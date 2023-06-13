@@ -1,0 +1,201 @@
+@charset "utf-8";
+/* 공통 */
+
+@mixin default-first {
+  html {
+    font-size: 16px;
+    overflow: auto;
+  }
+  body {
+    width: 100%;
+    min-width: 1200px;
+    height: 100% !important;
+    overflow-y: auto;
+    overflow-x: auto;
+    background-color: #f8f9ff;
+  }
+  * {
+    letter-spacing: 0;
+    color: #000;
+    box-sizing: border-box;
+    line-height: normal;
+    font-size: inherit;
+    color: inherit;
+    text-align: inherit;
+    word-break: keep-all;
+  }
+  .nav-link {
+    cursor: pointer;
+  }
+  .nav-link:hover,
+  .nav-link:hover * {
+    opacity: 0.7;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+  .v_center {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+  }
+  .left {
+    float: left;
+  }
+  .right {
+    float: right;
+  }
+
+  /* 정사각형 만들기 */
+  .square {
+    width: 50%;
+    position: relative;
+  }
+  .square:after {
+    content: '';
+    display: block;
+    padding-bottom: 100%;
+  }
+  .square .inner {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    text-align: center;
+  }
+
+  /* font */
+  .txt_small {
+    font-size: 13px;
+  }
+  .txt_sum {
+    color: #b84a4a;
+    font-weight: 500;
+  }
+  .txt_required {
+    margin-right: 10px;
+    color: #b84a4a;
+    font-weight: 500;
+    font-size: 20px;
+    vertical-align: middle;
+  }
+  .txt_notrequired {
+    margin-right: 10px;
+    color: transparent;
+    font-weight: 500;
+    font-size: 20px;
+    vertical-align: middle;
+  }
+
+  /* button */
+  .btn_del {
+    width: auto;
+    height: auto;
+    vertical-align: middle;
+  }
+  .btn_add {
+    width: auto;
+    height: auto;
+  }
+  .btn_off {
+    opacity: 0.2;
+  }
+  .btn_blue {
+    padding: 8px 15px 10px;
+    font-size: 15px;
+    line-height: 15px;
+    color: #fff;
+    background-color: #081a51;
+    border-radius: 5px;
+  }
+
+  /* form */
+  input {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    color: #667085;
+  }
+  .input_right {
+    margin-left: 8px;
+  }
+  .input_left {
+    margin-right: 8px;
+  }
+
+  /* page */
+  .page {
+    display: block;
+    padding: 40px 25px;
+    width: 100%;
+    height: calc(100% - 90px);
+    overflow: auto;
+  }
+
+  /* table.section */
+  table.section {
+    margin: 0 25px;
+    float: left;
+    background-color: #fff;
+    border-radius: 10px;
+    -webkit-box-shadow: 3px 3px 3px 0px rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: 3px 3px 3px 0px rgba(0, 0, 0, 0.1);
+    box-shadow: 3px 3px 3px 0px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+  table.section > caption {
+    padding-left: 20px;
+    padding-bottom: 15px;
+    font-size: 20px;
+    color: #081a51;
+    font-weight: 500;
+  }
+  table.section > caption > button {
+    float: right;
+    margin-right: 20px;
+  }
+  table.section > thead {
+    border-bottom: 1px solid #4965bb;
+  }
+  table.section th {
+    padding: 15px 20px;
+    font-size: 16px;
+    color: #081a51;
+    font-weight: 500;
+    border-right: 1px dotted #ccc;
+  }
+  table.section th:last-child {
+    border-right: 0;
+  }
+  table.section td {
+    padding: 15px 20px;
+    font-size: 14px;
+    color: #667085;
+    border-right: 1px dotted #ccc;
+    border-bottom: 1px dotted #ccc;
+  }
+  table.section td:last-child {
+    border-right: 0;
+  }
+  table.section .btn_del {
+    width: auto;
+    height: auto;
+    vertical-align: middle;
+  }
+  table.section .btn_add {
+  }
+  table.section .td_btn_add {
+    text-align: right;
+  }
+  table.section .td_btn_add .txt_small {
+    margin-right: 5px;
+    line-height: 24px;
+    vertical-align: top;
+  }
+}

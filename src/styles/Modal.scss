@@ -1,0 +1,51 @@
+@import './common.scss';
+
+.Alert {
+  textarea {
+    border-width: 0;
+    resize: none;
+  }
+  .modal-title {
+    span {
+      margin-left: 10px;
+    }
+  }
+}
+
+.Confirm {
+  .modal-title {
+    margin: 0 auto;
+  }
+  .btn {
+    margin: 0 auto;
+  }
+}
+
+.Login {
+  .modal-title {
+    margin: 0 auto;
+  }
+  .btn {
+    margin: 0 auto;
+  }
+}
+
+
+.modal-90w {
+  min-width: 90%;
+}
+
+.ItemSelect {
+  .modal-title {
+    margin-left: 3rem;
+  }
+
+  .TableBody {
+    border: 2px solid black;
+    max-height: 600px;
+    overflow-y: auto;
+    table {
+      @include default-table;
+    }
+  }
+}

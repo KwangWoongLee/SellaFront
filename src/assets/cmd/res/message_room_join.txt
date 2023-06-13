@@ -1,0 +1,10 @@
+  # socket.io response : 메세지룸 동기화 응답
+  # room_idxs : 현재 접속중인 메세지룸 정보
+
+  Response : { 
+    "room_idxs": [
+       47,
+       48,
+       49
+     ]
+  }

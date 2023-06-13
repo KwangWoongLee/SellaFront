@@ -1,0 +1,15 @@
+  # socket.io request : 채팅 메시지를 보냅니다
+  # chat_type : 채팅의 타입 입니다.
+      - 1 : 일반 - target_aidxs 의 유저들에게 보냅니다.
+      - 2 : 채널 - 채널의 모든 유저에게 보냅니다.
+      - 3 : 월드 - 월드의 모든 유저에게 보냅니다.
+      - 4 : 귓속말 - target_aidxs 의 유저들에게 보냅니다.
+      - 5 : 친구 - target_aidxs 의 유저들에게 보냅니다.
+
+  # target_aidxs : 메시지를 보낼 유저들의 aidx 배열입니다.
+    
+  Request : {
+    "chat_type": integer,
+    "msg": string,
+    "target_aidxs": array
+  }

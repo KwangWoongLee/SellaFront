@@ -1,0 +1,19 @@
+# socket.io response : 접속완료 응답
+# 소켓 커넥션 호출후 정상적으로 접속이 완료되면 서버로부터 응답
+
+# socket_id : socket id
+# user : 유저 정보
+  - aidx : account idx,
+  - grade : 계정 등급,
+  - room_idxs : 포함된 room idx list
+  
+Response : {
+  socket_id : NMWL__tEY_CvXmgOAANp,
+  user : {
+    "aidx": 3074,
+    "grade": 0,
+    "room_idxs": [
+      47
+    ]
+  }
+}

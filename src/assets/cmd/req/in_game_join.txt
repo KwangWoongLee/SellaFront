@@ -1,0 +1,8 @@
+  # socket.io request : 인게임 채팅에 입장
+  # world_key : 월드의 인게임 채팅룸 키 입니다. 생성방법은 : 마이월드 / 프리월드 진입시에 target_aidx, widx 보내 주시면 됩니다. 이외에는 빈 스트링 보내주셔서 월드 채팅 막으세요
+  # channel_key : 같이 게임중인 채널의 인게임 채팅룸 키 입니다.  생성방법은 : 접속중인 채널의 no + 진입한 iocp 서버의 room_key 로 조합해서 주시면 됩니다.
+  
+  Request : {
+    "world_key":string
+    "channel_key":string
+  }

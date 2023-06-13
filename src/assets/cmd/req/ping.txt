@@ -1,0 +1,5 @@
+  # socket.io request : 핑 보내기
+  # ping - 접속 유지를 위해 1분에 한번씩 ping을 보내주세요
+  # 서버에서 응답으로 cmd.res.ping 메세지를 보내줍니다.
+  
+  Request : {}

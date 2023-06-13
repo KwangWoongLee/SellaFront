@@ -1,0 +1,42 @@
+# socket.io response : 메세지를 수신합니다.
+# midx : message idx
+# sender_aidx : 보낸사람 aidx
+# target_aidx : 0 이 아니라면 1대1 대화 보낸유저
+# ridx : 0 이 아니라면 room 대화 idx
+# msg : 메세지 내용
+# reg_time : 메세지 보낸 시간 unixtime
+# param : 메세지 이외의 내용을 전달하고 싶을때 사용 JSON String
+  - file : 파일을 첨부할때 사용 
+  - emoticon : 이모티콘 첨부에서 사용
+  - room_register : 룸 생성정보
+      - aidxs : aidx array : 생성에 참여한 유저들
+  - room_invite : 룸 초대 정보
+    - aidxs : aidx array : 초대한 유저들
+  - room_escape : 룸 삭제 정보
+    - aidx : aidx : 나간 유저
+  - room_modify_title : 룸 제목 변경 정보
+    - title : 변경한 제목 
+  - room_destroy : 룸 파괴정보
+    - ridx : 파괴된 룸 ridx
+
+# param file 의 경우 api/message/send_file 에서 자동으로 만들어준다. 직접 넣으면 error
+
+# param 키값에 따른 채팅창 표시
+  file : 항목이 있으면 파일을 msg 아래쪽에 표시
+  { 
+    type : string - image or mov or file 
+    originalname : 파일원본 이름,
+    size : 파일사이즈
+    download_url : download url
+    expires : 서버에서 파일 삭제하는 시간 - ex) 7d = reg_time + 7일
+  }
+
+
+Response : {
+  "sender_aidx": 1,
+  "target_aidx": 1,
+  "ridx": 0,
+  "msg": "안녕하세요",
+  "param": "{}",
+  "reg_time": 1625719304,
+}

@@ -1,0 +1,13 @@
+  # socket.io request : 메세지 보내기
+  # target_aidx : 보낼 유저 aidx 입니다. 룸채팅이라면 0으로 보내면 됩니다.
+  # ridx : 보낼 채팅룸 id 입니다. 1대1 혹은 자기자신에게 보낸다면 0으로 보내면 됩니다
+  # msg : 보낼 메세지 입니다. 1글자 이상 1000글자 이하로 보내세요
+  # param : 메세지 이외의 내용을 전달하고 싶을때 사용 JSON object String , com.res.message 참조
+   - param 을 비워서 보낼때는 {} 로 보내면 됩니다.
+  
+  Request : {
+    "target_aidx": bigint
+    "ridx": bigint,
+    "msg": string,
+    "param": json string
+  }

@@ -1,0 +1,322 @@
+@charset 'utf-8';
+
+/** setting **/
+
+@import url(https://fonts.googleapis.com/earlyaccess/notosanskr.css);
+
+/*
+html, body { width:100%;   overflow:visible; letter-spacing:0px; color:#333; font-size:10px; font-family: 'Noto Sans KR', sans-serif; background-color:#dce1e6; }
+*/
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+    letter-spacing: 0;
+    font-size: 12px;
+    /* font-family: 'Noto Sans KR', sans-serif; */
+    background-color: #fff;
+    box-sizing: border-box;
+    line-height: 1rem;
+}
+
+* {
+    outline: none;
+    border-collapse: collapse;
+    border-spacing: 0;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    color: #333;
+    font-weight: 300;
+}
+
+/** * Eric Meyer's Reset CSS v2.0 (http://meyerweb.com/eric/tools/css/reset/) * http://cssreset.com */
+
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    vertical-align: baseline;
+    box-sizing: border-box;
+    /*세로모드에서 가로모드로 전환할때 텍스트가 약간 커지는 현상 방지*/
+    margin: 0;
+    padding: 0;
+    border: 0;
+    vertical-align: baseline;
+    -webkit-text-size-adjust: none;
+    text-decoration: none;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+/* HTML5 display-role reset for older browsers */
+
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+    display: block;
+    /* font-family: 'Noto Sans KR', sans-serif; */
+}
+
+ol,
+ul {
+    list-style: none;
+}
+
+blockquote,
+q {
+    quotes: none;
+    box-sizing: border-box;
+}
+
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+    content: "";
+    content: none;
+    box-sizing: border-box;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+button,
+a {
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    cursor: pointer;
+    font-size: inherit;
+    /* font-family: 'Noto Sans KR', sans-serif; */
+}
+
+textarea,
+input,
+select,
+textarea {
+    padding: 0;
+    margin: 0;
+    outline: 0;
+    font-size: inherit;
+    /* font-family: 'Noto Sans KR', sans-serif; */
+
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+
+    /* 삭제한 후 */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+
+    /* 스타일 주면 IOS에서 그림자 사라짐 */
+    border: 1px solid #d2d2d2;
+
+    /* 둥근 테두리 삭제 */
+    -webkit-border-radius: 0;
+}
+
+input[type="radio"],
+input[type="checkbox"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+select {
+    cursor: pointer;
+}
+
+button:active,
+a:active,
+input[type="reset"]:active,
+input[type="submit"]:active {
+    opacity: 0.8;
+    -webkit-apprearance: none;
+}
+
+i {
+    font-size: 0;
+}
+
+hr {
+    display: block;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background-color: #d2d2d2;
+}
+
+img {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+}
+
+dl {
+    margin-block-start: 0;
+    margin-block-end: 0;
+    margin-inline-start: 0;
+    margin-inline-end: 0;
+}
+
+dt,
+dd {
+    margin-inline-start: 0;
+    font-size: inherit;
+    line-height: inherit;
+}
+
+*:hover {
+    outline: none;
+    -webkit-apprearance: none;
+}
+
+*:visited {
+    outline: none;
+    -webkit-apprearance: none;
+}
+
+*:focus {
+    outline: none;
+    -webkit-apprearance: none;
+}
+
+*:active {
+    outline: none;
+    -webkit-apprearance: none;
+}
+
+/* placeholder */
+
+::-webkit-input-placeholder {
+    /* Chrome/Opera/Safari */
+    color: #aaaaaa;
+}
+
+::-moz-placeholder {
+    /* Firefox 19+ */
+    color: #aaaaaa;
+}
+
+:-ms-input-placeholder {
+    /* IE 10+ */
+    color: #aaaaaa;
+}
+
+:-moz-placeholder {
+    /* Firefox 18- */
+    color: #aaaaaa;
+}
+
+/* 스크롤 */
+
+::-webkit-scrollbar-track {
+    background-color: #f5f5f5;
+}
+
+::-webkit-scrollbar {
+    width: 0;
+    /* remove scrollbar space */
+    background: transparent;
+    /* optional: just make scrollbar invisible */
+    height: 0 !important;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #aaaaaa;
+}

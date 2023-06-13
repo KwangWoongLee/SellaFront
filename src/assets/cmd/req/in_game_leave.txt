@@ -1,0 +1,3 @@
+  # socket.io request : 인게임 채팅을 나갑니다.
+      
+  Request : {}

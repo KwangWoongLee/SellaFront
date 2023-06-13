@@ -1,0 +1,10 @@
+  # socket.io response : 인게임 채팅 응답
+  # chat_type : 채팅 타입
+  # msg : 메시지
+  # sender_aidx : 보낸 유저 aidx
+  
+  Response : {
+    "chat_type":2,
+    "msg":"안녕하세요",
+    "sender_aidx":18
+  }

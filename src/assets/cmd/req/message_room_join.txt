@@ -1,0 +1,9 @@
+  # socket.io request : 메세지룸에 입장합니다. 
+  message param 값으로 : 
+  room_register
+  room_invite
+  room_escape
+  room_destroy
+  를 받았을때 보내서 메세지 룸을 동기화 시켜줍니다.
+      
+  Request : {}

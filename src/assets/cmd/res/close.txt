@@ -1,0 +1,4 @@
+# socket.io response : 서버로부터 클라이언트 접속종료 요청받음
+# 패킷 수신후 socket 을 종료시키면 됩니다.
+  
+Response : {}

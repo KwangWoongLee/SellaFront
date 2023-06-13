@@ -1,0 +1,3 @@
+  # socket.io response : 핑 응답
+  
+  Response : {}

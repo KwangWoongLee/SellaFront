@@ -1,0 +1,56 @@
+/*
+* scss 기본 문법
+* https://seokzin.tistory.com/entry/SCSS-SCSS-%EB%AC%B8%EB%B2%95-%EC%A0%95%EB%A6%AC
+*/
+@import './common.scss';
+
+.UserList {
+  max-height: 820px;
+  overflow-y: auto;
+
+  table {
+    @include default-table;
+  }
+  ~ .more-btn {
+    width: 100%;
+  }
+}
+
+.UserInfo {
+  max-height: 820px;
+  overflow-y: auto;
+
+  .justify-content-around > .btn {
+    width: 100%;
+    margin-left: 1rem;
+    margin-right: 1rem;
+  }
+
+  table {
+    table {
+      @include default-table;
+    }
+  }
+}
+
+.UserMoney {
+  max-height: 820px;
+  overflow-y: auto;
+
+  table {
+    table {
+      @include default-table;
+    }
+  }
+}
+
+.UserItem {
+  max-height: 820px;
+  overflow-y: auto;
+
+  table {
+    table {
+      @include default-table;
+    }
+  }
+}
