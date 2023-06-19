@@ -14,15 +14,16 @@ import RegistResult from 'components/base/RegistResult';
 import SearchID from 'components/base/SearchID';
 import SearchPW from 'components/base/SearchPW';
 
-import com, { logger, modal } from 'util/com';
+import { logger } from 'util/com';
 import ProtectedRoute from 'components/common/ProtectedRoute';
 import Tab1 from 'components/settlement/Tab1';
 import Tab2 from 'components/settlement/Tab2';
 import Step1 from 'components/project/Step1';
 import Step2 from 'components/project/Step2';
-import MgrAccount from 'components/manager/MgrAccount';
 
 import NavigateCtr from 'components/common/NavigateCtr';
+import Margin from 'components/calculator/Margin';
+import Buying from 'components/calculator/Buying';
 import CSCenter from 'components/cscenter/CSCenter';
 import Announcement from 'components/cscenter/Announcement';
 import Manual from 'components/cscenter/Manual';
@@ -33,7 +34,6 @@ import Inquiry from 'components/cscenter/Inquiry';
 
 export function App() {
   logger.render('App');
-  const auth = true;
   useEffect(() => {
     logger.debug('mount App');
   }, []);
@@ -80,12 +80,20 @@ export function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="manager">
+          <Route path="calculator">
             <Route
-              path="account"
+              path="margin"
               element={
                 <ProtectedRoute>
-                  <MgrAccount />
+                  <Margin />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="buying"
+              element={
+                <ProtectedRoute>
+                  <Buying />
                 </ProtectedRoute>
               }
             />

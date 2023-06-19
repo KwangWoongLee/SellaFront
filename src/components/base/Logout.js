@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-import { logger, modal, navigate } from 'util/com';
+import { logger, navigate } from 'util/com';
 import Recoils from 'recoils';
 import request from 'util/request';
 

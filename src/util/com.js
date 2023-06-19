@@ -153,4 +153,9 @@ export const is_authed = () => {
   return true;
 };
 
+export const boolType = (value) => {
+  if (value === 'Y') return 1;
+  else return 0;
+};
+
 export default com;

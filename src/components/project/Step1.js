@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import {} from 'react-bootstrap';
 import Head from 'components/template/Head';
@@ -6,11 +6,8 @@ import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 import request from 'util/request';
 import { modal } from 'util/com';
-import com from 'util/com';
 import Recoils from 'recoils';
 import _ from 'lodash';
-import icon_member from 'images/icon_member.svg';
-import icon_power from 'images/icon_power.svg';
 import icon_add from 'images/icon_add.svg';
 import icon_del from 'images/icon_del.svg';
 

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import { Modal, Button, InputGroup, Form } from 'react-bootstrap';
+import { Button, InputGroup, Form } from 'react-bootstrap';
 import Recoils from 'recoils';
-import com, { logger, modal, navigate } from 'util/com';
+import com, { logger, navigate } from 'util/com';
 import { AiFillMail, AiFillLock } from 'react-icons/ai';
 import request from 'util/request';
 // import _ from 'lodash';

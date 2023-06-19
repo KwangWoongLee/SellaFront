@@ -3,9 +3,7 @@ import React, { useEffect } from 'react';
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
-import { logger, modal, navigate } from 'util/com';
-import com from 'util/com';
-import Recoils from 'recoils';
+import { logger } from 'util/com';
 
 const MyPage = () => {
   logger.render('MyPage');

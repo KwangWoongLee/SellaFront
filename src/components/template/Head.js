@@ -1,12 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Navbar, Nav, NavDropdown, DropdownButton, Form, OverlayTrigger, Popover } from 'react-bootstrap';
+import React, { useEffect } from 'react';
+import { Nav } from 'react-bootstrap';
 import 'styles/Template.scss';
-import { navigate, modal, logger } from 'util/com';
+import { navigate, logger } from 'util/com';
 
-import request from 'util/request';
 import Recoils from 'recoils';
-import com from 'util/com';
-import _ from 'lodash';
 
 import logo_top from 'images/logo_top.svg';
 import icon_member from 'images/icon_member.svg';
@@ -53,13 +50,15 @@ const Head = () => {
           </ul>
         </div>
         <div className="member">
-          <span>{account.name} 님</span>
-
-          <Nav.Link className="nav-link" onClick={onLink} name="/cscenter">
-            <div className="cscenter">고객센터</div>
-          </Nav.Link>
-          {account && account.grade != -1 ? (
+          {account && account.grade !== -1 ? (
             <>
+              <span>{account.name} 님</span>
+              <Nav.Link className="nav-link" onClick={onLink} name="/calculator/margin">
+                <img src={icon_member} alt="" />
+              </Nav.Link>
+              <Nav.Link className="nav-link" onClick={onLink} name="/cscenter">
+                <div className="cscenter">고객센터</div>
+              </Nav.Link>
               <Nav.Link className="nav-link" onClick={onLink} name="/mypage">
                 <img src={icon_member} alt="" />
               </Nav.Link>

@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
-import { Table, Button } from 'react-bootstrap';
+import {} from 'react-bootstrap';
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
-import { useInput, modal } from 'util/com';
-import request from 'util/request';
+import {} from 'util/com';
 import SettlementNavTab from 'components/settlement/SettlementNavTab';
-
-import 'styles/User.scss';
 
 import { logger } from 'util/com';
 

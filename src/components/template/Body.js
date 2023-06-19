@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
-import com, { modal, logger, navigate } from 'util/com';
-import Recoils from 'recoils';
-import { Card } from 'react-bootstrap';
-import { navigate_ref } from 'components/common/NavigateCtr';
+import { modal, logger } from 'util/com';
 
 import 'styles/Template.scss';
 const Timer = () => {

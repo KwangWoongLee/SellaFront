@@ -4,11 +4,11 @@ import { logger } from 'util/com';
 import CommonNavTab from 'components/common/CommonNavTab';
 
 const data = [
-  { name: '/settlement/tab1', desc: '손익 계산' },
-  { name: '/settlement/tab2', desc: '오늘 주문 합계' },
+  { name: '/calculator/margin', desc: '마진 계산기' },
+  { name: '/calculator/buying', desc: '사입 계산기' },
 ];
-const SettlementNavTab = ({ active }) => {
-  logger.render('SettlementNavTab');
+const CalculatorNavTab = ({ active }) => {
+  logger.render('CalculatorNavTab');
 
   useEffect(() => {}, []);
 
@@ -19,4 +19,4 @@ const SettlementNavTab = ({ active }) => {
   );
 };
 
-export default React.memo(SettlementNavTab);
+export default React.memo(CalculatorNavTab);

@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
-import { Table, Button, Modal } from 'react-bootstrap';
+import { Button, Modal } from 'react-bootstrap';
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
-import { useInput, modal, navigate } from 'util/com';
+import { modal, navigate } from 'util/com';
 import request from 'util/request';
 import SettlementNavTab from 'components/settlement/SettlementNavTab';
 import Recoils from 'recoils';
-
-import 'styles/User.scss';
 
 import { logger } from 'util/com';
 
@@ -20,7 +18,6 @@ const Tab1 = () => {
   const aidx = account.aidx;
   const [viewState, setView] = useState(true);
   const [platform, setPlatform] = useState('네이버 스마트스토어');
-  const [datas, setDatas] = useState([]);
 
   useEffect(() => {
     request.post(`user/delivery`, { aidx }).then((ret) => {

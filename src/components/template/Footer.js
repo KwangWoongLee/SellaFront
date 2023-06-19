@@ -1,7 +1,5 @@
 import React, { useEffect } from 'react';
-import { Alert } from 'react-bootstrap';
 import { logger } from 'util/com';
-import { Link } from 'react-router-dom';
 
 import 'styles/Template.scss';
 

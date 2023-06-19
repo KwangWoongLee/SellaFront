@@ -1,7 +1,6 @@
 import axios from 'axios';
 import _ from 'lodash';
-import { modal, navigate } from 'util/com';
-import Recoils from 'recoils';
+import { modal } from 'util/com';
 
 const get_client = (...arg) => {
   let headers = {
@@ -59,11 +58,11 @@ const input_chk = (send_obj) => {
 
 const request = {
   post: async (url, send_obj, common_err = true, ...headers) => {
-    const input_err = input_chk(send_obj);
-    if (input_err) {
-      if (common_err) modal.alert('error', '입력값에러', input_err.err);
-      return input_err;
-    }
+    // const input_err = input_chk(send_obj);
+    // if (input_err) {
+    //   if (common_err) modal.alert('error', '입력값에러', input_err.err);
+    //   return input_err;
+    // }
 
     const ret = {
       err: null,
