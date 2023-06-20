@@ -35,7 +35,7 @@ const Head = () => {
         <div className="menu">
           <ul className="left">
             <li>
-              <Nav.Link className="nav-link" onClick={onLink} name="/settlement/tab1">
+              <Nav.Link className="nav-link" onClick={onLink} name="/settlement/margin_calc">
                 <span>정산해보기!</span>손익 관리
               </Nav.Link>
             </li>
@@ -56,11 +56,11 @@ const Head = () => {
 
         <div className="member">
           <img src={icon_calculator} alt="계산기" className="icon_calculator" />
-          <Nav.Link className="nav-link mcalculator" onClick={onLink} name="/mcalculator">
+          <Nav.Link className="nav-link mcalculator" onClick={onLink} name="/calculator/margin">
             <span>마진계산기</span>
           </Nav.Link>
           <span>·</span>
-          <Nav.Link className="nav-link bcalculator" onClick={onLink} name="/bcalculator">
+          <Nav.Link className="nav-link bcalculator" onClick={onLink} name="/calculator/buying">
             <span>사입계산기</span>
           </Nav.Link>
           <Nav.Link className="nav-link" onClick={onLink} name="/cscenter">

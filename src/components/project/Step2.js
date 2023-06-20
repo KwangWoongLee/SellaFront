@@ -178,7 +178,7 @@ const Step2 = () => {
   };
 
   const onUpload = function () {
-    modal.file_upload('user/goods/save', '.xlsx', '파일 업로드', { aidx }, (ret) => {
+    modal.file_upload('user/goods/save', '.xlsx', '파일 업로드', { aidx, excelType }, (ret) => {
       if (!ret.err) {
         logger.info(ret.data);
 

@@ -16,8 +16,11 @@ import SearchPW from 'components/base/SearchPW';
 
 import { logger } from 'util/com';
 import ProtectedRoute from 'components/common/ProtectedRoute';
-import Tab1 from 'components/settlement/Tab1';
-import Tab2 from 'components/settlement/Tab2';
+import MarginCalc from 'components/settlement/MarginCalc';
+import TodaySummary from 'components/settlement/TodaySummary';
+import FormManagement from 'components/settlement/FormManagement';
+import SaleProduct from 'components/settlement/SaleProduct';
+import StandardProduct from 'components/settlement/StandardProduct';
 import Step1 from 'components/project/Step1';
 import Step2 from 'components/project/Step2';
 
@@ -48,18 +51,50 @@ export function App() {
           <Route path="/logout" element={<Logout />} />
           <Route path="settlement">
             <Route
-              path="tab1"
+              path="margin_calc"
               element={
                 <ProtectedRoute>
-                  <Tab1 />
+                  <MarginCalc />
                 </ProtectedRoute>
               }
             />
             <Route
-              path="tab2"
+              path="today_summary"
               element={
                 <ProtectedRoute>
-                  <Tab2 />
+                  <TodaySummary />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path=""
+              element={
+                <ProtectedRoute>
+                  <TodaySummary />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="form_management"
+              element={
+                <ProtectedRoute>
+                  <FormManagement />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="sale_protuct"
+              element={
+                <ProtectedRoute>
+                  <SaleProduct />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="standard_product"
+              element={
+                <ProtectedRoute>
+                  <StandardProduct />
                 </ProtectedRoute>
               }
             />

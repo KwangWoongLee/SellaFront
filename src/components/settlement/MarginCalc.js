@@ -11,8 +11,8 @@ import Recoils from 'recoils';
 
 import { logger } from 'util/com';
 
-const Tab1 = () => {
-  logger.render('Tab1');
+const MarginCalc = () => {
+  logger.render('MarginCalc');
 
   const account = Recoils.useValue('CONFIG:ACCOUNT');
   const aidx = account.aidx;
@@ -53,9 +53,9 @@ const Tab1 = () => {
     <>
       <Head />
       <Body title={`손익 계산`}>
-        <SettlementNavTab active="/settlement/tab1" />
+        <SettlementNavTab active="/settlement/margin_calc" />
         {viewState ? (
-          <div className="Tab1">
+          <div className="MarginCalc">
             {platform}
             <Button variant="primary" onClick={onUpload}>
               새 주문서 업로드
@@ -88,4 +88,4 @@ const Tab1 = () => {
   );
 };
 
-export default React.memo(Tab1);
+export default React.memo(MarginCalc);

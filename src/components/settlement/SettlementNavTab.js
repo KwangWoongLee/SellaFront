@@ -4,8 +4,12 @@ import { logger } from 'util/com';
 import CommonNavTab from 'components/common/CommonNavTab';
 
 const data = [
-  { name: '/settlement/tab1', desc: '손익 계산' },
-  { name: '/settlement/tab2', desc: '오늘 주문 합계' },
+  { name: '/settlement/margin_calc', desc: '손익 계산' },
+  { name: '/settlement/today_summary', desc: '오늘 주문 합계' },
+  { name: '/settlement/', desc: '판매상품 통계' },
+  { name: '/settlement/form_management', desc: '매체별 양식 관리' },
+  { name: '/settlement/sale_protuct', desc: '판매상품 연결 조회' },
+  { name: '/settlement/standard_product', desc: '기준상품 연결 조회' },
 ];
 const SettlementNavTab = ({ active }) => {
   logger.render('SettlementNavTab');

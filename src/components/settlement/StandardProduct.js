@@ -9,8 +9,8 @@ import SettlementNavTab from 'components/settlement/SettlementNavTab';
 
 import { logger } from 'util/com';
 
-const Tab2 = () => {
-  logger.render('Tab2');
+const StandardProduct = () => {
+  logger.render('StandardProduct');
 
   const [info, setInfo] = useState(null);
 
@@ -19,13 +19,13 @@ const Tab2 = () => {
   return (
     <>
       <Head />
-      <Body title={`유저 기본정보`}>
-        <SettlementNavTab active="/settlement/Tab2" />
-        <div className="Tab2"></div>
+      <Body title={`기준상품 연결 조회`}>
+        <SettlementNavTab active="/settlement/standard_product" />
+        <div className="StandardProduct"></div>
       </Body>
       <Footer />
     </>
   );
 };
 
-export default React.memo(Tab2);
+export default React.memo(StandardProduct);
