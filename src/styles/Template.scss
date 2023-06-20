@@ -1,28 +1,22 @@
-@import './reset_202305.scss';
-@import './font.scss';
-@import './common_202305.scss';
-
 .header {
   position: relative;
   padding: 0 50px;
   width: 100%;
   height: 90px;
   background-color: #081a51;
-
-  @include default-first;
 }
 .header > .logo {
   display: block;
   float: left;
   margin: 25px 0;
-  padding:0 !important;
+  padding: 0 !important;
   width: auto;
   height: 40px;
 }
 .header > .menu {
   display: inline-block;
   height: 100%;
-  margin-left:70px;
+  margin-left: 70px;
 }
 .header > .menu > ul {
   display: inline-block;
@@ -89,7 +83,7 @@
 .header > .member > span,
 .header > .member > .nav-link span {
   display: block;
-  float: left;  
+  float: left;
   font-size: 14px;
   color: #fff;
   line-height: 24px;
@@ -102,22 +96,27 @@
 .header > .member > .nav-link {
   display: block;
   float: left;
-  margin:20px 0 !important; 
+  margin: 20px 0 !important;
   cursor: pointer;
 }
 
-.header > .member > .icon_calculator { margin-top:3px; margin-right:3px; width:16px; }
+.header > .member > .icon_calculator {
+  margin-top: 3px;
+  margin-right: 3px;
+  width: 16px;
+}
 .header > .member > .nav-link.mcalculator,
 .header > .member > .nav-link.bcalculator,
 .header > .member > .nav-link.icon_member,
 .header > .member > .nav-link.icon_power {
   padding: 0;
-  margin:5px !important;
+  margin: 5px !important;
 }
 
-.header > .member .name { 
-  margin:15px 5px 15px 10px !important; 
-  cursor:default; }
+.header > .member .name {
+  margin: 15px 5px 15px 10px !important;
+  cursor: default;
+}
 
 .header > .member > .nav-link > img {
   display: block;
@@ -147,12 +146,4 @@
 }
 .header > .member:hover + ul {
   display: inline-block;
-}
-
-.body {
-  @include default-first;
-}
-
-.footer {
-  @include default-first;
 }

@@ -19,13 +19,20 @@ const Regist = () => {
   const onSubmit = (e) => {
     e.preventDefault();
 
-    const id = e.currentTarget[0].value;
-    const password = e.currentTarget[1].value;
+    const name = e.currentTarget[0].value;
+    const gender = 1;
+
+    const local = 1;
+    const phone = e.currentTarget[6].value;
+
+    const id = e.currentTarget[10].value;
+    const password = e.currentTarget[12].value;
+    const email = '';
 
     com.storage.setItem('id', id);
     com.storage.setItem('password', password);
 
-    request.post('regist', { id, password }).then((ret) => {
+    request.post('user/regist', { id, password, phone, name, email, gender, local }).then((ret) => {
       if (!ret.err) {
         navigate('/regist/result');
       } else {
