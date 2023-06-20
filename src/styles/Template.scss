@@ -1,25 +1,28 @@
+@import './reset_202305.scss';
+@import './font.scss';
+@import './common_202305.scss';
+
 .header {
   position: relative;
   padding: 0 50px;
   width: 100%;
   height: 90px;
   background-color: #081a51;
+
+  @include default-first;
 }
 .header > .logo {
   display: block;
   float: left;
   margin: 25px 0;
+  padding:0 !important;
   width: auto;
   height: 40px;
 }
 .header > .menu {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  margin-left: calc(-1 * (50% - 250px));
-  display: block;
-  width: calc(100% - 500px);
+  display: inline-block;
   height: 100%;
+  margin-left:70px;
 }
 .header > .menu > ul {
   display: inline-block;
@@ -40,7 +43,7 @@
   font-weight: 400;
   color: #fff;
 }
-.header > .menu > ul > li > .nav-link > span {
+.header > .menu > ul > li > .nav-link span {
   display: block;
   font-size: 13px;
   line-height: 20px;
@@ -51,7 +54,7 @@
 }
 .header > .menu > ul.right {
   float: left;
-  margin-left: 50px;
+  margin-left: 40px;
 }
 .header > .menu > ul.left {
   width: 200px;
@@ -84,14 +87,13 @@
   height: 100%;
 }
 .header > .member > span,
-.header > .member > .nav-link > .cscenter {
+.header > .member > .nav-link span {
   display: block;
-  float: left;
-  margin-right: 5px;
-  font-size: 15px;
+  float: left;  
+  font-size: 14px;
   color: #fff;
   line-height: 24px;
-  cursor: default;
+  cursor: pointer;
   font-weight: 400;
 }
 .header > .member > .cscenter {
@@ -100,13 +102,29 @@
 .header > .member > .nav-link {
   display: block;
   float: left;
-  margin-left: 8px;
+  margin:20px 0 !important; 
+  cursor: pointer;
 }
+
+.header > .member > .icon_calculator { margin-top:3px; margin-right:3px; width:16px; }
+.header > .member > .nav-link.mcalculator,
+.header > .member > .nav-link.bcalculator,
+.header > .member > .nav-link.icon_member,
+.header > .member > .nav-link.icon_power {
+  padding: 0;
+  margin:5px !important;
+}
+
+.header > .member .name { 
+  margin:15px 5px 15px 10px !important; 
+  cursor:default; }
+
 .header > .member > .nav-link > img {
   display: block;
   width: auto;
   height: 20px;
 }
+
 .header > .member > ul {
   position: absolute;
   top: 70px;
@@ -129,4 +147,12 @@
 }
 .header > .member:hover + ul {
   display: inline-block;
+}
+
+.body {
+  @include default-first;
+}
+
+.footer {
+  @include default-first;
 }

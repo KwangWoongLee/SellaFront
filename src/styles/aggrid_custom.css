@@ -1,0 +1,10 @@
+.ag-theme-alpine { --ag-header-foreground-color: #fff; height: auto !important; }
+.ag-root-wrapper { border:0; }
+.ag-root-wrapper.ag-layout-normal { height: calc(100vh - 210px); }
+.ag-header { height:40; min-height:40px; background-color: #182B65; border-top-left-radius:10px; border-top-right-radius:10px;  overflow:hidden; }
+.ag-header-cell { border-right:1px dotted #ccc; }
+.ag-header-cell-resize::after { display:none; }
+.ag-pinned-left-header { border-right: 0; }
+.ag-icon-menu::before { color: #fff; }
+.ag-header-row { height:40px; }
+.ag-body { border-bottom-left-radius:10px; border-bottom-right-radius:10px; }

@@ -59,9 +59,9 @@ const InputModal = React.memo(({ modalState, setModalState, callback }) => {
   const onClose = () => setModalState(false);
 
   return (
-    <Modal show={modalState} onHide={onClose} centered>
-      <Modal.Header className="d-flex justify-content-center">
-        <Modal.Title className="text-primary">상품추가</Modal.Title>
+    <Modal show={modalState} onHide={onClose} centered className="modal step2">
+      <Modal.Header>
+        <Modal.Title>상품추가</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={onSubmit} id="insert-form">
