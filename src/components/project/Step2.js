@@ -22,6 +22,10 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 //
 
 import 'styles/Step2.scss';
+
+import icon_circle_arrow_down from 'images/icon_circle_arrow_down.svg';
+import icon_circle_arrow_up from 'images/icon_circle_arrow_up.svg';
+
 let rawData;
 const excel_str = [
   '신규 등록용',
@@ -238,29 +242,34 @@ const Step2 = () => {
       <Head />
       <Body title={`Step2`}>
         <div className="page">
-          <Button variant="primary" onClick={onDelete}>
-            선택 삭제
-          </Button>{' '}
-          <Button variant="primary" onClick={onSave}>
-            선택 저장
-          </Button>{' '}
-          <Button variant="primary" onClick={onInsert}>
-            상품 추가
-          </Button>{' '}
-          <DropdownButton variant="" title={excel_str[excelType]}>
-            {excel_str.map((name, key) => (
-              <Dropdown.Item key={key} eventKey={key} onClick={(e) => onChange(key, e)} active={excelType === key}>
-                {excel_str[key]}
-              </Dropdown.Item>
-            ))}
-          </DropdownButton>
-          <Button variant="primary" onClick={onUpload}>
-            상품 엑셀 업로드
-          </Button>{' '}
-          <Button variant="primary" onClick={onDownload}>
-            상품 엑셀 다운로드
-          </Button>
-          <div style={containerStyle}>
+          <div className="btnbox_left">
+            <Button variant="primary" onClick={onDelete}>
+              선택 삭제
+            </Button>{' '}
+            <Button variant="primary" onClick={onSave}>
+              선택 저장
+            </Button>{' '}
+            <Button variant="primary" onClick={onInsert}>
+              상품 추가
+            </Button>{' '}
+          </div>
+          <div className="btnbox_right">
+            <Button variant="primary" onClick={onUpload}>
+              <img src={icon_circle_arrow_up} />
+              상품 엑셀 업로드
+            </Button>{' '}
+            <DropdownButton variant="" title={excel_str[excelType]}>
+              {excel_str.map((name, key) => (
+                <Dropdown.Item key={key} eventKey={key} onClick={(e) => onChange(key, e)} active={excelType === key}>
+                  {excel_str[key]}
+                </Dropdown.Item>
+              ))}
+            </DropdownButton>
+            <Button variant="primary" onClick={onDownload}>
+              상품 엑셀 다운로드
+            </Button>
+          </div>
+          <div style={containerStyle} className="tablebox">
             <div style={gridStyle} className="ag-theme-alpine test">
               <AgGridReact
                 ref={gridRef}

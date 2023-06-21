@@ -91,8 +91,16 @@ body {
 /* button */
 
 .btn-primary {
+  width: auto;
+  height: auto;
+  padding: 5px 10px;
+  vertical-align: middle;
   background-color: #fff;
   border-color: #ccc;
+  color: #444;
+  line-height: normal;
+  font-size: 13px;
+  border-radius: 7px;
 }
 
 .btn_del {
