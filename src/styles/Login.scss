@@ -1,0 +1,23 @@
+.body.login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 20vh;
+
+  .videobox {
+    display: block;
+    float: left;
+  }
+
+  .formbox {
+    display: block;
+    width: auto;
+    height: auto;
+    float: right;
+    margin-left: 50px;
+  }
+
+  .formbox h3 {
+    display: inlin;
+  }
+}

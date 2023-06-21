@@ -1,50 +1,53 @@
 @import './aggrid_custom.css';
 
-.btnbox_left {
-  display: block;
-  float: left;
-}
-.btnbox_left > button:nth-child(1) {
-  background-color: #b84a4a;
-  color: #fff;
-  border-color: #b84a4a;
-}
+.body.step2 {
+  .btnbox_left {
+    display: block;
+    float: left;
+  }
 
-.btnbox_left > button:nth-child(2) {
-  background-color: #081a51;
-  color: #fff;
-  border-color: #081a51;
-}
+  .btnbox_right {
+    display: block;
+    float: right;
+  }
 
-.btnbox_right {
-  display: block;
-  float: right;
-}
+  .btnbox_right > * {
+    float: left;
+  }
 
-.btnbox_right > * {
-  float: left;
-}
+  .btnbox_right > .dropdown > button {
+    padding: 6px 10px;
+    font-size: 13px;
+    line-height: 16px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
 
-.btnbox_right > .dropdown > button {
-  padding: 5px 10px;
-  font-size: 13px;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 7px;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-}
+  .btnbox_right > button:nth-child(1) {
+    margin-right: 10px;
+  }
 
-.btnbox_right > button:nth-child(1),
-.btnbox_right > button:nth-child(3) {
-  background-color: #1d7044;
-  color: #fff;
-  border-color: #1d7044;
-}
+  .btnbox_right > button:nth-child(3) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
 
-.tablebox {
-  display: block;
-  margin-top: 15px;
-  height: auto !important;
-  float: left;
+  .btnbox_right > button:nth-child(1) img,
+  .btnbox_right > button:nth-child(3) img {
+    display: inline-block;
+    width: auto;
+    height: 16px;
+    margin-right: 3px;
+    vertical-align: middle;
+  }
+
+  .tablebox {
+    display: block;
+    margin-top: 15px;
+    height: auto !important;
+    float: left;
+  }
 }

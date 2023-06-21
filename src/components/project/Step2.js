@@ -25,6 +25,7 @@ import 'styles/Step2.scss';
 
 import icon_circle_arrow_down from 'images/icon_circle_arrow_down.svg';
 import icon_circle_arrow_up from 'images/icon_circle_arrow_up.svg';
+import icon_set from 'images/icon_set.svg';
 
 let rawData;
 const excel_str = [
@@ -100,6 +101,30 @@ const Step2 = () => {
     },
     { field: 'goods_category', sortable: true, headerName: '카테고리', filter: true },
     { field: 'name', sortable: true, unSortIcon: true, headerName: '상품명', filter: true },
+    {
+      field: 'stock_price',
+      sortable: true,
+      unSortIcon: true,
+      valueParser: (params) => Number(params.newValue),
+      headerName: '입고단가',
+      filter: true,
+    },
+    {
+      field: 'delivery_fee',
+      sortable: true,
+      unSortIcon: true,
+      valueParser: (params) => Number(params.newValue),
+      headerName: '택배비',
+      filter: true,
+    },
+    {
+      field: 'packing_fee',
+      sortable: true,
+      unSortIcon: true,
+      valueParser: (params) => Number(params.newValue),
+      headerName: '포장비',
+      filter: true,
+    },
     {
       field: 'stock_price',
       sortable: true,
@@ -240,48 +265,53 @@ const Step2 = () => {
   return (
     <>
       <Head />
-      <Body title={`Step2`}>
-        <div className="page">
-          <div className="btnbox_left">
-            <Button variant="primary" onClick={onDelete}>
-              선택 삭제
-            </Button>{' '}
-            <Button variant="primary" onClick={onSave}>
-              선택 저장
-            </Button>{' '}
-            <Button variant="primary" onClick={onInsert}>
-              상품 추가
-            </Button>{' '}
-          </div>
-          <div className="btnbox_right">
-            <Button variant="primary" onClick={onUpload}>
-              <img src={icon_circle_arrow_up} />
-              상품 엑셀 업로드
-            </Button>{' '}
-            <DropdownButton variant="" title={excel_str[excelType]}>
-              {excel_str.map((name, key) => (
-                <Dropdown.Item key={key} eventKey={key} onClick={(e) => onChange(key, e)} active={excelType === key}>
-                  {excel_str[key]}
-                </Dropdown.Item>
-              ))}
-            </DropdownButton>
-            <Button variant="primary" onClick={onDownload}>
-              상품 엑셀 다운로드
-            </Button>
-          </div>
-          <div style={containerStyle} className="tablebox">
-            <div style={gridStyle} className="ag-theme-alpine test">
-              <AgGridReact
-                ref={gridRef}
-                rowData={rowData}
-                columnDefs={columnDefs}
-                alwaysShowHorizontalScroll={true}
-                alwaysShowVerticalScroll={true}
-                defaultColDef={defaultColDef}
-                rowSelection={'multiple'}
-                onCellEditingStopped={onCellValueChanged}
-              ></AgGridReact>
-            </div>
+      <Body title={`Step2`} myClass={'step2'}>
+        <div className="btnbox_left">
+          <Button variant="primary" onClick={onDelete} className="btn_red">
+            선택 삭제
+          </Button>{' '}
+          <Button variant="primary" onClick={onSave} className="btn_blue">
+            선택 저장
+          </Button>{' '}
+          <Button variant="primary" onClick={onInsert}>
+            상품 추가
+          </Button>{' '}
+          <p class="prdcount">
+            전체 상품 <span>2000</span> 개
+          </p>
+        </div>
+        <div className="btnbox_right">
+          <Button variant="primary" onClick={onUpload} className="btn_green">
+            <img src={icon_circle_arrow_up} />
+            상품 엑셀 업로드
+          </Button>{' '}
+          <DropdownButton variant="" title={excel_str[excelType]}>
+            {excel_str.map((name, key) => (
+              <Dropdown.Item key={key} eventKey={key} onClick={(e) => onChange(key, e)} active={excelType === key}>
+                {excel_str[key]}
+              </Dropdown.Item>
+            ))}
+          </DropdownButton>
+          <Button variant="primary" onClick={onDownload} className="btn_green">
+            <img src={icon_circle_arrow_down} />
+            상품 엑셀 다운로드
+          </Button>
+          <Button className="btn_set">
+            <img src={icon_set} />
+          </Button>
+        </div>
+        <div style={containerStyle} className="tablebox">
+          <div style={gridStyle} className="ag-theme-alpine test">
+            <AgGridReact
+              ref={gridRef}
+              rowData={rowData}
+              columnDefs={columnDefs}
+              alwaysShowHorizontalScroll={true}
+              alwaysShowVerticalScroll={true}
+              defaultColDef={defaultColDef}
+              rowSelection={'multiple'}
+              onCellEditingStopped={onCellValueChanged}
+            ></AgGridReact>
           </div>
         </div>
       </Body>

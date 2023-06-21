@@ -40,15 +40,20 @@ const FileUpload = () => {
 
     setProgress(() => ({ percent: 0, loaded: 0, total: 0 }));
     setBtnDisable(true);
-    request.post_form(state.url, frm, onUploadProgress).then((ret) => {
-      if (!ret.err) {
-        if (typeof ret.data === 'string') modal.alert('info', '업료드 완료', ret.data);
-        else modal.alert('info', '업료드 완료', '요청하신 파일에 대한 읽기를 완료했습니다.');
+    if (state.url) {
+      request.post_form(state.url, frm, onUploadProgress).then((ret) => {
+        if (!ret.err) {
+          if (typeof ret.data === 'string') modal.alert('info', '업료드 완료', ret.data);
+          else modal.alert('info', '업료드 완료', '요청하신 파일에 대한 읽기를 완료했습니다.');
 
-        if (state.cb) state.cb(ret);
-      }
-      setBtnDisable(false);
-    });
+          if (state.cb) state.cb(ret);
+        }
+        setBtnDisable(false);
+      });
+    } else {
+      if (state.cb) state.cb({ err: null, files });
+      state_reset();
+    }
   };
 
   return (

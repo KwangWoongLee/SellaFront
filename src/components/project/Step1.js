@@ -20,19 +20,17 @@ const maxDeliItemCount = 8;
 const maxPackItemCount = 8;
 
 const DeliItem_Default = [
-  { delivery_category: '기본값', delivery_fee: 0 },
-  { delivery_category: '택배 극소', delivery_fee: 0 },
-  { delivery_category: '택배 소', delivery_fee: 0 },
-  { delivery_category: '택배 중', delivery_fee: 0 },
-  { delivery_category: '택배 대', delivery_fee: 0 },
+  { delivery_category: '택배 극소', delivery_fee: 0, _order: 1 },
+  { delivery_category: '택배 소', delivery_fee: 0, _order: 2 },
+  { delivery_category: '택배 중', delivery_fee: 0, _order: 3 },
+  { delivery_category: '택배 대', delivery_fee: 0, _order: 4 },
 ];
 
 const PackItem_Default = [
-  { packing_category: '기본값', packing_fee1: 0, packing_fee2: 0 },
-  { packing_category: '포장비 1', packing_fee1: 0, packing_fee2: 0 },
-  { packing_category: '포장비 2', packing_fee1: 0, packing_fee2: 0 },
-  { packing_category: '포장비 3', packing_fee1: 0, packing_fee2: 0 },
-  { packing_category: '포장비 4', packing_fee1: 0, packing_fee2: 0 },
+  { packing_category: '포장비 1', packing_fee1: 0, packing_fee2: 0, _order: 1 },
+  { packing_category: '포장비 2', packing_fee1: 0, packing_fee2: 0, _order: 2 },
+  { packing_category: '포장비 3', packing_fee1: 0, packing_fee2: 0, _order: 3 },
+  { packing_category: '포장비 4', packing_fee1: 0, packing_fee2: 0, _order: 4 },
 ];
 //
 
@@ -49,7 +47,7 @@ const Step1 = () => {
       if (!ret.err) {
         logger.info(ret.data);
 
-        ret.data.length ? setDeliItems(() => ret.data) : setDeliItems(DeliItem_Default);
+        ret.data.length > 1 ? setDeliItems(() => ret.data) : setDeliItems([ret.data[0], ...DeliItem_Default]);
       }
     });
 
@@ -57,7 +55,7 @@ const Step1 = () => {
       if (!ret.err) {
         logger.info(ret.data);
 
-        ret.data.length ? setPackItems(() => ret.data) : setPackItems(PackItem_Default);
+        ret.data.length > 1 ? setPackItems(() => ret.data) : setPackItems([ret.data[0], ...PackItem_Default]);
       }
     });
 
@@ -84,12 +82,15 @@ const Step1 = () => {
   const onClickAdd = (type, e) => {
     if (type === 'Delivery') {
       if (deliItems.length >= maxDeliItemCount) return;
-
-      setDeliItems([...deliItems, { delivery_category: '', delivery_fee: 0 }]);
+      const orders = _.map(deliItems, '_order');
+      const orderMax = _.max(orders);
+      setDeliItems([...deliItems, { delivery_category: '', delivery_fee: 0, _order: orderMax + 1 }]);
     } else if (type === 'Packing') {
       if (packItems.length >= maxPackItemCount) return;
 
-      setPackItems([...packItems, { packing_category: '', packing_fee1: 0, packing_fee2: 0 }]);
+      const orders = _.map(packItems, '_order');
+      const orderMax = _.max(orders);
+      setPackItems([...packItems, { packing_category: '', packing_fee1: 0, packing_fee2: 0, _order: orderMax + 1 }]);
     }
   };
 
@@ -105,28 +106,7 @@ const Step1 = () => {
 
   const onSave = (type, e) => {
     if (type === 'Delivery') {
-      const delivery_list = [];
-      const nodes = e.currentTarget.parentNode.parentNode.childNodes[2].childNodes;
-      for (const idx in nodes) {
-        const node = nodes[idx];
-        if (!node) continue;
-
-        const tds = node.childNodes;
-        if (!tds) continue;
-
-        if (tds.length >= 3) {
-          const category = tds[0].childNodes[1].defaultValue;
-          const fee = tds[1].childNodes[0].defaultValue;
-
-          if (!category || category === '' || !fee) {
-            modal.alert('error', '', '빈 항목이 있습니다.');
-            return;
-          }
-
-          delivery_list.push({ category, fee });
-        }
-      }
-      request.post(`user/delivery/save`, { aidx, delivery_list }).then((ret) => {
+      request.post(`user/delivery/save`, { aidx, delivery_list: deliItems }).then((ret) => {
         if (!ret.err) {
           logger.info(ret.data);
 
@@ -135,29 +115,7 @@ const Step1 = () => {
         }
       });
     } else if (type === 'Packing') {
-      const packing_list = [];
-      const nodes = e.currentTarget.parentNode.parentNode.childNodes[2].childNodes;
-      for (const idx in nodes) {
-        const node = nodes[idx];
-        if (!node) continue;
-
-        const tds = node.childNodes;
-        if (!tds) continue;
-
-        if (tds.length >= 4) {
-          const category = tds[0].childNodes[1].defaultValue;
-          const fee1 = tds[1].childNodes[0].defaultValue;
-          const fee2 = tds[2].childNodes[0].defaultValue;
-
-          if (!category || category === '' || !fee1 || !fee2) {
-            modal.alert('error', '', '빈 항목이 있습니다.');
-            return;
-          }
-
-          packing_list.push({ category, fee1, fee2 });
-        }
-      }
-      request.post(`user/packing/save`, { aidx, packing_list }).then((ret) => {
+      request.post(`user/packing/save`, { aidx, packing_list: packItems }).then((ret) => {
         if (!ret.err) {
           logger.info(ret.data);
 

@@ -1,5 +1,11 @@
 .ag-theme-alpine {
   --ag-header-foreground-color: #fff;
+  --ag-borders-input: solid 1px;
+  --ag-input-border-color: red;
+  --ag-input-border-color-invalid: red;
+  --ag-input-disabled-border-color: red;
+  --ag-input-disabled-background-color: red;
+
   height: auto !important;
 }
 
@@ -8,15 +14,18 @@
 }
 
 .ag-root-wrapper.ag-layout-normal {
-  height: calc(100vh - 270px);
+  min-height: calc(100vh - 200px);
+  -webkit-box-shadow: 0px 3px 10px 0px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 0px 3px 10px 0px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 3px 10px 0px rgba(0, 0, 0, 0.1);
+  border-radius: 7px;
+  overflow: hidden;
 }
 
 .ag-header {
   height: 40;
   min-height: 40px;
   background-color: #182B65;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
   overflow: hidden;
 }
 
@@ -43,4 +52,16 @@
 .ag-body {
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
+}
+
+.ag-input-field-input {
+  border: 1px solid #ccc;
+}
+
+.ag-ltr .ag-cell {
+  border-right: 1px dotted #ccc;
+}
+
+.ag-body-horizontal-scroll-viewport {
+  overflow: auto;
 }

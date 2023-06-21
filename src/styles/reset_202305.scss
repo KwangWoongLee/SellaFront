@@ -310,13 +310,13 @@ dd {
 }
 
 ::-webkit-scrollbar {
-  width: 0;
+  width: 7px;
   /* remove scrollbar space */
   background: transparent;
   /* optional: just make scrollbar invisible */
-  height: 0 !important;
+  height: 7px !important;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #aaaaaa;
+  background-color: #ccc;
 }

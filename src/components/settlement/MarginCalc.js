@@ -23,7 +23,7 @@ const MarginCalc = () => {
     request.post(`user/delivery`, { aidx }).then((ret) => {
       if (!ret.err) {
         logger.info(ret.data);
-        if (ret.data.length == 0) setView(false);
+        if (ret.data.length <= 1) setView(false);
         else {
           setView(true);
         }
@@ -33,7 +33,7 @@ const MarginCalc = () => {
     request.post(`user/packing`, { aidx }).then((ret) => {
       if (!ret.err) {
         logger.info(ret.data);
-        if (ret.data.length == 0) setView(false);
+        if (ret.data.length <= 1) setView(false);
         else {
           setView(true);
         }

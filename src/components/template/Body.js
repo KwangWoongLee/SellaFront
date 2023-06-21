@@ -22,15 +22,14 @@ const Timer = () => {
   return <div onClick={onClick}>{time}</div>;
 };
 
-const Body = ({ title, children }) => {
+const Body = ({ title, myClass, children }) => {
   logger.render('Template Body');
   useEffect(() => {}, []);
 
   return (
     <>
-      <div className="body">{children}</div>
+      <div className={`body ${myClass}`}>{children}</div>
     </>
   );
 };
-
 export default React.memo(Body);
