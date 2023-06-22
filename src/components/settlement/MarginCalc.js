@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { Button, Modal } from 'react-bootstrap';
+import { Button, Modal, Dropdown, DropdownButton } from 'react-bootstrap';
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
@@ -8,6 +8,7 @@ import { modal, navigate } from 'util/com';
 import request from 'util/request';
 import SettlementNavTab from 'components/settlement/SettlementNavTab';
 import Recoils from 'recoils';
+import * as xlsx from 'xlsx';
 
 import { logger } from 'util/com';
 
@@ -15,9 +16,10 @@ const MarginCalc = () => {
   logger.render('MarginCalc');
 
   const account = Recoils.useValue('CONFIG:ACCOUNT');
+  const platforms = Recoils.useValue('DATA:PLATFORMS');
   const aidx = account.aidx;
   const [viewState, setView] = useState(true);
-  const [platform, setPlatform] = useState('네이버 스마트스토어');
+  const [platformType, setplatformType] = useState(0);
 
   useEffect(() => {
     request.post(`user/delivery`, { aidx }).then((ret) => {
@@ -42,11 +44,80 @@ const MarginCalc = () => {
   }, []);
 
   const onUpload = function () {
-    modal.file_upload('settlement/profit_loss', '.xlsx', '파일 업로드', { aidx, platform }, (ret) => {
+    // modal.file_upload('settlement/profit_loss', '.xlsx', '파일 업로드', { aidx, platform }, (ret) => {
+    //   if (!ret.err) {
+    //     logger.info(ret.data);
+    //   }
+    // });
+    modal.file_upload(null, '.xlsx', '파일 업로드', { aidx, platform: platforms[platformType] }, (ret) => {
       if (!ret.err) {
-        logger.info(ret.data);
+        const { files } = ret;
+        if (!files.length) return;
+        const file = files[0];
+        const reader = new FileReader();
+        const rABS = !!reader.readAsBinaryString;
+
+        const items = [];
+        reader.onload = (e) => {
+          const bstr = e.target.result;
+          const wb = xlsx.read(bstr, { type: rABS ? 'binary' : 'array', bookVBA: true });
+
+          const title_array = platforms[platformType].title_array;
+          const title_row = platforms[platformType].title_row;
+
+          const expected = {};
+
+          const titles = title_array.split(', ');
+          for (const ts of titles) {
+            const title_splits = ts.split('(');
+            const header = title_splits[0];
+
+            const match_data = title_splits[1].split(')')[0];
+            const column = match_data.split(':')[0];
+            expected[column] = header;
+          }
+
+          const wsname = wb.SheetNames[0];
+          const ws = wb.Sheets[wsname];
+
+          // for (const key in ws) {
+          //   const prevlast = key[key.length - 2];
+          //   const last = key[key.length - 1];
+
+          //   if (isNaN(prevlast) && !isNaN(last) && Number(last) === title_row) {
+          //     const column = key.slice(0, key.length - 1);
+          //     const header = ws[key]['h'];
+
+          //     if (expected[column] !== header) return; // 에러
+          //   }
+          // }
+
+          const frm = new FormData();
+          frm.append('files', file);
+          frm.append('aidx', aidx);
+          frm.append('platform', JSON.stringify(platforms[platformType]));
+
+          request
+            .post_form('settlement/profit_loss', frm, () => {})
+            .then((ret) => {
+              if (!ret.err) {
+                if (typeof ret.data === 'string') modal.alert('info', '업료드 완료', ret.data);
+                else modal.alert('info', '업료드 완료', '요청하신 파일에 대한 읽기를 완료했습니다.');
+              }
+            });
+        };
+
+        if (rABS) {
+          reader.readAsBinaryString(file);
+        } else {
+          reader.readAsArrayBuffer(file);
+        }
       }
     });
+  };
+
+  const onChange = (key, e) => {
+    setplatformType(key);
   };
 
   return (
@@ -56,7 +127,19 @@ const MarginCalc = () => {
         <SettlementNavTab active="/settlement/margin_calc" />
         {viewState ? (
           <div className="MarginCalc">
-            {platform}
+            <DropdownButton variant="" title={platforms.length ? platforms[platformType].name : ''}>
+              {platforms &&
+                platforms.map((item, key) => (
+                  <Dropdown.Item
+                    key={key}
+                    eventKey={key}
+                    onClick={(e) => onChange(key, e)}
+                    active={platformType === key}
+                  >
+                    {item.name}
+                  </Dropdown.Item>
+                ))}
+            </DropdownButton>
             <Button variant="primary" onClick={onUpload}>
               새 주문서 업로드
             </Button>
@@ -64,13 +147,14 @@ const MarginCalc = () => {
         ) : (
           <Modal show={!viewState} centered className="Confirm">
             {<Modal.Title className="text-primary">{'초기 값을 설정해 주세요.'}</Modal.Title>}
+            손익을 계산하시려면 기초정보, 상품정보를 등록 해주세요.
             <Button
               variant="primary"
               onClick={() => {
                 navigate('/step1');
               }}
             >
-              확인
+              기초정보 관리로 이동
             </Button>
             <Button
               variant="primary"
@@ -78,7 +162,7 @@ const MarginCalc = () => {
                 navigate('/step2');
               }}
             >
-              취소
+              상품 관리로 이동
             </Button>
           </Modal>
         )}

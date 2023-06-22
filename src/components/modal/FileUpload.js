@@ -5,39 +5,31 @@ import { logger, modal } from 'util/com';
 import 'styles/Modal.scss';
 import request from 'util/request';
 import _ from 'lodash';
+import icon_close from 'images/icon_close.svg';
 
 const FileUpload = () => {
   const state = Recoils.useValue('MODAL:FILEUPLOAD');
   const state_reset = Recoils.useResetState('MODAL:FILEUPLOAD');
   const [progress, setProgress] = useState({ percent: 0, loaded: 0, total: 0 });
   const [btn_disable, setBtnDisable] = useState(false);
-
   logger.render('FileUploadModal : ', state.show);
-
   useEffect(() => {
     if (!state.show) {
       setProgress(() => ({ percent: 0, loaded: 0, total: 0 }));
       setBtnDisable(false);
     }
   }, [state]);
-
   const onUploadProgress = (e) => {
     const percent = Math.round((e.loaded * 100) / e.total);
-
     logger.info(`${percent}% ... ${e.loaded} / ${e.total}`);
-
     setProgress({ percent, loaded: e.loaded, total: e.total });
   };
-
   const onSubmit = (e) => {
     e.preventDefault();
-
     const frm = new FormData();
     const files = e.currentTarget[0].files;
-
     _.forEach(files, (file) => frm.append('files', file));
     _.forEach(state.frm_data, (data, name) => frm.append(name, data));
-
     setProgress(() => ({ percent: 0, loaded: 0, total: 0 }));
     setBtnDisable(true);
     if (state.url) {
@@ -45,7 +37,6 @@ const FileUpload = () => {
         if (!ret.err) {
           if (typeof ret.data === 'string') modal.alert('info', '업료드 완료', ret.data);
           else modal.alert('info', '업료드 완료', '요청하신 파일에 대한 읽기를 완료했습니다.');
-
           if (state.cb) state.cb(ret);
         }
         setBtnDisable(false);
@@ -55,11 +46,14 @@ const FileUpload = () => {
       state_reset();
     }
   };
-
   return (
     <Modal show={state.show} onHide={state_reset} size="lg" backdrop="static" centered>
       <Modal.Header className="d-flex justify-content-center">
         <Modal.Title className="text-primary">{state.title ? state.title : '파일 업로드'}</Modal.Title>
+        <Button variant="primary" className="btn_close">
+          {/* 닫기버튼 추가 */}
+          <img src={icon_close} />
+        </Button>
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={onSubmit} id="upload-modal-form">
@@ -82,5 +76,4 @@ const FileUpload = () => {
     </Modal>
   );
 };
-
 export default React.memo(FileUpload);

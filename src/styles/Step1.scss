@@ -1,0 +1,14 @@
+// Step1.
+
+@import './table_custom.css';
+
+.body.step1 {
+  .section {
+    display: inline-block;
+    float: left;
+  }
+
+  .tablebox1 {
+    margin-right: 30px;
+  }
+}

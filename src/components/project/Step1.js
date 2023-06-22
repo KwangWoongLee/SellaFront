@@ -129,15 +129,16 @@ const Step1 = () => {
   return (
     <>
       <Head />
-      <Body title={`Step1`}>
-        <div className="page">
-          <table className="section">
-            <caption>
-              택배비 관리{' '}
-              <button className="btn_blue" onClick={(e) => onSave('Delivery', e)}>
-                저장
-              </button>
-            </caption>
+      <Body title={`Step1`} myClass={'step1'}>
+        <div className="section tablebox1">
+          <h3>
+            택배비 관리{' '}
+            <button className="btn-primary btn_blue" onClick={(e) => onSave('Delivery', e)}>
+              저장
+            </button>
+          </h3>
+
+          <table>
             <thead>
               <th>구분</th>
               <th>택배비</th>
@@ -166,14 +167,17 @@ const Step1 = () => {
               </tr>
             </tbody>
           </table>
+        </div>
+
+        <div className="section tablebox2">
+          <h3>
+            포장비 관리{' '}
+            <button className="btn-primary btn_blue" onClick={(e) => onSave('Packing', e)}>
+              저장
+            </button>
+          </h3>
 
           <table className="section">
-            <caption>
-              포장비 관리{' '}
-              <button className="btn_blue" onClick={(e) => onSave('Packing', e)}>
-                저장
-              </button>
-            </caption>
             <thead>
               <th>구분</th>
               <th>박스/비닐</th>

@@ -1,3 +1,5 @@
+// Login.
+
 .body.login {
   display: flex;
   align-items: center;
@@ -11,13 +13,73 @@
 
   .formbox {
     display: block;
-    width: auto;
+    width: 320px;
     height: auto;
     float: right;
-    margin-left: 50px;
+    margin-left: 70px;
   }
 
   .formbox h3 {
-    display: inlin;
+    display: inline-block;
+    width: 100%;
+    height: auto;
+    margin-bottom: 30px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+  }
+
+  .formbox label {
+    display: block;
+    margin-bottom: 5px;
+    width: 100%;
+  }
+
+  .formbox .btnbox {
+    display: inline-block;
+    width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+  }
+
+  .formbox .btnbox_left {
+    float: left;
+  }
+
+  .formbox .btnbox_left * {
+    float: left;
+    margin-right: 7px;
+    margin-bottom: 0;
+    width: auto;
+    line-height: 20px;
+  }
+
+  .formbox .btnbox_right {
+    float: right;
+  }
+
+  .formbox .btnbox_right .btn_txt,
+  .formbox .btnbox_right span {
+    line-height: 20px;
+    float: left;
+  }
+
+  .formbox .btnbox_right span {
+    margin: 0 3px;
+  }
+
+  .btn_login {
+    width: 100%;
+    height: 37px;
+    margin-bottom: 20px;
+  }
+
+  .btn_join {
+    display: table;
+    width: auto;
+    height: auto;
+    margin: 0 auto 10px;
+    font-weight: 500;
+    color: #081a51;
   }
 }

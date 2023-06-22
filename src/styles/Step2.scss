@@ -1,9 +1,29 @@
+//Step2.
+
 @import './aggrid_custom.css';
 
 .body.step2 {
   .btnbox_left {
     display: block;
     float: left;
+  }
+
+  .btnbox_left button {
+    float: left;
+    margin-right: 10px;
+  }
+
+  .btnbox_left .prdcount {
+    float: left;
+    margin-bottom: 0 !important;
+    font-size: 14px;
+    color: #666;
+    line-height: 28px;
+  }
+
+  .btnbox_left .prdcount span {
+    font-weight: bold;
+    color: #000;
   }
 
   .btnbox_right {
@@ -16,18 +36,16 @@
   }
 
   .btnbox_right > .dropdown > button {
-    padding: 6px 10px;
-    font-size: 13px;
-    line-height: 16px;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 7px;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
   }
 
   .btnbox_right > button:nth-child(1) {
     margin-right: 10px;
+  }
+
+  .btnbox_right > button:nth-child(3) {
+    margin-right: 8px;
   }
 
   .btnbox_right > button:nth-child(3) {
@@ -42,6 +60,12 @@
     height: 16px;
     margin-right: 3px;
     vertical-align: middle;
+  }
+
+  .btnbox_right .btn_set {
+    margin-right: 10px;
+    border: 0;
+    background: transparent;
   }
 
   .tablebox {

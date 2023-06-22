@@ -1,5 +1,9 @@
 import React, { useEffect } from 'react';
+import 'styles/reset_202305.scss';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'styles/font.scss';
+import 'styles/common_202305.scss';
+
 import Home from 'components/base/Home';
 import { RecoilRoot } from 'recoil';
 import RecoilNexus from 'recoil-nexus';

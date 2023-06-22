@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 
-import { Button } from 'react-bootstrap';
+import { Button, DropdownButton, Dropdown } from 'react-bootstrap';
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
@@ -25,6 +25,8 @@ const Margin = () => {
 
   const [rowData, setDatas] = useState([]);
   const [goodsData, setGoodsData] = useState([]);
+  const [platformData, setplatformData] = useState([]);
+  const [platformType, setplatformType] = useState(0);
   const [modalState, setModalState] = useState(false);
 
   //inputs
@@ -33,10 +35,14 @@ const Margin = () => {
   const sellDeliveryFeeRef = useRef(null);
   const stockPriceRef = useRef(null);
   const savedDPFeeRef = useRef(null);
-  const flatformFeeRateRef = useRef(null);
-  const flatformDeliverFeeRateRef = useRef(null);
+  const platformFeeRateRef = useRef(null);
+  const platformDeliverFeeRateRef = useRef(null);
   const lowestMarginRateRef = useRef(null);
   //
+
+  const [sumMinus, setSumMinus] = useState(0);
+  const [sumPlus, setSumPlus] = useState(0);
+  const [lowestPrice, setLowestPrice] = useState('');
 
   //ag-grid
 
@@ -105,11 +111,16 @@ const Margin = () => {
         if (ret.data) {
           const margin_results = ret.data.margin_results;
           const goods_result = ret.data.goods_result;
-          const flatform_data = ret.data.flatform_data;
+          const platform_result = ret.data.platform_data;
 
           margin_results ? setDatas(margin_results) : setDatas([]);
           goods_result ? setGoodsData(goods_result) : setGoodsData([]);
-          // flatform_data ? setGoodsData(flatform_data) : setGoodsData([]);
+          platform_result ? setplatformData(platform_result) : setplatformData([]);
+
+          if (platform_result && platform_result.length) {
+            platformFeeRateRef.current.value = platform_result[0].fee_rate;
+            platformDeliverFeeRateRef.current.value = platform_result[0].delivery_fee_rate;
+          }
         }
       }
     });
@@ -121,8 +132,8 @@ const Margin = () => {
     const sellDeliveryFee = sellDeliveryFeeRef.current.value;
     const stockPrice = stockPriceRef.current.value;
     const savedDPFee = savedDPFeeRef.current.value;
-    const flatformFeeRate = flatformFeeRateRef.current.value;
-    const flatformDeliverFeeRate = flatformDeliverFeeRateRef.current.value;
+    const platformFeeRate = platformFeeRateRef.current.value;
+    const platformDeliverFeeRate = platformDeliverFeeRateRef.current.value;
     const lowestMarginRate = lowestMarginRateRef.current.value;
   };
   const onSearch = () => {
@@ -135,12 +146,76 @@ const Margin = () => {
     savedDPFeeRef.current.value = goods.delivery_fee + goods.packing_fee;
     // sellPriceRef.current.value;
     // sellDeliveryFeeRef.current.value;
-    // flatformFeeRateRef.current.value;
-    // flatformDeliverFeeRateRef.current.value;
-    // lowestMarginRateRef.current.value;
   };
 
   const onDelete = () => {};
+
+  const onChange = (key, e) => {
+    setplatformType(key);
+
+    platformFeeRateRef.current.value = platformData[key].fee_rate;
+    platformDeliverFeeRateRef.current.value = platformData[key].delivery_fee_rate;
+  };
+
+  const onChangeInput = (e, ref) => {
+    if (e.target.value.match('^[a-zA-Z ]*$') != null) {
+      ref.current.value = e.target.value;
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      let sellPrice = sellPriceRef.current.value;
+      let sellDeliveryFee = sellDeliveryFeeRef.current.value;
+      let stockPrice = stockPriceRef.current.value;
+      let savedDPFee = savedDPFeeRef.current.value;
+      let lowestMarginRate = lowestMarginRateRef.current.value;
+
+      let platformFeeRate = platformFeeRateRef.current.value;
+      platformFeeRate = platformFeeRate / 100;
+      let platformDeliverFeeRate = platformDeliverFeeRateRef.current.value;
+      platformDeliverFeeRate = platformDeliverFeeRate / 100;
+
+      if (isNaN(sellPrice) || !sellPrice) return;
+      if (isNaN(sellDeliveryFee) || !sellDeliveryFee) return;
+      if (isNaN(stockPrice) || !stockPrice) return;
+      if (isNaN(savedDPFee) || !savedDPFee) return;
+      if (isNaN(lowestMarginRate) || !lowestMarginRate) return;
+
+      sellPrice = Number(sellPrice);
+      if (sellPrice <= 0) return;
+
+      sellDeliveryFee = Number(sellDeliveryFee);
+      if (sellDeliveryFee <= 0) return;
+
+      stockPrice = Number(stockPrice);
+      if (stockPrice <= 0) return;
+
+      savedDPFee = Number(savedDPFee);
+      if (savedDPFee <= 0) return;
+
+      lowestMarginRate = Number(lowestMarginRate);
+      if (lowestMarginRate <= 0 || lowestMarginRate >= 100) return;
+      lowestMarginRate = lowestMarginRate / 100;
+
+      let platformFee = sellPrice * platformFeeRate;
+      let platformDeliveryFee = sellDeliveryFee * platformDeliverFeeRate;
+
+      const sum_minus = stockPrice + savedDPFee + platformFee + platformDeliveryFee;
+      setSumMinus(sum_minus);
+
+      const sum_plus = sellPrice + sellDeliveryFee - sum_minus;
+      setSumPlus(sum_plus);
+
+      const marginRate = (sum_plus / sellPrice) * 100;
+
+      const low =
+        (sellDeliveryFee - stockPrice - savedDPFee - platformDeliveryFee) / (lowestMarginRate + platformFeeRate - 1);
+
+      setLowestPrice(low);
+    }
+  };
+
   return (
     <>
       <Head />
@@ -160,12 +235,12 @@ const Margin = () => {
               <tbody>
                 <tr>
                   <td>판매가격</td>
-                  <td></td>
+                  <td>{}원</td>
                 </tr>
 
                 <tr>
                   <td>정산금액</td>
-                  <td></td>
+                  <td>{}원</td>
                 </tr>
 
                 <tr>
@@ -175,7 +250,7 @@ const Margin = () => {
 
                 <tr>
                   <td>마진율</td>
-                  <td></td>
+                  <td>{}</td>
                 </tr>
               </tbody>
             </table>
@@ -195,14 +270,20 @@ const Margin = () => {
                 </tr>
 
                 <tr>
-                  <td>+수익합계 {}원</td>
+                  <td>+수익합계 {sumPlus}원</td>
                 </tr>
 
                 <tr>
                   <td>
                     {' '}
                     판매가격
-                    <input type="text" ref={sellPriceRef}></input>
+                    <input
+                      type="number"
+                      ref={sellPriceRef}
+                      onChange={(e) => {
+                        onChangeInput(e, sellPriceRef);
+                      }}
+                    ></input>
                   </td>
                 </tr>
 
@@ -210,12 +291,12 @@ const Margin = () => {
                   <td>
                     {' '}
                     받은 배송비
-                    <input type="text" ref={sellDeliveryFeeRef}></input>
+                    <input type="number" ref={sellDeliveryFeeRef}></input>
                   </td>
                 </tr>
 
                 <tr>
-                  <td>- 비용 합계 {} 원</td>
+                  <td>- 비용 합계 {sumMinus} 원</td>
                 </tr>
 
                 <tr>
@@ -223,7 +304,7 @@ const Margin = () => {
                   <td>
                     {' '}
                     매입가
-                    <input type="text" ref={stockPriceRef}></input>
+                    <input type="number" ref={stockPriceRef}></input>
                   </td>
                 </tr>
 
@@ -232,7 +313,7 @@ const Margin = () => {
                   <td>
                     {' '}
                     택배비 포장비
-                    <input type="text" ref={savedDPFeeRef}></input>
+                    <input type="number" ref={savedDPFeeRef}></input>
                   </td>
                 </tr>
 
@@ -241,7 +322,19 @@ const Margin = () => {
                   <td>
                     {' '}
                     수수료
-                    <input type="text"></input>
+                    <DropdownButton variant="" title={platformData.length ? platformData[platformType].name : ''}>
+                      {platformData &&
+                        platformData.map((item, key) => (
+                          <Dropdown.Item
+                            key={key}
+                            eventKey={key}
+                            onClick={(e) => onChange(key, e)}
+                            active={platformType === key}
+                          >
+                            {item.name}
+                          </Dropdown.Item>
+                        ))}
+                    </DropdownButton>
                   </td>
                 </tr>
                 <tr>
@@ -249,7 +342,7 @@ const Margin = () => {
                   <td>
                     {' '}
                     매체 수수료
-                    <input type="text" ref={flatformFeeRateRef}></input>
+                    <input type="number" disabled ref={platformFeeRateRef}></input>
                   </td>
                 </tr>
                 <tr>
@@ -257,19 +350,19 @@ const Margin = () => {
                   <td>
                     {' '}
                     배송비 수수료
-                    <input type="text" ref={flatformDeliverFeeRateRef}></input>
+                    <input type="number" disabled ref={platformDeliverFeeRateRef}></input>
                   </td>
                 </tr>
                 <tr>
                   {' '}
-                  <td> 최저 판매가 {} 원</td>
+                  <td> 최저 판매가 {lowestPrice} 원</td>
                 </tr>
                 <tr>
                   {' '}
                   <td>
                     {' '}
                     최저 마진
-                    <input type="text" ref={lowestMarginRateRef}></input>
+                    <input type="number" ref={lowestMarginRateRef} onKeyDown={handleKeyDown}></input> %
                   </td>
                 </tr>
               </tbody>

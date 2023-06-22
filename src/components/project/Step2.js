@@ -4,6 +4,8 @@ import { Button, DropdownButton, Dropdown } from 'react-bootstrap';
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
+import { NumberFormatter } from 'components/common/AgGrid/NumberFormatter';
+import { NumericCellEditor } from 'components/common/AgGrid/NumericCellEditor';
 import Step2Modal from 'components/project/Step2Modal';
 import request from 'util/request';
 import { modal, page_reload } from 'util/com';
@@ -70,7 +72,9 @@ const Step2 = () => {
   const onCellValueChanged = (params) => {
     var column = params.column.colDef.field;
     if (rawData && rawData[params.node.rowIndex][column] && rawData[params.node.rowIndex][column] !== params.newValue) {
-      params.column.colDef.cellStyle = { color: 'red' };
+      const newStyle = _.cloneDeep(params.column.colDef.cellStyle);
+      newStyle.color = 'red';
+      params.column.colDef.cellStyle = newStyle;
       params.api.refreshCells({
         force: true,
         columns: [column],
@@ -78,7 +82,9 @@ const Step2 = () => {
       });
     } else {
       var column = params.column.colDef.field;
-      params.column.colDef.cellStyle = { color: 'black' };
+      const newStyle = _.cloneDeep(params.column.colDef.cellStyle);
+      newStyle.color = 'black';
+      params.column.colDef.cellStyle = newStyle;
       params.api.refreshCells({
         force: true,
         columns: [column],
@@ -100,7 +106,22 @@ const Step2 = () => {
       filter: true,
     },
     { field: 'goods_category', sortable: true, headerName: '카테고리', filter: true },
-    { field: 'name', sortable: true, unSortIcon: true, headerName: '상품명', filter: true },
+    {
+      field: 'name',
+      sortable: true,
+      unSortIcon: true,
+      headerName: '상품명',
+      filter: true,
+      width: 100,
+      resizable: false,
+      cellStyle: {
+        marginLeft: '2px',
+        marginRight: '2px',
+        border: '1px dotted black',
+        'background-color': 'skyblue',
+        'background-clip': 'content-box',
+      },
+    },
     {
       field: 'stock_price',
       sortable: true,
@@ -207,7 +228,7 @@ const Step2 = () => {
   };
 
   const onUpload = function () {
-    modal.file_upload('user/goods/save', '.xlsx', '파일 업로드', { aidx, excelType }, (ret) => {
+    modal.file_upload('user/goods/save', '.xlsx', '상품정보 엑셀 파일을 선택해주세요.', { aidx, excelType }, (ret) => {
       if (!ret.err) {
         logger.info(ret.data);
 

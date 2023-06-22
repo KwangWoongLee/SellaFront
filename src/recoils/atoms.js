@@ -39,4 +39,13 @@ insert_recoil('CONFIG:ACCOUNT', {
   name: '',
 });
 
+// my_datas
+insert_recoil('DATA:PLATFORMS', {
+  platforms: [],
+});
+
+insert_recoil('DATA:GOODS', {
+  goods: [],
+});
+
 export default states;

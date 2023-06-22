@@ -1,4 +1,6 @@
 @charset "utf-8";
+// common_202305
+
 /* 공통 */
 
 html,
@@ -100,13 +102,15 @@ body {
 .btn-primary {
   width: auto;
   height: auto;
-  padding: 5px 10px;
+  min-width: 60px;
+  padding: 7px 12px;
   vertical-align: middle;
   background-color: #fff;
   border-color: #ccc;
-  color: #444;
+  color: #222;
   line-height: normal;
   font-size: 13px;
+  text-align: center;
   line-height: 16px;
   border-radius: 5px;
 }
@@ -119,6 +123,10 @@ body {
   opacity: 0.9;
 }
 
+.btn-primary:active:focus,
+.btn-primary:focus {
+  box-shadow: unset !important;
+}
 .btn_del {
   width: auto;
   height: auto;
@@ -130,6 +138,13 @@ body {
 }
 .btn_off {
   opacity: 0.2;
+}
+
+.btn_set {
+  width: 30px;
+  height: auto;
+  min-width: unset;
+  padding: 2px;
 }
 
 .btn_red,
@@ -156,19 +171,50 @@ body {
   border-color: #1d7044;
 }
 
+.btn_txt,
+label {
+  display: inline-block;
+  width: auto;
+  height: auto;
+  padding: 0;
+  font-size: 14px;
+  color: #666;
+  border: 0;
+  background: transparent;
+}
+
+.btn_txt:hover {
+  background-color: transparent;
+}
+
+.btn.dropdown-toggle {
+  padding: 8px 12px;
+  font-size: 13px;
+  line-height: 16px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 7px;
+}
+
 /* form */
 input {
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 14px;
-  color: #667085;
+  padding: 8px 12px !important;
+  border: 1px solid #ccc !important;
+  border-radius: 5px !important;
+  font-size: 14px !important;
+  color: #222 !important;
 }
 .input_right {
   margin-left: 8px;
 }
 .input_left {
   margin-right: 8px;
+}
+
+input[type='checkbox'] {
+  border: 0 !important;
+  padding: 0 !important;
+  cursor: pointer;
 }
 
 /* page */
@@ -180,63 +226,29 @@ input {
   overflow: auto;
 }
 
-/* table.section */
-table.section {
-  margin: 0 25px;
+// 모달
+.modal-header {
+  display: inline-block !important;
+  padding: 10px 20px !important;
+}
+.modal-header .modal-title {
+  display: block;
   float: left;
-  background-color: #fff;
-  border-radius: 10px;
-  -webkit-box-shadow: 3px 3px 3px 0px rgba(0, 0, 0, 0.1);
-  -moz-box-shadow: 3px 3px 3px 0px rgba(0, 0, 0, 0.1);
-  box-shadow: 3px 3px 3px 0px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  text-align: left;
+  font-size: 18px;
+  color: #000 !important;
 }
-table.section > caption {
-  padding-left: 20px;
-  padding-bottom: 15px;
-  font-size: 20px;
-  color: #081a51;
-  font-weight: 500;
+
+.modal-header .btn_close,
+.modal-header .btn-close {
+  border: 0;
+  padding: 5px;
+  float: right !important;
+  margin-right: -5px;
+  width: 27px;
+  height: 27px;
 }
-table.section > caption > button {
-  float: right;
-  margin-right: 20px;
-}
-table.section > thead {
-  border-bottom: 1px solid #4965bb;
-}
-table.section th {
-  padding: 15px 20px;
-  font-size: 16px;
-  color: #081a51;
-  font-weight: 500;
-  border-right: 1px dotted #ccc;
-}
-table.section th:last-child {
-  border-right: 0;
-}
-table.section td {
-  padding: 15px 20px;
+
+.modal-body .form-label {
   font-size: 14px;
-  color: #667085;
-  border-right: 1px dotted #ccc;
-  border-bottom: 1px dotted #ccc;
-}
-table.section td:last-child {
-  border-right: 0;
-}
-table.section .btn_del {
-  width: auto;
-  height: auto;
-  vertical-align: middle;
-}
-table.section .btn_add {
-}
-table.section .td_btn_add {
-  text-align: right;
-}
-table.section .td_btn_add .txt_small {
-  margin-right: 5px;
-  line-height: 24px;
-  vertical-align: top;
 }

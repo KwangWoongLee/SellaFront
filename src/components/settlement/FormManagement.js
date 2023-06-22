@@ -69,10 +69,6 @@ const FormManagement = () => {
     };
   }, []);
 
-  const onChange = () => {
-    console.log('here');
-  };
-
   const [columnDefs] = useState([
     {
       field: 'idx',
