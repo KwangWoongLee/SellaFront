@@ -13,9 +13,9 @@ import request from 'util/request';
 
 // AG Grid
 import { AgGridReact } from 'ag-grid-react';
-import 'ag-grid-community/styles/ag-grid.css';
-import 'ag-grid-community/styles/ag-theme-alpine.css';
 //
+
+import 'styles/Margin.scss';
 
 const Margin = () => {
   logger.render('Margin');
@@ -218,93 +218,114 @@ const Margin = () => {
 
   return (
     <>
-      <Head />
-      <Body title={`마진 계산기`}>
-        <CalculatorNavTab active="/calculator/margin" />
-        <div className="margin">
-          <div className="">
+      <Head></Head>
+      <CalculatorNavTab active="/calculator/margin" />
+      <Body title={`마진 계산기`} myClass={'margin'}>
+        <div className="section section1">
+          <div className="btnbox">
             <Button variant="primary" onClick={onDelete}>
               초기화
             </Button>
-            <Button variant="primary" onClick={onSave}>
+            <Button variant="primary" onClick={onSave} className="btn_blue">
               저장
             </Button>
-            <table className="section">
-              <caption></caption>
-              <thead></thead>
-              <tbody>
-                <tr>
-                  <td>판매가격</td>
-                  <td>{}원</td>
-                </tr>
-
-                <tr>
-                  <td>정산금액</td>
-                  <td>{}원</td>
-                </tr>
-
-                <tr>
-                  <td>순이익</td>
-                  <td></td>
-                </tr>
-
-                <tr>
-                  <td>마진율</td>
-                  <td>{}</td>
-                </tr>
-              </tbody>
-            </table>
           </div>
-          <div>
-            <Button variant="primary" onClick={onDelete}>
-              선택 삭제
-            </Button>
-            <table className="section">
-              <caption></caption>
-              <thead></thead>
+          <div className="tablebox1">
+            <table>
+              <colgroup>
+                <col width="50px" />
+                <col />
+              </colgroup>
               <tbody>
                 <tr>
+                  <th>판매가격</th>
                   <td>
-                    <input type="button" onClick={onSearch} ref={nameRef}></input>
+                    {}999,999,999,999
+                    <span> 원</span>
                   </td>
                 </tr>
 
                 <tr>
-                  <td>+수익합계 {sumPlus}원</td>
+                  <th>정산금액</th>
+                  <td>
+                    {}91,232
+                    <span> 원</span>
+                  </td>
+                </tr>
+
+                <tr>
+                  <th>순이익</th>
+                  <td className="txt_green">
+                    <span>이익 + </span>
+                    {}14,780
+                    <span> 원</span>
+                  </td>
+                </tr>
+
+                <tr>
+                  <th>마진율</th>
+                  <td className="txt_green">
+                    {}15.2
+                    <span> %</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="tablebox2">
+            <table>
+              <tbody>
+                <tr>
+                  <td>
+                    <input ref={nameRef} placeholder="상품명 입력" className="input_prdname"></input>
+                    <Button variant="primary" onClick={onSearch} className="btn_blue">
+                      내 상품 찾기
+                    </Button>
+                  </td>
+                </tr>
+                <tr>
+                  <td className="td_sum green">
+                    <span>+ 수익합계</span> {sumPlus} 원
+                  </td>
                 </tr>
 
                 <tr>
                   <td>
                     {' '}
-                    판매가격
+                    <span className="txt_green">판매가격</span>
                     <input
                       type="number"
                       ref={sellPriceRef}
                       onChange={(e) => {
                         onChangeInput(e, sellPriceRef);
                       }}
-                    ></input>
+                    ></input>{' '}
+                    <span>원</span>
                   </td>
                 </tr>
 
                 <tr>
                   <td>
                     {' '}
-                    받은 배송비
+                    <span className="txt_green">받은 배송비</span>
                     <input type="number" ref={sellDeliveryFeeRef}></input>
+                    <span>원</span>
                   </td>
                 </tr>
 
                 <tr>
-                  <td>- 비용 합계 {sumMinus} 원</td>
+                  <td className="td_sum red">
+                    <span>- 비용 합계</span> {sumMinus} 원
+                  </td>
                 </tr>
 
                 <tr>
                   {' '}
                   <td>
                     {' '}
-                    매입가
+                    <span className="txt_red">매입가</span>
                     <input type="number" ref={stockPriceRef}></input>
+                    <span>원</span>
                   </td>
                 </tr>
 
@@ -312,8 +333,9 @@ const Margin = () => {
                   {' '}
                   <td>
                     {' '}
-                    택배비 포장비
+                    <span className="txt_red ">택배비·포장비</span>
                     <input type="number" ref={savedDPFeeRef}></input>
+                    <span>원</span>
                   </td>
                 </tr>
 
@@ -321,8 +343,12 @@ const Margin = () => {
                   {' '}
                   <td>
                     {' '}
-                    수수료
-                    <DropdownButton variant="" title={platformData.length ? platformData[platformType].name : ''}>
+                    <span className="txt_red">수수료</span>
+                    <DropdownButton
+                      variant=""
+                      title={platformData.length ? platformData[platformType].name : ''}
+                      className="nounit"
+                    >
                       {platformData &&
                         platformData.map((item, key) => (
                           <Dropdown.Item
@@ -341,45 +367,61 @@ const Margin = () => {
                   {' '}
                   <td>
                     {' '}
-                    매체 수수료
-                    <input type="number" disabled ref={platformFeeRateRef}></input>
+                    <span className="txt_small">매체 수수료</span>
+                    <input type="number" ref={platformFeeRateRef}></input>
+                    <span>%</span>
                   </td>
                 </tr>
                 <tr>
                   {' '}
                   <td>
                     {' '}
-                    배송비 수수료
-                    <input type="number" disabled ref={platformDeliverFeeRateRef}></input>
+                    <span className="txt_small">배송비 수수료</span>
+                    <input type="number" ref={platformDeliverFeeRateRef}></input>
+                    <span>%</span>
                   </td>
                 </tr>
                 <tr>
                   {' '}
-                  <td> 최저 판매가 {lowestPrice} 원</td>
+                  <td className="td_sum gray">
+                    {' '}
+                    <span>최저 판매가</span> {lowestPrice} 원
+                  </td>
                 </tr>
                 <tr>
                   {' '}
                   <td>
                     {' '}
-                    최저 마진
-                    <input type="number" ref={lowestMarginRateRef} onKeyDown={handleKeyDown}></input> %
+                    <span>최저 마진</span>
+                    <input type="number" ref={lowestMarginRateRef} onKeyDown={handleKeyDown}></input>
+                    <span>%</span>
                   </td>
                 </tr>
               </tbody>
             </table>
-
-            <div style={containerStyle} className="tablebox">
-              <div style={gridStyle} className="ag-theme-alpine test">
-                <AgGridReact
-                  ref={gridRef}
-                  rowData={rowData}
-                  columnDefs={columnDefs}
-                  alwaysShowHorizontalScroll={true}
-                  alwaysShowVerticalScroll={true}
-                  defaultColDef={defaultColDef}
-                  rowSelection={'multiple'}
-                ></AgGridReact>
-              </div>
+          </div>
+          {/* 계산하기 버튼 추가 */}
+          <Button variant="primary" className="btn_blue btn_calc">
+            계산하기
+          </Button>
+        </div>
+        <div className="section section2">
+          <div className="btnbox">
+            <Button variant="primary" onClick={onDelete}>
+              선택 삭제
+            </Button>
+          </div>
+          <div style={containerStyle} className="tablebox">
+            <div style={gridStyle} className="ag-theme-alpine test">
+              <AgGridReact
+                ref={gridRef}
+                rowData={rowData}
+                columnDefs={columnDefs}
+                alwaysShowHorizontalScroll={true}
+                alwaysShowVerticalScroll={true}
+                defaultColDef={defaultColDef}
+                rowSelection={'multiple'}
+              ></AgGridReact>
             </div>
           </div>
         </div>

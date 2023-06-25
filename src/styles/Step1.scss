@@ -1,7 +1,5 @@
 // Step1.
 
-@import './table_custom.css';
-
 .body.step1 {
   .section {
     display: inline-block;
@@ -10,5 +8,14 @@
 
   .tablebox1 {
     margin-right: 30px;
+  }
+
+  .tablebox2 tr td:nth-child(4) {
+    text-align: center;
+  }
+
+  .td_btn_add {
+    padding: 10px 0;
+    text-align: center;
   }
 }

@@ -39,6 +39,15 @@ insert_recoil('CONFIG:ACCOUNT', {
   name: '',
 });
 
+//sella common data
+insert_recoil('SELLA:CATEGORIES', {
+  categories: [],
+});
+
+insert_recoil('SELLA:SELLAFORMS', {
+  sella_forms: [],
+});
+
 // my_datas
 insert_recoil('DATA:PLATFORMS', {
   platforms: [],
@@ -46,6 +55,10 @@ insert_recoil('DATA:PLATFORMS', {
 
 insert_recoil('DATA:GOODS', {
   goods: [],
+});
+
+insert_recoil('DATA:FORMSMATCH', {
+  forms_match: [],
 });
 
 export default states;

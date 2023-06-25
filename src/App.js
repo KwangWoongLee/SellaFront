@@ -3,6 +3,10 @@ import 'styles/reset_202305.scss';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'styles/font.scss';
 import 'styles/common_202305.scss';
+import 'ag-grid-community/styles/ag-grid.css';
+import 'ag-grid-community/styles/ag-theme-alpine.css';
+import 'styles/aggrid_custom.css';
+import 'styles/table_custom.css';
 
 import Home from 'components/base/Home';
 import { RecoilRoot } from 'recoil';

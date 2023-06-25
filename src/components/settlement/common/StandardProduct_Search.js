@@ -1,0 +1,81 @@
+import React, { useState, useEffect, useRef } from 'react';
+
+import { Button, DropdownButton, Dropdown, Modal, Form, FloatingLabel } from 'react-bootstrap';
+import request from 'util/request';
+import { modal } from 'util/com';
+import Recoils from 'recoils';
+import _ from 'lodash';
+
+import { logger } from 'util/com';
+
+const StandardProduct_Search = React.memo(({ select_row_data, callback }) => {
+  logger.render('StandardProduct_Search');
+  const account = Recoils.getState('CONFIG:ACCOUNT');
+  const goods = Recoils.getState('DATA:GOODS');
+  const forms_match = Recoils.getState('DATA:FORMSMATCH');
+  const aidx = account.aidx;
+
+  const goodsNameRef = useRef(null);
+  const [items, setItems] = useState([]);
+
+  useEffect(() => {
+    // _.filter(forms_match, {'forms_name'})
+    setItems(goods);
+  }, []);
+
+  const onSearch = (e) => {
+    e.preventDefault();
+
+    let search_results = [...goods];
+
+    const goodsName = goodsNameRef.current.value;
+    if (goodsName) {
+      search_results = _.filter(search_results, (goods) => {
+        return _.includes(goods.name, goodsName);
+      });
+    }
+
+    setItems(search_results);
+  };
+
+  const onSelect = (e, d) => {
+    e.preventDefault();
+    callback(d);
+  };
+
+  return (
+    <>
+      <div>
+        연결한 기준 상품 검색
+        <input type="text" placeholder={'상품명'} ref={goodsNameRef}></input>
+        <Button onClick={onSearch}>찾기</Button>
+        <table className="section">
+          <tbody>
+            <>{items && items.map((d, key) => <SelectItem key={key} index={key} d={d} onSelect={onSelect} />)}</>
+          </tbody>
+        </table>
+      </div>
+    </>
+  );
+});
+
+const SelectItem = React.memo(({ index, d, onSelect }) => {
+  logger.render('SelectItem : ', index);
+  return (
+    <tr>
+      <td>{d.category}</td>
+      <td>
+        <button
+          className="btn_del"
+          onClick={(e) => {
+            onSelect(e, d);
+          }}
+        >
+          선택
+        </button>
+      </td>
+    </tr>
+  );
+});
+
+export default React.memo(StandardProduct_Search);

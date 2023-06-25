@@ -31,8 +31,8 @@ const Buying = () => {
   return (
     <>
       <Head />
+      <CalculatorNavTab active="/calculator/buying" />
       <Body title={`마진 계산기`}>
-        <CalculatorNavTab active="/calculator/buying" />
         <div className="Buying">
           <Button variant="primary" onClick={onDelete}>
             선택 삭제

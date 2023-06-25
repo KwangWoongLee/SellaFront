@@ -5,7 +5,7 @@ import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 import {} from 'util/com';
-import SettlementNavTab from 'components/settlement/SettlementNavTab';
+import SettlementNavTab from 'components/settlement/common/SettlementNavTab';
 
 import { logger } from 'util/com';
 

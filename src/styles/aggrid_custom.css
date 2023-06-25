@@ -67,3 +67,28 @@
 .ag-body-horizontal-scroll-viewport {
   overflow: auto;
 }
+
+.ag-cell-editable:before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: calc(100% - 6px);
+  height: calc(100% - 6px);
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.ag-cell-inline-editing {
+  background-color: transparent;
+  border-color: transparent !important;
+}
+
+.ag-theme-alpine .ag-ltr input[class^=ag-][type=text] {
+  width: calc(100% - 6px);
+  height: calc(100% - 6px);
+}
+
+input[class^=ag-][type=text]:focus {
+  box-shadow: none !important;
+}

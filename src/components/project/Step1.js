@@ -79,6 +79,9 @@ const Step1 = () => {
     }
   };
 
+  //8개 이상일때 추가 버튼의 .btn_on 클래스를 .btn_off로 변경 부탁드려요!
+  //반대로 8개 이하일때 .btn_off 클래스를 .btn_on으로 변경 부탁드립니다 ㅎㅎ
+
   const onClickAdd = (type, e) => {
     if (type === 'Delivery') {
       if (deliItems.length >= maxDeliItemCount) return;
@@ -160,7 +163,10 @@ const Step1 = () => {
               <tr>
                 <td colSpan="3" className="td_btn_add">
                   <span className="txt_small">최대 8개!</span>
-                  <button className="btn_add btn_off" onClick={(e) => onClickAdd('Delivery', e)}>
+                  <button
+                    className={`btn_add ${deliItems.length >= 8 ? 'btn_off' : 'btn_of'}`}
+                    onClick={(e) => onClickAdd('Delivery', e)}
+                  >
                     <img src={icon_add} alt="추가" />
                   </button>
                 </td>
@@ -199,9 +205,12 @@ const Step1 = () => {
                   ))}
               </>
               <tr>
-                <td colSpan="3" className="td_btn_add">
+                <td colSpan="5" className="td_btn_add">
                   <span className="txt_small">최대 8개!</span>
-                  <button className="btn_add btn_off" onClick={(e) => onClickAdd('Packing', e)}>
+                  <button
+                    className={`btn_add ${packItems.length >= 8 ? 'btn_off' : 'btn_of'}`}
+                    onClick={(e) => onClickAdd('Packing', e)}
+                  >
                     <img src={icon_add} alt="추가" />
                   </button>
                 </td>
@@ -232,7 +241,7 @@ const DeliveryFeeItem = React.memo(({ index, d, onChange, onDelete }) => {
       )}
 
       <td>
-        <input name="delivery_fee" type="text" value={d.delivery_fee} onChange={onChange} />
+        <input name="delivery_fee" type="number" value={d.delivery_fee} onChange={onChange} />
         <span className="input_right">원</span>
       </td>
       {index == 0 ? (

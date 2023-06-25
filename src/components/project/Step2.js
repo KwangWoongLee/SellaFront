@@ -19,8 +19,6 @@ import { logger } from 'util/com';
 
 // AG Grid
 import { AgGridReact } from 'ag-grid-react';
-import 'ag-grid-community/styles/ag-grid.css';
-import 'ag-grid-community/styles/ag-theme-alpine.css';
 //
 
 import 'styles/Step2.scss';
@@ -70,10 +68,9 @@ const Step2 = () => {
   }, []);
 
   const onCellValueChanged = (params) => {
-    var column = params.column.colDef.field;
+    let column = params.column.colDef.field;
     if (rawData && rawData[params.node.rowIndex][column] && rawData[params.node.rowIndex][column] !== params.newValue) {
-      const newStyle = _.cloneDeep(params.column.colDef.cellStyle);
-      newStyle.color = 'red';
+      const newStyle = { color: 'red' };
       params.column.colDef.cellStyle = newStyle;
       params.api.refreshCells({
         force: true,
@@ -81,9 +78,8 @@ const Step2 = () => {
         rowNodes: [params.node],
       });
     } else {
-      var column = params.column.colDef.field;
-      const newStyle = _.cloneDeep(params.column.colDef.cellStyle);
-      newStyle.color = 'black';
+      let column = params.column.colDef.field;
+      const newStyle = { color: 'black' };
       params.column.colDef.cellStyle = newStyle;
       params.api.refreshCells({
         force: true,
@@ -94,95 +90,138 @@ const Step2 = () => {
   };
 
   const [columnDefs] = useState([
-    { field: '', pinned: 'left', lockPinned: true, cellClass: 'lock-pinned', checkboxSelection: true, width: 5 },
     {
-      field: 'idx',
-      sortable: true,
+      editable: false,
+      headerCheckboxSelection: true,
+      checkboxSelection: true,
+      cellClass: 'lock-pinned',
       pinned: 'left',
       lockPinned: true,
-      cellClass: 'lock-pinned',
-      editable: false,
-      headerName: '상품코드',
-      filter: true,
+      maxWidth: 52,
     },
-    { field: 'goods_category', sortable: true, headerName: '카테고리', filter: true },
     {
-      field: 'name',
+      field: 'idx',
+      headerName: '상품코드',
+      sortable: true,
+      editable: false,
+      filter: false,
+      cellClass: 'lock-pinned',
+      pinned: 'left',
+      lockPinned: true,
+      width: 150,
+    },
+    {
+      field: 'goods_category',
+      headerName: '카테고리',
       sortable: true,
       unSortIcon: true,
+      filter: false,
+      cellClass: 'ag-cell-editable lock-pinned',
+      pinned: 'left',
+      lockPinned: true,
+      width: 120,
+    },
+    {
+      field: 'name',
       headerName: '상품명',
-      filter: true,
-      width: 100,
-      resizable: false,
-      cellStyle: {
-        marginLeft: '2px',
-        marginRight: '2px',
-        border: '1px dotted black',
-        'background-color': 'skyblue',
-        'background-clip': 'content-box',
-      },
+      sortable: true,
+      unSortIcon: true,
+      filter: false,
+      cellClass: 'ag-cell-editable lock-pinned prd_name',
+      pinned: 'left',
+      lockPinned: true,
+      width: 250,
     },
     {
       field: 'stock_price',
+      headerName: '입고단가',
       sortable: true,
       unSortIcon: true,
       valueParser: (params) => Number(params.newValue),
-      headerName: '입고단가',
-      filter: true,
+      filter: false,
+      cellDataType: 'number', // 인풋 타입을 넘버로 바꾸고싶어요ㅠㅠ
+      cellClass: 'ag-cell-editable',
     },
     {
       field: 'delivery_fee',
+      headerName: '택배비',
       sortable: true,
       unSortIcon: true,
       valueParser: (params) => Number(params.newValue),
-      headerName: '택배비',
-      filter: true,
+      filter: false,
+      cellDataType: 'number', // 인풋 타입을 넘버로 바꾸고싶어요ㅠㅠ
+      cellClass: 'ag-cell-editable',
     },
     {
       field: 'packing_fee',
+      headerName: '포장비',
       sortable: true,
       unSortIcon: true,
       valueParser: (params) => Number(params.newValue),
-      headerName: '포장비',
-      filter: true,
+      filter: false,
+      cellClass: 'ag-cell-editable',
     },
     {
       field: 'stock_price',
+      headerName: '입고단가',
       sortable: true,
       unSortIcon: true,
       valueParser: (params) => Number(params.newValue),
-      headerName: '입고단가',
-      filter: true,
+      filter: false,
+      cellClass: 'ag-cell-editable',
     },
     {
       field: 'box_amount',
+      headerName: '박스입수량',
       sortable: true,
       unSortIcon: true,
       valueParser: (params) => Number(params.newValue),
-      headerName: '박스입수량',
-      filter: true,
+      filter: false,
+      cellClass: 'ag-cell-editable',
     },
     {
       field: 'single_delivery',
+      headerName: '단독배송',
       sortable: true,
       unSortIcon: true,
-      headerName: '단독배송',
-      filter: true,
+      filter: false,
       cellEditor: 'agSelectCellEditor',
+      cellClass: 'ag-cell-editable',
       cellEditorParams: {
         values: ['Y', 'N'],
       },
     },
-    { field: 'barcode', sortable: true, unSortIcon: true, headerName: '바코드', filter: true },
-    { field: 'rrp', sortable: true, unSortIcon: true, headerName: '권장소비자가', filter: true },
-    { field: 'memo', sortable: true, unSortIcon: true, headerName: '메모', filter: true },
-    { field: 'reg_date', sortable: true, unSortIcon: true, headerName: '최종 수정일', filter: true, editable: false },
     {
-      field: 'modify_date',
+      field: 'barcode',
+      headerName: '바코드',
       sortable: true,
       unSortIcon: true,
+      filter: false,
+      cellClass: 'ag-cell-editable',
+    },
+    {
+      field: 'rrp',
+      headerName: '권장소비자가',
+      sortable: true,
+      unSortIcon: true,
+      filter: false,
+      cellClass: 'ag-cell-editable',
+    },
+    {
+      field: 'memo',
+      headerName: '메모',
+      sortable: true,
+      unSortIcon: true,
+      filter: false,
+      cellClass: 'ag-cell-editable',
+    },
+    { field: 'reg_date', headerName: '최종 수정일', sortable: true, unSortIcon: true, filter: false, editable: false },
+    {
+      field: 'modify_date',
       headerName: '최종 등록일',
-      filter: true,
+      sortable: true,
+      unSortIcon: true,
+      filter: false,
       editable: false,
     },
   ]);
@@ -332,6 +371,7 @@ const Step2 = () => {
               defaultColDef={defaultColDef}
               rowSelection={'multiple'}
               onCellEditingStopped={onCellValueChanged}
+              singleClickEdit={true}
             ></AgGridReact>
           </div>
         </div>

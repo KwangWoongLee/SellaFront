@@ -6,9 +6,11 @@ import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 import { modal, navigate } from 'util/com';
 import request from 'util/request';
-import SettlementNavTab from 'components/settlement/SettlementNavTab';
+import SettlementNavTab from 'components/settlement/common/SettlementNavTab';
+import MarginCalc_UnConnectModal from 'components/settlement/MarginCalc_UnConnectModal';
 import Recoils from 'recoils';
 import * as xlsx from 'xlsx';
+import _ from 'lodash';
 
 import { logger } from 'util/com';
 
@@ -20,35 +22,12 @@ const MarginCalc = () => {
   const aidx = account.aidx;
   const [viewState, setView] = useState(true);
   const [platformType, setplatformType] = useState(0);
+  const [rowData, setRowData] = useState([]);
+  const [modalState, setModalState] = useState(false);
 
-  useEffect(() => {
-    request.post(`user/delivery`, { aidx }).then((ret) => {
-      if (!ret.err) {
-        logger.info(ret.data);
-        if (ret.data.length <= 1) setView(false);
-        else {
-          setView(true);
-        }
-      }
-    });
-
-    request.post(`user/packing`, { aidx }).then((ret) => {
-      if (!ret.err) {
-        logger.info(ret.data);
-        if (ret.data.length <= 1) setView(false);
-        else {
-          setView(true);
-        }
-      }
-    });
-  }, []);
+  useEffect(() => {}, []);
 
   const onUpload = function () {
-    // modal.file_upload('settlement/profit_loss', '.xlsx', '파일 업로드', { aidx, platform }, (ret) => {
-    //   if (!ret.err) {
-    //     logger.info(ret.data);
-    //   }
-    // });
     modal.file_upload(null, '.xlsx', '파일 업로드', { aidx, platform: platforms[platformType] }, (ret) => {
       if (!ret.err) {
         const { files } = ret;
@@ -101,8 +80,7 @@ const MarginCalc = () => {
             .post_form('settlement/profit_loss', frm, () => {})
             .then((ret) => {
               if (!ret.err) {
-                if (typeof ret.data === 'string') modal.alert('info', '업료드 완료', ret.data);
-                else modal.alert('info', '업료드 완료', '요청하신 파일에 대한 읽기를 완료했습니다.');
+                setRowData(() => ret.data);
               }
             });
         };
@@ -118,6 +96,32 @@ const MarginCalc = () => {
 
   const onChange = (key, e) => {
     setplatformType(key);
+  };
+
+  const onClick = (e) => {
+    switch (e.detail) {
+      case 1: {
+        break;
+      }
+      case 2: {
+        setModalState(true);
+        break;
+      }
+      case 3: {
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+  };
+
+  const deleteCallback = (d) => {
+    setRowData(
+      _.filter(rowData, (item) => {
+        return item.order_no != d.order_no;
+      })
+    );
   };
 
   return (
@@ -143,6 +147,59 @@ const MarginCalc = () => {
             <Button variant="primary" onClick={onUpload}>
               새 주문서 업로드
             </Button>
+
+            <Button variant="primary" onClick={onUpload}>
+              선택 삭제
+            </Button>
+
+            <Button variant="primary" onClick={onUpload}>
+              손익 계산
+            </Button>
+
+            <Button variant="primary" onClick={onUpload}>
+              주문서 저장
+            </Button>
+
+            <Button variant="primary" onClick={onUpload}>
+              다운로드
+            </Button>
+
+            <Button variant="primary" onClick={onUpload}>
+              세팅버튼
+            </Button>
+
+            <table>
+              <thead>
+                <th></th>
+                <th>연결상태</th>
+                <th>손익</th>
+                <th>결제일</th>
+                <th>주문번호</th>
+                <th>매체</th>
+                <th>판매상품명</th>
+                <th>옵션</th>
+                <th>주문수량</th>
+                <th>총 결제금액</th>
+                <th>입고단가</th>
+                <th>배송비</th>
+                <th>포장비</th>
+                <th>수취인명</th>
+                <th>수취인주소</th>
+                <th>수취인연락처</th>
+              </thead>
+              <tbody>
+                {rowData &&
+                  rowData.map((d, key) => (
+                    <MarginCalcItems
+                      key={key}
+                      index={key}
+                      d={d}
+                      onClick={onClick}
+                      platform_name={platforms[platformType].name}
+                    />
+                  ))}
+              </tbody>
+            </table>
           </div>
         ) : (
           <Modal show={!viewState} centered className="Confirm">
@@ -168,8 +225,38 @@ const MarginCalc = () => {
         )}
       </Body>
       <Footer />
+      <MarginCalc_UnConnectModal
+        modalState={modalState}
+        setModalState={setModalState}
+        rowData={rowData}
+        callback={deleteCallback}
+      ></MarginCalc_UnConnectModal>
     </>
   );
 };
+
+const MarginCalcItems = React.memo(({ index, d, platform_name, onClick }) => {
+  logger.render('MarginCalc TableItem : ', index);
+  return (
+    <tr onClick={onClick}>
+      <td></td>
+      <td>{d.connect_flag ? '연결' : '미연결'}</td>
+      <td>?</td>
+      <td>{d.payment_date}</td>
+      <td>{d.order_no}</td>
+      <td>{platform_name}</td>
+      <td>{d.forms_product_name}</td>
+      <td>{d.forms_option_name1}</td>
+      <td>{d.count}</td>
+      <td>{d.sum_payment_price}</td>
+      <td>?</td>
+      <td>?</td>
+      <td>?</td>
+      <td>?</td>
+      <td>?</td>
+      <td>?</td>
+    </tr>
+  );
+});
 
 export default React.memo(MarginCalc);

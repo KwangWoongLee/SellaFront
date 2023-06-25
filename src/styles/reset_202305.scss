@@ -150,6 +150,7 @@ section {
 
 ol,
 ul {
+  padding-left: 0 !important;
   list-style: none;
 }
 
@@ -242,6 +243,22 @@ input[type='checkbox']:before {
 
 input[type='checkbox']:checked:before {
   background-image: url(../images/icon_check_on.svg);
+}
+
+input[type='number'] {
+  text-align: right;
+}
+
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* 파이어폭스에서의 초기화 방법 */
+input[type='number'] {
+  -moz-appearance: textfield;
 }
 
 select {

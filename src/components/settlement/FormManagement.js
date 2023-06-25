@@ -7,7 +7,10 @@ import Body from 'components/template/Body';
 import { modal } from 'util/com';
 import request from 'util/request';
 import Recoils from 'recoils';
-import SettlementNavTab from 'components/settlement/SettlementNavTab';
+import SettlementNavTab from 'components/settlement/common/SettlementNavTab';
+import FormManagement_Basic from 'components/settlement/FormManagement_Basic';
+import FormManagement_Custom from 'components/settlement/FormManagement_Custom';
+import FormManagement_Custom_Add from 'components/settlement/FormManagement_Custom_Add';
 import * as xlsx from 'xlsx';
 
 import { logger } from 'util/com';
@@ -27,34 +30,16 @@ const FormManagement = () => {
   const account = Recoils.useValue('CONFIG:ACCOUNT');
   const aidx = account.aidx;
 
-  const [info, setInfo] = useState(null);
   const [formsData, setFormsDatas] = useState([]);
-  const [basicFormData, setBasicFormDatas] = useState([]);
-  const formNameRef = useRef(null);
-  const [formSaveData, setFormSaveData] = useState([]);
-  const [modalState, setModalState] = useState(false);
-  const [excelData, setExcelData] = useState([]);
+  const [formMode, setFormMode] = useState(0);
+  const [nextForm, setNextForm] = useState(null);
+  let platformRef = useRef(null);
 
   useEffect(() => {
-    request.post(`user/forms`, { aidx }).then((ret) => {
-      if (!ret.err) {
-        logger.info(ret.data);
-        setFormsDatas(ret.data);
+    let platforms = _.cloneDeep(Recoils.getState('DATA:PLATFORMS'));
+    platformRef.current = [...platforms];
 
-        if (ret.data.length && ret.data[0].titles) {
-          const nowForm = ret.data[0].titles;
-          formNameRef.current.value = ret.data[0].name;
-          setFormSaveData(nowForm);
-        } else setFormSaveData([]);
-      }
-    });
-
-    request.post(`user/basic_forms`, {}).then((ret) => {
-      if (!ret.err) {
-        logger.info(ret.data);
-        setBasicFormDatas(ret.data);
-      }
-    });
+    setFormsDatas([...platformRef.current]);
   }, []);
 
   // ag-grid
@@ -63,7 +48,7 @@ const FormManagement = () => {
   const gridStyle = useMemo(() => ({ height: '50%', width: '50%' }), []);
   const defaultColDef = useMemo(() => {
     return {
-      resizable: true,
+      resizable: false,
       flex: 1,
       minWidth: 100,
     };
@@ -87,9 +72,6 @@ const FormManagement = () => {
       rowDrag: true,
       editable: true,
       sortable: false,
-      checkboxSelection: (params) => {
-        return true;
-      },
     },
     {
       field: 'name',
@@ -99,16 +81,28 @@ const FormManagement = () => {
       editable: false,
       headerName: '양식명',
     },
+    {
+      field: 'view',
+      editable: false,
+      headerName: '',
+    },
   ]);
 
-  const onSelectionChanged = useCallback(() => {
+  const onSelectionChanged = () => {
     const selectedRows = gridRef.current.api.getSelectedRows();
     const node = selectedRows[0];
-    const name = node.name;
-    formNameRef.current.value = name;
 
-    setFormSaveData(node.titles);
-  }, []);
+    const basic_form_flag = node.basic_form_flag;
+    const platforms = platformRef.current;
+    const platform = _.find(platforms, { basic_form_flag: basic_form_flag, idx: node.idx });
+    setNextForm({ ...platform });
+
+    if (basic_form_flag == true) {
+      setFormMode(1);
+    } else {
+      platform.idx != -1 ? setFormMode(2) : setFormMode(3);
+    }
+  };
 
   const onSaveOrder = () => {
     const datas = [];
@@ -129,58 +123,24 @@ const FormManagement = () => {
 
   const onAddForm = () => {
     // 한개 추가
+    const new_form = { name: '새 매체 양식', basic_form_flag: 0, idx: -1 };
 
-    setFormsDatas([{ name: '새 매체 양식' }, ...formsData]);
+    const platforms = platformRef.current;
+    if (platforms) {
+      platforms.unshift(new_form);
+      // const row0 = gridRef.current.api.getRowNode(0);
+      // row0.setSelected(true);
+      // platformRef.current = platforms;
+    }
 
-    formNameRef.current.value = '새 매체 양식';
-    setFormSaveData(_.filter(basicFormData, { essential: 1 }));
+    setFormsDatas([...platformRef.current]);
   };
-  const onSaveForm = () => {};
-  const onAddSellaBasic = () => {
-    setModalState(true);
-  };
 
-  const onUpload = function () {
-    modal.file_upload(null, '.xlsx', '파일 업로드', {}, (ret) => {
-      if (!ret.err) {
-        const { files } = ret;
-        if (!files.length) return;
-        const file = files[0];
-        const reader = new FileReader();
-        const rABS = !!reader.readAsBinaryString;
-
-        const items = [];
-        reader.onload = (e) => {
-          const bstr = e.target.result;
-          const wb = xlsx.read(bstr, { type: rABS ? 'binary' : 'array', bookVBA: true });
-
-          const wsname = wb.SheetNames[0];
-          const ws = wb.Sheets[wsname];
-
-          for (const key in ws) {
-            const prevlast = key[key.length - 2];
-            const last = key[key.length - 1];
-
-            if (isNaN(prevlast) && !isNaN(last) && Number(last) === 1) {
-              const column = key.slice(0, key.length - 1);
-              const header = ws[key]['h'];
-              let v = '-';
-              if (ws[column + '2']) v = ws[column + '2']['w'];
-
-              items.push({ column, header, value: v });
-            }
-          }
-
-          setExcelData(items);
-        };
-
-        if (rABS) {
-          reader.readAsBinaryString(file);
-        } else {
-          reader.readAsArrayBuffer(file);
-        }
-      }
-    });
+  const onGridReady = () => {
+    if (formsData) {
+      const row0 = gridRef.current.api.getRowNode(0);
+      if (row0) row0.setSelected(true);
+    }
   };
 
   return (
@@ -203,6 +163,7 @@ const FormManagement = () => {
                 rowDragManaged={true}
                 animateRows={true}
                 onSelectionChanged={onSelectionChanged}
+                onGridReady={onGridReady}
               ></AgGridReact>
             </div>
           </div>
@@ -213,122 +174,13 @@ const FormManagement = () => {
             사용자 양식 추가
           </Button>
         </div>
-        <div className="form_management">
-          <span>
-            매체명
-            <input type={'text'} ref={formNameRef}></input>
-          </span>
-          <Button variant="primary" onClick={onSaveForm}>
-            양식 저장
-          </Button>
-          <table className="section">
-            <caption></caption>
-            <thead>
-              <th>셀라 표준 항목</th>
-              <th>선택한 엑셀 항목</th>
-            </thead>
-            <tbody>
-              {formSaveData && formSaveData.map((d, key) => <SellaForm key={d.idx} index={key} d={d} />)}
-              <></>
-            </tbody>
-          </table>
-          <Button variant="primary" onClick={onAddSellaBasic}>
-            항목 추가
-          </Button>
-        </div>
-
-        <div className="form_management">
-          <Button variant="primary" onClick={onUpload}>
-            주문 양식 업로드
-          </Button>
-          <table className="section">
-            <caption></caption>
-            <thead>
-              <th>열</th>
-              <th>업로드한 엑셀 항목</th>
-              <th></th>
-            </thead>
-            <tbody>
-              {excelData && excelData.map((d, key) => <UploadExcelItems key={key} index={key} d={d} />)}
-              <></>
-            </tbody>
-          </table>
-        </div>
+        <div>{formMode == 1 && <FormManagement_Basic platform={nextForm} />}</div>
+        <div>{formMode == 2 && <FormManagement_Custom platform={nextForm} />}</div>
+        <div>{formMode == 3 && <FormManagement_Custom_Add platform={nextForm} />}</div>
       </Body>
       <Footer />
-      <SellaBasicModal
-        modalState={modalState}
-        setModalState={setModalState}
-        basicFormData={basicFormData}
-      ></SellaBasicModal>
     </>
   );
 };
-
-const SellaForm = React.memo(({ index, d }) => {
-  logger.render('SellaForm TableItem : ', index);
-  return (
-    <tr>
-      <td>
-        {d.title} {d.essential ? '*' : ''}
-      </td>
-      {d.data ? (
-        <>
-          <td>
-            {d.data.title}
-            {' ('}
-            {d.data.column}
-            {'열)'}
-          </td>
-        </>
-      ) : (
-        <>클릭하여</>
-      )}
-    </tr>
-  );
-});
-
-const UploadExcelItems = React.memo(({ index, d }) => {
-  logger.render('SellaForm TableItem : ', index);
-  return (
-    <tr>
-      <td>{d.column}</td>
-
-      <td>
-        {d.header}
-        <br />
-        {d.value}
-      </td>
-      <td>
-        <Button>선택</Button>
-      </td>
-    </tr>
-  );
-});
-
-const SellaBasicModal = React.memo(({ modalState, setModalState, basicFormData }) => {
-  logger.render('SellaBasicModal');
-  const columnList = _.filter(basicFormData, { essential: 0 });
-
-  useEffect(() => {
-    if (modalState) {
-    }
-  }, [modalState]);
-
-  const onClose = () => setModalState(false);
-
-  return (
-    <Modal show={modalState} onHide={onClose} centered>
-      <Modal.Body>
-        {columnList &&
-          columnList.map((d, key) => (
-            <Button key={key} index={key}>
-              {d.title}
-            </Button>
-          ))}
-      </Modal.Body>
-    </Modal>
-  );
-});
 
 export default React.memo(FormManagement);

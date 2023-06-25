@@ -4,7 +4,7 @@
 table {
   float: left;
   background-color: #fff;
-  border-radius: 10px;
+  border-radius: 7px;
   -webkit-box-shadow: 3px 3px 3px 0px rgba(0, 0, 0, 0.1);
   -moz-box-shadow: 3px 3px 3px 0px rgba(0, 0, 0, 0.1);
   box-shadow: 3px 3px 3px 0px rgba(0, 0, 0, 0.1);
@@ -18,7 +18,7 @@ h3 {
   width: 100%;
   height: auto;
   font-size: 18px;
-  line-height: 26px;
+  line-height: 32px;
   color: #081a51;
   font-weight: 500;
 }
@@ -47,8 +47,26 @@ table th:last-child {
   border-right: 0;
 }
 
+table tr:hover,
+table tr:hover td input {
+  background-color: #e8f4fe !important;
+  cursor: default;
+}
+
+table tr:hover td input:focus {
+  background-color: #fff !important;
+}
+
+table tr:focus-within {
+  background-color: #bcdffb !important;
+}
+
+table tr:focus-within input:not(:focus) {
+  background-color: #bcdffb !important;
+}
+
 table td {
-  padding: 5px 18px;
+  padding: 5px;
   font-size: 13px;
   color: #babfc7;
   border-right: 1px dotted #babfc7;
@@ -60,6 +78,8 @@ table td:last-child {
 }
 
 table .btn_del {
+  display: block;
+  margin: 0 auto;
   width: auto;
   height: auto;
   vertical-align: middle;
@@ -75,4 +95,8 @@ table .td_btn_add .txt_small {
   margin-right: 5px;
   line-height: 24px;
   vertical-align: top;
+}
+
+table td input {
+  padding: 6px 10px !important;
 }

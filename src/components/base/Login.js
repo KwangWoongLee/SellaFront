@@ -36,6 +36,8 @@ const Login = () => {
 
         Recoils.setState('DATA:GOODS', ret.data.goods);
         Recoils.setState('DATA:PLATFORMS', ret.data.forms);
+        Recoils.setState('SELLA:SELLAFORMS', ret.data.sella_forms);
+        Recoils.setState('SELLA:CATEGORIES', ret.data.sella_categories);
 
         navigate('/settlement/margin_calc');
       }
