@@ -219,209 +219,211 @@ const Margin = () => {
   return (
     <>
       <Head></Head>
-      <CalculatorNavTab active="/calculator/margin" />
       <Body title={`마진 계산기`} myClass={'margin'}>
-        <div className="section section1">
-          <div className="btnbox">
-            <Button variant="primary" onClick={onDelete}>
-              초기화
-            </Button>
-            <Button variant="primary" onClick={onSave} className="btn_blue">
-              저장
-            </Button>
-          </div>
-          <div className="tablebox1">
-            <table>
-              <colgroup>
-                <col width="50px" />
-                <col />
-              </colgroup>
-              <tbody>
-                <tr>
-                  <th>판매가격</th>
-                  <td>
-                    {}999,999,999,999
-                    <span> 원</span>
-                  </td>
-                </tr>
+        <CalculatorNavTab active="/calculator/margin" />
+        <div className="page">
+          <div className="section section1">
+            <div className="btnbox">
+              <Button variant="primary" onClick={onDelete}>
+                초기화
+              </Button>
+              <Button variant="primary" onClick={onSave} className="btn_blue">
+                저장
+              </Button>
+            </div>
+            <div className="tablebox1">
+              <table>
+                <colgroup>
+                  <col width="50px" />
+                  <col />
+                </colgroup>
+                <tbody>
+                  <tr>
+                    <th>판매가격</th>
+                    <td>
+                      {}999,999,999,999
+                      <span> 원</span>
+                    </td>
+                  </tr>
 
-                <tr>
-                  <th>정산금액</th>
-                  <td>
-                    {}91,232
-                    <span> 원</span>
-                  </td>
-                </tr>
+                  <tr>
+                    <th>정산금액</th>
+                    <td>
+                      {}91,232
+                      <span> 원</span>
+                    </td>
+                  </tr>
 
-                <tr>
-                  <th>순이익</th>
-                  <td className="txt_green">
-                    <span>이익 + </span>
-                    {}14,780
-                    <span> 원</span>
-                  </td>
-                </tr>
+                  <tr>
+                    <th>순이익</th>
+                    <td className="txt_green">
+                      <span>이익 + </span>
+                      {}14,780
+                      <span> 원</span>
+                    </td>
+                  </tr>
 
-                <tr>
-                  <th>마진율</th>
-                  <td className="txt_green">
-                    {}15.2
-                    <span> %</span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div className="tablebox2">
-            <table>
-              <tbody>
-                <tr>
-                  <td>
-                    <input ref={nameRef} placeholder="상품명 입력" className="input_prdname"></input>
-                    <Button variant="primary" onClick={onSearch} className="btn_blue">
-                      내 상품 찾기
-                    </Button>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="td_sum green">
-                    <span>+ 수익합계</span> {sumPlus} 원
-                  </td>
-                </tr>
+                  <tr>
+                    <th>마진율</th>
+                    <td className="txt_green">
+                      {}15.2
+                      <span> %</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div className="tablebox2">
+              <table>
+                <tbody>
+                  <tr>
+                    <td>
+                      <input ref={nameRef} placeholder="상품명 입력" className="input_prdname"></input>
+                      <Button variant="primary" onClick={onSearch} className="btn_blue">
+                        내 상품 찾기
+                      </Button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="td_sum green">
+                      <span>+ 수익합계</span> {sumPlus} 원
+                    </td>
+                  </tr>
 
-                <tr>
-                  <td>
-                    {' '}
-                    <span className="txt_green">판매가격</span>
-                    <input
-                      type="number"
-                      ref={sellPriceRef}
-                      onChange={(e) => {
-                        onChangeInput(e, sellPriceRef);
-                      }}
-                    ></input>{' '}
-                    <span>원</span>
-                  </td>
-                </tr>
+                  <tr>
+                    <td>
+                      {' '}
+                      <span className="txt_green">판매가격</span>
+                      <input
+                        type="number"
+                        ref={sellPriceRef}
+                        onChange={(e) => {
+                          onChangeInput(e, sellPriceRef);
+                        }}
+                      ></input>{' '}
+                      <span>원</span>
+                    </td>
+                  </tr>
 
-                <tr>
-                  <td>
-                    {' '}
-                    <span className="txt_green">받은 배송비</span>
-                    <input type="number" ref={sellDeliveryFeeRef}></input>
-                    <span>원</span>
-                  </td>
-                </tr>
+                  <tr>
+                    <td>
+                      {' '}
+                      <span className="txt_green">받은 배송비</span>
+                      <input type="number" ref={sellDeliveryFeeRef}></input>
+                      <span>원</span>
+                    </td>
+                  </tr>
 
-                <tr>
-                  <td className="td_sum red">
-                    <span>- 비용 합계</span> {sumMinus} 원
-                  </td>
-                </tr>
+                  <tr>
+                    <td className="td_sum red">
+                      <span>- 비용 합계</span> {sumMinus} 원
+                    </td>
+                  </tr>
 
-                <tr>
-                  {' '}
-                  <td>
+                  <tr>
                     {' '}
-                    <span className="txt_red">매입가</span>
-                    <input type="number" ref={stockPriceRef}></input>
-                    <span>원</span>
-                  </td>
-                </tr>
+                    <td>
+                      {' '}
+                      <span className="txt_red">매입가</span>
+                      <input type="number" ref={stockPriceRef}></input>
+                      <span>원</span>
+                    </td>
+                  </tr>
 
-                <tr>
-                  {' '}
-                  <td>
+                  <tr>
                     {' '}
-                    <span className="txt_red ">택배비·포장비</span>
-                    <input type="number" ref={savedDPFeeRef}></input>
-                    <span>원</span>
-                  </td>
-                </tr>
+                    <td>
+                      {' '}
+                      <span className="txt_red ">택배비·포장비</span>
+                      <input type="number" ref={savedDPFeeRef}></input>
+                      <span>원</span>
+                    </td>
+                  </tr>
 
-                <tr>
-                  {' '}
-                  <td>
+                  <tr>
                     {' '}
-                    <span className="txt_red">수수료</span>
-                    <DropdownButton
-                      variant=""
-                      title={platformData.length ? platformData[platformType].name : ''}
-                      className="nounit"
-                    >
-                      {platformData &&
-                        platformData.map((item, key) => (
-                          <Dropdown.Item
-                            key={key}
-                            eventKey={key}
-                            onClick={(e) => onChange(key, e)}
-                            active={platformType === key}
-                          >
-                            {item.name}
-                          </Dropdown.Item>
-                        ))}
-                    </DropdownButton>
-                  </td>
-                </tr>
-                <tr>
-                  {' '}
-                  <td>
+                    <td>
+                      {' '}
+                      <span className="txt_red">수수료</span>
+                      <DropdownButton
+                        variant=""
+                        title={platformData.length ? platformData[platformType].name : ''}
+                        className="nounit"
+                      >
+                        {platformData &&
+                          platformData.map((item, key) => (
+                            <Dropdown.Item
+                              key={key}
+                              eventKey={key}
+                              onClick={(e) => onChange(key, e)}
+                              active={platformType === key}
+                            >
+                              {item.name}
+                            </Dropdown.Item>
+                          ))}
+                      </DropdownButton>
+                    </td>
+                  </tr>
+                  <tr>
                     {' '}
-                    <span className="txt_small">매체 수수료</span>
-                    <input type="number" ref={platformFeeRateRef}></input>
-                    <span>%</span>
-                  </td>
-                </tr>
-                <tr>
-                  {' '}
-                  <td>
+                    <td>
+                      {' '}
+                      <span className="txt_small">매체 수수료</span>
+                      <input type="number" ref={platformFeeRateRef}></input>
+                      <span>%</span>
+                    </td>
+                  </tr>
+                  <tr>
                     {' '}
-                    <span className="txt_small">배송비 수수료</span>
-                    <input type="number" ref={platformDeliverFeeRateRef}></input>
-                    <span>%</span>
-                  </td>
-                </tr>
-                <tr>
-                  {' '}
-                  <td className="td_sum gray">
+                    <td>
+                      {' '}
+                      <span className="txt_small">배송비 수수료</span>
+                      <input type="number" ref={platformDeliverFeeRateRef}></input>
+                      <span>%</span>
+                    </td>
+                  </tr>
+                  <tr>
                     {' '}
-                    <span>최저 판매가</span> {lowestPrice} 원
-                  </td>
-                </tr>
-                <tr>
-                  {' '}
-                  <td>
+                    <td className="td_sum gray">
+                      {' '}
+                      <span>최저 판매가</span> {lowestPrice} 원
+                    </td>
+                  </tr>
+                  <tr>
                     {' '}
-                    <span>최저 마진</span>
-                    <input type="number" ref={lowestMarginRateRef} onKeyDown={handleKeyDown}></input>
-                    <span>%</span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          {/* 계산하기 버튼 추가 */}
-          <Button variant="primary" className="btn_blue btn_calc">
-            계산하기
-          </Button>
-        </div>
-        <div className="section section2">
-          <div className="btnbox">
-            <Button variant="primary" onClick={onDelete}>
-              선택 삭제
+                    <td>
+                      {' '}
+                      <span>최저 마진</span>
+                      <input type="number" ref={lowestMarginRateRef} onKeyDown={handleKeyDown}></input>
+                      <span>%</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            {/* 계산하기 버튼 추가 */}
+            <Button variant="primary" className="btn_blue btn_calc">
+              계산하기
             </Button>
           </div>
-          <div style={containerStyle} className="tablebox">
-            <div style={gridStyle} className="ag-theme-alpine test">
-              <AgGridReact
-                ref={gridRef}
-                rowData={rowData}
-                columnDefs={columnDefs}
-                alwaysShowHorizontalScroll={true}
-                alwaysShowVerticalScroll={true}
-                defaultColDef={defaultColDef}
-                rowSelection={'multiple'}
-              ></AgGridReact>
+          <div className="section section2">
+            <div className="btnbox">
+              <Button variant="primary" onClick={onDelete}>
+                선택 삭제
+              </Button>
+            </div>
+            <div style={containerStyle} className="tablebox">
+              <div style={gridStyle} className="ag-theme-alpine test">
+                <AgGridReact
+                  ref={gridRef}
+                  rowData={rowData}
+                  columnDefs={columnDefs}
+                  alwaysShowHorizontalScroll={true}
+                  alwaysShowVerticalScroll={true}
+                  defaultColDef={defaultColDef}
+                  rowSelection={'multiple'}
+                ></AgGridReact>
+              </div>
             </div>
           </div>
         </div>

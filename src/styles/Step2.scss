@@ -33,38 +33,12 @@
     float: left;
   }
 
-  .btnbox_right > .dropdown > button {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-  }
-
   .btnbox_right > button:nth-child(1) {
     margin-right: 10px;
   }
 
   .btnbox_right > button:nth-child(3) {
-    margin-right: 8px;
-  }
-
-  .btnbox_right > button:nth-child(3) {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-  }
-
-  .btnbox_right > button:nth-child(1) img,
-  .btnbox_right > button:nth-child(3) img {
-    display: inline-block;
-    width: auto;
-    height: 16px;
-    margin-right: 3px;
-    vertical-align: middle;
-  }
-
-  .btnbox_right .btn_set {
-    margin-top: 2px;
-    margin-right: 10px;
-    border: 0;
-    background: transparent;
+    margin-right: 5px;
   }
 
   .tablebox {

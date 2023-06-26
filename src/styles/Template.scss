@@ -110,9 +110,18 @@
 .header > .member > .nav-link.mcalculator,
 .header > .member > .nav-link.bcalculator,
 .header > .member > .nav-link.icon_member,
-.header > .member > .nav-link.icon_power {
+.header > .member > .nav-link.icon_power,
+.header > .member > .nav-link.cschat {
   padding: 0;
   margin: 5px !important;
+}
+
+.header > .member .icon_kakao {
+  display: block;
+  float: left;
+  margin-top: 3px;
+  margin-right: 5px;
+  width: 16px;
 }
 
 .header > .member .name {

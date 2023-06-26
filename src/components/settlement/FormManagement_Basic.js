@@ -63,7 +63,6 @@ const FormManagement_Basic = (param) => {
           <div>
             제목행 : {platform.title_row}번째 / 주문 시작 행 : {platform.start_row}번째 / 끝에서부터 제거할 행의 개수 :{' '}
             {platform.end_row}줄
-            <hr />
             <table className="section">
               <caption></caption>
               <thead></thead>

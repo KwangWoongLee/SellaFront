@@ -17,7 +17,14 @@ body {
   display: inline-block;
   width: 100%;
   height: 100%;
-  padding: 25px 30px 30px;
+}
+
+.page {
+  display: inline-block;
+  padding: 25px 30px 30px 30px;
+  width: 100%;
+  height: auto;
+  overflow: auto;
 }
 
 * {
@@ -156,7 +163,11 @@ body {
   width: 30px;
   height: auto;
   min-width: unset;
-  padding: 3px;
+  padding: 5px;
+  margin-top: 2px;
+  margin-right: 10px;
+  border: 0;
+  background: transparent;
 }
 
 .btn_red,
@@ -183,6 +194,15 @@ body {
   border-color: #1d7044;
 }
 
+.btn_green img {
+  display: inline-block;
+  width: auto;
+  height: 15px;
+  margin-top: -3px;
+  margin-right: 3px;
+  vertical-align: middle;
+}
+
 .btn_txt,
 label {
   display: inline-block;
@@ -200,7 +220,7 @@ label {
 }
 
 .btn.dropdown-toggle {
-  padding: 8.5px 12px;
+  padding: 8px 12px;
   font-size: 13px;
   line-height: 16px;
   background-color: #fff;
@@ -237,13 +257,14 @@ input[type='checkbox'] {
   cursor: pointer;
 }
 
-/* page */
-.page {
-  display: block;
-  padding: 30px;
-  width: 100%;
-  height: calc(100% - 90px);
-  overflow: auto;
+.dropdown > button {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+.dropdown + .btn_green {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
 }
 
 // 모달

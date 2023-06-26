@@ -133,90 +133,91 @@ const Step1 = () => {
     <>
       <Head />
       <Body title={`Step1`} myClass={'step1'}>
-        <div className="section tablebox1">
-          <h3>
-            택배비 관리{' '}
-            <button className="btn-primary btn_blue" onClick={(e) => onSave('Delivery', e)}>
-              저장
-            </button>
-          </h3>
+        <div className="page">
+          <div className="section tablebox1">
+            <h3>
+              택배비 관리{' '}
+              <button className="btn-primary btn_blue" onClick={(e) => onSave('Delivery', e)}>
+                저장
+              </button>
+            </h3>
 
-          <table>
-            <thead>
-              <th>구분</th>
-              <th>택배비</th>
-              <th></th>
-            </thead>
-            <tbody>
-              <>
-                {deliItems &&
-                  deliItems.map((d, key) => (
-                    <DeliveryFeeItem
-                      key={key}
-                      index={key}
-                      d={d}
-                      onDelete={onDelete}
-                      onChange={(e) => onChange('Delivery', e)}
-                    />
-                  ))}
-              </>
-              <tr>
-                <td colSpan="3" className="td_btn_add">
-                  <span className="txt_small">최대 8개!</span>
-                  <button
-                    className={`btn_add ${deliItems.length >= 8 ? 'btn_off' : 'btn_of'}`}
-                    onClick={(e) => onClickAdd('Delivery', e)}
-                  >
-                    <img src={icon_add} alt="추가" />
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+            <table>
+              <thead>
+                <th>구분</th>
+                <th>택배비</th>
+                <th></th>
+              </thead>
+              <tbody>
+                <>
+                  {deliItems &&
+                    deliItems.map((d, key) => (
+                      <DeliveryFeeItem
+                        key={key}
+                        index={key}
+                        d={d}
+                        onDelete={onDelete}
+                        onChange={(e) => onChange('Delivery', e)}
+                      />
+                    ))}
+                </>
+                <tr>
+                  <td colSpan="3" className="td_btn_add">
+                    <span className="txt_small">최대 8개!</span>
+                    <button
+                      className={`btn_add ${deliItems.length >= 8 ? 'btn_off' : 'btn_of'}`}
+                      onClick={(e) => onClickAdd('Delivery', e)}
+                    >
+                      <img src={icon_add} alt="추가" />
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="section tablebox2">
+            <h3>
+              포장비 관리{' '}
+              <button className="btn-primary btn_blue" onClick={(e) => onSave('Packing', e)}>
+                저장
+              </button>
+            </h3>
 
-        <div className="section tablebox2">
-          <h3>
-            포장비 관리{' '}
-            <button className="btn-primary btn_blue" onClick={(e) => onSave('Packing', e)}>
-              저장
-            </button>
-          </h3>
-
-          <table className="section">
-            <thead>
-              <th>구분</th>
-              <th>박스/비닐</th>
-              <th>기타 포장비</th>
-              <th>포장비 합계</th>
-              <th></th>
-            </thead>
-            <tbody>
-              <>
-                {packItems &&
-                  packItems.map((d, key) => (
-                    <PackingFeeItem
-                      key={key}
-                      index={key}
-                      d={d}
-                      onDelete={onDelete}
-                      onChange={(e) => onChange('Packing', e)}
-                    />
-                  ))}
-              </>
-              <tr>
-                <td colSpan="5" className="td_btn_add">
-                  <span className="txt_small">최대 8개!</span>
-                  <button
-                    className={`btn_add ${packItems.length >= 8 ? 'btn_off' : 'btn_of'}`}
-                    onClick={(e) => onClickAdd('Packing', e)}
-                  >
-                    <img src={icon_add} alt="추가" />
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+            <table className="section">
+              <thead>
+                <th>구분</th>
+                <th>박스/비닐</th>
+                <th>기타 포장비</th>
+                <th>포장비 합계</th>
+                <th></th>
+              </thead>
+              <tbody>
+                <>
+                  {packItems &&
+                    packItems.map((d, key) => (
+                      <PackingFeeItem
+                        key={key}
+                        index={key}
+                        d={d}
+                        onDelete={onDelete}
+                        onChange={(e) => onChange('Packing', e)}
+                      />
+                    ))}
+                </>
+                <tr>
+                  <td colSpan="5" className="td_btn_add">
+                    <span className="txt_small">최대 8개!</span>
+                    <button
+                      className={`btn_add ${packItems.length >= 8 ? 'btn_off' : 'btn_of'}`}
+                      onClick={(e) => onClickAdd('Packing', e)}
+                    >
+                      <img src={icon_add} alt="추가" />
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </Body>
       <Footer />

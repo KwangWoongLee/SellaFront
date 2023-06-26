@@ -12,6 +12,7 @@ import logo_top from 'images/logo_top.svg';
 import icon_member from 'images/icon_member.svg';
 import icon_power from 'images/icon_power.svg';
 import icon_calculator from 'images/icon_calculator.svg';
+import icon_kakao from 'images/icon_kakao.svg';
 
 const Head = () => {
   logger.render('Template Head');
@@ -65,6 +66,10 @@ const Head = () => {
           </Nav.Link>
           <Nav.Link className="nav-link" onClick={onLink} name="/cscenter">
             <span className="cscenter">고객센터</span>
+          </Nav.Link>
+          <Nav.Link className="nav-link cschat" name="/cschat">
+            <img src={icon_kakao} alt="카카오" className="icon_kakao" />
+            <span className="cschat">1:1문의</span>
           </Nav.Link>
           {account && account.grade != -1 ? (
             <>

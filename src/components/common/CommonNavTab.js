@@ -24,7 +24,6 @@ const CommonNavTab = ({ data, active }) => {
           <NavItem key={key} onLink={onLink} active={active} name={d.name} desc={d.desc} />
         ))}
       </Nav>
-      <hr />
     </>
   );
 };
