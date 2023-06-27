@@ -36,6 +36,8 @@ const Login = () => {
 
         Recoils.setState('DATA:GOODS', ret.data.goods);
         Recoils.setState('DATA:PLATFORMS', ret.data.forms);
+        Recoils.setState('DATA:FORMSMATCH', ret.data.forms_match);
+        Recoils.setState('DATA:GOODSMATCH', ret.data.goods_match);
         Recoils.setState('SELLA:SELLAFORMS', ret.data.sella_forms);
         Recoils.setState('SELLA:CATEGORIES', ret.data.sella_categories);
 
@@ -84,7 +86,7 @@ const Login = () => {
           </InputGroup>
           <div className="btnbox">
             <div className="btnbox_left">
-              <input type="checkbox"></input>
+              <input type={'checkbox'}></input>
               <label>ID 저장</label>
             </div>
             <div className="btnbox_right">

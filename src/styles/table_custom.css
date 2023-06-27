@@ -2,6 +2,7 @@
 
 /* table */
 table {
+  position: relative;
   float: left;
   background-color: #fff;
   border-radius: 7px;
@@ -28,23 +29,64 @@ h3>button {
 }
 
 table thead {
-  height: 40;
+  height: 40px;
   min-height: 40px;
   background-color: #182B65;
   overflow: hidden;
 }
 
+table tbody:empty {
+  min-width: 100%;
+  height: auto;
+  min-height: calc(100vh - 340px);
+  display: block;
+}
+
+table tbody:empty:before {
+  content: "데이터가 없습니다.";
+  position: absolute;
+  top: 49%;
+  left: 50%;
+  display: inline-block;
+  margin-left: -150px;
+  width: 300px;
+  height: auto;
+  text-align: center;
+  font-size: 14px;
+  color: #c5c9d6;
+}
+
 table th {
-  padding: 5px 18px;
+  padding: 13px 3px 14px;
   border-right: 1px dotted #ccc;
   font-size: 13px;
+  line-height: 13px;
   font-weight: 300;
-  line-height: 30px;
   color: #fff;
+  vertical-align: middle;
+  text-align: center;
 }
 
 table th:last-child {
   border-right: 0;
+}
+
+table th.required:before {
+  content: "* ";
+  font-size: 15px;
+  color: #B84A4A;
+  vertical-align: middle;
+}
+
+table th span.sub {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-size: 12px;
+}
+
+table th.required span.sub {
+  text-indent: 10px;
 }
 
 table tr:hover,
@@ -53,9 +95,20 @@ table tr:hover td input {
   cursor: default;
 }
 
+table thead tr:hover {
+  background-color: #182B65 !important;
+}
+
 table tr:hover td input:focus {
   background-color: #fff !important;
 }
+
+table tr:hover td input[type='radio']:focus,
+table tr:hover td input[type='checkbox']:focus {
+  background-color: transparent !important;
+}
+
+
 
 table tr:focus-within {
   background-color: #bcdffb !important;
@@ -68,9 +121,10 @@ table tr:focus-within input:not(:focus) {
 table td {
   padding: 5px;
   font-size: 13px;
-  color: #babfc7;
+  color: #000;
   border-right: 1px dotted #babfc7;
   border-bottom: 1px dotted #babfc7;
+  vertical-align: middle;
 }
 
 table td:last-child {
@@ -99,4 +153,11 @@ table .td_btn_add .txt_small {
 
 table td input {
   padding: 6px 10px !important;
+}
+
+table input[type='checkbox'] {
+  display: inline-block;
+  vertical-align: middle;
+  width: auto;
+  height: auto;
 }

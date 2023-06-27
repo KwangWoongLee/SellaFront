@@ -20,7 +20,7 @@ const GoodsMatchTable = React.memo(({ rows, serverWork, selectCallback, deleteCa
 
   useEffect(() => {
     setRowData([...rows]);
-  }, []);
+  }, [rows]);
 
   const onDelete = (e, d) => {
     e.preventDefault();
@@ -29,7 +29,7 @@ const GoodsMatchTable = React.memo(({ rows, serverWork, selectCallback, deleteCa
     } else {
       setRowData(
         _.filter(rowData, (item) => {
-          return item.order_no != d.order_no;
+          return item.idx != d.idx;
         })
       );
     }
@@ -39,7 +39,6 @@ const GoodsMatchTable = React.memo(({ rows, serverWork, selectCallback, deleteCa
   return (
     <>
       <div>
-        연결 상품
         <table className="section">
           <thead>
             <tr>

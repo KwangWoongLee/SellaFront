@@ -3,11 +3,8 @@
 
 /* 공통 */
 
-html,
 body {
-  width: 100%;
-  min-width: 1200px;
-  height: 100% !important;
+  min-width: 1920px;
   background-color: #f8f9ff !important;
   font-size: 16px;
   overflow: auto;
@@ -111,6 +108,10 @@ body {
 
 .txt_red {
   color: #b84a4a !important;
+}
+
+.center {
+  text-align: center !important;
 }
 
 /* button */
@@ -267,19 +268,6 @@ input[type='checkbox'] {
   border-bottom-left-radius: 0;
 }
 
-// 모달
-.modal-header {
-  display: inline-block !important;
-  padding: 10px 20px !important;
-}
-.modal-header .modal-title {
-  display: block;
-  float: left;
-  text-align: left;
-  font-size: 18px;
-  color: #000 !important;
-}
-
 .modal-header .btn_close,
 .modal-header .btn-close {
   border: 0;
@@ -288,6 +276,7 @@ input[type='checkbox'] {
   margin-right: -5px;
   width: 27px;
   height: 27px;
+  min-width: unset;
 }
 
 .modal-body .form-label {

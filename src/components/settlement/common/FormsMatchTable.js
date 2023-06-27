@@ -8,13 +8,8 @@ import _ from 'lodash';
 
 import { logger } from 'util/com';
 
-const FormsMatchTable = React.memo(({ rows, serverWork, selectCallback, deleteCallback }) => {
+const FormsMatchTable = React.memo(({ rows, unconnect_flag, selectCallback, deleteCallback }) => {
   logger.render('FormsMatchTable');
-  const account = Recoils.useValue('CONFIG:ACCOUNT');
-  const sella_categories = Recoils.useValue('SELLA:CATEGORIES');
-  const goods = Recoils.useValue('DATA:GOODS');
-  const forms_match = Recoils.getState('DATA:FORMSMATCH');
-  const aidx = account.aidx;
 
   const [rowData, setRowData] = useState([]);
 
@@ -24,7 +19,7 @@ const FormsMatchTable = React.memo(({ rows, serverWork, selectCallback, deleteCa
 
   const onDelete = (e, d) => {
     e.preventDefault();
-    if (serverWork) {
+    if (unconnect_flag) {
       // TODO Server
     } else {
       setRowData(
@@ -38,26 +33,32 @@ const FormsMatchTable = React.memo(({ rows, serverWork, selectCallback, deleteCa
 
   return (
     <>
-      <div>
-        <table className="section">
-          <thead>
-            <tr>
-              <th>주문 매체</th>
-              <th>상품명</th>
-              <th>옵션</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <>
-              {rowData &&
-                rowData.map((d, key) => (
-                  <SelectItem key={key} index={key} d={d} onClick={selectCallback} onDelete={onDelete} />
-                ))}
-            </>
-          </tbody>
-        </table>
-      </div>
+      <table className="formsmatchtable">
+        <thead>
+          <tr>
+            <th>주문 매체</th>
+            <th>상품명</th>
+            <th>옵션</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <>
+            {rowData &&
+              rowData.map((d, key) => (
+                <SelectItem
+                  key={key}
+                  index={key}
+                  d={d}
+                  onClick={(e) => {
+                    selectCallback(d);
+                  }}
+                  onDelete={onDelete}
+                />
+              ))}
+          </>
+        </tbody>
+      </table>
     </>
   );
 });
@@ -66,7 +67,7 @@ const SelectItem = React.memo(({ index, d, onClick, onDelete }) => {
   logger.render('SelectItem : ', index);
   return (
     <tr>
-      <td onClick={onClick}>{d.name}</td>
+      <td onClick={onClick}>{d.forms_name}</td>
       <td onClick={onClick}>{d.forms_product_name}</td>
       <td onClick={onClick}>{d.forms_option_name1}</td>
       <td>

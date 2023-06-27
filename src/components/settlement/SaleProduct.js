@@ -18,7 +18,7 @@ const SaleProduct = () => {
   logger.render('SaleProduct');
 
   const [rowData, setRowData] = useState([]);
-  const { forms_match } = Recoils.getState('DATA:FORMSMATCH');
+  const forms_match = [...Recoils.getState('DATA:FORMSMATCH')];
 
   useEffect(() => {
     setRowData([...forms_match]);

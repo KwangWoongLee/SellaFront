@@ -187,8 +187,8 @@ const Step1 = () => {
               <thead>
                 <th>구분</th>
                 <th>박스/비닐</th>
-                <th>기타 포장비</th>
-                <th>포장비 합계</th>
+                <th>기타포장비</th>
+                <th>포장비합계</th>
                 <th></th>
               </thead>
               <tbody>

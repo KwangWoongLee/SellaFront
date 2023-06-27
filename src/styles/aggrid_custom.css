@@ -99,6 +99,12 @@
   height: calc(100% - 6px);
 }
 
+
 input[class^=ag-][type=text]:focus {
   box-shadow: none !important;
+}
+
+.ag-checkbox-input-wrapper:focus-within,
+.ag-checkbox-input-wrapper:active {
+  box-shadow: unset !important;
 }

@@ -8,25 +8,25 @@ import _ from 'lodash';
 
 import { logger } from 'util/com';
 
-const StandardProduct_Search = React.memo(({ select_row_data, callback }) => {
+const StandardProduct_Search = React.memo(({ rows, selectCallback }) => {
   logger.render('StandardProduct_Search');
-  const account = Recoils.getState('CONFIG:ACCOUNT');
-  const goods = Recoils.getState('DATA:GOODS');
-  const forms_match = Recoils.getState('DATA:FORMSMATCH');
-  const aidx = account.aidx;
 
   const goodsNameRef = useRef(null);
   const [items, setItems] = useState([]);
 
   useEffect(() => {
-    // _.filter(forms_match, {'forms_name'})
-    setItems(goods);
-  }, []);
+    if (rows && rows.length) {
+      setItems([...rows]);
+    } else {
+      const goods = [...Recoils.getState('DATA:GOODS')];
+      setItems(goods);
+    }
+  }, [rows]);
 
   const onSearch = (e) => {
     e.preventDefault();
 
-    let search_results = [...goods];
+    let search_results = [...Recoils.getState('DATA:GOODS')];
 
     const goodsName = goodsNameRef.current.value;
     if (goodsName) {
@@ -40,7 +40,7 @@ const StandardProduct_Search = React.memo(({ select_row_data, callback }) => {
 
   const onSelect = (e, d) => {
     e.preventDefault();
-    callback(d);
+    selectCallback(d);
   };
 
   return (
@@ -63,7 +63,7 @@ const SelectItem = React.memo(({ index, d, onSelect }) => {
   logger.render('SelectItem : ', index);
   return (
     <tr>
-      <td>{d.category}</td>
+      <td>{d.name}</td>
       <td>
         <button
           className="btn_del"

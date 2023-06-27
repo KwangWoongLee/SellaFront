@@ -51,7 +51,6 @@ const FileUpload = () => {
       <Modal.Header className="d-flex justify-content-center">
         <Modal.Title className="text-primary">{state.title ? state.title : '파일 업로드'}</Modal.Title>
         <Button variant="primary" className="btn_close">
-          {/* 닫기버튼 추가 */}
           <img src={icon_close} />
         </Button>
       </Modal.Header>

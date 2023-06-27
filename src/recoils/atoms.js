@@ -61,4 +61,7 @@ insert_recoil('DATA:FORMSMATCH', {
   forms_match: [],
 });
 
+insert_recoil('DATA:GOODSMATCH', {
+  goods_match: [],
+});
 export default states;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 
 import { Button, Modal, Dropdown, DropdownButton } from 'react-bootstrap';
 import Head from 'components/template/Head';
@@ -14,6 +14,16 @@ import _ from 'lodash';
 
 import { logger } from 'util/com';
 
+import 'styles/Settlement.scss';
+
+import icon_circle_arrow_down from 'images/icon_circle_arrow_down.svg';
+import icon_circle_arrow_up from 'images/icon_circle_arrow_up.svg';
+import icon_set from 'images/icon_set.svg';
+
+// AG Grid
+import { AgGridReact } from 'ag-grid-react';
+//
+
 const MarginCalc = () => {
   logger.render('MarginCalc');
 
@@ -24,6 +34,124 @@ const MarginCalc = () => {
   const [platformType, setplatformType] = useState(0);
   const [rowData, setRowData] = useState([]);
   const [modalState, setModalState] = useState(false);
+
+  //ag-grid
+
+  const gridRef = useRef();
+  const containerStyle = useMemo(() => ({ width: '100%', height: '100%' }), []);
+  const gridStyle = useMemo(() => ({ height: '1000px', width: '100%' }), []);
+  const defaultColDef = useMemo(() => {
+    return {
+      editable: true,
+      sortable: true,
+      resizable: true,
+      flex: 1,
+      minWidth: 100,
+    };
+  }, []);
+  const [columnDefs] = useState([
+    { field: '', pinned: 'left', lockPinned: true, cellClass: 'lock-pinned', checkboxSelection: true, width: 5 },
+    {
+      field: 'profit_loss',
+      sortable: true,
+      pinned: 'left',
+      lockPinned: true,
+      cellClass: 'lock-pinned',
+      editable: false,
+      headerName: '손익',
+      filter: true,
+    },
+    {
+      field: 'payment_date',
+      sortable: true,
+      pinned: 'left',
+      lockPinned: true,
+      cellClass: 'lock-pinned',
+      editable: false,
+      headerName: '결제일',
+      filter: true,
+    },
+
+    { field: 'order_no', sortable: true, unSortIcon: true, headerName: '주문번호', filter: true },
+    {
+      field: 'forms_name',
+      sortable: true,
+      unSortIcon: true,
+      headerName: '매체',
+    },
+    {
+      field: 'forms_product_name',
+      sortable: true,
+      unSortIcon: true,
+      headerName: '판매상품명',
+    },
+    {
+      field: 'forms_option_name1',
+      sortable: true,
+      unSortIcon: true,
+      headerName: '옵션',
+    },
+    {
+      field: 'count',
+      sortable: true,
+      unSortIcon: true,
+      valueParser: (params) => Number(params.newValue),
+      headerName: '주문수량',
+    },
+    {
+      field: 'sum_payment_price',
+      sortable: true,
+      unSortIcon: true,
+      valueParser: (params) => Number(params.newValue),
+      headerName: '총 결제금액(정산예정금액)',
+    },
+    {
+      field: 'recieved_delivery_fee',
+      sortable: true,
+      unSortIcon: true,
+      valueParser: (params) => Number(params.newValue),
+      headerName: '받은 배송비',
+    },
+    {
+      field: 'stock_price',
+      sortable: true,
+      unSortIcon: true,
+      valueParser: (params) => Number(params.newValue),
+      headerName: '입고단가',
+    },
+    {
+      field: 'delivery_fee',
+      sortable: true,
+      unSortIcon: true,
+      valueParser: (params) => Number(params.newValue),
+      headerName: '배송비',
+    },
+    {
+      field: 'packing_fee',
+      sortable: true,
+      unSortIcon: true,
+      valueParser: (params) => Number(params.newValue),
+      headerName: '포장비',
+    },
+    {
+      field: 'recieved_name',
+      sortable: true,
+      unSortIcon: true,
+      headerName: '수취인명',
+    },
+    {
+      field: 'recieved_addr',
+      sortable: true,
+      unSortIcon: true,
+      headerName: '수취인 주소',
+    },
+    {
+      field: 'recieved_phone',
+      sortable: true,
+      unSortIcon: true,
+      headerName: '수취인 연락처',
+    },
+  ]);
 
   useEffect(() => {}, []);
 
@@ -98,22 +226,8 @@ const MarginCalc = () => {
     setplatformType(key);
   };
 
-  const onClick = (e) => {
-    switch (e.detail) {
-      case 1: {
-        break;
-      }
-      case 2: {
-        setModalState(true);
-        break;
-      }
-      case 3: {
-        break;
-      }
-      default: {
-        break;
-      }
-    }
+  const onClick = () => {
+    setModalState(true);
   };
 
   const deleteCallback = (d) => {
@@ -127,79 +241,111 @@ const MarginCalc = () => {
   return (
     <>
       <Head />
-      <Body title={`손익 계산`}>
+      <Body title={`손익 계산`} myClass={'margin_calc'}>
         <SettlementNavTab active="/settlement/margin_calc" />
+
         {viewState ? (
-          <div className="MarginCalc">
-            <DropdownButton variant="" title={platforms.length ? platforms[platformType].name : ''}>
-              {platforms &&
-                platforms.map((item, key) => (
-                  <Dropdown.Item
-                    key={key}
-                    eventKey={key}
-                    onClick={(e) => onChange(key, e)}
-                    active={platformType === key}
-                  >
-                    {item.name}
-                  </Dropdown.Item>
-                ))}
-            </DropdownButton>
-            <Button variant="primary" onClick={onUpload}>
-              새 주문서 업로드
-            </Button>
-
-            <Button variant="primary" onClick={onUpload}>
-              선택 삭제
-            </Button>
-
-            <Button variant="primary" onClick={onUpload}>
-              손익 계산
-            </Button>
-
-            <Button variant="primary" onClick={onUpload}>
-              주문서 저장
-            </Button>
-
-            <Button variant="primary" onClick={onUpload}>
-              다운로드
-            </Button>
-
-            <Button variant="primary" onClick={onUpload}>
-              세팅버튼
-            </Button>
-
-            <table>
-              <thead>
-                <th></th>
-                <th>연결상태</th>
-                <th>손익</th>
-                <th>결제일</th>
-                <th>주문번호</th>
-                <th>매체</th>
-                <th>판매상품명</th>
-                <th>옵션</th>
-                <th>주문수량</th>
-                <th>총 결제금액</th>
-                <th>입고단가</th>
-                <th>배송비</th>
-                <th>포장비</th>
-                <th>수취인명</th>
-                <th>수취인주소</th>
-                <th>수취인연락처</th>
-              </thead>
-              <tbody>
-                {rowData &&
-                  rowData.map((d, key) => (
-                    <MarginCalcItems
+          <div className="page">
+            <div className="btnbox">
+              <DropdownButton variant="" title={platforms.length ? platforms[platformType].name : ''}>
+                {platforms &&
+                  platforms.map((item, key) => (
+                    <Dropdown.Item
                       key={key}
-                      index={key}
-                      d={d}
-                      onClick={onClick}
-                      platform_name={platforms[platformType].name}
-                    />
+                      eventKey={key}
+                      onClick={(e) => onChange(key, e)}
+                      active={platformType === key}
+                    >
+                      {item.name}
+                    </Dropdown.Item>
                   ))}
-              </tbody>
-            </table>
+              </DropdownButton>
+              <Button variant="primary" onClick={onUpload} className="btn_green">
+                <img src={icon_circle_arrow_up} />새 주문서 업로드
+              </Button>
+
+              <Button variant="primary" onClick={onUpload} className="btn_red">
+                선택 삭제
+              </Button>
+
+              <Button variant="primary" onClick={onUpload} className="btn_blue">
+                손익 계산
+              </Button>
+
+              <Button variant="primary" onClick={onUpload}>
+                주문서 저장
+              </Button>
+
+              <Button variant="primary" onClick={onUpload} className="btn_green">
+                <img src={icon_circle_arrow_down} />
+                다운로드
+              </Button>
+
+              <Button className="btn_set">
+                <img src={icon_set} />
+              </Button>
+            </div>
+
+            {/* 결과 출력하는 영역이 빠져있어서 넣어뒀습니다~ 
+            손익계산 버튼 누르기 전에는 <ul className="viewbox"> 에 off 클래스 추가해주세요.*/}
+            <ul className="viewbox off">
+              <li>
+                <p className="dt">총 주문</p>
+                <p className="dd">
+                  999,999
+                  <span>건</span>
+                </p>
+              </li>
+              <li>
+                <p className="dt">택배 발송</p>
+                <p className="dd">
+                  999,999
+                  <span>건</span>
+                </p>
+              </li>
+              <li>
+                <p className="dt">적자 주문</p>
+                <span className="dd txt_red">
+                  9<span className="unit txt_red">건</span>
+                </span>
+              </li>
+              <li>
+                <p className="dt">상품 결제 금액</p>
+                <p className="dd">
+                  999,999
+                  <span>원</span>
+                </p>
+              </li>
+              <li>
+                <p className="dt">받은 배송비</p>
+                <p className="dd">
+                  999,999
+                  <span>원</span>
+                </p>
+              </li>
+              {/* 손익합계 <li> className에 이익일때 profit, 손해일때 loss 넣어주세요. */}
+              <li className="loss">
+                <p className="dt">손익 합계</p>
+                <p className="dd">
+                  999,999
+                  <span>원</span>
+                </p>
+              </li>
+            </ul>
+            <div style={containerStyle} className="tablebox">
+              <div style={gridStyle} className="ag-theme-alpine test">
+                <AgGridReact
+                  ref={gridRef}
+                  rowData={rowData}
+                  columnDefs={columnDefs}
+                  alwaysShowHorizontalScroll={true}
+                  alwaysShowVerticalScroll={true}
+                  defaultColDef={defaultColDef}
+                  rowSelection={'multiple'}
+                  onRowDoubleClicked={onClick}
+                ></AgGridReact>
+              </div>
+            </div>
           </div>
         ) : (
           <Modal show={!viewState} centered className="Confirm">
@@ -229,6 +375,7 @@ const MarginCalc = () => {
         modalState={modalState}
         setModalState={setModalState}
         rowData={rowData}
+        unconnect_flag={true}
         callback={deleteCallback}
       ></MarginCalc_UnConnectModal>
     </>
@@ -238,9 +385,10 @@ const MarginCalc = () => {
 const MarginCalcItems = React.memo(({ index, d, platform_name, onClick }) => {
   logger.render('MarginCalc TableItem : ', index);
   return (
-    <tr onClick={onClick}>
-      <td></td>
-      <td>{d.connect_flag ? '연결' : '미연결'}</td>
+    <tr onClick={onClick} className={d.connect_flag ? 'connected' : 'unconnected'}>
+      <td className="center">
+        <input type={'checkbox'}></input>
+      </td>
       <td>?</td>
       <td>{d.payment_date}</td>
       <td>{d.order_no}</td>
@@ -249,6 +397,7 @@ const MarginCalcItems = React.memo(({ index, d, platform_name, onClick }) => {
       <td>{d.forms_option_name1}</td>
       <td>{d.count}</td>
       <td>{d.sum_payment_price}</td>
+      <td>?</td>
       <td>?</td>
       <td>?</td>
       <td>?</td>

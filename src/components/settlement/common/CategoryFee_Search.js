@@ -10,9 +10,7 @@ import { logger } from 'util/com';
 
 const CategoryFee_Search = React.memo(({ callback }) => {
   logger.render('CategoryFee_Search');
-  const account = Recoils.useValue('CONFIG:ACCOUNT');
   const sella_categories = Recoils.useValue('SELLA:CATEGORIES');
-  const aidx = account.aidx;
 
   const categoryRef = useRef(null);
   const [items, setItems] = useState([]);
