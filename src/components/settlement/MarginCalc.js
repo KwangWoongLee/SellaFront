@@ -14,7 +14,7 @@ import _ from 'lodash';
 
 import { logger } from 'util/com';
 
-import 'styles/Settlement.scss';
+import 'styles/MarginCalc.scss';
 
 import icon_circle_arrow_down from 'images/icon_circle_arrow_down.svg';
 import icon_circle_arrow_up from 'images/icon_circle_arrow_up.svg';
@@ -42,11 +42,12 @@ const MarginCalc = () => {
   const gridStyle = useMemo(() => ({ height: '1000px', width: '100%' }), []);
   const defaultColDef = useMemo(() => {
     return {
-      editable: true,
+      editable: false,
       sortable: true,
       resizable: true,
       flex: 1,
-      minWidth: 100,
+      minWidth: 80,
+      autoHeight: true,
     };
   }, []);
   const [columnDefs] = useState([
@@ -59,7 +60,9 @@ const MarginCalc = () => {
       cellClass: 'lock-pinned',
       editable: false,
       headerName: '손익',
-      filter: true,
+      filter: false,
+      unSortIcon: true,
+      width: 140,
     },
     {
       field: 'payment_date',
@@ -69,34 +72,44 @@ const MarginCalc = () => {
       cellClass: 'lock-pinned',
       editable: false,
       headerName: '결제일',
-      filter: true,
+      filter: false,
+      unSortIcon: true,
+      width: 120,
     },
 
-    { field: 'order_no', sortable: true, unSortIcon: true, headerName: '주문번호', filter: true },
+    { field: 'order_no', sortable: true, unSortIcon: true, headerName: '주문번호', minWidth: 160 },
     {
       field: 'forms_name',
       sortable: true,
       unSortIcon: true,
       headerName: '매체',
+      minWidth: 120,
     },
     {
       field: 'forms_product_name',
       sortable: true,
       unSortIcon: true,
       headerName: '판매상품명',
+      minWidth: 400,
+      wrapText: true,
+      vertical: 'Center',
     },
     {
       field: 'forms_option_name1',
       sortable: true,
       unSortIcon: true,
       headerName: '옵션',
+      minWidth: 300,
+      wrapText: true,
+      vertical: 'Center',
     },
     {
       field: 'count',
       sortable: true,
       unSortIcon: true,
       valueParser: (params) => Number(params.newValue),
-      headerName: '주문수량',
+      headerName: '수량',
+      minWidth: 100,
     },
     {
       field: 'sum_payment_price',
@@ -104,6 +117,7 @@ const MarginCalc = () => {
       unSortIcon: true,
       valueParser: (params) => Number(params.newValue),
       headerName: '총 결제금액(정산예정금액)',
+      minWidth: 140,
     },
     {
       field: 'recieved_delivery_fee',
@@ -111,6 +125,7 @@ const MarginCalc = () => {
       unSortIcon: true,
       valueParser: (params) => Number(params.newValue),
       headerName: '받은 배송비',
+      minWidth: 140,
     },
     {
       field: 'stock_price',
@@ -118,6 +133,7 @@ const MarginCalc = () => {
       unSortIcon: true,
       valueParser: (params) => Number(params.newValue),
       headerName: '입고단가',
+      minWidth: 120,
     },
     {
       field: 'delivery_fee',
@@ -125,6 +141,7 @@ const MarginCalc = () => {
       unSortIcon: true,
       valueParser: (params) => Number(params.newValue),
       headerName: '배송비',
+      minWidth: 100,
     },
     {
       field: 'packing_fee',
@@ -132,24 +149,28 @@ const MarginCalc = () => {
       unSortIcon: true,
       valueParser: (params) => Number(params.newValue),
       headerName: '포장비',
+      minWidth: 100,
     },
     {
       field: 'recieved_name',
       sortable: true,
       unSortIcon: true,
       headerName: '수취인명',
+      minWidth: 120,
     },
     {
       field: 'recieved_addr',
       sortable: true,
       unSortIcon: true,
       headerName: '수취인 주소',
+      minWidth: 140,
     },
     {
       field: 'recieved_phone',
       sortable: true,
       unSortIcon: true,
       headerName: '수취인 연락처',
+      minWidth: 140,
     },
   ]);
 
@@ -324,6 +345,7 @@ const MarginCalc = () => {
                 </p>
               </li>
               {/* 손익합계 <li> className에 이익일때 profit, 손해일때 loss 넣어주세요. */}
+              {/* 이 작업도 손익 계산이 다끝나면 하게 될 것 같아요! */}
               <li className="loss">
                 <p className="dt">손익 합계</p>
                 <p className="dd">

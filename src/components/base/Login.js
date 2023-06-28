@@ -38,6 +38,7 @@ const Login = () => {
         Recoils.setState('DATA:PLATFORMS', ret.data.forms);
         Recoils.setState('DATA:FORMSMATCH', ret.data.forms_match);
         Recoils.setState('DATA:GOODSMATCH', ret.data.goods_match);
+        Recoils.setState('SELLA:PLATFORM', ret.data.platform);
         Recoils.setState('SELLA:SELLAFORMS', ret.data.sella_forms);
         Recoils.setState('SELLA:CATEGORIES', ret.data.sella_categories);
 

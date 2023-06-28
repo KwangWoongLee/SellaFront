@@ -1,0 +1,150 @@
+// MarginCalc.
+
+.body.margin_calc {
+  .nav-tabs .nav-item:nth-child(4),
+  .nav-tabs .nav-item:nth-child(5),
+  .nav-tabs .nav-item:nth-child(6) {
+    float: right;
+  }
+
+  .btnbox {
+    display: inline-block;
+    float: left;
+
+    .btn {
+      margin-right: 10px;
+    }
+
+    .dropdown {
+      float: left;
+    }
+
+    .dropdown .btn {
+      margin-right: 0;
+    }
+
+    .btn:nth-child(2) {
+      display: block;
+    }
+
+    .btn:nth-child(3),
+    .btn:nth-child(4),
+    .btn:nth-child(5),
+    .btn:nth-child(6) {
+      margin-top: 10px;
+    }
+
+    .btn:nth-child(6) {
+      margin-right: 5px;
+    }
+
+    .btn_set {
+      margin-top: 9px;
+    }
+  }
+
+  .viewbox {
+    display: inline-block;
+    float: right;
+    margin-bottom: 0;
+    border: 1px solid #8e9fd5;
+    border-radius: 7px;
+    background-color: #fff;
+
+    li {
+      display: table-cell;
+      float: left;
+      padding: 13px 25px;
+      border-right: 1px dotted #8e9fd5;
+    }
+
+    li p {
+      display: block;
+      margin-bottom: 0;
+      width: auto;
+      height: auto;
+    }
+
+    li .dt {
+      margin-bottom: 10px;
+      font-size: 13px;
+      line-height: 13px;
+      color: #848da8;
+    }
+
+    li .dd {
+      font-size: 24px;
+      line-height: 24px;
+      font-weight: 800;
+      color: #081a51;
+    }
+
+    li .dd span {
+      font-size: 16px;
+      font-weight: 400;
+      margin-left: 5px;
+    }
+
+    li.profit .dd {
+      color: #1d7044;
+    }
+
+    li.profit .dd:before {
+      content: '이익 + ';
+      font-size: 16px;
+      font-weight: 400;
+    }
+
+    li.loss .dd {
+      color: #b84a4a;
+    }
+
+    li.loss .dd:before {
+      content: '손해 - ';
+      font-size: 16px;
+      font-weight: 400;
+    }
+  }
+
+  .viewbox.off {
+    li {
+      display: none;
+    }
+
+    li:first-child {
+      display: inline-block;
+    }
+
+    li:first-child * {
+      display: none;
+    }
+
+    li:first-child:after {
+      content: '주문서를 업로드하고 손익계산 버튼을 눌러주세요.';
+      display: inline-block;
+      min-width: 850px;
+      min-height: 50px;
+      font-size: 18px;
+      font-weight: 500;
+      line-height: 50px;
+      text-align: center;
+      color: #c5c9d6;
+    }
+  }
+
+  .tablebox {
+    display: block;
+    float: left;
+    margin-top: 15px;
+    width: 100%;
+    height: auto !important;
+
+    .ag-root-wrapper.ag-layout-normal {
+      height: calc(100vh - 300px);
+    }
+
+    tr.unconnected {
+      background-color: #ffeaea;
+    }
+  }
+}

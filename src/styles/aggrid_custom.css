@@ -16,8 +16,7 @@
 }
 
 .ag-root-wrapper.ag-layout-normal {
-  min-height: calc(100vh - 210px);
-  height: auto;
+  height: calc(100vh - 210px);
   -webkit-box-shadow: 0px 3px 10px 0px rgba(0, 0, 0, 0.1);
   -moz-box-shadow: 0px 3px 10px 0px rgba(0, 0, 0, 0.1);
   box-shadow: 0px 3px 10px 0px rgba(0, 0, 0, 0.1);
@@ -72,6 +71,16 @@
 
 .ag-ltr .ag-cell {
   border-right: 1px dotted #ccc;
+  font-weight: 300;
+}
+
+.ag-cell-wrapper {
+  height: 100%;
+}
+
+.ag-cell-value,
+.ag-group-value {
+  font-weight: 300;
 }
 
 .ag-body-horizontal-scroll-viewport {
@@ -107,4 +116,9 @@ input[class^=ag-][type=text]:focus {
 .ag-checkbox-input-wrapper:focus-within,
 .ag-checkbox-input-wrapper:active {
   box-shadow: unset !important;
+}
+
+.ag-cell,
+.ag-full-width-row .ag-cell-wrapper.ag-row-group {
+  --ag-internal-calculated-line-height: var(--ag-line-height, calc(var(--ag-row-height) - var(--ag-row-border-width)));
 }

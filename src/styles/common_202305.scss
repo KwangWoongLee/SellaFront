@@ -10,17 +10,21 @@ body {
   overflow: auto;
 }
 
+#root {
+  height: 100%;
+}
+
 .body {
   display: inline-block;
   width: 100%;
-  height: 100%;
+  height: calc(100% - 90px);
 }
 
 .page {
   display: inline-block;
   padding: 25px 30px 30px 30px;
   width: 100%;
-  height: auto;
+  height: calc(100% - 53px);
   overflow: auto;
 }
 
@@ -116,6 +120,10 @@ body {
 
 /* button */
 
+.btn {
+  color: #666;
+}
+
 .btn-primary {
   width: auto;
   height: auto;
@@ -146,6 +154,13 @@ body {
 .btn:focus {
   box-shadow: unset !important;
 }
+
+.btn_small {
+  min-width: unset;
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
 .btn_del {
   width: 22px;
   height: auto;
@@ -169,6 +184,21 @@ body {
   margin-right: 10px;
   border: 0;
   background: transparent;
+}
+
+.btn_search {
+  padding: 7px 6px;
+  width: 30px;
+  height: auto;
+  min-width: unset;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background: #fff;
+
+  img {
+    width: 20px;
+    height: auto;
+  }
 }
 
 .btn_red,
@@ -235,6 +265,7 @@ input {
   border: 1px solid #ccc !important;
   border-radius: 5px !important;
   font-size: 14px !important;
+  font-weight: 300;
   color: #222 !important;
 }
 
@@ -277,10 +308,27 @@ input[type='checkbox'] {
   width: 27px;
   height: 27px;
   min-width: unset;
+  background-color: transparent;
 }
 
 .modal-body .form-label {
   font-size: 14px;
+}
+
+.input_search {
+  float: left;
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  border-right: 0 !important;
+}
+
+.input_search + .btn_search {
+  float: left;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-left: 0 !important;
 }
 
 /* nav-tabs */

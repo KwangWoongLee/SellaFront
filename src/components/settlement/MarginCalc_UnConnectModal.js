@@ -65,37 +65,29 @@ const MarginCalc_UnConnectModal = React.memo(({ modalState, setModalState, rowDa
       </Modal.Header>
       <Modal.Body>
         <div className="section1">
-          <div className="tablebox1">
-            <h3>
-              미연결 주문 <span>{items.length}</span>
-            </h3>
-            <FormsMatchTable
-              rows={items}
-              selectCallback={onSelectFormsMatchTable}
-              deleteCallback={onDeleteFormsMatchTable}
-            ></FormsMatchTable>
-          </div>
-          <div className="tablebox2">
-            <h3>연결 상품</h3>
-            <GoodsMatchTable
-              rows={goodsMatch}
-              selectCallback={onSelectGoodsMatchTable}
-              deleteCallback={onDeleteGoodsMatchTable}
-            ></GoodsMatchTable>
-          </div>
+          <h3>
+            미연결 주문 <span>{items.length}</span>
+          </h3>
+          <FormsMatchTable
+            rows={items}
+            selectCallback={onSelectFormsMatchTable}
+            deleteCallback={onDeleteFormsMatchTable}
+          ></FormsMatchTable>
+          <h3>연결 상품</h3>
+          <GoodsMatchTable
+            rows={goodsMatch}
+            selectCallback={onSelectGoodsMatchTable}
+            deleteCallback={onDeleteGoodsMatchTable}
+          ></GoodsMatchTable>
         </div>
         <div className="section2">
-          <div className="tablebox1">
-            <h3>연결할 기준 상품 검색</h3>
-            <StandardProduct_Search
-              rows={standardItems}
-              selectCallback={onSelectStandardProduct_Seach}
-            ></StandardProduct_Search>
-          </div>
-          <div className="tablebox2">
-            <h3>수수료 검색</h3>
-            <CategoryFee_Search></CategoryFee_Search>
-          </div>
+          <h3>연결할 기준 상품 검색</h3>
+          <StandardProduct_Search
+            rows={standardItems}
+            selectCallback={onSelectStandardProduct_Seach}
+          ></StandardProduct_Search>
+          <h3>수수료 검색</h3>
+          <CategoryFee_Search></CategoryFee_Search>
         </div>
       </Modal.Body>
     </Modal>

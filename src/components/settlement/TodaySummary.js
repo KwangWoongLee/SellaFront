@@ -9,6 +9,8 @@ import SettlementNavTab from 'components/settlement/common/SettlementNavTab';
 
 import { logger } from 'util/com';
 
+import 'styles/TodaySummary.scss';
+
 const TodaySummary = () => {
   logger.render('TodaySummary');
 
@@ -19,9 +21,9 @@ const TodaySummary = () => {
   return (
     <>
       <Head />
-      <Body title={`유저 기본정보`}>
+      <Body title={`유저 기본정보`} myClass={'today_summary'}>
         <SettlementNavTab active="/settlement/today_summary" />
-        <div className="TodaySummary"></div>
+        <div></div>
       </Body>
       <Footer />
     </>

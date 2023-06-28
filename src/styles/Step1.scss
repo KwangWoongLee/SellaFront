@@ -1,6 +1,10 @@
 // Step1.
 
 .body.step1 {
+  .page {
+    height: calc(100% - 5px);
+  }
+
   .section {
     display: inline-block;
     float: left;

@@ -1,0 +1,59 @@
+// standard_product.
+
+.body.standard_product {
+  .nav-tabs .nav-item:nth-child(4),
+  .nav-tabs .nav-item:nth-child(5),
+  .nav-tabs .nav-item:nth-child(6) {
+    float: right;
+  }
+
+  .section1 {
+    width: calc(40% - 30px);
+  }
+
+  .section2 {
+    width: 60%;
+  }
+
+  .topbox {
+    display: block;
+    width: 100%;
+    height: 34px;
+
+    h3 {
+      float: left;
+      width: auto;
+    }
+
+    .searchbox {
+      float: right;
+
+      .dropdown {
+        float: left;
+        margin-right: 10px;
+
+        button {
+          border-radius: 5px !important;
+        }
+      }
+    }
+  }
+
+  .tablebox {
+    width: 100%;
+    height: calc(100% - 50px);
+    background-color: #fff;
+    border-radius: 7px;
+    box-shadow: 3px 3px 3px 0px rgba(0, 0, 0, 0.1);
+    overflow: auto;
+
+    table {
+      width: 100%;
+      height: auto;
+      background-color: transparent;
+      border-radius: 0;
+      box-shadow: unset;
+      overflow: auto;
+    }
+  }
+}

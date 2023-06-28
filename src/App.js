@@ -91,7 +91,7 @@ export function App() {
               }
             />
             <Route
-              path="sale_protuct"
+              path="sale_product"
               element={
                 <ProtectedRoute>
                   <SaleProduct />

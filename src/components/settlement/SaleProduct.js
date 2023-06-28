@@ -14,6 +14,8 @@ import StandardProduct_Search from 'components/settlement/common/StandardProduct
 import { logger } from 'util/com';
 import Recoils from 'recoils';
 
+import 'styles/SaleProduct.scss';
+
 const SaleProduct = () => {
   logger.render('SaleProduct');
 
@@ -35,7 +37,7 @@ const SaleProduct = () => {
   return (
     <>
       <Head />
-      <Body title={`판매상품 연결조회`}>
+      <Body title={`판매상품 연결조회`} myClass={'sale_product'}>
         <SettlementNavTab active="/settlement/sale_product" />
         <div className="SaleProduct">
           <FormsMatchTable rows={rowData} selectCallback={onSelect} deleteCallback={onDelete}></FormsMatchTable>

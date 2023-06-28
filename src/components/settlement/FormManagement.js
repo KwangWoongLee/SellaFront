@@ -146,7 +146,7 @@ const FormManagement = () => {
   return (
     <>
       <Head />
-      <Body title={`매체별 양식관리`}>
+      <Body title={`매체별 양식관리`} myClass={'form_management'}>
         <SettlementNavTab active="/settlement/form_management" />
         <div className="form_management">
           판매매체

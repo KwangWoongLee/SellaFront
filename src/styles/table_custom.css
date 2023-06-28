@@ -108,8 +108,6 @@ table tr:hover td input[type='checkbox']:focus {
   background-color: transparent !important;
 }
 
-
-
 table tr:focus-within {
   background-color: #bcdffb !important;
 }
@@ -118,8 +116,12 @@ table tr:focus-within input:not(:focus) {
   background-color: #bcdffb !important;
 }
 
+table tr.select {
+  background-color: #bcdffb;
+}
+
 table td {
-  padding: 5px;
+  padding: 5px 10px;
   font-size: 13px;
   color: #000;
   border-right: 1px dotted #babfc7;

@@ -24,10 +24,11 @@ const Margin = () => {
   const aidx = account.aidx;
 
   const [rowData, setDatas] = useState([]);
-  const [goodsData, setGoodsData] = useState([]);
-  const [platformData, setplatformData] = useState([]);
+  const platformData = [...Recoils.getState('SELLA:PLATFORM')];
   const [platformType, setplatformType] = useState(0);
   const [modalState, setModalState] = useState(false);
+
+  const saveRef = useRef({});
 
   //inputs
   const nameRef = useRef(null);
@@ -40,6 +41,12 @@ const Margin = () => {
   const lowestMarginRateRef = useRef(null);
   //
 
+  const [resultData, setResultData] = useState({
+    sell_price: 0,
+    settlement_price: 0,
+    margin: 0,
+    margin_rate: 0,
+  });
   const [sumMinus, setSumMinus] = useState(0);
   const [sumPlus, setSumPlus] = useState(0);
   const [lowestPrice, setLowestPrice] = useState('');
@@ -108,25 +115,15 @@ const Margin = () => {
       if (!ret.err) {
         logger.info(ret.data);
 
-        if (ret.data) {
-          const margin_results = ret.data.margin_results;
-          const goods_result = ret.data.goods_result;
-          const platform_result = ret.data.platform_data;
-
-          margin_results ? setDatas(margin_results) : setDatas([]);
-          goods_result ? setGoodsData(goods_result) : setGoodsData([]);
-          platform_result ? setplatformData(platform_result) : setplatformData([]);
-
-          if (platform_result && platform_result.length) {
-            platformFeeRateRef.current.value = platform_result[0].fee_rate;
-            platformDeliverFeeRateRef.current.value = platform_result[0].delivery_fee_rate;
-          }
-        }
+        // setDatas(() => ret.data);
       }
     });
   }, []);
 
   const onSave = () => {
+    // if (saveRef.current) {
+    //   const saveData = saveRef.current;
+    // }
     const name = nameRef.current.value;
     const sellPrice = sellPriceRef.current.value;
     const sellDeliveryFee = sellDeliveryFeeRef.current.value;
@@ -163,57 +160,86 @@ const Margin = () => {
     }
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      let sellPrice = sellPriceRef.current.value;
-      let sellDeliveryFee = sellDeliveryFeeRef.current.value;
-      let stockPrice = stockPriceRef.current.value;
-      let savedDPFee = savedDPFeeRef.current.value;
-      let lowestMarginRate = lowestMarginRateRef.current.value;
+  const onClickCalc = (e) => {
+    let sellPrice = sellPriceRef.current.value;
+    let sellDeliveryFee = sellDeliveryFeeRef.current.value;
+    let stockPrice = stockPriceRef.current.value;
+    let savedDPFee = savedDPFeeRef.current.value;
+    let lowestMarginRate = lowestMarginRateRef.current.value;
 
-      let platformFeeRate = platformFeeRateRef.current.value;
-      platformFeeRate = platformFeeRate / 100;
-      let platformDeliverFeeRate = platformDeliverFeeRateRef.current.value;
-      platformDeliverFeeRate = platformDeliverFeeRate / 100;
+    let platformFeeRate = platformFeeRateRef.current.value;
+    platformFeeRate = platformFeeRate / 100;
+    let platformDeliverFeeRate = platformDeliverFeeRateRef.current.value;
+    platformDeliverFeeRate = platformDeliverFeeRate / 100;
 
-      if (isNaN(sellPrice) || !sellPrice) return;
-      if (isNaN(sellDeliveryFee) || !sellDeliveryFee) return;
-      if (isNaN(stockPrice) || !stockPrice) return;
-      if (isNaN(savedDPFee) || !savedDPFee) return;
-      if (isNaN(lowestMarginRate) || !lowestMarginRate) return;
+    if (isNaN(sellPrice)) return;
+    if (isNaN(sellDeliveryFee)) return;
+    if (isNaN(stockPrice)) return;
+    if (isNaN(savedDPFee)) return;
+    if (isNaN(lowestMarginRate)) return;
 
-      sellPrice = Number(sellPrice);
-      if (sellPrice <= 0) return;
+    sellPrice = Number(sellPrice);
+    if (sellPrice < 0) return;
 
-      sellDeliveryFee = Number(sellDeliveryFee);
-      if (sellDeliveryFee <= 0) return;
+    sellDeliveryFee = Number(sellDeliveryFee);
+    if (sellDeliveryFee < 0) return;
 
-      stockPrice = Number(stockPrice);
-      if (stockPrice <= 0) return;
+    stockPrice = Number(stockPrice);
+    if (stockPrice < 0) return;
 
-      savedDPFee = Number(savedDPFee);
-      if (savedDPFee <= 0) return;
+    savedDPFee = Number(savedDPFee);
+    if (savedDPFee < 0) return;
 
-      lowestMarginRate = Number(lowestMarginRate);
-      if (lowestMarginRate <= 0 || lowestMarginRate >= 100) return;
-      lowestMarginRate = lowestMarginRate / 100;
+    lowestMarginRate = Number(lowestMarginRate);
+    if (lowestMarginRate < 0 || lowestMarginRate >= 100) return;
+    lowestMarginRate = lowestMarginRate / 100;
 
-      let platformFee = sellPrice * platformFeeRate;
-      let platformDeliveryFee = sellDeliveryFee * platformDeliverFeeRate;
+    let platformFee = sellPrice * platformFeeRate;
+    let platformDeliveryFee = sellDeliveryFee * platformDeliverFeeRate;
 
-      const sum_minus = stockPrice + savedDPFee + platformFee + platformDeliveryFee;
-      setSumMinus(sum_minus);
+    const sum_minus = stockPrice + savedDPFee;
+    setSumMinus(sum_minus);
 
-      const sum_plus = sellPrice + sellDeliveryFee - sum_minus;
-      setSumPlus(sum_plus);
+    const sum_plus = sellPrice + sellDeliveryFee;
+    setSumPlus(sum_plus);
 
-      const marginRate = (sum_plus / sellPrice) * 100;
+    const margin = sum_plus - sumMinus - platformFee - platformDeliveryFee;
+    const marginRate = (margin / sellPrice) * 100;
 
-      const low =
-        (sellDeliveryFee - stockPrice - savedDPFee - platformDeliveryFee) / (lowestMarginRate + platformFeeRate - 1);
+    const test = lowestMarginRate + platformFeeRate - 1;
+    if (test == 0) return;
 
-      setLowestPrice(low);
-    }
+    const low =
+      (sellDeliveryFee - stockPrice - savedDPFee - platformDeliveryFee) / (lowestMarginRate + platformFeeRate - 1);
+
+    setLowestPrice(Math.floor(low));
+
+    const result = {
+      sell_price: sellPrice,
+      settlement_price: 0,
+      margin: Math.floor(margin),
+      margin_rate: marginRate ? Math.floor(marginRate * 10) / 10 : 0,
+    };
+
+    setResultData({ ...result });
+  };
+
+  const onReset = () => {
+    nameRef.current.value = '';
+    sellPriceRef.current.value = '';
+    sellDeliveryFeeRef.current.value = '';
+    stockPriceRef.current.value = '';
+    savedDPFeeRef.current.value = '';
+    lowestMarginRateRef.current.value = '';
+    setLowestPrice(0);
+    setSumMinus(0);
+    setSumPlus(0);
+    setResultData({
+      sell_price: 0,
+      settlement_price: 0,
+      margin: 0,
+      margin_rate: 0,
+    });
   };
 
   return (
@@ -224,7 +250,7 @@ const Margin = () => {
         <div className="page">
           <div className="section section1">
             <div className="btnbox">
-              <Button variant="primary" onClick={onDelete}>
+              <Button variant="primary" onClick={onReset}>
                 초기화
               </Button>
               <Button variant="primary" onClick={onSave} className="btn_blue">
@@ -241,7 +267,7 @@ const Margin = () => {
                   <tr>
                     <th>판매가격</th>
                     <td>
-                      {}999,999,999,999
+                      {resultData.sell_price}
                       <span> 원</span>
                     </td>
                   </tr>
@@ -249,7 +275,7 @@ const Margin = () => {
                   <tr>
                     <th>정산금액</th>
                     <td>
-                      {}91,232
+                      {resultData.settlement_price}
                       <span> 원</span>
                     </td>
                   </tr>
@@ -258,7 +284,7 @@ const Margin = () => {
                     <th>순이익</th>
                     <td className="txt_green">
                       <span>이익 + </span>
-                      {}14,780
+                      {resultData.margin}
                       <span> 원</span>
                     </td>
                   </tr>
@@ -266,7 +292,7 @@ const Margin = () => {
                   <tr>
                     <th>마진율</th>
                     <td className="txt_green">
-                      {}15.2
+                      {resultData.margin_rate}
                       <span> %</span>
                     </td>
                   </tr>
@@ -278,7 +304,7 @@ const Margin = () => {
                 <tbody>
                   <tr>
                     <td>
-                      <input ref={nameRef} placeholder="상품명 입력" className="input_prdname"></input>
+                      <input ref={nameRef} disabled placeholder="상품명 입력" className="input_prdname"></input>
                       <Button variant="primary" onClick={onSearch} className="btn_blue">
                         내 상품 찾기
                       </Button>
@@ -394,15 +420,14 @@ const Margin = () => {
                     <td>
                       {' '}
                       <span>최저 마진</span>
-                      <input type="number" ref={lowestMarginRateRef} onKeyDown={handleKeyDown}></input>
+                      <input type="number" ref={lowestMarginRateRef}></input>
                       <span>%</span>
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
-            {/* 계산하기 버튼 추가 */}
-            <Button variant="primary" className="btn_blue btn_calc">
+            <Button variant="primary" className="btn_blue btn_calc" onClick={onClickCalc}>
               계산하기
             </Button>
           </div>
@@ -430,12 +455,7 @@ const Margin = () => {
       </Body>
       <Footer />
 
-      <SearchModal
-        modalState={modalState}
-        setModalState={setModalState}
-        goods_data={goodsData}
-        callback={PageCallback}
-      ></SearchModal>
+      <SearchModal modalState={modalState} setModalState={setModalState} selectCallback={PageCallback}></SearchModal>
     </>
   );
 };

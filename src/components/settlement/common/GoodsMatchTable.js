@@ -8,6 +8,8 @@ import _ from 'lodash';
 
 import { logger } from 'util/com';
 
+import icon_del from 'images/icon_del.svg';
+
 const GoodsMatchTable = React.memo(({ rows, serverWork, selectCallback, deleteCallback }) => {
   logger.render('GoodsMatchTable');
   const account = Recoils.useValue('CONFIG:ACCOUNT');
@@ -39,17 +41,19 @@ const GoodsMatchTable = React.memo(({ rows, serverWork, selectCallback, deleteCa
   return (
     <>
       <div>
-        <table className="section">
+        <table className="goodsmatchtable thead">
           <thead>
             <tr>
-              <th>연결일시</th>
-              <th>상품코드</th>
-              <th>연결된 상품명</th>
-              <th>연결된 수량</th>
-              <th>수수료</th>
-              <th></th>
+              <th class="td1">연결일시</th>
+              <th class="td2">상품코드</th>
+              <th class="td3">연결된 상품명</th>
+              <th class="td4">수량</th>
+              <th class="td5">수수료</th>
+              <th class="td6"></th>
             </tr>
           </thead>
+        </table>
+        <table className="goodsmatchtable tbody">
           <tbody>
             <>
               {rowData &&
@@ -68,19 +72,19 @@ const SelectItem = React.memo(({ index, d, onClick, onDelete }) => {
   logger.render('SelectItem : ', index);
   return (
     <tr>
-      <td>{d.reg_date}</td>
-      <td>{d.idx}</td>
-      <td>{d.name}</td>
-      <td>{d.match_count}</td>
-      <td>{d.category_fee_rate}</td>
-      <td>
+      <td class="td1">{d.reg_date}</td>
+      <td class="td2">{d.idx}</td>
+      <td class="td3">{d.name}</td>
+      <td class="td4">{d.match_count}</td>
+      <td class="td5">{d.category_fee_rate}</td>
+      <td class="td6">
         <button
           className="btn_del"
           onClick={(e) => {
             onDelete(e, d);
           }}
         >
-          제거
+          <img src={icon_del} />
         </button>
       </td>
     </tr>

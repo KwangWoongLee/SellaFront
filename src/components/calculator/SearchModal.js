@@ -8,27 +8,22 @@ import _ from 'lodash';
 
 import { logger } from 'util/com';
 
-const SearchModal = React.memo(({ modalState, setModalState, goods_data, callback }) => {
+const SearchModal = React.memo(({ modalState, setModalState, selectCallback }) => {
   logger.render('SearchModal');
-  const account = Recoils.useValue('CONFIG:ACCOUNT');
-  const aidx = account.aidx;
 
   const nameRef = useRef(null);
   const [items, setItems] = useState([]);
 
   useEffect(() => {
-    if (modalState) {
-    }
-  }, [modalState]);
+    setItems([...Recoils.getState('DATA:GOODS')]);
+  }, []);
 
   const onSearch = (e) => {
     e.preventDefault();
 
     const name = nameRef.current.value;
 
-    if (!name) return modal.alert('error', '필수항목 누락', '상품명 항목이 비었습니다.');
-
-    const search_results = _.filter(goods_data, (goods) => {
+    const search_results = _.filter([...Recoils.getState('DATA:GOODS')], (goods) => {
       return _.includes(goods.name, name);
     });
 
@@ -37,10 +32,16 @@ const SearchModal = React.memo(({ modalState, setModalState, goods_data, callbac
 
   const onSelect = (e, d) => {
     e.preventDefault();
-    callback(d);
+    selectCallback(d);
     onClose();
   };
   const onClose = () => setModalState(false);
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      onSearch(e);
+    }
+  };
 
   return (
     <Modal show={modalState} onHide={onClose} centered className="modal step2">
@@ -48,7 +49,7 @@ const SearchModal = React.memo(({ modalState, setModalState, goods_data, callbac
         <Modal.Title>상품선택</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <input type="text" ref={nameRef}></input>
+        <input type="text" ref={nameRef} onKeyDown={handleKeyDown}></input>
         <Button onClick={onSearch}>찾기</Button>
 
         <table className="section">

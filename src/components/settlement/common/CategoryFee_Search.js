@@ -8,6 +8,8 @@ import _ from 'lodash';
 
 import { logger } from 'util/com';
 
+import icon_search from 'images/icon_search.svg';
+
 const CategoryFee_Search = React.memo(({ callback }) => {
   logger.render('CategoryFee_Search');
   const sella_categories = Recoils.useValue('SELLA:CATEGORIES');
@@ -50,10 +52,15 @@ const CategoryFee_Search = React.memo(({ callback }) => {
     setPlatformType(key);
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      onSearch(e);
+    }
+  };
+
   return (
     <>
-      <div>
-        수수료검색
+      <div className="inputbox">
         <DropdownButton variant="" title={platform_str[platformType]}>
           {platform_str.map((name, key) => (
             <Dropdown.Item key={key} eventKey={key} onClick={(e) => onChange(key, e)} active={platformType === key}>
@@ -61,9 +68,19 @@ const CategoryFee_Search = React.memo(({ callback }) => {
             </Dropdown.Item>
           ))}
         </DropdownButton>
-        <input type="text" placeholder="카테고리명" ref={categoryRef}></input>
-        <Button onClick={onSearch}>찾기</Button>
-        <table className="section">
+        <input
+          type="text"
+          placeholder="카테고리명"
+          ref={categoryRef}
+          onKeyDown={handleKeyDown}
+          className="input_search"
+        ></input>
+        <Button onClick={onSearch} className="btn_search">
+          <img src={icon_search} />
+        </Button>
+      </div>
+      <div className="categoryfeesearch">
+        <table>
           <tbody>
             <>{items && items.map((d, key) => <SelectItem key={key} index={key} d={d} onSelect={onSelect} />)}</>
           </tbody>
@@ -79,9 +96,9 @@ const SelectItem = React.memo(({ index, d, onSelect }) => {
     <tr>
       <td>{d.category}</td>
       <td>{d.category_fee_rate}%</td>
-      <td>
+      <td className="td_small">
         <button
-          className="btn_del"
+          className="btn-primary btn_blue btn_small"
           onClick={(e) => {
             onSelect(e, d);
           }}

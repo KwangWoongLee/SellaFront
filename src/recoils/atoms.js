@@ -48,6 +48,10 @@ insert_recoil('SELLA:SELLAFORMS', {
   sella_forms: [],
 });
 
+insert_recoil('SELLA:PLATFORM', {
+  platform: [],
+});
+
 // my_datas
 insert_recoil('DATA:PLATFORMS', {
   platforms: [],

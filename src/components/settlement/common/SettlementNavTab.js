@@ -8,7 +8,7 @@ const data = [
   { name: '/settlement/today_summary', desc: '오늘 주문 합계' },
   { name: '/settlement/', desc: '판매상품 통계' },
   { name: '/settlement/form_management', desc: '매체별 양식 관리' },
-  { name: '/settlement/sale_protuct', desc: '판매상품 연결 조회' },
+  { name: '/settlement/sale_product', desc: '판매상품 연결 조회' },
   { name: '/settlement/standard_product', desc: '기준상품 연결 조회' },
 ];
 const SettlementNavTab = ({ active }) => {

@@ -1,6 +1,10 @@
 //Step2.
 
 .body.step2 {
+  .page {
+    height: calc(100% - 5px);
+  }
+
   .btnbox_left {
     display: block;
     float: left;

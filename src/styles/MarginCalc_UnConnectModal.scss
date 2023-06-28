@@ -8,15 +8,46 @@
 
   .modal-content {
     height: 100%;
+    background-color: #f8f9ff;
   }
 
   .modal-body {
     height: 100%;
+    overflow: visible;
+  }
+
+  h3 {
+    margin-bottom: 20px;
   }
 
   table {
     width: 100%;
     height: 100%;
+  }
+
+  table.thead {
+    display: block;
+    height: auto !important;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+  }
+
+  table.thead thead {
+    display: table;
+    width: 100%;
+    height: auto;
+  }
+
+  table.tbody {
+    display: block;
+    border-radius: 0 !important;
+    overflow-y: auto;
+  }
+
+  table.tbody tbody {
+    display: table;
+    width: 100%;
+    height: auto;
   }
 }
 
@@ -31,6 +62,7 @@
     font-size: 13px;
     color: #000;
     font-weight: 600;
+    line-height: 15px;
   }
 
   h3 span:after {
@@ -39,11 +71,58 @@
     font-weight: 300;
   }
 
-  .tablebox1 {
-    height: 50%;
+  .formsmatchtable {
+    .td1 {
+      width: 170px;
+    }
+
+    .td2 {
+      width: 470px;
+    }
+
+    .td3 {
+      width: 370px;
+    }
   }
 
-  .formsmatchtable {
+  .formsmatchtable.tbody {
+    height: 320px !important;
+    margin-bottom: 30px;
+  }
+
+  .goodsmatchtable {
+    .td1 {
+      width: 170px;
+      border-left: 1px solid #ccc;
+    }
+
+    .td2 {
+      width: 150px;
+    }
+
+    .td3 {
+      width: 420px;
+    }
+
+    .td4 {
+      width: 120px;
+    }
+
+    .td5 {
+      width: 150px;
+    }
+  }
+
+  .goodsmatchtable.tbody {
+    height: 280px !important;
+  }
+
+  tbody:empty {
+    min-height: unset;
+  }
+
+  table.thead .td1 {
+    border-left-color: #081a51;
   }
 }
 
@@ -52,4 +131,74 @@
   float: right;
   width: calc(40% - 30px);
   height: 100%;
+  overflow: visible;
+
+  h3 {
+    width: auto;
+    float: left;
+  }
+
+  .inputbox {
+    margin-top: -10px;
+    width: auto;
+    float: right;
+
+    .dropdown {
+      float: left;
+      margin-right: 10px;
+
+      button {
+        border-radius: 5px !important;
+      }
+    }
+  }
+
+  .standardproductsearch {
+    width: 100%;
+    height: 360px !important;
+    margin-bottom: 30px;
+    background-color: #fff;
+    border-radius: 7px;
+    box-shadow: 3px 3px 3px 0px rgba(0, 0, 0, 0.1);
+    overflow: auto;
+  }
+
+  .categoryfeesearch {
+    width: 100%;
+    height: 320px !important;
+    background-color: #fff;
+    border-radius: 7px;
+    box-shadow: 3px 3px 3px 0px rgba(0, 0, 0, 0.1);
+    overflow: auto;
+  }
+
+  .standardproductsearch table,
+  .categoryfeesearch table {
+    height: auto;
+    background-color: transparent;
+    border-radius: 0;
+    box-shadow: unset;
+    overflow: auto;
+  }
+
+  .categoryfeesearch tbody {
+    height: auto;
+  }
+
+  .categoryfeesearch tr {
+    height: 37px;
+  }
+
+  td {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  .td_small {
+    width: 52px;
+  }
+
+  .btn_small {
+    float: right;
+  }
 }

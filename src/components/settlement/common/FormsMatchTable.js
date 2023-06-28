@@ -8,6 +8,8 @@ import _ from 'lodash';
 
 import { logger } from 'util/com';
 
+import icon_del from 'images/icon_del.svg';
+
 const FormsMatchTable = React.memo(({ rows, unconnect_flag, selectCallback, deleteCallback }) => {
   logger.render('FormsMatchTable');
 
@@ -33,15 +35,17 @@ const FormsMatchTable = React.memo(({ rows, unconnect_flag, selectCallback, dele
 
   return (
     <>
-      <table className="formsmatchtable">
+      <table className="formsmatchtable thead">
         <thead>
           <tr>
-            <th>주문 매체</th>
-            <th>상품명</th>
-            <th>옵션</th>
-            <th></th>
+            <th class="td1">주문 매체</th>
+            <th class="td2">상품명</th>
+            <th class="td3">옵션</th>
+            <th class="td4"></th>
           </tr>
         </thead>
+      </table>
+      <table className="formsmatchtable tbody">
         <tbody>
           <>
             {rowData &&
@@ -67,17 +71,23 @@ const SelectItem = React.memo(({ index, d, onClick, onDelete }) => {
   logger.render('SelectItem : ', index);
   return (
     <tr>
-      <td onClick={onClick}>{d.forms_name}</td>
-      <td onClick={onClick}>{d.forms_product_name}</td>
-      <td onClick={onClick}>{d.forms_option_name1}</td>
-      <td>
+      <td onClick={onClick} class="td1">
+        {d.forms_name}
+      </td>
+      <td onClick={onClick} class="td2">
+        {d.forms_product_name}
+      </td>
+      <td onClick={onClick} class="td3">
+        {d.forms_option_name1}
+      </td>
+      <td class="td4">
         <button
           className="btn_del"
           onClick={(e) => {
             onDelete(e, d);
           }}
         >
-          제거
+          <img src={icon_del} />
         </button>
       </td>
     </tr>

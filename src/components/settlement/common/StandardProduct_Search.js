@@ -8,6 +8,8 @@ import _ from 'lodash';
 
 import { logger } from 'util/com';
 
+import icon_search from 'images/icon_search.svg';
+
 const StandardProduct_Search = React.memo(({ rows, selectCallback }) => {
   logger.render('StandardProduct_Search');
 
@@ -43,13 +45,28 @@ const StandardProduct_Search = React.memo(({ rows, selectCallback }) => {
     selectCallback(d);
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      onSearch(e);
+    }
+  };
+
   return (
     <>
-      <div>
-        연결한 기준 상품 검색
-        <input type="text" placeholder={'상품명'} ref={goodsNameRef}></input>
-        <Button onClick={onSearch}>찾기</Button>
-        <table className="section">
+      <div class="inputbox">
+        <input
+          type="text"
+          placeholder={'상품명'}
+          ref={goodsNameRef}
+          onKeyDown={handleKeyDown}
+          className="input_search"
+        ></input>
+        <Button onClick={onSearch} className="btn_search">
+          <img src={icon_search} />
+        </Button>
+      </div>
+      <div className="standardproductsearch">
+        <table>
           <tbody>
             <>{items && items.map((d, key) => <SelectItem key={key} index={key} d={d} onSelect={onSelect} />)}</>
           </tbody>
@@ -64,9 +81,9 @@ const SelectItem = React.memo(({ index, d, onSelect }) => {
   return (
     <tr>
       <td>{d.name}</td>
-      <td>
+      <td className="td_small">
         <button
-          className="btn_del"
+          className="btn-primary btn_blue btn_small"
           onClick={(e) => {
             onSelect(e, d);
           }}
