@@ -6,4 +6,119 @@
   .nav-tabs .nav-item:nth-child(6) {
     float: right;
   }
+
+  h3 {
+    float: left;
+    width: auto;
+    height: auto;
+    margin-bottom: 20px;
+  }
+
+  .section1 {
+    float: left;
+    width: calc(20% - 60px);
+    height: 100%;
+    overflow: hidden;
+
+    .ag-theme-alpine {
+      width: 100%;
+      height: calc(100% - 80px) !important;
+      overflow: auto;
+    }
+
+    .ag-theme-alpine > div > .ag-root-wrapper {
+      height: 100%;
+    }
+    .ag-header {
+      display: none;
+    }
+
+    .btnbox {
+      margin-top: 10px;
+
+      .btn_blue {
+        float: right;
+        margin-right: 5px;
+      }
+    }
+  }
+
+  .section2 {
+    float: right;
+    margin-left: 30px;
+    width: 80%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .section3 {
+    float: left;
+    margin-left: 30px;
+    width: 45%;
+    height: 100%;
+    overflow: visible;
+
+    .inputbox {
+      display: inline-block;
+      float: left;
+      margin-top: -8px;
+      margin-left: 10px;
+
+      input {
+        float: left;
+        width: 276px;
+      }
+
+      button {
+        float: left;
+        margin-left: 10px;
+      }
+    }
+
+    table {
+      width: 100%;
+    }
+
+    table.tbody {
+      height: calc(100% - 120px) !important;
+    }
+
+    th,
+    td {
+      padding: 15px 0;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 400;
+    }
+
+    th:nth-child(1),
+    td:nth-child(1) {
+      width: 50%;
+    }
+
+    td.required {
+      color: #b84a4a;
+      font-weight: 400;
+    }
+
+    .btn_add {
+      float: right;
+      margin-top: -7px;
+      width: 115px;
+    }
+  }
+
+  .section4 {
+    float: left;
+    margin-left: 30px;
+    width: 30%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .section2:empty,
+  .section3:empty,
+  .section4:empty {
+    display: none;
+  }
 }

@@ -8,34 +8,81 @@
   }
 
   .section1 {
+    float: left;
     width: calc(40% - 30px);
+    height: 100%;
+
+    th:nth-child(1),
+    td:nth-child(1) {
+      width: 120px;
+    }
+
+    th:nth-child(2),
+    td:nth-child(2) {
+      width: 150px;
+    }
   }
 
   .section2 {
+    float: right;
     width: 60%;
-  }
+    height: 100%;
 
-  .topbox {
-    display: block;
-    width: 100%;
-    height: 34px;
-
-    h3 {
-      float: left;
-      width: auto;
+    th:nth-child(1),
+    td:nth-child(1) {
+      width: 120px;
     }
 
-    .searchbox {
-      float: right;
+    th:nth-child(2),
+    td:nth-child(2) {
+      width: 120px;
+    }
 
-      .dropdown {
-        float: left;
-        margin-right: 10px;
+    th:nth-child(4),
+    td:nth-child(4) {
+      width: 200px;
+    }
 
-        button {
-          border-radius: 5px !important;
-        }
+    th:nth-child(5),
+    td:nth-child(5) {
+      width: 80px;
+    }
+
+    th:nth-child(6),
+    td:nth-child(6) {
+      width: 80px;
+    }
+
+    th:nth-child(7),
+    td:nth-child(7) {
+      width: 120px;
+    }
+  }
+
+  h3 {
+    float: left;
+    width: auto;
+    margin-bottom: 20px;
+    padding-left: 0;
+  }
+
+  .inputbox {
+    display: inline-block;
+    float: right;
+    width: auto;
+    margin-top: -6px;
+
+    .dropdown {
+      float: left;
+      margin-right: 10px;
+
+      button {
+        border-radius: 5px !important;
       }
+    }
+
+    .btn_search + .btn_reset {
+      margin-left: 5px;
     }
   }
 
@@ -45,7 +92,7 @@
     background-color: #fff;
     border-radius: 7px;
     box-shadow: 3px 3px 3px 0px rgba(0, 0, 0, 0.1);
-    overflow: auto;
+    overflow: hidden;
 
     table {
       width: 100%;
@@ -54,6 +101,35 @@
       border-radius: 0;
       box-shadow: unset;
       overflow: auto;
+    }
+
+    table.thead {
+      height: 40px;
+    }
+
+    table.tbody {
+      display: block;
+      width: 100%;
+      height: 659px;
+      overflow-y: auto;
+    }
+
+    table.tbody tbody {
+      display: table;
+      width: 100%;
+      height: auto;
+    }
+
+    table tbody:empty {
+      min-height: 659px;
+    }
+
+    .td_small {
+      width: 73px;
+    }
+
+    .btn_small {
+      float: right;
     }
   }
 }

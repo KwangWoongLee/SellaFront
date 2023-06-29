@@ -53,23 +53,26 @@ const FormManagement_Custom = (param) => {
 
   return (
     <>
-      <div>
-        <span>
-          매체명
-          <input type={'text'} disabled ref={nameRef}></input>
-        </span>
-        <table className="section">
-          <caption></caption>
-          <thead>
-            <th>셀라 표준 항목</th>
-            <th>선택한 엑셀 항목</th>
-          </thead>
-          <tbody>
-            {rowData && rowData.map((d, key) => <SellaForm key={d.idx} index={key} d={d} />)}
-            <></>
-          </tbody>
-        </table>
+      <h3>매체 명</h3>
+      <div className="inputbox">
+        <input type={'text'} ref={nameRef}></input>
+        <button className="btn-primary btn btn_blue">양식 저장</button>
       </div>
+      <Button variant="primary" className="btn_add">
+        항목 추가
+      </Button>
+      <table className="thead">
+        <thead>
+          <th>셀라 표준 항목</th>
+          <th>선택한 엑셀 항목</th>
+        </thead>
+      </table>
+      <table className="tbody">
+        <tbody>
+          {rowData && rowData.map((d, key) => <SellaForm key={d.idx} index={key} d={d} />)}
+          <></>
+        </tbody>
+      </table>
     </>
   );
 };

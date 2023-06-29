@@ -59,7 +59,7 @@ const FormManagement_Basic = (param) => {
     <>
       {platform && (
         <>
-          <span>{platform.name} - 양식 확인</span> <Button onClick={onDownload}>엑셀 양식 다운로드</Button>
+          <h3>{platform.name} - 양식 확인</h3> <Button onClick={onDownload}>엑셀 양식 다운로드</Button>
           <div>
             제목행 : {platform.title_row}번째 / 주문 시작 행 : {platform.start_row}번째 / 끝에서부터 제거할 행의 개수 :{' '}
             {platform.end_row}줄

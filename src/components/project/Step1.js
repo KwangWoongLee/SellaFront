@@ -137,7 +137,7 @@ const Step1 = () => {
           <div className="section tablebox1">
             <h3>
               택배비 관리{' '}
-              <button className="btn-primary btn_blue" onClick={(e) => onSave('Delivery', e)}>
+              <button className="btn-primary btn btn_blue" onClick={(e) => onSave('Delivery', e)}>
                 저장
               </button>
             </h3>
@@ -178,7 +178,7 @@ const Step1 = () => {
           <div className="section tablebox2">
             <h3>
               포장비 관리{' '}
-              <button className="btn-primary btn_blue" onClick={(e) => onSave('Packing', e)}>
+              <button className="btn-primary btn btn_blue" onClick={(e) => onSave('Packing', e)}>
                 저장
               </button>
             </h3>

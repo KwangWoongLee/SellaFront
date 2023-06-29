@@ -39,21 +39,19 @@ const SaleProduct = () => {
       <Head />
       <Body title={`판매상품 연결조회`} myClass={'sale_product'}>
         <SettlementNavTab active="/settlement/sale_product" />
-        <div className="SaleProduct">
-          <FormsMatchTable rows={rowData} selectCallback={onSelect} deleteCallback={onDelete}></FormsMatchTable>
-          <br />
-          <br />
-          <br />
-          <GoodsMatchTable rows={rowData} selectCallback={onSelect} deleteCallback={onDelete}></GoodsMatchTable>
-          <br />
-          <br />
-          <br />
-          <StandardProduct_Search></StandardProduct_Search>
-          <br />
-          <br />
-          <br />
-          <br />
-          <CategoryFee_Search></CategoryFee_Search>
+        <div className="page">
+          <div className="section1">
+            <h3>판매 상품 연결 조회</h3>
+            <FormsMatchTable rows={rowData} selectCallback={onSelect} deleteCallback={onDelete}></FormsMatchTable>
+            <h3>연결 상품</h3>
+            <GoodsMatchTable rows={rowData} selectCallback={onSelect} deleteCallback={onDelete}></GoodsMatchTable>
+          </div>
+          <div className="section2">
+            <h3>연결할 기준 상품 검색</h3>
+            <StandardProduct_Search></StandardProduct_Search>
+            <h3>수수료 검색</h3>
+            <CategoryFee_Search></CategoryFee_Search>
+          </div>
         </div>
       </Body>
       <Footer />

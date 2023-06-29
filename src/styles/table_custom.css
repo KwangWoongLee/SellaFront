@@ -13,15 +13,28 @@ table {
 }
 
 h3 {
-  display: table;
+  display: block;
   margin-bottom: 15px;
-  padding-left: 20px;
   width: 100%;
   height: auto;
-  font-size: 18px;
-  line-height: 32px;
+  font-size: 15px;
+  line-height: 15px;
   color: #081a51;
   font-weight: 500;
+}
+
+h3 span {
+  margin-left: 3px;
+  font-size: 13px;
+  color: #000;
+  font-weight: 600;
+  line-height: 15px;
+}
+
+h3 span:after {
+  content: ' 건';
+  color: #888;
+  font-weight: 300;
 }
 
 h3>button {
@@ -162,4 +175,47 @@ table input[type='checkbox'] {
   vertical-align: middle;
   width: auto;
   height: auto;
+}
+
+table.thead {
+  display: block;
+  height: auto !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+table.thead thead {
+  display: table;
+  width: 100%;
+  height: auto !important;
+}
+
+table.tbody {
+  display: block;
+  border-radius: 0 !important;
+  border-bottom-left-radius: 7px !important;
+  border-bottom-right-radius: 7px !important;
+  overflow-y: auto;
+}
+
+table.tbody tbody {
+  display: table;
+  width: 100%;
+  height: auto;
+}
+
+tbody:empty {
+  min-height: unset !important;
+}
+
+table.thead td:first-child {
+  border-left-color: #081a51;
+}
+
+.td_small {
+  width: 73px;
+}
+
+.btn_small {
+  float: right;
 }

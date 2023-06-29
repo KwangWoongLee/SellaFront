@@ -38,10 +38,10 @@ const FormsMatchTable = React.memo(({ rows, unconnect_flag, selectCallback, dele
       <table className="formsmatchtable thead">
         <thead>
           <tr>
-            <th class="td1">주문 매체</th>
-            <th class="td2">상품명</th>
-            <th class="td3">옵션</th>
-            <th class="td4"></th>
+            <th>주문 매체</th>
+            <th>상품명</th>
+            <th>옵션</th>
+            <th></th>
           </tr>
         </thead>
       </table>
@@ -71,16 +71,10 @@ const SelectItem = React.memo(({ index, d, onClick, onDelete }) => {
   logger.render('SelectItem : ', index);
   return (
     <tr>
-      <td onClick={onClick} class="td1">
-        {d.forms_name}
-      </td>
-      <td onClick={onClick} class="td2">
-        {d.forms_product_name}
-      </td>
-      <td onClick={onClick} class="td3">
-        {d.forms_option_name1}
-      </td>
-      <td class="td4">
+      <td onClick={onClick}>{d.forms_name}</td>
+      <td onClick={onClick}>{d.forms_product_name}</td>
+      <td onClick={onClick}>{d.forms_option_name1}</td>
+      <td>
         <button
           className="btn_del"
           onClick={(e) => {

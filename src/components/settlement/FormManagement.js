@@ -44,47 +44,40 @@ const FormManagement = () => {
 
   // ag-grid
   const gridRef = useRef();
-  const containerStyle = useMemo(() => ({ width: '50%', height: '50%' }), []);
-  const gridStyle = useMemo(() => ({ height: '50%', width: '50%' }), []);
+  // const containerStyle = useMemo(() => ({ width: '50%', height: '50%' }), []);
+  // const gridStyle = useMemo(() => ({ height: '50%', width: '50%' }), []);
   const defaultColDef = useMemo(() => {
     return {
       resizable: false,
       flex: 1,
-      minWidth: 100,
+      lockPinned: true,
+      pinned: 'left',
+      cellClass: 'lock-pinned',
+      editable: false,
+      sortable: false,
     };
   }, []);
 
   const [columnDefs] = useState([
     {
       field: 'idx',
-      pinned: 'left',
-      lockPinned: true,
-      cellClass: 'lock-pinned',
-      editable: false,
       headerName: 'idx',
       hide: true,
     },
     {
       field: '',
-      pinned: 'left',
-      lockPinned: true,
-      width: 10,
+      maxWidth: 50,
       rowDrag: true,
-      editable: true,
-      sortable: false,
     },
     {
       field: 'name',
-      pinned: 'left',
-      lockPinned: true,
-      cellClass: 'lock-pinned',
-      editable: false,
       headerName: '양식명',
     },
+    // 지우고 싶어요 ㅎㅎ
     {
       field: 'view',
-      editable: false,
-      headerName: '',
+      headerName: '필요없는 셀',
+      hide: true,
     },
   ]);
 
@@ -148,10 +141,10 @@ const FormManagement = () => {
       <Head />
       <Body title={`매체별 양식관리`} myClass={'form_management'}>
         <SettlementNavTab active="/settlement/form_management" />
-        <div className="form_management">
-          판매매체
-          <div style={containerStyle}>
-            <div style={gridStyle} className="ag-theme-alpine test">
+        <div className="page">
+          <div className="section1">
+            <h3>판매매체</h3>
+            <div className="ag-theme-alpine">
               <AgGridReact
                 ref={gridRef}
                 rowData={formsData}
@@ -166,17 +159,19 @@ const FormManagement = () => {
                 onGridReady={onGridReady}
               ></AgGridReact>
             </div>
+            <div className="btnbox">
+              <Button variant="primary" onClick={onSaveOrder}>
+                순서 저장
+              </Button>{' '}
+              <Button variant="primary" onClick={onAddForm} className="btn_blue">
+                사용자 양식 추가
+              </Button>
+            </div>
           </div>
-          <Button variant="primary" onClick={onSaveOrder}>
-            순서 저장
-          </Button>{' '}
-          <Button variant="primary" onClick={onAddForm}>
-            사용자 양식 추가
-          </Button>
+          <div className="section2">{formMode == 1 && <FormManagement_Basic platform={nextForm} />}</div>
+          <div className="section3">{formMode == 2 && <FormManagement_Custom platform={nextForm} />}</div>
+          <div className="section4">{formMode == 3 && <FormManagement_Custom_Add platform={nextForm} />}</div>
         </div>
-        <div>{formMode == 1 && <FormManagement_Basic platform={nextForm} />}</div>
-        <div>{formMode == 2 && <FormManagement_Custom platform={nextForm} />}</div>
-        <div>{formMode == 3 && <FormManagement_Custom_Add platform={nextForm} />}</div>
       </Body>
       <Footer />
     </>

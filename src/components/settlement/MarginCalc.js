@@ -354,6 +354,7 @@ const MarginCalc = () => {
                 </p>
               </li>
             </ul>
+            {/* 표가 미어있일 경우에 'NO Rows To Show' 라고 쓰여있는데 다른 텍스트를 넣을 수 있을까요? */}
             <div style={containerStyle} className="tablebox">
               <div style={gridStyle} className="ag-theme-alpine test">
                 <AgGridReact

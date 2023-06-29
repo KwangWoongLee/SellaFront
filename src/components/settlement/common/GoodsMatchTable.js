@@ -40,30 +40,28 @@ const GoodsMatchTable = React.memo(({ rows, serverWork, selectCallback, deleteCa
 
   return (
     <>
-      <div>
-        <table className="goodsmatchtable thead">
-          <thead>
-            <tr>
-              <th class="td1">연결일시</th>
-              <th class="td2">상품코드</th>
-              <th class="td3">연결된 상품명</th>
-              <th class="td4">수량</th>
-              <th class="td5">수수료</th>
-              <th class="td6"></th>
-            </tr>
-          </thead>
-        </table>
-        <table className="goodsmatchtable tbody">
-          <tbody>
-            <>
-              {rowData &&
-                rowData.map((d, key) => (
-                  <SelectItem key={key} index={key} d={d} onClick={selectCallback} onDelete={onDelete} />
-                ))}
-            </>
-          </tbody>
-        </table>
-      </div>
+      <table className="goodsmatchtable thead">
+        <thead>
+          <tr>
+            <th class="td1">연결일시</th>
+            <th class="td2">상품코드</th>
+            <th class="td3">연결된 상품명</th>
+            <th class="td4">수량</th>
+            <th class="td5">수수료</th>
+            <th class="td6"></th>
+          </tr>
+        </thead>
+      </table>
+      <table className="goodsmatchtable tbody">
+        <tbody>
+          <>
+            {rowData &&
+              rowData.map((d, key) => (
+                <SelectItem key={key} index={key} d={d} onClick={selectCallback} onDelete={onDelete} />
+              ))}
+          </>
+        </tbody>
+      </table>
     </>
   );
 });

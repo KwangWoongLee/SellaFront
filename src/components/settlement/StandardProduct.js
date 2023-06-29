@@ -15,6 +15,7 @@ import _ from 'lodash';
 import 'styles/StandardProduct.scss';
 
 import icon_search from 'images/icon_search.svg';
+import icon_reset from 'images/icon_reset.svg';
 
 const StandardProduct = () => {
   logger.render('StandardProduct');
@@ -72,36 +73,39 @@ const StandardProduct = () => {
         <SettlementNavTab active="/settlement/standard_product" />
         <div className="page">
           <div className="section1">
-            <div className="topbox">
-              <h3>기준상품 연결 조회 </h3>
-              <div className="searchbox">
-                <DropdownButton variant="" title={goodsData.length ? goodsData[categoryType].category : ''}>
-                  {goodsData &&
-                    _.uniqBy(goodsData, 'category').map((item, key) => (
-                      <Dropdown.Item
-                        key={key}
-                        eventKey={key}
-                        onClick={(e) => onChange(key, e)}
-                        active={categoryType === key}
-                      >
-                        {item.category}
-                      </Dropdown.Item>
-                    ))}
-                </DropdownButton>
-                <input type="text" placeholder={'상품명'} ref={nameRef} className="input_search"></input>
-                <Button onClick={onSearch} className="btn_search">
-                  <img src={icon_search} />
-                </Button>
-              </div>
+            <h3>기준상품 연결 조회 </h3>
+            <div className="inputbox">
+              <DropdownButton variant="" title={goodsData.length ? goodsData[categoryType].category : ''}>
+                {goodsData &&
+                  _.uniqBy(goodsData, 'category').map((item, key) => (
+                    <Dropdown.Item
+                      key={key}
+                      eventKey={key}
+                      onClick={(e) => onChange(key, e)}
+                      active={categoryType === key}
+                    >
+                      {item.category}
+                    </Dropdown.Item>
+                  ))}
+              </DropdownButton>
+              <input type="text" placeholder={'상품명'} ref={nameRef} className="input_search"></input>
+              <Button onClick={onSearch} className="btn_search">
+                <img src={icon_search} />
+              </Button>
+              {/* 리셋버튼 추가했어요!, 검색 결과 출력 후 초기화 할때 쓰려구요! */}
+              <Button className="btn_reset">
+                <img src={icon_reset} />
+              </Button>
             </div>
             <div className="tablebox">
-              <table>
-                <caption></caption>
+              <table className="thead">
                 <thead>
                   <th>상품코드</th>
                   <th>카테고리</th>
                   <th>상품명</th>
                 </thead>
+              </table>
+              <table className="tbody">
                 <tbody>
                   <>
                     {goodsData &&
@@ -112,15 +116,14 @@ const StandardProduct = () => {
             </div>
           </div>
           <div className="section2">
-            <div className="topbox">
-              <h3>기준상품 연결 조회 </h3>
-            </div>
+            <h3>
+              기준상품 연결 조회 <span>0</span> {/* 연결된 상품 수 출력 */}
+            </h3>
             <div className="tablebox">
-              {/* 일반 테이블에서 클릭 시 선택 표시 >> select 클래스 넣어주세요 
-              여기 말고 다른 테이블도 선택된 상태 표시 >>> select 클래스 넣어주세요 */}
-              {/* 이작업은 좀걸려요^^ 주말에 작업해드릴게요!*/}
-              <table>
-                <caption></caption>
+              {/* 일반 테이블에서 클릭 시 선택 표시 >> tr 태그에 select 클래스 넣어주세요 
+              여기 말고 다른 테이블도 선택된 상태 표시 >>> tr 태그에 select 클래스 넣어주세요 */}
+              {/* 이작업은 좀걸려요^^ 주말에 작업해드릴게요! >>> 넵 ㅎㅎ*/}
+              <table className="thead">
                 <thead>
                   <th>연결일시</th>
                   <th>주문 매체</th>
@@ -128,11 +131,11 @@ const StandardProduct = () => {
                   <th>옵션</th>
                   <th>수량</th>
                   <th>수수료</th>
-                  <th>
-                    <button>저장</button>
-                    <button>제거</button>
-                  </th>
+                  <th></th>
                 </thead>
+              </table>
+              {/* 이부분 데이터가 뿌려지는 걸 못봐서 나중에 다시 스타일 잡을게요! */}
+              <table className="tbody">
                 <tbody>
                   <>
                     {matchData &&

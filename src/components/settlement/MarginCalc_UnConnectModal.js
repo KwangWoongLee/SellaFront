@@ -56,7 +56,7 @@ const MarginCalc_UnConnectModal = React.memo(({ modalState, setModalState, rowDa
     setGoodsMatchs([...goodsMatch, d]);
   };
   return (
-    <Modal show={modalState} onHide={onClose} centered className="modal UnConnect">
+    <Modal show={modalState} onHide={onClose} centered className="modal UnConnect sale_product">
       <Modal.Header>
         <Modal.Title>상품 매칭 관리</Modal.Title>
         <Button variant="primary" className="btn_close">

@@ -9,6 +9,7 @@ import _ from 'lodash';
 import { logger } from 'util/com';
 
 import icon_search from 'images/icon_search.svg';
+import icon_reset from 'images/icon_reset.svg';
 
 const StandardProduct_Search = React.memo(({ rows, selectCallback }) => {
   logger.render('StandardProduct_Search');
@@ -63,6 +64,9 @@ const StandardProduct_Search = React.memo(({ rows, selectCallback }) => {
         ></input>
         <Button onClick={onSearch} className="btn_search">
           <img src={icon_search} />
+        </Button>
+        <Button className="btn_reset">
+          <img src={icon_reset} />
         </Button>
       </div>
       <div className="standardproductsearch">
