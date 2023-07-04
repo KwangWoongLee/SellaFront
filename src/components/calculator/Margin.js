@@ -304,8 +304,8 @@ const Margin = () => {
                 <tbody>
                   <tr>
                     <td>
-                      <input ref={nameRef} disabled placeholder="상품명 입력" className="input_prdname"></input>
-                      <Button variant="primary" onClick={onSearch} className="btn_blue">
+                      <input ref={nameRef} placeholder="상품명 입력" className="input_prdname"></input>
+                      <Button variant="primary" onClick={onSearch} className="btn btn_blue">
                         내 상품 찾기
                       </Button>
                     </td>

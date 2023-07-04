@@ -1,6 +1,10 @@
 // margin.
 
 .body.margin {
+  .page {
+    overflow: auto;
+  }
+
   .section {
     display: inline-block;
     float: left;
@@ -13,6 +17,10 @@
 
   .section2 {
     width: calc(100% - 350px);
+
+    .ag-root-wrapper.ag-layout-normal {
+      height: calc(100vh - 250px);
+    }
   }
 
   .btnbox {

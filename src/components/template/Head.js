@@ -21,8 +21,6 @@ const Head = () => {
     logger.debug('href : ', href);
     navigate(href);
   };
-  // 아래로 스크롤되면 상단 헤더가 고정이 되었으면 좋겠는데, 혹시 스크롤 이벤트 발생하면 <div className="header"> 클래스에 추가해서 on/off 이런식으로 바뀌게 해 주실수 있을까요?
-  // 이왕 깜빡거리지 않게 스무스하게 변경되면 좋을것 같아요. 제가 뭐라도 하고싶은데 뷰는 진짜 손도 못대겠네요 ...ㅎㅎㅎㅎㅎ
   return (
     <>
       <div className="header">

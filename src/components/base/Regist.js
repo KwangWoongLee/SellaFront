@@ -8,6 +8,8 @@ import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 
+import 'styles/Login.scss';
+
 const agency_str = ['통신사 선택', 'SKT', 'KT', 'LG'];
 
 const Regist = () => {
@@ -45,7 +47,39 @@ const Regist = () => {
   return (
     <>
       <Head />
-      <Body title={`회원가입`}>
+      <Body title={`회원가입`} myClass={'login regist'}>
+        <h3>회원가입</h3>
+        <div className="termsbox">
+          <div className="terms1">
+            <span>[필수] 서비스 이용약관</span>
+            <label>동의</label>
+            <input type={'checkbox'}></input>
+            <textarea>
+              여러분을 환영합니다. 네이버 서비스 및 제품(이하 ‘서비스’)을 이용해 주셔서 감사합니다. 본 약관은 다양한
+              네이버 서비스의 이용과 관련하여 네이버 서비스를 제공
+            </textarea>
+          </div>
+          <div className="terms2">
+            <span>[필수] 개인정보 수집 및 이용</span>
+            <label>동의</label>
+            <input type={'checkbox'}></input>
+            <textarea>
+              여러분을 환영합니다. 네이버 서비스 및 제품(이하 ‘서비스’)을 이용해 주셔서 감사합니다. 본 약관은 다양한
+              네이버 서비스의 이용과 관련하여 네이버 서비스를 제공
+            </textarea>
+          </div>
+          <div className="terms3">
+            <span>[선택] 마케팅정보 활용</span>
+            <label>동의</label>
+            <input type={'checkbox'}></input>
+            <textarea>
+              여러분을 환영합니다. 네이버 서비스 및 제품(이하 ‘서비스’)을 이용해 주셔서 감사합니다. 본 약관은 다양한
+              네이버 서비스의 이용과 관련하여 네이버 서비스를 제공
+            </textarea>
+          </div>
+          <label>전체 약관 동의</label>
+          <input type={'checkbox'}></input>
+        </div>
         <Form onSubmit={onSubmit} id="regist-form">
           이름
           <InputGroup className="mb-3">

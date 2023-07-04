@@ -73,7 +73,7 @@ const FormManagement = () => {
       field: 'name',
       headerName: '양식명',
     },
-    // 지우고 싶어요 ㅎㅎ
+    // view 필요없는 셀 >>> 지우고 싶어요 ㅎㅎ
     {
       field: 'view',
       headerName: '필요없는 셀',

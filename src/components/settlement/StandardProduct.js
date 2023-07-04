@@ -20,21 +20,17 @@ import icon_reset from 'images/icon_reset.svg';
 const StandardProduct = () => {
   logger.render('StandardProduct');
 
-  const account = Recoils.useValue('CONFIG:ACCOUNT');
-  const aidx = account.aidx;
-
   const [goodsData, setGoodsData] = useState([]);
   const [matchData, setMatchData] = useState([]);
   const [categoryType, setCategoryType] = useState(0);
+  const [tableRow, setTableRow] = useState(null);
 
   const nameRef = useRef(null);
 
   useEffect(() => {
     const goods = [...Recoils.getState('DATA:GOODS')];
-    const goods_match = [...Recoils.getState('DATA:GOODSMATCH')];
 
     setGoodsData(goods);
-    setMatchData(goods_match);
   }, []);
 
   const onChange = (key, e) => {
@@ -62,8 +58,15 @@ const StandardProduct = () => {
     // setSearchData(goods_data);
   };
 
-  const onClickSearchRow = (e) => {
-    console.log(1);
+  const onClickSearchRow = (e, d) => {
+    e.preventDefault();
+    const node = e.target.parentNode;
+
+    let goods_match = [...Recoils.getState('DATA:GOODSMATCH')];
+    goods_match = _.filter(goods_match, { goods_idx: d.idx });
+
+    setMatchData(goods_match);
+    setTableRow(node.rowIndex);
   };
 
   return (
@@ -109,7 +112,17 @@ const StandardProduct = () => {
                 <tbody>
                   <>
                     {goodsData &&
-                      goodsData.map((d, key) => <GoodsItem key={key} index={key} d={d} onClick={onClickSearchRow} />)}
+                      goodsData.map((d, key) => (
+                        <GoodsItem
+                          key={key}
+                          index={key}
+                          d={d}
+                          onClick={(e) => {
+                            onClickSearchRow(e, d);
+                          }}
+                          tableRow={tableRow}
+                        />
+                      ))}
                   </>
                 </tbody>
               </table>
@@ -120,9 +133,6 @@ const StandardProduct = () => {
               기준상품 연결 조회 <span>0</span> {/* 연결된 상품 수 출력 */}
             </h3>
             <div className="tablebox">
-              {/* 일반 테이블에서 클릭 시 선택 표시 >> tr 태그에 select 클래스 넣어주세요 
-              여기 말고 다른 테이블도 선택된 상태 표시 >>> tr 태그에 select 클래스 넣어주세요 */}
-              {/* 이작업은 좀걸려요^^ 주말에 작업해드릴게요! >>> 넵 ㅎㅎ*/}
               <table className="thead">
                 <thead>
                   <th>연결일시</th>
@@ -137,12 +147,7 @@ const StandardProduct = () => {
               {/* 이부분 데이터가 뿌려지는 걸 못봐서 나중에 다시 스타일 잡을게요! */}
               <table className="tbody">
                 <tbody>
-                  <>
-                    {matchData &&
-                      matchData.map((d, key) => (
-                        <GoodsMatchItem key={key} index={key} d={d} onClick={onClickSearchRow} />
-                      ))}
-                  </>
+                  <>{matchData && matchData.map((d, key) => <GoodsMatchItem key={key} index={key} d={d} />)}</>
                 </tbody>
               </table>
             </div>
@@ -154,10 +159,15 @@ const StandardProduct = () => {
   );
 };
 
-const GoodsItem = React.memo(({ index, d, onClick }) => {
+const GoodsItem = React.memo(({ index, d, onClick, tableRow }) => {
   logger.render('GoodsItem : ', index);
   return (
-    <tr onClick={onClick}>
+    <tr
+      className={index == tableRow ? 'select' : ''}
+      onClick={(e) => {
+        onClick(e);
+      }}
+    >
       <td>{d.idx}</td>
       <td>{d.category}</td>
       <td>{d.name}</td>
@@ -165,13 +175,16 @@ const GoodsItem = React.memo(({ index, d, onClick }) => {
   );
 });
 
-const GoodsMatchItem = React.memo(({ index, d, onClick }) => {
-  logger.render('GoodsItem : ', index);
+const GoodsMatchItem = React.memo(({ index, d }) => {
+  logger.render('GoodsMatchItem : ', index);
   return (
-    <tr onClick={onClick}>
+    <tr>
       <td>{d.reg_date}</td>
       <td>{d.forms_name}</td>
       <td>{d.name}</td>
+      <td>{d.forms_option1}</td>
+      <td>{d.count}</td>
+      <td>{d.category_fee}</td>
     </tr>
   );
 });

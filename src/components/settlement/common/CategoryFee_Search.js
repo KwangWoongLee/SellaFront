@@ -11,7 +11,7 @@ import { logger } from 'util/com';
 import icon_search from 'images/icon_search.svg';
 import icon_reset from 'images/icon_reset.svg';
 
-const CategoryFee_Search = React.memo(({ callback }) => {
+const CategoryFee_Search = React.memo(({ abledCategoryFee, selectCallback }) => {
   logger.render('CategoryFee_Search');
   const sella_categories = Recoils.useValue('SELLA:CATEGORIES');
 
@@ -46,7 +46,7 @@ const CategoryFee_Search = React.memo(({ callback }) => {
 
   const onSelect = (e, d) => {
     e.preventDefault();
-    callback(d);
+    selectCallback(d);
   };
 
   const onChange = (key, e) => {
@@ -86,7 +86,11 @@ const CategoryFee_Search = React.memo(({ callback }) => {
       <div className="categoryfeesearch">
         <table>
           <tbody>
-            <>{items && items.map((d, key) => <SelectItem key={key} index={key} d={d} onSelect={onSelect} />)}</>
+            {abledCategoryFee ? (
+              <>{items && items.map((d, key) => <SelectItem key={key} index={key} d={d} onSelect={onSelect} />)}</>
+            ) : (
+              <>이 매체는 수수료 매칭이 필요하지 않습니다.</>
+            )}
           </tbody>
         </table>
       </div>

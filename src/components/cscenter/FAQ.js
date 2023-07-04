@@ -11,7 +11,13 @@ import Recoils from 'recoils';
 import ImageModal from 'components/common/ImageModal';
 
 import { logger } from 'util/com';
-import icon_member from 'images/icon_member.svg';
+
+import 'styles/CSCenter.scss';
+
+import icon_arrow_left from 'images/icon_arrow_left.svg';
+import icon_arrow_right from 'images/icon_arrow_right.svg';
+import icon_search from 'images/icon_search.svg';
+import icon_reset from 'images/icon_reset.svg';
 
 const FAQ = () => {
   logger.render('FAQ');
@@ -103,61 +109,89 @@ const FAQ = () => {
   return (
     <>
       <Head />
-      <Body title={``}>
+      <Body title={`자주 묻는 질문`} myClass={'cscenter faq'}>
         <CSCenterNavTab active="/cscenter/faq" className="navtab cscenter" />
-        <span>
-          <Button onClick={(e) => onPageNext(false)}>전</Button>
-          page {page} of {pageCount}
-          <Button onClick={(e) => onPageNext(true)}>후</Button>
-        </span>
 
-        <span>
-          <Button onClick={(e) => onPageNext(true)}>전체</Button>{' '}
-          <Button onClick={(e) => onPageNext(true)}>회원정보</Button>{' '}
-          <Button onClick={(e) => onPageNext(true)}>이용방법</Button>{' '}
-          <Button onClick={(e) => onPageNext(true)}>결제</Button>{' '}
-          <Button onClick={(e) => onPageNext(true)}>기타</Button>{' '}
-          <input
-            name="title"
-            type="text"
-            placeholder="제목명"
-            value={title}
-            onChange={(e) => {
-              setTitle(e.target.value);
-            }}
-          />
-          <Button onClick={onSearch}>찾기</Button>
-        </span>
-        <table className="table faq">
-          <thead>
-            <tr>
-              <th>카테고리</th>
-              <th>제목</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rowData.slice(offset, offset + limit).map((row, index) => (
-              <Fragment key={`${index}${row.title}`}>
-                <tr style={{ cursor: 'pointer' }} onClick={() => handleClick(index)}>
-                  <td>{row.faq_category}</td>
-                  <td>{row.title}</td>
+        <div className="page">
+          <h3>자주 묻는 질문</h3>
+
+          <div className="pagination">
+            <Button onClick={(e) => onPageNext(false)} className="btn_arrow_left">
+              <img src={icon_arrow_left} alt="이전 페이지" />
+            </Button>
+            <span>
+              Page {page} of {pageCount}
+            </span>
+            <Button onClick={(e) => onPageNext(true)} className="btn_arrow_right">
+              <img src={icon_arrow_right} alt="다음 페이지" />
+            </Button>
+          </div>
+
+          <div className="inputbox">
+            {/* default 전체, 
+            다른버튼 클릭하여 조회기간 변경 시 해당 버튼에 btn_blue 클래스 넣어주시면 됩니다~  */}
+            <div className="period">
+              <Button onClick={(e) => onPageNext(true)} className="btn_blue">
+                전체
+              </Button>
+              <Button onClick={(e) => onPageNext(true)}>회원정보</Button>
+              <Button onClick={(e) => onPageNext(true)}>이용방법</Button>
+              <Button onClick={(e) => onPageNext(true)}>결제</Button>
+              <Button onClick={(e) => onPageNext(true)}>기타</Button>
+            </div>
+            <input
+              name="title"
+              type="text"
+              placeholder="제목"
+              className="input_search"
+              value={title}
+              onChange={(e) => {
+                setTitle(e.target.value);
+              }}
+            />
+            <Button onClick={onSearch} className="btn btn_search">
+              <img src={icon_search} />
+            </Button>
+            <Button className="btn_reset">
+              <img src={icon_reset} />
+            </Button>
+          </div>
+
+          <div className="tablebox">
+            <table className="thead">
+              <thead>
+                <tr>
+                  <th>카테고리</th>
+                  <th>제목</th>
                 </tr>
-                {row.other ? (
-                  <tr className="toggle-row">
-                    <td
-                      onClick={(e) => {
-                        onModalImage(e, row.other.img_url);
-                      }}
-                    >
-                      <img src={row.other.img_url} alt="" />
-                    </td>
-                    <td colSpan={2}>{row.other.content}</td>
-                  </tr>
-                ) : null}
-              </Fragment>
-            ))}
-          </tbody>
-        </table>
+              </thead>
+            </table>
+            <table className="tbody">
+              <tbody>
+                {rowData.slice(offset, offset + limit).map((row, index) => (
+                  <Fragment key={`${index}${row.title}`}>
+                    <tr style={{ cursor: 'pointer' }} onClick={() => handleClick(index)}>
+                      <td>{row.faq_category}</td>
+                      <td>{row.title}</td>
+                    </tr>
+                    {row.other ? (
+                      <tr className="toggle-row">
+                        <td
+                          onClick={(e) => {
+                            onModalImage(e, row.other.img_url);
+                          }}
+                        >
+                          <img src={row.other.img_url} alt="" />
+                        </td>
+                        <td colSpan={2}>{row.other.content}</td>
+                      </tr>
+                    ) : null}
+                  </Fragment>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </Body>
       <Footer />
       <ImageModal modalState={modalState} setModalState={setModalState} imgUrl={imgUrl}></ImageModal>

@@ -45,6 +45,11 @@
     margin-right: 5px;
   }
 
+  .btnbox_right .btn.dropdown-toggle {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+  }
+
   .tablebox {
     display: block;
     margin-top: 15px;

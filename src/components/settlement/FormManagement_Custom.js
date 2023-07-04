@@ -68,6 +68,10 @@ const FormManagement_Custom = (param) => {
         </thead>
       </table>
       <table className="tbody">
+        {/* 여기 들어오는 데이터 중 별표달린 필수값은 빨간색 텍스트인데, 해당 td에 required 클래스 넣어주면 됩니다. */}
+        {/* '정산예정금액이있습니다' 항목에 체크박스, 툴팁버튼 있습니다 */}
+        {/* '배송비 묶음번호가 있습니다' 항목에 체크박스, 툴팁버튼 있습니다 */}
+        {/* 선택한 엑셀항목 열에 선택 전 '클릭하여 매칭해주세요' 라고 떠요 ㅎㅎ */}
         <tbody>
           {rowData && rowData.map((d, key) => <SellaForm key={d.idx} index={key} d={d} />)}
           <></>
@@ -76,6 +80,8 @@ const FormManagement_Custom = (param) => {
     </>
   );
 };
+
+// 나머지 화면은 조금더 만들어주시면 다시 볼게요!
 
 const SellaForm = React.memo(({ index, d }) => {
   logger.render('SellaForm TableItem : ', index);

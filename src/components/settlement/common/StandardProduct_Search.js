@@ -43,6 +43,7 @@ const StandardProduct_Search = React.memo(({ rows, selectCallback }) => {
 
   const onSelect = (e, d) => {
     e.preventDefault();
+
     selectCallback(d);
   };
 
@@ -72,7 +73,9 @@ const StandardProduct_Search = React.memo(({ rows, selectCallback }) => {
       <div className="standardproductsearch">
         <table>
           <tbody>
-            <>{items && items.map((d, key) => <SelectItem key={key} index={key} d={d} onSelect={onSelect} />)}</>
+            <>
+              {items && items.map((d, key) => <StandardProductItem key={key} index={key} d={d} onSelect={onSelect} />)}
+            </>
           </tbody>
         </table>
       </div>
@@ -80,8 +83,8 @@ const StandardProduct_Search = React.memo(({ rows, selectCallback }) => {
   );
 });
 
-const SelectItem = React.memo(({ index, d, onSelect }) => {
-  logger.render('SelectItem : ', index);
+const StandardProductItem = React.memo(({ index, d, onSelect }) => {
+  logger.render('StandardProductItem : ', index);
   return (
     <tr>
       <td>{d.name}</td>

@@ -10,27 +10,30 @@ import { logger } from 'util/com';
 
 import icon_del from 'images/icon_del.svg';
 
-const FormsMatchTable = React.memo(({ rows, unconnect_flag, selectCallback, deleteCallback }) => {
+const FormsMatchTable = React.memo(({ rows, unconnect_flag, setItems, selectCallback, deleteCallback }) => {
   logger.render('FormsMatchTable');
 
+  const account = Recoils.useValue('CONFIG:ACCOUNT');
+  const aidx = account.aidx;
+
   const [rowData, setRowData] = useState([]);
+  const [tableRow, setTableRow] = useState(null);
 
   useEffect(() => {
     setRowData([...rows]);
-  }, []);
+  }, [rows]);
 
   const onDelete = (e, d) => {
     e.preventDefault();
     if (unconnect_flag) {
       // TODO Server
     } else {
-      setRowData(
-        _.filter(rowData, (item) => {
-          return item.order_no != d.order_no;
-        })
-      );
+      deleteCallback(d);
     }
-    deleteCallback(d);
+  };
+
+  const onReset = () => {
+    setTableRow(null);
   };
 
   return (
@@ -50,14 +53,19 @@ const FormsMatchTable = React.memo(({ rows, unconnect_flag, selectCallback, dele
           <>
             {rowData &&
               rowData.map((d, key) => (
-                <SelectItem
+                <FormsMatchItem
                   key={key}
                   index={key}
                   d={d}
                   onClick={(e) => {
+                    e.preventDefault();
+                    const node = e.target.parentNode;
+
+                    setTableRow(node.rowIndex);
                     selectCallback(d);
                   }}
                   onDelete={onDelete}
+                  tableRow={tableRow}
                 />
               ))}
           </>
@@ -67,10 +75,10 @@ const FormsMatchTable = React.memo(({ rows, unconnect_flag, selectCallback, dele
   );
 });
 
-const SelectItem = React.memo(({ index, d, onClick, onDelete }) => {
-  logger.render('SelectItem : ', index);
+const FormsMatchItem = React.memo(({ index, d, onClick, onDelete, tableRow }) => {
+  logger.render('FormsMatchItem : ', index);
   return (
-    <tr>
+    <tr className={index == tableRow ? 'select' : ''}>
       <td onClick={onClick}>{d.forms_name}</td>
       <td onClick={onClick}>{d.forms_product_name}</td>
       <td onClick={onClick}>{d.forms_option_name1}</td>

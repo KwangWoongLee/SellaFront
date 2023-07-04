@@ -66,12 +66,12 @@
 
       input {
         float: left;
-        width: 276px;
+        width: 280px;
       }
 
       button {
         float: left;
-        margin-left: 10px;
+        margin-left: 5px;
       }
     }
 
@@ -101,9 +101,14 @@
       font-weight: 400;
     }
 
+    td:nth-child(1) {
+      width: 50%;
+    }
+
     .btn_add {
       float: right;
       margin-top: -7px;
+      margin-right: 5px;
       width: 115px;
     }
   }

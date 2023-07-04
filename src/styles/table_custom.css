@@ -51,7 +51,6 @@ table thead {
 table tbody:empty {
   min-width: 100%;
   height: auto;
-  min-height: calc(100vh - 340px);
   display: block;
 }
 
@@ -166,10 +165,6 @@ table .td_btn_add .txt_small {
   vertical-align: top;
 }
 
-table td input {
-  padding: 6px 10px !important;
-}
-
 table input[type='checkbox'] {
   display: inline-block;
   vertical-align: middle;
@@ -177,9 +172,27 @@ table input[type='checkbox'] {
   height: auto;
 }
 
+.tablebox {
+  width: 100%;
+  height: calc(100% - 50px);
+  background-color: #fff;
+  border-radius: 7px;
+  box-shadow: 3px 3px 3px 0px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.tablebox table {
+  width: 100%;
+  height: auto;
+  background-color: transparent;
+  border-radius: 0;
+  box-shadow: unset;
+  overflow: auto;
+}
+
 table.thead {
   display: block;
-  height: auto !important;
+  height: 40px !important;
   border-bottom-left-radius: 0 !important;
   border-bottom-right-radius: 0 !important;
 }
@@ -192,6 +205,8 @@ table.thead thead {
 
 table.tbody {
   display: block;
+  width: 100%;
+  height: 659px;
   border-radius: 0 !important;
   border-bottom-left-radius: 7px !important;
   border-bottom-right-radius: 7px !important;
@@ -202,10 +217,6 @@ table.tbody tbody {
   display: table;
   width: 100%;
   height: auto;
-}
-
-tbody:empty {
-  min-height: unset !important;
 }
 
 table.thead td:first-child {

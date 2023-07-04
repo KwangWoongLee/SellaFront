@@ -74,7 +74,7 @@
 
     .dropdown {
       float: left;
-      margin-right: 10px;
+      margin-right: 5px;
 
       button {
         border-radius: 5px !important;
@@ -83,53 +83,6 @@
 
     .btn_search + .btn_reset {
       margin-left: 5px;
-    }
-  }
-
-  .tablebox {
-    width: 100%;
-    height: calc(100% - 50px);
-    background-color: #fff;
-    border-radius: 7px;
-    box-shadow: 3px 3px 3px 0px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-
-    table {
-      width: 100%;
-      height: auto;
-      background-color: transparent;
-      border-radius: 0;
-      box-shadow: unset;
-      overflow: auto;
-    }
-
-    table.thead {
-      height: 40px;
-    }
-
-    table.tbody {
-      display: block;
-      width: 100%;
-      height: 659px;
-      overflow-y: auto;
-    }
-
-    table.tbody tbody {
-      display: table;
-      width: 100%;
-      height: auto;
-    }
-
-    table tbody:empty {
-      min-height: 659px;
-    }
-
-    .td_small {
-      width: 73px;
-    }
-
-    .btn_small {
-      float: right;
     }
   }
 }

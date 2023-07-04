@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { Button, InputGroup, Form, Nav } from 'react-bootstrap';
 import Recoils from 'recoils';
 import com, { logger, navigate } from 'util/com';
-import { AiFillMail, AiFillLock } from 'react-icons/ai';
 import request from 'util/request';
 
 import Head from 'components/template/Head';

@@ -30,6 +30,7 @@ const MarginCalc = () => {
   const account = Recoils.useValue('CONFIG:ACCOUNT');
   const platforms = Recoils.useValue('DATA:PLATFORMS');
   const aidx = account.aidx;
+  const [viewResult, setViewResult] = useState(false);
   const [viewState, setView] = useState(true);
   const [platformType, setplatformType] = useState(0);
   const [rowData, setRowData] = useState([]);
@@ -177,6 +178,9 @@ const MarginCalc = () => {
   useEffect(() => {}, []);
 
   const onUpload = function () {
+    setRowData([]);
+    setViewResult(false);
+
     modal.file_upload(null, '.xlsx', '파일 업로드', { aidx, platform: platforms[platformType] }, (ret) => {
       if (!ret.err) {
         const { files } = ret;
@@ -251,12 +255,24 @@ const MarginCalc = () => {
     setModalState(true);
   };
 
+  const onViewResult = () => {
+    if (!rowData || !rowData.length) return;
+
+    setViewResult(true);
+  };
+
   const deleteCallback = (d) => {
     setRowData(
       _.filter(rowData, (item) => {
         return item.order_no != d.order_no;
       })
     );
+  };
+
+  const getRowStyle = (params) => {
+    if (!params.node.data.connect_flag) {
+      return { background: 'red' };
+    }
   };
 
   return (
@@ -289,11 +305,12 @@ const MarginCalc = () => {
                 선택 삭제
               </Button>
 
-              <Button variant="primary" onClick={onUpload} className="btn_blue">
+              <Button variant="primary" onClick={onViewResult} className="btn_blue">
                 손익 계산
               </Button>
 
-              <Button variant="primary" onClick={onUpload}>
+              {/* TODO 색 고민 해봐야.. */}
+              <Button onClick={onUpload} disabled={viewResult ? false : true}>
                 주문서 저장
               </Button>
 
@@ -307,9 +324,7 @@ const MarginCalc = () => {
               </Button>
             </div>
 
-            {/* 결과 출력하는 영역이 빠져있어서 넣어뒀습니다~ 
-            손익계산 버튼 누르기 전에는 <ul className="viewbox"> 에 off 클래스 추가해주세요.*/}
-            <ul className="viewbox off">
+            <ul className={viewResult ? 'viewbox' : 'viewbox off'}>
               <li>
                 <p className="dt">총 주문</p>
                 <p className="dd">
@@ -366,6 +381,7 @@ const MarginCalc = () => {
                   defaultColDef={defaultColDef}
                   rowSelection={'multiple'}
                   onRowDoubleClicked={onClick}
+                  getRowStyle={getRowStyle}
                 ></AgGridReact>
               </div>
             </div>
@@ -399,7 +415,7 @@ const MarginCalc = () => {
         setModalState={setModalState}
         rowData={rowData}
         unconnect_flag={true}
-        callback={deleteCallback}
+        deleteCallback={deleteCallback}
       ></MarginCalc_UnConnectModal>
     </>
   );

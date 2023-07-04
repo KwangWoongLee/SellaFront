@@ -19,8 +19,27 @@ const Manual = () => {
   return (
     <>
       <Head />
-      <Body title={``}>
+      <Body title={`사용방법`} myClass={'cscenter manual'}>
         <CSCenterNavTab active="/cscenter/manual" />
+        <div className="page">
+          <h3>사용방법</h3>
+          <div className="pagination"></div>
+          <div className="inputbox"></div>
+          <div className="tablebox">
+            <table className="thead">
+              <thead>
+                <tr>
+                  <th>날짜</th>
+                  <th>카테고리</th>
+                  <th>제목</th>
+                </tr>
+              </thead>
+              <table className="tbody">
+                <tbody></tbody>
+              </table>
+            </table>
+          </div>
+        </div>
       </Body>
       <Footer />
     </>
