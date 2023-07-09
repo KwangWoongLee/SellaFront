@@ -37,15 +37,22 @@ const FormManagement = () => {
 
   useEffect(() => {
     let platforms = _.cloneDeep(Recoils.getState('DATA:PLATFORMS'));
+    platforms = _.sortBy(platforms, ['_order']);
+
     platformRef.current = [...platforms];
 
     setFormsDatas([...platformRef.current]);
   }, []);
 
+  useEffect(() => {
+    if (gridRef.current.api) {
+      const row0 = gridRef.current.api.getRowNode(0);
+      row0.setSelected(true);
+    }
+  }, [formsData]);
+
   // ag-grid
   const gridRef = useRef();
-  // const containerStyle = useMemo(() => ({ width: '50%', height: '50%' }), []);
-  // const gridStyle = useMemo(() => ({ height: '50%', width: '50%' }), []);
   const defaultColDef = useMemo(() => {
     return {
       resizable: false,
@@ -57,6 +64,26 @@ const FormManagement = () => {
       sortable: false,
     };
   }, []);
+
+  const ButtonRenderer = (props) => {
+    const buttonClicked = () => {
+      request.post(`user/forms/save_view`, { aidx, idx: props.data.idx, view: !props.value }).then((ret) => {
+        if (!ret.err) {
+          logger.info(ret.data);
+
+          const platforms = _.cloneDeep(Recoils.getState('DATA:PLATFORMS'));
+          const findObj = _.find(platforms, { idx: props.data.idx });
+          findObj.view = !props.value ? 1 : 0;
+
+          Recoils.setState('DATA:PLATFORMS', platforms);
+          props.setValue(!props.value);
+        }
+      });
+    };
+
+    const v = props.value ? 'ON' : 'OFF';
+    return <button onClick={() => buttonClicked()}>{v}</button>;
+  };
 
   const [columnDefs] = useState([
     {
@@ -72,12 +99,13 @@ const FormManagement = () => {
     {
       field: 'name',
       headerName: '양식명',
+      width: 230,
     },
-    // view 필요없는 셀 >>> 지우고 싶어요 ㅎㅎ
     {
       field: 'view',
-      headerName: '필요없는 셀',
-      hide: true,
+      headerName: 'on/off',
+      cellRenderer: ButtonRenderer,
+      maxWidth: 63,
     },
   ]);
 
@@ -109,7 +137,14 @@ const FormManagement = () => {
       if (!ret.err) {
         logger.info(ret.data);
 
-        ret.data.length ? setFormsDatas(() => ret.data) : setFormsDatas([]);
+        // Recoils.setState('DATA:PLATFORMS', ret.data.forms);
+        const platforms = _.cloneDeep(Recoils.getState('DATA:PLATFORMS'));
+        for (const data of datas) {
+          const findObj = _.find(platforms, { idx: data.idx });
+          findObj._order = data._order;
+        }
+
+        Recoils.setState('DATA:PLATFORMS', platforms);
       }
     });
   };
@@ -121,9 +156,6 @@ const FormManagement = () => {
     const platforms = platformRef.current;
     if (platforms) {
       platforms.unshift(new_form);
-      // const row0 = gridRef.current.api.getRowNode(0);
-      // row0.setSelected(true);
-      // platformRef.current = platforms;
     }
 
     setFormsDatas([...platformRef.current]);
@@ -144,13 +176,16 @@ const FormManagement = () => {
         <div className="page">
           <div className="section1">
             <h3>판매매체</h3>
+            <Button variant="primary" onClick={onSaveOrder}>
+              순서 저장
+            </Button>
             <div className="ag-theme-alpine">
               <AgGridReact
                 ref={gridRef}
                 rowData={formsData}
                 columnDefs={columnDefs}
-                alwaysShowHorizontalScroll={true}
-                alwaysShowVerticalScroll={true}
+                alwaysShowHorizontalScroll={false}
+                alwaysShowVerticalScroll={false}
                 defaultColDef={defaultColDef}
                 rowSelection="single"
                 rowDragManaged={true}
@@ -160,17 +195,17 @@ const FormManagement = () => {
               ></AgGridReact>
             </div>
             <div className="btnbox">
-              <Button variant="primary" onClick={onSaveOrder}>
-                순서 저장
-              </Button>{' '}
               <Button variant="primary" onClick={onAddForm} className="btn_blue">
                 사용자 양식 추가
+              </Button>
+              <Button variant="primary" className="btn_red">
+                선택 양식 삭제
               </Button>
             </div>
           </div>
           <div className="section2">{formMode == 1 && <FormManagement_Basic platform={nextForm} />}</div>
           <div className="section3">{formMode == 2 && <FormManagement_Custom platform={nextForm} />}</div>
-          <div className="section4">{formMode == 3 && <FormManagement_Custom_Add platform={nextForm} />}</div>
+          <div className="section3">{formMode == 3 && <FormManagement_Custom_Add platform={nextForm} />}</div>
         </div>
       </Body>
       <Footer />

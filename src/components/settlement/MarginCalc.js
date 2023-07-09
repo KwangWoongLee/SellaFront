@@ -10,6 +10,8 @@ import SettlementNavTab from 'components/settlement/common/SettlementNavTab';
 import MarginCalc_UnConnectModal from 'components/settlement/MarginCalc_UnConnectModal';
 import Recoils from 'recoils';
 import * as xlsx from 'xlsx';
+import * as ExcelJS from 'exceljs';
+import { saveAs } from 'file-saver';
 import _ from 'lodash';
 
 import { logger } from 'util/com';
@@ -22,22 +24,157 @@ import icon_set from 'images/icon_set.svg';
 
 // AG Grid
 import { AgGridReact } from 'ag-grid-react';
+import ColumnControlModal from 'components/common/AgGrid/ColumnControlModal';
+const PLFormatter = (params) => {
+  let newValue = '';
+  newValue += params.value > 0 ? '이익' : '손해';
+  newValue += params.value;
+  return newValue;
+};
+
 //
+const ROUTE_COLUMN_BASE = [
+  { field: 'idx', hide: true },
+  { field: '', pinned: 'left', lockPinned: true, cellClass: 'lock-pinned', checkboxSelection: true, width: 5 },
+  {
+    field: 'profit_loss',
+    sortable: true,
+    pinned: 'left',
+    lockPinned: true,
+    cellClass: 'lock-pinned',
+    editable: false,
+    headerName: '손익',
+    filter: false,
+    unSortIcon: true,
+    width: 140,
+    valueFormatter: PLFormatter,
+  },
+  {
+    field: 'payment_date',
+    sortable: true,
+    pinned: 'left',
+    lockPinned: true,
+    cellClass: 'lock-pinned',
+    editable: false,
+    headerName: '결제일',
+    filter: false,
+    unSortIcon: true,
+    width: 120,
+  },
+
+  { field: 'order_no', sortable: true, unSortIcon: true, headerName: '주문번호', minWidth: 160 },
+  {
+    field: 'forms_name',
+    sortable: true,
+    unSortIcon: true,
+    headerName: '매체',
+    minWidth: 120,
+  },
+  {
+    field: 'forms_product_name',
+    sortable: true,
+    unSortIcon: true,
+    headerName: '판매상품명',
+    minWidth: 400,
+    wrapText: true,
+    vertical: 'Center',
+  },
+  {
+    field: 'forms_option_name1',
+    sortable: true,
+    unSortIcon: true,
+    headerName: '옵션',
+    minWidth: 300,
+    wrapText: true,
+    vertical: 'Center',
+  },
+  {
+    field: 'count',
+    sortable: true,
+    unSortIcon: true,
+    valueParser: (params) => Number(params.newValue),
+    headerName: '주문수량',
+    minWidth: 100,
+  },
+  {
+    field: 'sum_payment_price',
+    sortable: true,
+    unSortIcon: true,
+    valueParser: (params) => Number(params.newValue),
+    headerName: '총 결제금액(정산예정금액)',
+    minWidth: 140,
+  },
+
+  {
+    field: 'recieved_delivery_fee',
+    sortable: true,
+    unSortIcon: true,
+    valueParser: (params) => Number(params.newValue),
+    headerName: '받은 배송비',
+    minWidth: 140,
+  },
+  {
+    field: 'stock_price',
+    sortable: true,
+    unSortIcon: true,
+    valueParser: (params) => Number(params.newValue),
+    headerName: '입고단가',
+    minWidth: 120,
+  },
+  {
+    field: 'delivery_fee',
+    sortable: true,
+    unSortIcon: true,
+    valueParser: (params) => Number(params.newValue),
+    headerName: '배송비',
+    minWidth: 100,
+  },
+  {
+    field: 'packing_fee',
+    sortable: true,
+    unSortIcon: true,
+    valueParser: (params) => Number(params.newValue),
+    headerName: '포장비',
+    minWidth: 100,
+  },
+  {
+    field: 'recieved_name',
+    sortable: true,
+    unSortIcon: true,
+    headerName: '수취인명',
+    minWidth: 120,
+  },
+  {
+    field: 'recieved_addr',
+    sortable: true,
+    unSortIcon: true,
+    headerName: '수취인 주소',
+    minWidth: 140,
+  },
+  {
+    field: 'recieved_phone',
+    sortable: true,
+    unSortIcon: true,
+    headerName: '수취인 연락처',
+    minWidth: 140,
+  },
+];
 
 const MarginCalc = () => {
   logger.render('MarginCalc');
 
   const account = Recoils.useValue('CONFIG:ACCOUNT');
-  const platforms = Recoils.useValue('DATA:PLATFORMS');
   const aidx = account.aidx;
   const [viewResult, setViewResult] = useState(false);
   const [viewState, setView] = useState(true);
+  const [platforms, setPlatforms] = useState([]);
   const [platformType, setplatformType] = useState(0);
   const [rowData, setRowData] = useState([]);
   const [modalState, setModalState] = useState(false);
+  const [columnControlModalState, setColumnControlModalState] = useState(false);
 
+  const [viewColumns, setViewColumns] = useState([]);
   //ag-grid
-
   const gridRef = useRef();
   const containerStyle = useMemo(() => ({ width: '100%', height: '100%' }), []);
   const gridStyle = useMemo(() => ({ height: '1000px', width: '100%' }), []);
@@ -51,131 +188,40 @@ const MarginCalc = () => {
       autoHeight: true,
     };
   }, []);
-  const [columnDefs] = useState([
-    { field: '', pinned: 'left', lockPinned: true, cellClass: 'lock-pinned', checkboxSelection: true, width: 5 },
-    {
-      field: 'profit_loss',
-      sortable: true,
-      pinned: 'left',
-      lockPinned: true,
-      cellClass: 'lock-pinned',
-      editable: false,
-      headerName: '손익',
-      filter: false,
-      unSortIcon: true,
-      width: 140,
-    },
-    {
-      field: 'payment_date',
-      sortable: true,
-      pinned: 'left',
-      lockPinned: true,
-      cellClass: 'lock-pinned',
-      editable: false,
-      headerName: '결제일',
-      filter: false,
-      unSortIcon: true,
-      width: 120,
-    },
+  const [columnDefs, setColumnDefs] = useState([]);
 
-    { field: 'order_no', sortable: true, unSortIcon: true, headerName: '주문번호', minWidth: 160 },
-    {
-      field: 'forms_name',
-      sortable: true,
-      unSortIcon: true,
-      headerName: '매체',
-      minWidth: 120,
-    },
-    {
-      field: 'forms_product_name',
-      sortable: true,
-      unSortIcon: true,
-      headerName: '판매상품명',
-      minWidth: 400,
-      wrapText: true,
-      vertical: 'Center',
-    },
-    {
-      field: 'forms_option_name1',
-      sortable: true,
-      unSortIcon: true,
-      headerName: '옵션',
-      minWidth: 300,
-      wrapText: true,
-      vertical: 'Center',
-    },
-    {
-      field: 'count',
-      sortable: true,
-      unSortIcon: true,
-      valueParser: (params) => Number(params.newValue),
-      headerName: '수량',
-      minWidth: 100,
-    },
-    {
-      field: 'sum_payment_price',
-      sortable: true,
-      unSortIcon: true,
-      valueParser: (params) => Number(params.newValue),
-      headerName: '총 결제금액(정산예정금액)',
-      minWidth: 140,
-    },
-    {
-      field: 'recieved_delivery_fee',
-      sortable: true,
-      unSortIcon: true,
-      valueParser: (params) => Number(params.newValue),
-      headerName: '받은 배송비',
-      minWidth: 140,
-    },
-    {
-      field: 'stock_price',
-      sortable: true,
-      unSortIcon: true,
-      valueParser: (params) => Number(params.newValue),
-      headerName: '입고단가',
-      minWidth: 120,
-    },
-    {
-      field: 'delivery_fee',
-      sortable: true,
-      unSortIcon: true,
-      valueParser: (params) => Number(params.newValue),
-      headerName: '배송비',
-      minWidth: 100,
-    },
-    {
-      field: 'packing_fee',
-      sortable: true,
-      unSortIcon: true,
-      valueParser: (params) => Number(params.newValue),
-      headerName: '포장비',
-      minWidth: 100,
-    },
-    {
-      field: 'recieved_name',
-      sortable: true,
-      unSortIcon: true,
-      headerName: '수취인명',
-      minWidth: 120,
-    },
-    {
-      field: 'recieved_addr',
-      sortable: true,
-      unSortIcon: true,
-      headerName: '수취인 주소',
-      minWidth: 140,
-    },
-    {
-      field: 'recieved_phone',
-      sortable: true,
-      unSortIcon: true,
-      headerName: '수취인 연락처',
-      minWidth: 140,
-    },
-  ]);
+  useEffect(() => {
+    let temp = _.filter(Recoils.getState('DATA:PLATFORMS'), { view: 1 });
+    temp = _.sortBy(temp, ['_order']);
+    setPlatforms(temp);
+    //일단 하드코딩
+    request.post(`user/route_no`, { aidx, route_no: 0 }).then((ret) => {
+      if (!ret.err) {
+        logger.info(ret.data);
 
-  useEffect(() => {}, []);
+        for (const row of ret.data) {
+          const findObj = _.find(ROUTE_COLUMN_BASE, { field: row.field });
+          row.headerName = findObj.headerName;
+        }
+
+        setViewColumns(ret.data);
+
+        const field_arr = _.map(
+          _.filter(ret.data, (obj) => {
+            return obj.select_flag == 1 || obj.select_flag == true;
+          }),
+          'field'
+        );
+        setColumnDefs(() =>
+          _.filter(ROUTE_COLUMN_BASE, (base) => {
+            if (base.field == '') return true;
+
+            return _.includes(field_arr, base.field);
+          })
+        );
+      }
+    });
+  }, []);
 
   const onUpload = function () {
     setRowData([]);
@@ -261,10 +307,81 @@ const MarginCalc = () => {
     setViewResult(true);
   };
 
+  const onDownload = async () => {
+    if (!rowData) return;
+    if (!rowData.length) return;
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Sheet1');
+
+    const columns = [];
+    for (const column of columnDefs) {
+      if (column.field == '') continue;
+
+      const toAddedColumn = {};
+      toAddedColumn.header = column.headerName;
+      toAddedColumn.key = column.field;
+      toAddedColumn.width = 20;
+
+      columns.push(toAddedColumn);
+    }
+    worksheet.columns = columns;
+
+    worksheet.addRows([...rowData]);
+
+    const mimeType = { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' };
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], mimeType);
+    // TODO : 시간포함
+    saveAs(blob, '주문서다운로드.xlsx');
+  };
+
+  const onDelete = (e) => {
+    const selectedRows = gridRef.current.api.getSelectedRows();
+    const delete_arr = _.map(selectedRows, 'idx');
+    setRowData(
+      _.filter(rowData, (row) => {
+        return !_.includes(delete_arr, row.idx);
+      })
+    );
+  };
+
   const deleteCallback = (d) => {
     setRowData(
       _.filter(rowData, (item) => {
-        return item.order_no != d.order_no;
+        return;
+      })
+    );
+  };
+
+  const saveCallback = (d) => {
+    if (!d) return;
+
+    setRowData(
+      _.transform(
+        rowData,
+        function (result, item) {
+          if (item.forms_product_name == d.forms_product_name && item.forms_option_name1 == d.forms_option_name1)
+            item.connect_flag = true;
+          result.push(item);
+        },
+        []
+      )
+    );
+  };
+
+  const saveViewColumnsCallback = (viewColumns) => {
+    const field_arr = _.map(
+      _.filter(viewColumns, (obj) => {
+        return obj.select_flag == 1 || obj.select_flag == true;
+      }),
+      'field'
+    );
+    setColumnDefs(() =>
+      _.filter(ROUTE_COLUMN_BASE, (base) => {
+        if (base.field == '') return true;
+
+        return _.includes(field_arr, base.field);
       })
     );
   };
@@ -301,7 +418,7 @@ const MarginCalc = () => {
                 <img src={icon_circle_arrow_up} />새 주문서 업로드
               </Button>
 
-              <Button variant="primary" onClick={onUpload} className="btn_red">
+              <Button variant="primary" onClick={onDelete} className="btn_red">
                 선택 삭제
               </Button>
 
@@ -314,12 +431,17 @@ const MarginCalc = () => {
                 주문서 저장
               </Button>
 
-              <Button variant="primary" onClick={onUpload} className="btn_green">
+              <Button variant="primary" onClick={onDownload} className="btn_green">
                 <img src={icon_circle_arrow_down} />
                 다운로드
               </Button>
 
-              <Button className="btn_set">
+              <Button
+                className="btn_set"
+                onClick={() => {
+                  setColumnControlModalState(true);
+                }}
+              >
                 <img src={icon_set} />
               </Button>
             </div>
@@ -370,6 +492,7 @@ const MarginCalc = () => {
               </li>
             </ul>
             {/* 표가 미어있일 경우에 'NO Rows To Show' 라고 쓰여있는데 다른 텍스트를 넣을 수 있을까요? */}
+            {/* 아래 데이터가 없습니다 부분에 어떤 말을 넣고 싶으신지 입력해주시면 되세요^^ */}
             <div style={containerStyle} className="tablebox">
               <div style={gridStyle} className="ag-theme-alpine test">
                 <AgGridReact
@@ -382,6 +505,9 @@ const MarginCalc = () => {
                   rowSelection={'multiple'}
                   onRowDoubleClicked={onClick}
                   getRowStyle={getRowStyle}
+                  overlayNoRowsTemplate={
+                    '<span style="padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow"> \'데이터가 없습니다.\' </span>'
+                  }
                 ></AgGridReact>
               </div>
             </div>
@@ -416,35 +542,16 @@ const MarginCalc = () => {
         rowData={rowData}
         unconnect_flag={true}
         deleteCallback={deleteCallback}
+        saveCallback={saveCallback}
       ></MarginCalc_UnConnectModal>
+      <ColumnControlModal
+        modalState={columnControlModalState}
+        setModalState={setColumnControlModalState}
+        viewColumns={viewColumns}
+        callback={saveViewColumnsCallback}
+      ></ColumnControlModal>
     </>
   );
 };
-
-const MarginCalcItems = React.memo(({ index, d, platform_name, onClick }) => {
-  logger.render('MarginCalc TableItem : ', index);
-  return (
-    <tr onClick={onClick} className={d.connect_flag ? 'connected' : 'unconnected'}>
-      <td className="center">
-        <input type={'checkbox'}></input>
-      </td>
-      <td>?</td>
-      <td>{d.payment_date}</td>
-      <td>{d.order_no}</td>
-      <td>{platform_name}</td>
-      <td>{d.forms_product_name}</td>
-      <td>{d.forms_option_name1}</td>
-      <td>{d.count}</td>
-      <td>{d.sum_payment_price}</td>
-      <td>?</td>
-      <td>?</td>
-      <td>?</td>
-      <td>?</td>
-      <td>?</td>
-      <td>?</td>
-      <td>?</td>
-    </tr>
-  );
-});
 
 export default React.memo(MarginCalc);

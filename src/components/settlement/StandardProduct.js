@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 
 import { Button, DropdownButton, Dropdown } from 'react-bootstrap';
 import Head from 'components/template/Head';
@@ -16,20 +16,95 @@ import 'styles/StandardProduct.scss';
 
 import icon_search from 'images/icon_search.svg';
 import icon_reset from 'images/icon_reset.svg';
+import icon_del from 'images/icon_del.svg';
+
+// AG Grid
+import { AgGridReact } from 'ag-grid-react';
+//
 
 const StandardProduct = () => {
   logger.render('StandardProduct');
 
   const [goodsData, setGoodsData] = useState([]);
   const [matchData, setMatchData] = useState([]);
+  const [category, setCategory] = useState([]);
   const [categoryType, setCategoryType] = useState(0);
   const [tableRow, setTableRow] = useState(null);
 
   const nameRef = useRef(null);
 
+  //ag-grid
+
+  const gridRef = useRef();
+  const containerStyle = useMemo(() => ({ width: '100%', height: '100%' }), []);
+  const gridStyle = useMemo(() => ({ height: '1000px', width: '100%' }), []);
+  const defaultColDef = useMemo(() => {
+    return {
+      editable: false,
+      sortable: true,
+      resizable: true,
+      flex: 1,
+      minWidth: 80,
+      autoHeight: true,
+    };
+  }, []);
+
+  const [columnDefs] = useState([
+    { field: 'reg_date', sortable: true, unSortIcon: true, headerName: '연결 일시', minWidth: 160 },
+    {
+      field: 'forms_name',
+      sortable: true,
+      unSortIcon: true,
+      headerName: '주문 매체',
+      minWidth: 120,
+    },
+    {
+      field: 'forms_product_name',
+      sortable: true,
+      unSortIcon: true,
+      headerName: '상품명',
+      minWidth: 400,
+      wrapText: true,
+      vertical: 'Center',
+    },
+    {
+      field: 'forms_option_name1',
+      sortable: true,
+      unSortIcon: true,
+      headerName: '옵션',
+      minWidth: 300,
+      wrapText: true,
+      vertical: 'Center',
+    },
+    {
+      field: 'match_count',
+      sortable: true,
+      unSortIcon: true,
+      valueParser: (params) => Number(params.newValue),
+      headerName: '수량',
+      minWidth: 50,
+    },
+    {
+      field: 'category_fee_rate',
+      sortable: true,
+      unSortIcon: true,
+      valueParser: (params) => Number(params.newValue),
+      headerName: '수수료',
+      minWidth: 50,
+    },
+    {
+      field: '',
+      sortable: true,
+      unSortIcon: true,
+      headerName: '',
+      minWidth: 140,
+    },
+  ]);
+
   useEffect(() => {
     const goods = [...Recoils.getState('DATA:GOODS')];
 
+    setCategory(goods);
     setGoodsData(goods);
   }, []);
 
@@ -62,11 +137,37 @@ const StandardProduct = () => {
     e.preventDefault();
     const node = e.target.parentNode;
 
+    let forms_match = [...Recoils.getState('DATA:FORMSMATCH')];
     let goods_match = [...Recoils.getState('DATA:GOODSMATCH')];
     goods_match = _.filter(goods_match, { goods_idx: d.idx });
+    const result = [];
 
-    setMatchData(goods_match);
+    for (const obj of goods_match) {
+      const newObj = { ...obj };
+      const findObj = _.find(forms_match, { idx: obj.forms_match_idx });
+      if (findObj) {
+        newObj.forms_name = findObj.forms_name;
+        newObj.forms_product_name = findObj.forms_product_name;
+        newObj.forms_option_name1 = findObj.forms_option_name1;
+      }
+
+      result.push(newObj);
+    }
+
+    setMatchData(result);
     setTableRow(node.rowIndex);
+  };
+
+  const onUpdate = () => {};
+
+  const onDelete = () => {};
+
+  const onReset = () => {
+    setGoodsData([]);
+    setMatchData([]);
+    setCategoryType(0);
+    setTableRow(null);
+    nameRef.current.value = '';
   };
 
   return (
@@ -78,9 +179,9 @@ const StandardProduct = () => {
           <div className="section1">
             <h3>기준상품 연결 조회 </h3>
             <div className="inputbox">
-              <DropdownButton variant="" title={goodsData.length ? goodsData[categoryType].category : ''}>
-                {goodsData &&
-                  _.uniqBy(goodsData, 'category').map((item, key) => (
+              <DropdownButton variant="" title={category.length ? category[categoryType].category : ''}>
+                {category &&
+                  _.uniqBy(category, 'category').map((item, key) => (
                     <Dropdown.Item
                       key={key}
                       eventKey={key}
@@ -95,8 +196,8 @@ const StandardProduct = () => {
               <Button onClick={onSearch} className="btn_search">
                 <img src={icon_search} />
               </Button>
-              {/* 리셋버튼 추가했어요!, 검색 결과 출력 후 초기화 할때 쓰려구요! */}
-              <Button className="btn_reset">
+
+              <Button className="btn_reset" onClick={onReset}>
                 <img src={icon_reset} />
               </Button>
             </div>
@@ -132,24 +233,22 @@ const StandardProduct = () => {
             <h3>
               기준상품 연결 조회 <span>0</span> {/* 연결된 상품 수 출력 */}
             </h3>
-            <div className="tablebox">
-              <table className="thead">
-                <thead>
-                  <th>연결일시</th>
-                  <th>주문 매체</th>
-                  <th>상품명</th>
-                  <th>옵션</th>
-                  <th>수량</th>
-                  <th>수수료</th>
-                  <th></th>
-                </thead>
-              </table>
-              {/* 이부분 데이터가 뿌려지는 걸 못봐서 나중에 다시 스타일 잡을게요! */}
-              <table className="tbody">
-                <tbody>
-                  <>{matchData && matchData.map((d, key) => <GoodsMatchItem key={key} index={key} d={d} />)}</>
-                </tbody>
-              </table>
+            {/* 이부분 데이터가 뿌려지는 걸 못봐서 나중에 다시 스타일 잡을게요! */}
+            <div style={containerStyle} className="tablebox">
+              <div style={gridStyle} className="ag-theme-alpine test">
+                <AgGridReact
+                  ref={gridRef}
+                  rowData={matchData}
+                  columnDefs={columnDefs}
+                  alwaysShowHorizontalScroll={true}
+                  alwaysShowVerticalScroll={true}
+                  defaultColDef={defaultColDef}
+                  rowSelection={'multiple'}
+                  overlayNoRowsTemplate={
+                    '<span style="padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow"> \'데이터가 없습니다.\' </span>'
+                  }
+                ></AgGridReact>
+              </div>
             </div>
           </div>
         </div>
@@ -175,16 +274,24 @@ const GoodsItem = React.memo(({ index, d, onClick, tableRow }) => {
   );
 });
 
-const GoodsMatchItem = React.memo(({ index, d }) => {
+const GoodsMatchItem = React.memo(({ index, d, onUpdate, onDelete }) => {
   logger.render('GoodsMatchItem : ', index);
   return (
     <tr>
       <td>{d.reg_date}</td>
       <td>{d.forms_name}</td>
-      <td>{d.name}</td>
-      <td>{d.forms_option1}</td>
-      <td>{d.count}</td>
-      <td>{d.category_fee}</td>
+      <td>{d.forms_product_name}</td>
+      <td>{d.forms_option_name1}</td>
+      <td>{d.match_count}</td>
+      <td>{d.category_fee_rate}</td>
+      <td>
+        <button className="btn-primary btn_blue btn_small" onClick={onUpdate}>
+          수정
+        </button>
+        <button className="btn_del" onClick={onDelete}>
+          <img src={icon_del} />
+        </button>
+      </td>
     </tr>
   );
 });

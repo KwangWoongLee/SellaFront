@@ -36,7 +36,7 @@ const FAQ = () => {
   // search input
   const [categoryType, setCategoryType] = useState(0);
   const [title, setTitle] = useState('');
-  const category_str = ['일반', '테스트', '전체'];
+  const category_str = ['전체', '회원정보', '이용방법', '결제', '기타'];
   //
 
   // pagination
@@ -106,6 +106,16 @@ const FAQ = () => {
     });
   };
 
+  const onReset = () => {
+    setDatas([]);
+    setPage(1);
+    setCategoryType(0);
+    setTitle('');
+  };
+  const onChangeCategoryType = (type) => {
+    setCategoryType(type);
+  };
+
   return (
     <>
       <Head />
@@ -129,15 +139,16 @@ const FAQ = () => {
 
           <div className="inputbox">
             {/* default 전체, 
-            다른버튼 클릭하여 조회기간 변경 시 해당 버튼에 btn_blue 클래스 넣어주시면 됩니다~  */}
+            다른버튼 클릭하여 조회기간 변경 시 해당 버튼에 btn_blue 클래스 넣어주시면 됩니다~  
+            
+              여기가 조회기간이 아니라 카테고리인데, 아래 className="period" 바꿔도 작동 문제 없이 되나요..?
+            */}
             <div className="period">
-              <Button onClick={(e) => onPageNext(true)} className="btn_blue">
-                전체
-              </Button>
-              <Button onClick={(e) => onPageNext(true)}>회원정보</Button>
-              <Button onClick={(e) => onPageNext(true)}>이용방법</Button>
-              <Button onClick={(e) => onPageNext(true)}>결제</Button>
-              <Button onClick={(e) => onPageNext(true)}>기타</Button>
+              {category_str.map((name, key) => (
+                <Button onClick={(e) => onChangeCategoryType(key)} className={categoryType == key ? 'btn_blue' : ''}>
+                  {name}
+                </Button>
+              ))}
             </div>
             <input
               name="title"
@@ -152,7 +163,7 @@ const FAQ = () => {
             <Button onClick={onSearch} className="btn btn_search">
               <img src={icon_search} />
             </Button>
-            <Button className="btn_reset">
+            <Button className="btn_reset" onClick={onReset}>
               <img src={icon_reset} />
             </Button>
           </div>

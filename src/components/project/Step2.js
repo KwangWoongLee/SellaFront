@@ -4,8 +4,6 @@ import { Button, DropdownButton, Dropdown } from 'react-bootstrap';
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
-import { NumberFormatter } from 'components/common/AgGrid/NumberFormatter';
-import { NumericCellEditor } from 'components/common/AgGrid/NumericCellEditor';
 import Step2Modal from 'components/project/Step2Modal';
 import request from 'util/request';
 import { modal, page_reload } from 'util/com';
@@ -26,6 +24,8 @@ import 'styles/Step2.scss';
 import icon_circle_arrow_down from 'images/icon_circle_arrow_down.svg';
 import icon_circle_arrow_up from 'images/icon_circle_arrow_up.svg';
 import icon_set from 'images/icon_set.svg';
+import Step2_DFCellRenderer from 'components/project/Step2_DFCellRenderer';
+import Step2_PFCellRenderer from 'components/project/Step2_PFCellRenderer';
 
 let rawData;
 const excel_str = [
@@ -34,6 +34,8 @@ const excel_str = [
   '상품정보 수집용(카테고리,상품명)',
   '상품정보 수집용(입고단가,택배비,포장비)',
 ];
+let df_category = [];
+let pf_category = [];
 
 const Step2 = () => {
   logger.render('Step2');
@@ -57,6 +59,30 @@ const Step2 = () => {
   }, []);
 
   useEffect(() => {
+    if (!df_category.length)
+      request.post(`user/delivery`, { aidx }).then((ret) => {
+        if (!ret.err) {
+          logger.info(ret.data);
+
+          if (ret.data.length > 1) {
+            df_category = ret.data;
+            df_category.push({ delivery_category: '기타' });
+          }
+        }
+      });
+
+    if (!pf_category.length)
+      request.post(`user/packing`, { aidx }).then((ret) => {
+        if (!ret.err) {
+          logger.info(ret.data);
+
+          if (ret.data.length > 1) {
+            pf_category = ret.data;
+            pf_category.push({ packing_category: '기타', packing_fee: 0 });
+          }
+        }
+      });
+
     request.post(`user/goods`, { aidx }).then((ret) => {
       if (!ret.err) {
         logger.info(ret.data);
@@ -140,6 +166,7 @@ const Step2 = () => {
       valueParser: (params) => Number(params.newValue),
       filter: false,
       cellDataType: 'number', // 인풋 타입을 넘버로 바꾸고싶어요ㅠㅠ
+
       cellClass: 'ag-cell-editable',
     },
     {
@@ -147,19 +174,29 @@ const Step2 = () => {
       headerName: '택배비',
       sortable: true,
       unSortIcon: true,
-      valueParser: (params) => Number(params.newValue),
       filter: false,
-      cellDataType: 'number', // 인풋 타입을 넘버로 바꾸고싶어요ㅠㅠ
-      cellClass: 'ag-cell-editable',
+      // cellDataType: 'number', // 인풋 타입을 넘버로 바꾸고싶어요ㅠㅠ , project 폴더에 Step2_PopupCellRenderer 쪽에서 input있는데 컨트롤 하시면됩니다^^
+      editable: false,
+      // cellClass: 'ag-cell-editable',
+      cellRenderer: Step2_DFCellRenderer,
+      cellRendererParams: {
+        df_category,
+        rawData,
+      },
     },
     {
       field: 'packing_fee',
       headerName: '포장비',
       sortable: true,
       unSortIcon: true,
-      valueParser: (params) => Number(params.newValue),
       filter: false,
-      cellClass: 'ag-cell-editable',
+      editable: false,
+      // cellClass: 'ag-cell-editable',
+      cellRenderer: Step2_PFCellRenderer,
+      cellRendererParams: {
+        pf_category,
+        rawData,
+      },
     },
     {
       field: 'stock_price',

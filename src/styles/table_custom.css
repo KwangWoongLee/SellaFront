@@ -42,8 +42,8 @@ h3>button {
 }
 
 table thead {
-  height: 40px;
-  min-height: 40px;
+  height: 42px;
+  min-height: 42px;
   background-color: #182B65;
   overflow: hidden;
 }
@@ -192,7 +192,7 @@ table input[type='checkbox'] {
 
 table.thead {
   display: block;
-  height: 40px !important;
+  height: 42px !important;
   border-bottom-left-radius: 0 !important;
   border-bottom-right-radius: 0 !important;
 }
@@ -224,7 +224,7 @@ table.thead td:first-child {
 }
 
 .td_small {
-  width: 73px;
+  width: 75px;
 }
 
 .btn_small {

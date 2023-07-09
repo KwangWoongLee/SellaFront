@@ -6,7 +6,7 @@ import request from 'util/request';
 import Recoils from 'recoils';
 import com from 'util/com';
 import _ from 'lodash';
-import logo_top from 'images/logo_top.svg';
+import logo_white from 'images/logo_white.svg';
 import icon_member from 'images/icon_member.svg';
 import icon_power from 'images/icon_power.svg';
 import icon_calculator from 'images/icon_calculator.svg';
@@ -25,7 +25,7 @@ const Head = () => {
     <>
       <div className="header">
         <Nav.Link onClick={onLink} className="logo" name="/">
-          <img src={logo_top} alt="로고" />
+          <img src={logo_white} alt="로고" />
         </Nav.Link>
         <div className="menu">
           <ul className="left">

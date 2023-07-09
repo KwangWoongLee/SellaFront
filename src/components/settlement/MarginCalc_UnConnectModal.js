@@ -16,7 +16,7 @@ import 'styles/MarginCalc_UnConnectModal.scss';
 
 import icon_close from 'images/icon_close.svg';
 
-const MarginCalc_UnConnectModal = React.memo(({ modalState, setModalState, rowData, deleteCallback }) => {
+const MarginCalc_UnConnectModal = React.memo(({ modalState, setModalState, rowData, deleteCallback, saveCallback }) => {
   logger.render('MarginCalc_UnConnectModal');
   const account = Recoils.useValue('CONFIG:ACCOUNT');
   const aidx = account.aidx;
@@ -42,7 +42,11 @@ const MarginCalc_UnConnectModal = React.memo(({ modalState, setModalState, rowDa
     setItems(unique_arr);
   }, [rowData]);
 
-  const onClose = () => setModalState(false);
+  const onClose = () => {
+    setGoodsMatchs([]);
+    setStandardItems([]);
+    setModalState(false);
+  };
 
   const onSelectFormsMatchTable = (d) => {
     const recommends = _.filter(goods_data, { name: d.forms_product_name });
@@ -95,7 +99,13 @@ const MarginCalc_UnConnectModal = React.memo(({ modalState, setModalState, rowDa
     setGoodsMatchs([...selectFormsMatchRef.current.goods_match]);
   };
 
-  const onSelectCategoryFee_Search = (d) => {};
+  const onSelectCategoryFee_Search = (d) => {
+    for (const good_match of selectFormsMatchRef.current.goods_match) {
+      good_match.category_fee_rate = d.category_fee_rate;
+    }
+
+    setGoodsMatchs([...selectFormsMatchRef.current.goods_match]);
+  };
 
   const onSave = (d) => {
     if (!selectFormsMatchRef.current) return; // TODO error
@@ -110,6 +120,8 @@ const MarginCalc_UnConnectModal = React.memo(({ modalState, setModalState, rowDa
 
         Recoils.setState('DATA:FORMSMATCH', ret.data.forms_match);
         Recoils.setState('DATA:GOODSMATCH', ret.data.goods_match);
+
+        saveCallback(selectFormsMatchRef.current);
       }
     });
   };
@@ -133,7 +145,9 @@ const MarginCalc_UnConnectModal = React.memo(({ modalState, setModalState, rowDa
             deleteCallback={onDeleteFormsMatchTable}
           ></FormsMatchTable>
           <h3>연결 상품</h3>
-          <button onClick={onSave}>저장</button>
+          <button onClick={onSave} className="btn_blue btn-primary">
+            저장
+          </button>
           <GoodsMatchTable
             rows={goodsMatch}
             selectCallback={onSelectGoodsMatchTable}

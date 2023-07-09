@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-function Checkbox() {
-  const [checked, setChecked] = useState(false);
-  const handleChange = () => {
-    setChecked(!checked); 
+function Checkbox({ checked, checkedItemHandler }) {
+  const [bChecked, setChecked] = useState(checked);
+
+  const checkHandler = ({ target }) => {
+    setChecked(!bChecked);
+    checkedItemHandler(target.checked);
   };
 
   return (
-    <div>
-      <input type={'checkbox'} defaultChecked={checked} onChange={handleChange}></input>
-    </div>
+    <>
+      <input type="checkbox" checked={bChecked} onChange={(e) => checkHandler(e)} />
+    </>
   );
 }
 

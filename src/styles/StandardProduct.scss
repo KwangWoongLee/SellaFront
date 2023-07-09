@@ -55,7 +55,16 @@
 
     th:nth-child(7),
     td:nth-child(7) {
-      width: 120px;
+      width: 110px;
+    }
+
+    td button {
+      float: left;
+      margin: 0 5px;
+    }
+
+    .btn_del {
+      margin-top: 2px;
     }
   }
 

@@ -2,7 +2,10 @@
 
 .sale_product {
   h3 {
+    display: inline-block;
+    float: left;
     margin-bottom: 20px;
+    width: auto;
     font-size: 15px;
     line-height: 15px;
     font-weight: 500;
@@ -44,8 +47,7 @@
     .goodsmatchtable {
       th:nth-child(1),
       td:nth-child(1) {
-        width: 170px;
-        border-left: 1px solid #ccc;
+        width: 180px;
       }
 
       th:nth-child(2),
@@ -53,24 +55,29 @@
         width: 150px;
       }
 
-      th:nth-child(3),
-      td:nth-child(3) {
-        width: 420px;
-      }
-
       th:nth-child(4),
       td:nth-child(4) {
-        width: 120px;
+        width: 130px;
       }
 
       th:nth-child(5),
       td:nth-child(5) {
-        width: 150px;
+        width: 100px;
+      }
+
+      th:nth-child(6),
+      td:nth-child(6) {
+        width: 50px;
       }
     }
 
     .goodsmatchtable.tbody {
       height: 280px !important;
+    }
+
+    .btn_blue {
+      float: right;
+      margin-top: -6px;
     }
   }
 

@@ -201,7 +201,12 @@ const Announcement = () => {
         </div>
       </Body>
       <Footer />
-      {/* 이미지모달에 엑스버튼 넣고 스타일 잡으려고 하는데 어떻게 해야하는지 모르겠습니다 ㅎㅎ */}
+      {/* 이미지모달에 엑스버튼 넣고 스타일 잡으려고 하는데 어떻게 해야하는지 모르겠습니다 ㅎㅎ 
+      
+          이미지 모달은 src < components < common 폴더 안에있는 ImageModal.js 건드리시면 되세요ㅎㅎ
+          샘플 닫기버튼 만들어 놓았어요!                
+      */}
+
       <ImageModal modalState={modalState} setModalState={setModalState} imgUrl={imgUrl}></ImageModal>
     </>
   );

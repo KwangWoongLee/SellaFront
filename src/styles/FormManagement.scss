@@ -16,14 +16,15 @@
 
   .section1 {
     float: left;
-    width: calc(20% - 60px);
+    width: calc(20% - 30px);
     height: 100%;
-    overflow: hidden;
+    margin-right: 30px;
 
     .ag-theme-alpine {
       width: 100%;
       height: calc(100% - 80px) !important;
       overflow: auto;
+      box-shadow: 3px 3px 3px 0px rgba(0, 0, 0, 0.1);
     }
 
     .ag-theme-alpine > div > .ag-root-wrapper {
@@ -33,19 +34,25 @@
       display: none;
     }
 
+    h3 + button {
+      float: right;
+      margin-top: -6px;
+    }
     .btnbox {
       margin-top: 10px;
 
       .btn_blue {
+        float: left;
+      }
+
+      .btn_red {
         float: right;
-        margin-right: 5px;
       }
     }
   }
 
   .section2 {
     float: right;
-    margin-left: 30px;
     width: 80%;
     height: 100%;
     overflow: visible;
@@ -53,27 +60,9 @@
 
   .section3 {
     float: left;
-    margin-left: 30px;
-    width: 45%;
+    width: 80%;
     height: 100%;
     overflow: visible;
-
-    .inputbox {
-      display: inline-block;
-      float: left;
-      margin-top: -8px;
-      margin-left: 10px;
-
-      input {
-        float: left;
-        width: 280px;
-      }
-
-      button {
-        float: left;
-        margin-left: 5px;
-      }
-    }
 
     table {
       width: 100%;
@@ -85,15 +74,11 @@
 
     th,
     td {
-      padding: 15px 0;
+      position: relative;
+      padding: 10px 0;
       text-align: center;
       font-size: 14px;
       font-weight: 400;
-    }
-
-    th:nth-child(1),
-    td:nth-child(1) {
-      width: 50%;
     }
 
     td.required {
@@ -101,15 +86,131 @@
       font-weight: 400;
     }
 
-    td:nth-child(1) {
-      width: 50%;
+    .leftbox {
+      float: left;
+      width: 60%;
+      height: 100%;
+      margin-right: 30px;
+
+      .inputbox {
+        display: inline-block;
+        float: left;
+        margin-top: -8px;
+        margin-left: 10px;
+
+        input {
+          float: left;
+          width: 280px;
+        }
+
+        button {
+          float: left;
+          margin-left: 5px;
+        }
+      }
+
+      .btn_add {
+        float: right;
+        margin-top: -7px;
+        width: 115px;
+      }
+
+      table.tbody,
+      tr {
+        background-color: #aaa;
+      }
+
+      table tr:hover,
+      table tr:focus-within,
+      table tr.focus {
+        background-color: #fff !important;
+      }
+
+      th:nth-child(1) {
+        width: 50%;
+      }
+
+      td:nth-child(1) {
+        width: 50%;
+        font-size: 15px;
+        font-weight: 500;
+        color: #333;
+      }
+
+      .td_label,
+      .td_click {
+        padding: 7px 10px;
+      }
+
+      .td_clicked {
+        padding: 7px 10px;
+
+        b {
+          display: block;
+          width: 100%;
+        }
+
+        span {
+          display: block;
+          width: 100%;
+          padding-left: 5px;
+          font-size: 13px;
+          color: #888;
+        }
+      }
+
+      .td_click Button {
+        line-height: 40px;
+        color: #888;
+      }
+
+      .td_click Button,
+      .td_clicked Button,
+      .td_label Button {
+        display: block;
+        width: 100%;
+        height: 100%;
+        font-size: 15px;
+        font-weight: 500;
+        border: 0;
+        background-color: transparent;
+      }
+
+      .td_click Button:hover,
+      .td_clicked Button:hover {
+        opacity: 1;
+        background-color: transparent;
+      }
     }
 
-    .btn_add {
+    .rightbox {
       float: right;
-      margin-top: -7px;
-      margin-right: 5px;
-      width: 115px;
+      width: calc(40% - 30px);
+      height: 100%;
+
+      .btn_green {
+        float: left;
+        margin-top: -7px;
+      }
+
+      .inputbox {
+        float: right;
+        margin: -7px 5px 9px 0;
+
+        .btn_reset {
+          margin-left: 5px;
+        }
+      }
+
+      th:nth-child(1),
+      td:nth-child(1) {
+        width: 50px;
+      }
+
+      th:nth-child(2),
+      td:nth-child(2) {
+        width: 420px;
+      }
     }
   }
 

@@ -127,7 +127,13 @@ const SaleProduct = () => {
     setGoodsMatchs([...selectFormsMatchRef.current.goods_match]);
   };
 
-  const onSelectCategoryFee_Search = (d) => {};
+  const onSelectCategoryFee_Search = (d) => {
+    for (const good_match of selectFormsMatchRef.current.goods_match) {
+      good_match.category_fee_rate = d.category_fee_rate;
+    }
+
+    setGoodsMatchs([...selectFormsMatchRef.current.goods_match]);
+  };
 
   const onSave = (e) => {
     if (!selectFormsMatchRef.current) return; // TODO error
@@ -160,7 +166,9 @@ const SaleProduct = () => {
               deleteCallback={onDeleteFormsMatchTable}
             ></FormsMatchTable>
             <h3>연결 상품</h3>
-            <button onClick={onSave}>저장</button>
+            <button onClick={onSave} className="btn_blue btn-primary">
+              저장
+            </button>
             <GoodsMatchTable
               rows={goodsMatch}
               selectCallback={onSelectGoodsMatchTable}

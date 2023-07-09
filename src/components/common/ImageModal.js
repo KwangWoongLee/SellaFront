@@ -21,6 +21,7 @@ const ImageModal = React.memo(({ modalState, setModalState, imgUrl }) => {
 
   return (
     <Modal show={modalState} onHide={onClose} centered>
+      <Button onClick={onClose}>닫기</Button>
       <Modal.Body>
         <img src={imgUrl} />
       </Modal.Body>

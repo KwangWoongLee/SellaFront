@@ -16,7 +16,6 @@ const GoodsMatchTable = React.memo(
     const [rowData, setRowData] = useState([]);
 
     useEffect(() => {
-      // setRowData(_.cloneDeep(rows));
       setRowData([...rows]);
     }, [rows]);
 
@@ -63,6 +62,7 @@ const GoodsMatchTable = React.memo(
                     key={key}
                     index={key}
                     d={d}
+                    rowSpan={rowData.length}
                     onClick={selectCallback}
                     onChange={onChange}
                     onDelete={onDelete}
@@ -77,7 +77,7 @@ const GoodsMatchTable = React.memo(
   }
 );
 
-const GoodsMatchItem = React.memo(({ index, d, onClick, onDelete, onChange, abledCategoryFee }) => {
+const GoodsMatchItem = React.memo(({ index, d, rowSpan, onClick, onDelete, onChange, abledCategoryFee }) => {
   logger.render('GoodsMatchItem : ', index);
   const inputRef = useRef(null);
 
@@ -87,20 +87,20 @@ const GoodsMatchItem = React.memo(({ index, d, onClick, onDelete, onChange, able
 
   return (
     <tr>
-      <td class="td1">{d.reg_date}</td>
-      <td class="td2">{d.idx}</td>
-      <td class="td3">{d.name}</td>
-      <td class="td4">
+      <td>{d.reg_date}</td>
+      <td>{d.idx}</td>
+      <td>{d.name}</td>
+      <td>
         <>
           <button
-            className="btn_del"
+            className="btn_number_minus"
             onClick={(e) => {
               if (Number(inputRef.current.value) - 1 < 0) return;
               inputRef.current.value = Number(inputRef.current.value) - 1;
               onChange(e, d, inputRef.current.value);
             }}
           >
-            <img src={icon_del} alt="" />
+            빼기
           </button>
           <input
             type={'number'}
@@ -109,20 +109,28 @@ const GoodsMatchItem = React.memo(({ index, d, onClick, onDelete, onChange, able
             onChange={(e) => {
               onChange(e, d, inputRef.current.value);
             }}
+            className="btn_number"
           ></input>
           <button
-            className="btn_del"
+            className="btn_number_plus"
             onClick={(e) => {
               inputRef.current.value = Number(inputRef.current.value) + 1;
               onChange(e, d, inputRef.current.value);
             }}
           >
-            <img src={icon_del} alt="" />
+            더하기
           </button>
         </>
       </td>
-      {/* <td class="td5">{abledCategoryFee ? d.category_fee_rate : 0}</td> */}
-      <td class="td6">
+
+      {index == 0 ? (
+        <td class="td5" rowSpan={rowSpan}>
+          {abledCategoryFee ? d.category_fee_rate : 0}
+        </td>
+      ) : (
+        <></>
+      )}
+      <td>
         <button
           className="btn_del"
           onClick={(e) => {
