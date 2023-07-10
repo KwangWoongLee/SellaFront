@@ -24,6 +24,7 @@ import 'styles/FormManagement.scss';
 
 import icon_search from 'images/icon_search.svg';
 import icon_reset from 'images/icon_reset.svg';
+import icon_tip from 'images/icon_tip.svg';
 
 const FormManagement_Custom_Add = (param) => {
   logger.render('FormManagement_Custom_Add');
@@ -194,9 +195,6 @@ const FormManagement_Custom_Add = (param) => {
           {/* 여기 들어오는 데이터 중 별표달린 필수값은 빨간색 텍스트인데, 해당 td에 required 클래스 넣어주면 됩니다. */}
           {/* '정산예정금액이있습니다' 항목에 체크박스, 툴팁버튼 있습니다 */}
           {/* '배송비 묶음번호가 있습니다' 항목에 체크박스, 툴팁버튼 있습니다 */}
-          {/* 선택한 엑셀항목 열에 선택 전 '클릭하여 매칭해주세요' 라고 떠요 ㅎㅎ 
-            요것은 무슨말인지 모르겠어요ㅠ
-          */}
           <tbody>
             {rowData &&
               rowData.map((d, key) => (
@@ -218,6 +216,7 @@ const FormManagement_Custom_Add = (param) => {
         <Button variant="primary" onClick={onUpload} className="btn_green">
           주문 양식 불러오기
         </Button>
+        {/* 주문양식 불러온 후 > 불러온 데이터를 뿌려주면 좋을 것 같습니다. */}
         <div className="inputbox">
           <input type="text" className="input_search" placeholder="항목명"></input>
           <Button className="btn_search">
@@ -254,12 +253,8 @@ const FormManagement_Custom_Add = (param) => {
 
 const SellaForm = React.memo(({ index, d, selectRow, onClick, checkedItemHandler }) => {
   logger.render('SellaForm TableItem : ', index);
-  /* 이부분 포커스가 들어가면 tr에 백그라운드 흰색이 나오는데,    옆에서 항목을 선택하면 포커스가 아웃되어서 옆 영역을 클릭해도 포커스가 유지될 수 있도록 가능할까요? 클릭한 tr에 포커스를 유지하는게 가능하다면 className="focus" 라고 넣어주시면 제가 스타일에서 제어하겠습니다.*/
   // 클릭 전에 항상 첫번째 tr에 포커스가 들어와 있으면 좋을것 같습니다.
-  // td_label 영역은 버튼이 없어서 클릭해도 포커스가 적용되지 않아 버튼을 임시로 넣어두었습니다.. 그런데, 버튼을 만들어 포커스를 넣어도 같은 행 엑셀항목의 데이터가 바뀌지 않네요..ㅎㅎ 이부분 전화로 나중에 의논드릴게요!
-
-  // 마지막 td_label 영역을 click해서 클릭하여매칭해주세요. 부분과 같이 동작하도록 하는것은 어렵습니다.ㅠ
-  // 그렇게하면, checkbox나 tooltip의 클릭과 같이 먹을듯싶네요
+  // >>> 요거 다른 항목을 클릭해도 포커스가 유지되네용 ? ㅎㅎ 첫번째 행 focus는 처음 새로고침했을때만 들어와있으면 좋을것 같습니다 ㅎㅎ
   return (
     <tr className={selectRow == index ? 'focus' : ''}>
       <td className={d.sella_essential ? 'td_label required' : 'td_label'}>
@@ -273,7 +268,9 @@ const SellaForm = React.memo(({ index, d, selectRow, onClick, checkedItemHandler
             ></Checkbox>
           </>
         )}
-        {d.sella_title} {d.sella_essential ? '*' : ''}
+        <label>
+          {d.sella_title} {d.sella_essential ? '*' : ''}
+        </label>
         {d.tooltip && (
           <>
             <OverlayTrigger
@@ -289,7 +286,7 @@ const SellaForm = React.memo(({ index, d, selectRow, onClick, checkedItemHandler
                 </Tooltip>
               }
             >
-              <Button>툴팁</Button>
+              <Button className="btn_tip"></Button>
             </OverlayTrigger>
           </>
         )}
@@ -308,7 +305,7 @@ const SellaForm = React.memo(({ index, d, selectRow, onClick, checkedItemHandler
         </td>
       ) : (
         <td className="td_click">
-          <Button onClick={onClick}>클릭하여 매칭해주세요.</Button>
+          <Button onClick={onClick}>여기를 클릭하여 매칭해주세요.</Button>
         </td>
       )}
     </tr>

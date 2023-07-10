@@ -47,86 +47,114 @@ const Regist = () => {
   return (
     <>
       <Head />
-      <Body title={`회원가입`} myClass={'login regist'}>
-        <h3>회원가입</h3>
-        <div className="termsbox">
-          <div className="terms1">
-            <span>[필수] 서비스 이용약관</span>
-            <label>동의</label>
-            <input type={'checkbox'}></input>
-            <textarea>
-              여러분을 환영합니다. 네이버 서비스 및 제품(이하 ‘서비스’)을 이용해 주셔서 감사합니다. 본 약관은 다양한
-              네이버 서비스의 이용과 관련하여 네이버 서비스를 제공
-            </textarea>
+      <Body title={`회원가입`} myClass={'regist'}>
+        <Form onSubmit={onSubmit} id="regist-form" className="formbox">
+          <h3>회원가입</h3>
+
+          <div className="leftbox">
+            <div className="terms">
+              <span>[필수] 서비스 이용약관</span>
+              <input type={'checkbox'}></input>
+              <label>동의</label>
+              <textarea>
+                여러분을 환영합니다. 네이버 서비스 및 제품(이하 ‘서비스’)을 이용해 주셔서 감사합니다. 본 약관은 다양한
+                네이버 서비스의 이용과 관련하여 네이버 서비스를 제공
+              </textarea>
+            </div>
+            <div className="terms">
+              <span>[필수] 개인정보 수집 및 이용</span>
+              <input type={'checkbox'}></input>
+              <label>동의</label>
+              <textarea>
+                여러분을 환영합니다. 네이버 서비스 및 제품(이하 ‘서비스’)을 이용해 주셔서 감사합니다. 본 약관은 다양한
+                네이버 서비스의 이용과 관련하여 네이버 서비스를 제공 여러분을 환영합니다. 네이버 서비스 및 제품(이하
+                ‘서비스’)을 이용해 주셔서 감사합니다. 본 약관은 다양한 네이버 서비스의 이용과 관련하여 네이버 서비스를
+                제공 여러분을 환영합니다. 네이버 서비스 및 제품(이하 ‘서비스’)을 이용해 주셔서 감사합니다. 본 약관은
+                다양한 네이버 서비스의 이용과 관련하여 네이버 서비스를 제공
+              </textarea>
+            </div>
+            <div className="terms">
+              <span>[선택] 마케팅정보 활용</span>
+              <input type={'checkbox'}></input>
+              <label>동의</label>
+              <textarea>
+                여러분을 환영합니다. 네이버 서비스 및 제품(이하 ‘서비스’)을 이용해 주셔서 감사합니다. 본 약관은 다양한
+                네이버 서비스의 이용과 관련하여 네이버 서비스를 제공
+              </textarea>
+            </div>
+            <div className="terms">
+              <input type={'checkbox'}></input>
+              <label>전체 약관 동의</label>
+            </div>
           </div>
-          <div className="terms2">
-            <span>[필수] 개인정보 수집 및 이용</span>
-            <label>동의</label>
-            <input type={'checkbox'}></input>
-            <textarea>
-              여러분을 환영합니다. 네이버 서비스 및 제품(이하 ‘서비스’)을 이용해 주셔서 감사합니다. 본 약관은 다양한
-              네이버 서비스의 이용과 관련하여 네이버 서비스를 제공
-            </textarea>
+          <div className="rightbox">
+            <label>이름</label>
+            <InputGroup className="inputname">
+              <Form.Control type="text" placeholder="이름 입력" aria-label="name" defaultValue={''} />
+            </InputGroup>
+            <label>휴대폰인증</label>
+            <DropdownButton variant="" title={agency_str[agencyType]} className="inputagency">
+              {agency_str.map((name, key) => (
+                <Dropdown.Item
+                  key={key}
+                  eventKey={key}
+                  onClick={(e) => {
+                    setAgencyType(key);
+                  }}
+                  active={agencyType === key}
+                >
+                  {agency_str[key]}
+                </Dropdown.Item>
+              ))}
+            </DropdownButton>
+            <div className="btnbox">
+              {/* 버튼이 클릭됐을 때 className에 on 넣어주시면 됩니다! */}
+              <ButtonGroup aria-label="gender" className="gender">
+                <Button variant="secondary" className="btn-primary on">
+                  남
+                </Button>
+                <Button variant="secondary" className="btn-primary">
+                  여
+                </Button>
+              </ButtonGroup>
+              <ButtonGroup aria-label="local" className="local">
+                <Button variant="secondary" className="btn-primary on">
+                  내국인
+                </Button>
+                <Button variant="secondary" className="btn-primary">
+                  외국인
+                </Button>
+              </ButtonGroup>
+            </div>
+            <InputGroup className="inputphone1">
+              <Form.Control type="text" placeholder="휴대폰 번호 입력" defaultValue={''} />
+              <Button variant="primary" className="btn_blue">
+                인증번호 발송
+              </Button>
+            </InputGroup>
+            <InputGroup className="inputphone2">
+              <Form.Control type="text" placeholder="인증번호 입력" defaultValue={''} />
+              <Button variant="primary" className="btn_blue">
+                인증하기
+              </Button>
+            </InputGroup>
+            <label>아이디/비밀번호</label>
+            <InputGroup className="inputid">
+              <Form.Control type="text" placeholder="이메일주소" defaultValue={''} />
+              <Button variant="primary" className="btn_blue">
+                중복체크
+              </Button>
+            </InputGroup>
+            <InputGroup className="inputpw1">
+              <Form.Control type="password1" placeholder="비밀번호" defaultValue={''} />
+            </InputGroup>
+            <InputGroup className="inputpw2">
+              <Form.Control type="password2" placeholder="비밀번호 확인" defaultValue={''} />
+            </InputGroup>
+            <Button variant="primary" type="submit" form="regist-form" className="btn_blue">
+              회원가입
+            </Button>
           </div>
-          <div className="terms3">
-            <span>[선택] 마케팅정보 활용</span>
-            <label>동의</label>
-            <input type={'checkbox'}></input>
-            <textarea>
-              여러분을 환영합니다. 네이버 서비스 및 제품(이하 ‘서비스’)을 이용해 주셔서 감사합니다. 본 약관은 다양한
-              네이버 서비스의 이용과 관련하여 네이버 서비스를 제공
-            </textarea>
-          </div>
-          <label>전체 약관 동의</label>
-          <input type={'checkbox'}></input>
-        </div>
-        <Form onSubmit={onSubmit} id="regist-form">
-          이름
-          <InputGroup className="mb-3">
-            <Form.Control type="text" placeholder="이름 입력" aria-label="name" defaultValue={''} />
-          </InputGroup>
-          휴대폰인증
-          <DropdownButton variant="" title={agency_str[agencyType]}>
-            {agency_str.map((name, key) => (
-              <Dropdown.Item
-                key={key}
-                eventKey={key}
-                onClick={(e) => {
-                  setAgencyType(key);
-                }}
-                active={agencyType === key}
-              >
-                {agency_str[key]}
-              </Dropdown.Item>
-            ))}
-          </DropdownButton>
-          <ButtonGroup aria-label="gender">
-            <Button variant="secondary">남</Button>
-            <Button variant="secondary">여</Button>
-          </ButtonGroup>
-          <ButtonGroup aria-label="local">
-            <Button variant="secondary">내국인</Button>
-            <Button variant="secondary">외국인</Button>
-          </ButtonGroup>
-          <InputGroup className="mb-3">
-            <Form.Control type="text" placeholder="휴대폰 번호 입력" defaultValue={''} />
-            <Button variant="primary">인증번호 발송</Button>
-          </InputGroup>
-          <InputGroup className="mb-3">
-            <Form.Control type="text" placeholder="인증번호 입력" defaultValue={''} />
-            <Button variant="primary">인증하기</Button>
-          </InputGroup>
-          아이디/비밀번호
-          <InputGroup className="mb-3">
-            <Form.Control type="text" placeholder="이메일주소" defaultValue={''} />
-            <Button variant="primary">중복체크</Button>
-          </InputGroup>
-          <InputGroup className="mb-3">
-            <Form.Control type="password" placeholder="비밀번호" defaultValue={''} />
-          </InputGroup>
-          <Button variant="primary" type="submit" form="regist-form">
-            회원가입
-          </Button>
         </Form>
       </Body>
       <Footer />

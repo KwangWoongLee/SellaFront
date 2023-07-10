@@ -54,7 +54,8 @@ table tbody:empty {
   display: block;
 }
 
-table tbody:empty:before {
+table tbody:empty:before,
+.ag-overlay-no-rows-wrapper {
   content: "데이터가 없습니다.";
   position: absolute;
   top: 49%;

@@ -60,14 +60,15 @@
         width: 130px;
       }
 
-      th:nth-child(5),
-      td:nth-child(5) {
+      th.td_fee,
+      td.td_fee {
         width: 100px;
+        text-align: center;
       }
 
       th:nth-child(6),
       td:nth-child(6) {
-        width: 50px;
+        width: 40px;
       }
     }
 
@@ -187,10 +188,10 @@
   }
 
   .categoryfeesearch {
-    height: 300px !important;
+    height: 304px !important;
   }
 
   .categoryfeesearch table tbody:empty {
-    min-height: 300px;
+    min-height: 304px;
   }
 }

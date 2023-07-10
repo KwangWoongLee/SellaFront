@@ -9,6 +9,8 @@ import _ from 'lodash';
 
 import { logger } from 'util/com';
 
+import icon_close from 'images/icon_close.svg';
+
 const ImageModal = React.memo(({ modalState, setModalState, imgUrl }) => {
   logger.render('Step2Modal');
 
@@ -20,8 +22,14 @@ const ImageModal = React.memo(({ modalState, setModalState, imgUrl }) => {
   const onClose = () => setModalState(false);
 
   return (
-    <Modal show={modalState} onHide={onClose} centered>
-      <Button onClick={onClose}>닫기</Button>
+    <Modal show={modalState} onHide={onClose} centered className="imagemodal">
+      <Modal.Header className="d-flex justify-content-center">
+        <Modal.Title className="text-primary">이미지 보기</Modal.Title>
+        <Button onClick={onClose} variant="primary" className="btn_close">
+          <img src={icon_close} />
+        </Button>
+      </Modal.Header>
+
       <Modal.Body>
         <img src={imgUrl} />
       </Modal.Body>

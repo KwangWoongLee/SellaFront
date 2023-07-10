@@ -505,9 +505,7 @@ const MarginCalc = () => {
                   rowSelection={'multiple'}
                   onRowDoubleClicked={onClick}
                   getRowStyle={getRowStyle}
-                  overlayNoRowsTemplate={
-                    '<span style="padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow"> \'데이터가 없습니다.\' </span>'
-                  }
+                  overlayNoRowsTemplate={'데이터가 없습니다.'}
                 ></AgGridReact>
               </div>
             </div>

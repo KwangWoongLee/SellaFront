@@ -63,41 +63,29 @@ const StandardProduct = () => {
       sortable: true,
       unSortIcon: true,
       headerName: '상품명',
-      minWidth: 400,
       wrapText: true,
       vertical: 'Center',
+      minWidth: 400,
     },
     {
       field: 'forms_option_name1',
       sortable: true,
       unSortIcon: true,
       headerName: '옵션',
-      minWidth: 300,
       wrapText: true,
       vertical: 'Center',
+      minWidth: 200,
     },
     {
       field: 'match_count',
-      sortable: true,
-      unSortIcon: true,
       valueParser: (params) => Number(params.newValue),
       headerName: '수량',
       minWidth: 50,
     },
     {
-      field: 'category_fee_rate',
-      sortable: true,
-      unSortIcon: true,
-      valueParser: (params) => Number(params.newValue),
-      headerName: '수수료',
-      minWidth: 50,
-    },
-    {
       field: '',
-      sortable: true,
-      unSortIcon: true,
       headerName: '',
-      minWidth: 140,
+      maxWidth: 140,
     },
   ]);
 
@@ -234,21 +222,17 @@ const StandardProduct = () => {
               기준상품 연결 조회 <span>0</span> {/* 연결된 상품 수 출력 */}
             </h3>
             {/* 이부분 데이터가 뿌려지는 걸 못봐서 나중에 다시 스타일 잡을게요! */}
-            <div style={containerStyle} className="tablebox">
-              <div style={gridStyle} className="ag-theme-alpine test">
-                <AgGridReact
-                  ref={gridRef}
-                  rowData={matchData}
-                  columnDefs={columnDefs}
-                  alwaysShowHorizontalScroll={true}
-                  alwaysShowVerticalScroll={true}
-                  defaultColDef={defaultColDef}
-                  rowSelection={'multiple'}
-                  overlayNoRowsTemplate={
-                    '<span style="padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow"> \'데이터가 없습니다.\' </span>'
-                  }
-                ></AgGridReact>
-              </div>
+            <div style={gridStyle} className="ag-theme-alpine">
+              <AgGridReact
+                ref={gridRef}
+                rowData={matchData}
+                columnDefs={columnDefs}
+                alwaysShowHorizontalScroll={true}
+                alwaysShowVerticalScroll={true}
+                defaultColDef={defaultColDef}
+                rowSelection={'multiple'}
+                overlayNoRowsTemplate={'데이터가 없습니다.'}
+              ></AgGridReact>
             </div>
           </div>
         </div>
@@ -283,10 +267,9 @@ const GoodsMatchItem = React.memo(({ index, d, onUpdate, onDelete }) => {
       <td>{d.forms_product_name}</td>
       <td>{d.forms_option_name1}</td>
       <td>{d.match_count}</td>
-      <td>{d.category_fee_rate}</td>
       <td>
         <button className="btn-primary btn_blue btn_small" onClick={onUpdate}>
-          수정
+          저장
         </button>
         <button className="btn_del" onClick={onDelete}>
           <img src={icon_del} />

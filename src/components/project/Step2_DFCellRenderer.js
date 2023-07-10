@@ -47,21 +47,15 @@ const PopupCellRenderer = (props) => {
         interactive={true}
         placement="bottom"
       >
-        <DropdownButton
-          style={{ display: 'inline-block' }}
-          variant=""
-          title={df_str[selectType]}
-          onClick={visible ? hide : show}
-        ></DropdownButton>
+        <DropdownButton variant="" title={df_str[selectType]} onClick={visible ? hide : show}></DropdownButton>
       </Tippy>
       <input
-        style={{ display: 'inline-block' }}
         defaultValue={
           props.df_category && props.df_category[selectType] ? props.df_category[selectType].delivery_fee : 0
         }
         disabled={df_str.length && selectType == df_str.length - 1 ? false : true}
-      ></input>{' '}
-      원
+      ></input>
+      <span>원</span>
     </>
   );
 };

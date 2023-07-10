@@ -123,7 +123,8 @@ const Step2 = () => {
       cellClass: 'lock-pinned',
       pinned: 'left',
       lockPinned: true,
-      maxWidth: 52,
+      maxWidth: 30,
+      cellClass: 'checkcell',
     },
     {
       field: 'idx',
@@ -134,7 +135,8 @@ const Step2 = () => {
       cellClass: 'lock-pinned',
       pinned: 'left',
       lockPinned: true,
-      width: 150,
+      width: 120,
+      cellClass: 'codecell',
     },
     {
       field: 'goods_category',
@@ -166,8 +168,8 @@ const Step2 = () => {
       valueParser: (params) => Number(params.newValue),
       filter: false,
       cellDataType: 'number', // 인풋 타입을 넘버로 바꾸고싶어요ㅠㅠ
-
       cellClass: 'ag-cell-editable',
+      maxWidth: 90,
     },
     {
       field: 'delivery_fee',
@@ -183,6 +185,7 @@ const Step2 = () => {
         df_category,
         rawData,
       },
+      minWidth: 210,
     },
     {
       field: 'packing_fee',
@@ -197,6 +200,7 @@ const Step2 = () => {
         pf_category,
         rawData,
       },
+      minWidth: 205,
     },
     {
       field: 'stock_price',

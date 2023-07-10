@@ -44,12 +44,12 @@ const GoodsMatchTable = React.memo(
         <table className="goodsmatchtable thead">
           <thead>
             <tr>
-              <th class="td1">연결일시</th>
-              <th class="td2">상품코드</th>
-              <th class="td3">연결된 상품명</th>
-              <th class="td4">수량</th>
-              <th class="td5">수수료</th>
-              <th class="td6"></th>
+              <th>연결일시</th>
+              <th>상품코드</th>
+              <th>연결된 상품명</th>
+              <th>수량</th>
+              <th class="td_fee">수수료</th>
+              <th></th>
             </tr>
           </thead>
         </table>
@@ -124,7 +124,7 @@ const GoodsMatchItem = React.memo(({ index, d, rowSpan, onClick, onDelete, onCha
       </td>
 
       {index == 0 ? (
-        <td class="td5" rowSpan={rowSpan}>
+        <td class="td_fee" rowSpan={rowSpan}>
           {abledCategoryFee ? d.category_fee_rate : 0}
         </td>
       ) : (

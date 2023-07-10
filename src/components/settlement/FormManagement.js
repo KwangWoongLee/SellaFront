@@ -81,8 +81,8 @@ const FormManagement = () => {
       });
     };
 
-    const v = props.value ? 'ON' : 'OFF';
-    return <button onClick={() => buttonClicked()}>{v}</button>;
+    const v = props.value ? 'on' : 'off';
+    return <button onClick={() => buttonClicked()} className={'btn_onoff btn_' + v}></button>;
   };
 
   const [columnDefs] = useState([
@@ -99,13 +99,13 @@ const FormManagement = () => {
     {
       field: 'name',
       headerName: '양식명',
-      width: 230,
+      width: 220,
     },
     {
       field: 'view',
       headerName: 'on/off',
       cellRenderer: ButtonRenderer,
-      maxWidth: 63,
+      maxWidth: 73,
     },
   ]);
 

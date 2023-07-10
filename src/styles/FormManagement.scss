@@ -49,6 +49,32 @@
         float: right;
       }
     }
+
+    .btn_onoff {
+      display: block;
+      margin: 7px 0;
+      padding: 5px 0 2px;
+      width: 50px;
+      height: auto;
+      font-size: 0;
+      line-height: 13px;
+      text-align: center;
+      color: #fff;
+      background-color: #081a51;
+      border-radius: 5px;
+      overflow: hidden;
+      text-overflow: unset;
+    }
+
+    .btn_onoff.btn_on::before {
+      content: '사용';
+      font-size: 13px;
+    }
+
+    .btn_onoff.btn_off::before {
+      content: '미사용';
+      font-size: 13px;
+    }
   }
 
   .section2 {
@@ -81,8 +107,8 @@
       font-weight: 400;
     }
 
-    td.required {
-      color: #b84a4a;
+    td.required,
+    td.required * {
       font-weight: 400;
     }
 
@@ -180,6 +206,27 @@
       .td_clicked Button:hover {
         opacity: 1;
         background-color: transparent;
+      }
+
+      .td_label input,
+      .td_label label,
+      .td_label .btn_tip {
+        display: inline;
+      }
+
+      .td_label label {
+        margin: 0 7px;
+        font-size: 15px;
+        font-weight: 500;
+        color: #b84a4a;
+      }
+
+      .td_label input[type='checkbox'] + label {
+        color: #777;
+      }
+
+      .td_label input[type='checkbox']:checked + label {
+        color: #b84a4a !important;
       }
     }
 

@@ -215,8 +215,9 @@ textarea {
 
 input[type='radio'],
 input[type='checkbox'] {
+  display: block;
   width: auto;
-  height: 20px;
+  height: auto;
   -moz-appearance: none;
   -webkit-appearance: none;
   -o-appearance: none;
@@ -233,7 +234,7 @@ input[type='checkbox']:hover {
 input[type='checkbox']:before {
   content: '';
   color: transparent !important;
-  display: inline-block;
+  display: block;
   width: 16px;
   height: 16px;
   border: 2px solid#999;
