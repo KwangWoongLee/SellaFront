@@ -61,8 +61,8 @@ const PopupCellRenderer = (props) => {
           props.pf_category && props.pf_category[selectType] ? props.pf_category[selectType].packing_fee : 0
         }
         disabled={pf_str.length && selectType == pf_str.length - 1 ? false : true}
-      ></input>{' '}
-      원
+      ></input>
+      <span>원</span>
     </>
   );
 };

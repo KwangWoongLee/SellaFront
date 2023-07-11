@@ -10,8 +10,10 @@ import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 
-const Login = () => {
-  logger.render('Login');
+import 'styles/Login.scss';
+
+const SearchIDResult = () => {
+  logger.render('SearchIDResult');
 
   useEffect(() => {}, []);
 
@@ -32,8 +34,6 @@ const Login = () => {
           grade: ret.data.grade,
           name: ret.data.name,
         });
-
-        navigate('/');
       } else {
       }
     });
@@ -44,33 +44,31 @@ const Login = () => {
   return (
     <>
       <Head />
-      <Body title={`손익 계산`}>
-        <Form onSubmit={onSubmit} id="login-modal-form">
-          <InputGroup className="mb-3">
-            <InputGroup.Text id="basic-addon1">
-              <AiFillMail />
-            </InputGroup.Text>
-            <Form.Control
-              type="text"
-              placeholder="id"
-              aria-label="id"
-              defaultValue={com.storage.getItem('id')}
-              aria-describedby="basic-addon1"
-            />
-          </InputGroup>
-          <InputGroup className="mb-3">
-            <InputGroup.Text id="basic-addon2">
-              <AiFillLock />
-            </InputGroup.Text>
-            <Form.Control
-              type="password"
-              placeholder="password"
-              aria-label="password"
-              defaultValue={com.storage.getItem('password')}
-              aria-describedby="basic-addon2"
-            />
-          </InputGroup>
-          <Button variant="primary" type="submit" form="login-modal-form">
+      <Body title={`아이디찾기 성공`} myClass={'registresult'}>
+        <Form onSubmit={onSubmit} id="login-modal-form" className="formbox">
+          <h3>아이디 찾기</h3>
+
+          <span>고객님 정보와 일치하는 아이디입니다.</span>
+
+          <p>test0001@gmail.com</p>
+
+          <Button
+            variant="primary"
+            className=""
+            onClick={() => {
+              navigate('/search/password');
+            }}
+          >
+            비밀번호 찾기
+          </Button>
+
+          <Button
+            variant="primary"
+            className="btn_blue"
+            onClick={() => {
+              navigate('/login');
+            }}
+          >
             로그인
           </Button>
         </Form>
@@ -80,4 +78,4 @@ const Login = () => {
   );
 };
 
-export default React.memo(Login);
+export default React.memo(SearchIDResult);

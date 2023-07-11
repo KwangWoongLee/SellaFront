@@ -11,11 +11,15 @@ import Body from 'components/template/Body';
 import 'styles/Login.scss';
 
 const agency_str = ['통신사 선택', 'SKT', 'KT', 'LG'];
+const gender = ['남', '여'];
+const local = ['내국인', '외국인'];
 
 const Regist = () => {
   logger.render('Regist');
 
   const [agencyType, setAgencyType] = useState(0);
+  const [genderType, setGenderType] = useState(0);
+  const [localType, setLocalType] = useState(0);
   useEffect(() => {}, []);
 
   const onSubmit = (e) => {
@@ -31,13 +35,16 @@ const Regist = () => {
     const password = e.currentTarget[12].value;
     const email = '';
 
-    com.storage.setItem('id', id);
-    com.storage.setItem('password', password);
+
 
     request.post('user/regist', { id, password, phone, name, email, gender, local }).then((ret) => {
       if (!ret.err) {
+        com.storage.setItem('id', id);
+        com.storage.setItem('password', password);
+        
         navigate('/regist/result');
       } else {
+
       }
     });
 
@@ -84,7 +91,7 @@ const Regist = () => {
             </div>
             <div className="terms">
               <input type={'checkbox'}></input>
-              <label>전체 약관 동의</label>
+              <label>전체 약관에 모두 동의합니다.</label>
             </div>
           </div>
           <div className="rightbox">
@@ -110,20 +117,36 @@ const Regist = () => {
             <div className="btnbox">
               {/* 버튼이 클릭됐을 때 className에 on 넣어주시면 됩니다! */}
               <ButtonGroup aria-label="gender" className="gender">
-                <Button variant="secondary" className="btn-primary on">
-                  남
-                </Button>
-                <Button variant="secondary" className="btn-primary">
-                  여
-                </Button>
+                {gender.map((name, key) => (
+                  <Button
+                    variant="secondary"
+                    className={genderType === key ? 'btn-primary on' : 'btn-primary'}
+                    key={key}
+                    eventKey={key}
+                    onClick={(e) => {
+                      setGenderType(key);
+                    }}
+                    active={genderType === key}
+                  >
+                    {gender[key]}
+                  </Button>
+                ))}
               </ButtonGroup>
               <ButtonGroup aria-label="local" className="local">
-                <Button variant="secondary" className="btn-primary on">
-                  내국인
-                </Button>
-                <Button variant="secondary" className="btn-primary">
-                  외국인
-                </Button>
+                {local.map((name, key) => (
+                  <Button
+                    variant="secondary"
+                    className={localType === key ? 'btn-primary on' : 'btn-primary'}
+                    key={key}
+                    eventKey={key}
+                    onClick={(e) => {
+                      setLocalType(key);
+                    }}
+                    active={localType === key}
+                  >
+                    {local[key]}
+                  </Button>
+                ))}
               </ButtonGroup>
             </div>
             <InputGroup className="inputphone1">
@@ -132,12 +155,16 @@ const Regist = () => {
                 인증번호 발송
               </Button>
             </InputGroup>
+            <span className="inform inform1">인증번호를 발송했습니다.</span>
             <InputGroup className="inputphone2">
               <Form.Control type="text" placeholder="인증번호 입력" defaultValue={''} />
               <Button variant="primary" className="btn_blue">
                 인증하기
               </Button>
             </InputGroup>
+            {/* 경고 텍스트 span.inform 만들어뒀어용, 기본은 초록색으로 나오고, red 클래스로 폰트색 바꾸고 vhidden 으로 숨길수 있습니다. 
+            각 필요한 영역마다 넣어두었고 inform1 ~ inform4 까지 있습니다.*/}
+            <span className="inform inform2 red">인증번호가 일치하지 않습니다.</span>
             <label>아이디/비밀번호</label>
             <InputGroup className="inputid">
               <Form.Control type="text" placeholder="이메일주소" defaultValue={''} />
@@ -145,13 +172,15 @@ const Regist = () => {
                 중복체크
               </Button>
             </InputGroup>
+            <span className="inform inform3 vhidden">사용가능한 이메일입니다.</span>
             <InputGroup className="inputpw1">
-              <Form.Control type="password1" placeholder="비밀번호" defaultValue={''} />
+              <Form.Control type="password" placeholder="비밀번호" defaultValue={''} />
             </InputGroup>
             <InputGroup className="inputpw2">
-              <Form.Control type="password2" placeholder="비밀번호 확인" defaultValue={''} />
+              <Form.Control type="password" placeholder="비밀번호 확인" defaultValue={''} />
             </InputGroup>
-            <Button variant="primary" type="submit" form="regist-form" className="btn_blue">
+            <span className="inform inform4 vhidden">8~16자 대/소문자, 숫자, 특수문자를 사용하세요.</span>
+            <Button variant="primary" type="submit" form="regist-form" className="btn_blue btn_submit">
               회원가입
             </Button>
           </div>

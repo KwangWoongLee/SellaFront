@@ -90,15 +90,36 @@ const Login = () => {
               <label>ID 저장</label>
             </div>
             <div className="btnbox_right">
-              <Nav.Link className="btn_txt">아이디 찾기</Nav.Link>
+              <Nav.Link
+                className="btn_txt"
+                onClick={() => {
+                  navigate('/search/id');
+                }}
+              >
+                아이디 찾기
+              </Nav.Link>
               <span> · </span>
-              <Nav.Link className="btn_txt">비밀번호 찾기</Nav.Link>
+              <Nav.Link
+                className="btn_txt"
+                onClick={() => {
+                  navigate('/search/password');
+                }}
+              >
+                비밀번호 찾기
+              </Nav.Link>
             </div>
           </div>
           <Button variant="primary" type="submit" form="login-modal-form" className="btn_blue btn_login">
             로그인
           </Button>
-          <Nav.Link className="btn_txt btn_join">회원가입</Nav.Link>
+          <Nav.Link
+            className="btn_txt btn_join"
+            onClick={() => {
+              navigate('/regist');
+            }}
+          >
+            회원가입
+          </Nav.Link>
         </Form>
       </Body>
       <Footer />

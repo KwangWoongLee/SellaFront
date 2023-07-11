@@ -24,7 +24,6 @@ import 'styles/FormManagement.scss';
 
 import icon_search from 'images/icon_search.svg';
 import icon_reset from 'images/icon_reset.svg';
-import icon_tip from 'images/icon_tip.svg';
 
 const FormManagement_Custom_Add = (param) => {
   logger.render('FormManagement_Custom_Add');
@@ -189,6 +188,7 @@ const FormManagement_Custom_Add = (param) => {
           <thead>
             <th>셀라 표준 항목</th>
             <th>선택한 엑셀 항목</th>
+            {/* <th></th> */}
           </thead>
         </table>
         <table className="tbody">
@@ -307,6 +307,10 @@ const SellaForm = React.memo(({ index, d, selectRow, onClick, checkedItemHandler
         <td className="td_click">
           <Button onClick={onClick}>여기를 클릭하여 매칭해주세요.</Button>
         </td>
+        // <td>
+        //   <label>배송비 수수료</label>
+        //   <input type="text" /><span>원</span>
+        // </td>
       )}
     </tr>
   );
@@ -319,8 +323,7 @@ const UploadExcelItems = React.memo(({ index, d, callback }) => {
       <td>{d.column}</td>
       <td>
         {d.header}
-        <br />
-        {d.value}
+        <p>{d.value}</p>
       </td>
       <td>
         <Button

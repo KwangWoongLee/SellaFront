@@ -49,6 +49,11 @@ body {
 .hidden {
   display: none !important;
 }
+
+.vhidden {
+  visibility: hidden !important;
+}
+
 .v_center {
   display: flex;
   align-items: center;

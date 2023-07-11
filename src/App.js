@@ -21,6 +21,8 @@ import Regist from 'components/base/Regist';
 import RegistResult from 'components/base/RegistResult';
 import SearchID from 'components/base/SearchID';
 import SearchPW from 'components/base/SearchPW';
+import SearchIDResult from 'components/base/SearchIDResult';
+import SearchPWResult from 'components/base/SearchPWResult';
 
 import { logger } from 'util/com';
 import ProtectedRoute from 'components/common/ProtectedRoute';
@@ -170,8 +172,14 @@ export function App() {
           </Route>
 
           <Route path="search">
-            <Route path="id" element={<SearchID />} />
-            <Route path="password" element={<SearchPW />} />
+            <Route path="id">
+              <Route path="" element={<SearchID />} />
+              <Route path="result" element={<SearchIDResult />} />
+            </Route>
+            <Route path="password">
+              <Route path="" element={<SearchPW />} />
+              <Route path="result" element={<SearchPWResult />} />
+            </Route>
           </Route>
 
           <Route path="*" element={<h1>Not Found Page</h1>} />
