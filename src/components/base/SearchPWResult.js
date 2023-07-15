@@ -44,35 +44,43 @@ const Login = () => {
   return (
     <>
       <Head />
-      <Body title={`손익 계산`}>
-        <Form onSubmit={onSubmit} id="login-modal-form">
-          <InputGroup className="mb-3">
-            <InputGroup.Text id="basic-addon1">
-              <AiFillMail />
-            </InputGroup.Text>
-            <Form.Control
-              type="text"
-              placeholder="id"
-              aria-label="id"
-              defaultValue={com.storage.getItem('id')}
-              aria-describedby="basic-addon1"
-            />
+      <Body title={`비밀번호 찾기 성공`} myClass={'searchresult'}>
+        <Form onSubmit={onSubmit} id="login-modal-form" className="formbox">
+          <h3>비밀번호 찾기</h3>
+
+          <span>안전한 비밀번호로 변경해주세요.</span>
+
+          <InputGroup className="inputid">
+            <label>새 비밀번호</label>
+            <Form.Control type="password" placeholder="새 비밀번호" defaultValue={''} />
           </InputGroup>
-          <InputGroup className="mb-3">
-            <InputGroup.Text id="basic-addon2">
-              <AiFillLock />
-            </InputGroup.Text>
-            <Form.Control
-              type="password"
-              placeholder="password"
-              aria-label="password"
-              defaultValue={com.storage.getItem('password')}
-              aria-describedby="basic-addon2"
-            />
+
+          <InputGroup className="inputname">
+            <label>새 비밀번호 확인</label>
+            <Form.Control type="password" placeholder="새 비밀번호 확인" defaultValue={''} />
           </InputGroup>
-          <Button variant="primary" type="submit" form="login-modal-form">
-            로그인
-          </Button>
+
+          <span className="inform">인증번호를 발송했습니다.</span>
+
+          <div className="btnbox">
+            <Button
+              variant="primary"
+              onClick={() => {
+                navigate('/search/password');
+              }}
+            >
+              비밀번호 찾기
+            </Button>
+            <Button
+              variant="primary"
+              className="btn_blue"
+              onClick={() => {
+                navigate('/login');
+              }}
+            >
+              로그인
+            </Button>
+          </div>
         </Form>
       </Body>
       <Footer />

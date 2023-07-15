@@ -4,11 +4,20 @@
 .body.regist,
 .body.registresult,
 .body.searchid,
+.body.searchresult,
 .body.searchpw {
   display: flex;
   align-items: center;
   justify-content: center;
+}
 
+.body.login,
+.body.regist,
+.body.registresult,
+.body.searchid,
+.body.searchresult,
+.body.searchpw,
+.body.myprofile {
   .videobox {
     display: block;
     float: left;
@@ -118,7 +127,8 @@
 
 .body.regist,
 .body.searchid,
-.body.searchpw {
+.body.searchpw,
+.body.myprofile {
   .formbox {
     margin-left: 0;
     width: 750px;
@@ -251,7 +261,8 @@
   }
 }
 
-.body.registresult {
+.body.registresult,
+.body.searchresult {
   .formbox {
     width: 500px;
 
@@ -285,6 +296,18 @@
       margin: 0 auto;
       height: 40px;
       width: 100%;
+    }
+
+    .btnbox {
+      button {
+        display: block;
+        float: left;
+        width: calc(50% - 5px);
+      }
+
+      button:first-child {
+        margin-right: 10px;
+      }
     }
   }
 }
@@ -414,5 +437,102 @@
   .inputname {
     float: left;
     width: calc(50% - 5px);
+  }
+}
+
+.body.myprofile {
+  .page {
+    display: flex;
+    justify-content: center;
+    padding-top: 70px;
+    overflow: auto;
+
+    h3 {
+      width: 100%;
+      height: auto;
+      font-size: 24px;
+      line-height: 24px;
+      font-weight: 600;
+      text-align: center;
+      color: #000;
+    }
+
+    .formbox {
+      display: inline-block;
+      width: 20%;
+      height: auto;
+    }
+  }
+
+  .input-group {
+    display: inline-block;
+    width: 100%;
+    height: auto;
+  }
+
+  label {
+    float: left;
+    width: 100px !important;
+    height: 32px;
+    line-height: 32px !important;
+    margin-right: 10px;
+    margin-bottom: 0 !important;
+    font-size: 13px;
+    font-weight: 500;
+    color: #777 !important;
+  }
+
+  input {
+    display: block;
+    float: right;
+    width: calc(100% - 110px) !important;
+  }
+
+  .inform {
+    display: inline-block;
+    float: right;
+    width: calc(100% - 110px) !important;
+  }
+
+  .inputid,
+  .inputpw1,
+  .inform1,
+  .inform2 {
+    margin-bottom: 25px;
+  }
+
+  .inputpw2 {
+    label {
+      height: 64px;
+      line-height: 64px;
+    }
+
+    input {
+      border: 1px solid #ccc !important;
+    }
+
+    input:nth-child(2) {
+      border-top-left-radius: 5px !important;
+      border-top-right-radius: 5px !important;
+      border-bottom-left-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+      border-bottom: 0 !important;
+    }
+  }
+
+  .inputname,
+  .inputcompany {
+    margin-bottom: 10px;
+  }
+
+  .btn_submit {
+    margin: 40px 0 30px;
+  }
+
+  .btn_txt {
+    display: block;
+    margin: 0 auto;
+    font-size: 13px;
+    color: #777;
   }
 }

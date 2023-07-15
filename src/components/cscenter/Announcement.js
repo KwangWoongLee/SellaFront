@@ -106,6 +106,16 @@ const Announcement = () => {
     });
   };
 
+  const onReset = () => {
+    setDatas([]);
+    setPage(1);
+    setCategoryType(0);
+    setTitle('');
+  };
+  const onChangeCategoryType = (type) => {
+    setCategoryType(type);
+  };
+
   return (
     <>
       <Head />
@@ -128,20 +138,18 @@ const Announcement = () => {
           </div>
 
           <div className="inputbox">
-            <DropdownButton variant="" title={category_str[categoryType]}>
+            {/* default 전체, 
+            다른버튼 클릭하여 조회기간 변경 시 해당 버튼에 btn_blue 클래스 넣어주시면 됩니다~  
+            
+              여기가 조회기간이 아니라 카테고리인데, 아래 className="period" 바꿔도 작동 문제 없이 되나요..?
+            */}
+            <div className="period">
               {category_str.map((name, key) => (
-                <Dropdown.Item
-                  key={key}
-                  eventKey={key}
-                  onClick={(e) => {
-                    setCategoryType(key);
-                  }}
-                  active={categoryType === key}
-                >
-                  {category_str[key]}
-                </Dropdown.Item>
+                <Button onClick={(e) => onChangeCategoryType(key)} className={categoryType == key ? 'btn_blue' : ''}>
+                  {name}
+                </Button>
               ))}
-            </DropdownButton>
+            </div>
             <input
               name="title"
               type="text"
@@ -155,7 +163,7 @@ const Announcement = () => {
             <Button onClick={onSearch} className="btn btn_search">
               <img src={icon_search} />
             </Button>
-            <Button className="btn_reset">
+            <Button className="btn_reset" onClick={onReset}>
               <img src={icon_reset} />
             </Button>
           </div>

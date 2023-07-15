@@ -1,17 +1,19 @@
 // MarginCalc.
+// TodaySummary
 
-.body.margin_calc {
+.body.margin_calc,
+.body.today_summary {
+  .nav-tabs .nav-item:nth-child(3),
   .nav-tabs .nav-item:nth-child(4),
-  .nav-tabs .nav-item:nth-child(5),
-  .nav-tabs .nav-item:nth-child(6) {
+  .nav-tabs .nav-item:nth-child(5) {
     float: right;
   }
-
-  .btnbox {
+  .inputbox {
     display: inline-block;
     float: left;
 
     .btn {
+      float: left;
       margin-right: 10px;
     }
 
@@ -25,23 +27,31 @@
       border-bottom-right-radius: 0 !important;
     }
 
-    .btn:nth-child(2) {
-      display: block;
-    }
-
-    .btn:nth-child(3),
-    .btn:nth-child(4),
-    .btn:nth-child(5),
-    .btn:nth-child(6) {
+    .btnbox {
+      display: inline-block;
       margin-top: 10px;
-    }
+      width: 100%;
+      height: auto;
 
-    .btn:nth-child(6) {
-      margin-right: 5px;
-    }
+      .btn:nth-child(2) {
+        display: block;
+      }
 
-    .btn_set {
-      margin-top: 9px;
+      .btn:nth-child(6) {
+        margin-right: 5px;
+      }
+
+      .btn_set {
+        margin-top: 1px;
+      }
+
+      .txt_red {
+        display: inline-block;
+        float: left;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 32px;
+      }
     }
   }
 
@@ -88,7 +98,7 @@
     }
 
     li.profit .dd {
-      color: #1d7044;
+      color: #006d00;
     }
 
     li.profit .dd:before {
@@ -98,7 +108,7 @@
     }
 
     li.loss .dd {
-      color: #b84a4a;
+      color: #d20000;
     }
 
     li.loss .dd:before {

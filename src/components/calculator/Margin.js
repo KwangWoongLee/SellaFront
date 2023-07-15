@@ -318,7 +318,6 @@ const Margin = () => {
 
                   <tr>
                     <td>
-                      {' '}
                       <span className="txt_green">판매가격</span>
                       <input
                         type="number"
@@ -326,14 +325,13 @@ const Margin = () => {
                         onChange={(e) => {
                           onChangeInput(e, sellPriceRef);
                         }}
-                      ></input>{' '}
+                      ></input>
                       <span>원</span>
                     </td>
                   </tr>
 
                   <tr>
                     <td>
-                      {' '}
                       <span className="txt_green">받은 배송비</span>
                       <input type="number" ref={sellDeliveryFeeRef}></input>
                       <span>원</span>
@@ -347,9 +345,7 @@ const Margin = () => {
                   </tr>
 
                   <tr>
-                    {' '}
                     <td>
-                      {' '}
                       <span className="txt_red">매입가</span>
                       <input type="number" ref={stockPriceRef}></input>
                       <span>원</span>
@@ -357,9 +353,7 @@ const Margin = () => {
                   </tr>
 
                   <tr>
-                    {' '}
                     <td>
-                      {' '}
                       <span className="txt_red ">택배비·포장비</span>
                       <input type="number" ref={savedDPFeeRef}></input>
                       <span>원</span>
@@ -367,9 +361,7 @@ const Margin = () => {
                   </tr>
 
                   <tr>
-                    {' '}
                     <td>
-                      {' '}
                       <span className="txt_red">수수료</span>
                       <DropdownButton
                         variant=""
@@ -391,35 +383,27 @@ const Margin = () => {
                     </td>
                   </tr>
                   <tr>
-                    {' '}
                     <td>
-                      {' '}
                       <span className="txt_small">매체 수수료</span>
                       <input type="number" ref={platformFeeRateRef}></input>
                       <span>%</span>
                     </td>
                   </tr>
                   <tr>
-                    {' '}
                     <td>
-                      {' '}
                       <span className="txt_small">배송비 수수료</span>
                       <input type="number" ref={platformDeliverFeeRateRef}></input>
                       <span>%</span>
                     </td>
                   </tr>
                   <tr>
-                    {' '}
                     <td className="td_sum gray">
-                      {' '}
                       <span>최저 판매가</span> {lowestPrice} 원
                     </td>
                   </tr>
                   <tr>
-                    {' '}
                     <td>
-                      {' '}
-                      <span>최저 마진</span>
+                      <span>최저 마진율</span>
                       <input type="number" ref={lowestMarginRateRef}></input>
                       <span>%</span>
                     </td>
@@ -438,7 +422,7 @@ const Margin = () => {
               </Button>
             </div>
             <div style={containerStyle} className="tablebox">
-              <div style={gridStyle} className="ag-theme-alpine test">
+              <div style={gridStyle} className="ag-theme-alpine">
                 <AgGridReact
                   ref={gridRef}
                   rowData={rowData}
@@ -447,6 +431,7 @@ const Margin = () => {
                   alwaysShowVerticalScroll={true}
                   defaultColDef={defaultColDef}
                   rowSelection={'multiple'}
+                  overlayNoRowsTemplate={'데이터가 없습니다.'}
                 ></AgGridReact>
               </div>
             </div>

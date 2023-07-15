@@ -93,12 +93,12 @@ body {
   font-size: 13px;
 }
 .txt_sum {
-  color: #b84a4a;
+  color: #d20000;
   font-weight: 500;
 }
 .txt_required {
   margin-right: 5px;
-  color: #b84a4a;
+  color: #d20000;
   font-weight: 500;
   font-size: 20px;
   vertical-align: middle;
@@ -112,11 +112,11 @@ body {
 }
 
 .txt_green {
-  color: #1d7044 !important;
+  color: #006d00 !important;
 }
 
 .txt_red {
-  color: #b84a4a !important;
+  color: #d20000 !important;
 }
 
 .center {
@@ -193,12 +193,34 @@ button:hover {
 }
 
 .btn_reset {
+  margin-top: 3px;
+  margin-left: 5px;
   width: 28px;
   height: auto;
   min-width: unset;
   padding: 5px;
   border: 0;
   background: transparent;
+}
+
+.btn_more {
+  padding: 0 !important;
+  width: 62px !important;
+  min-width: unset !important;
+  height: 20px !important;
+  font-size: 0;
+  text-align: left;
+  border: 0;
+  background: url(../images/icon_arrow_left2.svg) no-repeat right center;
+  background-size: 20px;
+}
+
+.btn_more:before {
+  content: '더보기';
+  padding-left: 5px;
+  font-size: 13px;
+  line-height: 19.5px;
+  color: #017efa;
 }
 
 .btn_tip {
@@ -239,8 +261,8 @@ button:hover {
 .btn_red:hover,
 .btn_red:focus {
   color: #fff;
-  background-color: #b84a4a;
-  border-color: #b84a4a;
+  background-color: #d20000;
+  border-color: #d20000;
 }
 
 .btn_blue,
@@ -251,12 +273,20 @@ button:hover {
   border-color: #081a51;
 }
 
+.btn_flblue,
+.btn_flblue:hover,
+.btn_flblue:focus {
+  color: #fff;
+  background-color: #0051ff;
+  border-color: #0051ff;
+}
+
 .btn_green,
 .btn_green:hover,
 .btn_green:focus {
   color: #fff;
-  background-color: #1d7044;
-  border-color: #1d7044;
+  background-color: #006d00;
+  border-color: #006d00;
 }
 
 .btn_green img {
@@ -360,6 +390,7 @@ input[type='checkbox'] {
 }
 
 .dropdown > button {
+  min-height: 32px;
   text-align: left;
 }
 

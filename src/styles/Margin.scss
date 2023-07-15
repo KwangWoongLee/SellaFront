@@ -1,6 +1,7 @@
-// margin.
+// calculator > margin, buying
 
-.body.margin {
+.body.margin,
+.body.buying {
   .page {
     overflow: auto;
   }
@@ -112,16 +113,16 @@
   }
 
   .section1 .tablebox2 table .td_sum.green {
-    color: #1d7044;
-    border-top: 1px solid #1d7044;
-    border-bottom: 1px solid #1d7044;
+    color: #006d00;
+    border-top: 1px solid #006d00;
+    border-bottom: 1px solid #006d00;
     background-color: #ddf4e8;
   }
 
   .section1 .tablebox2 table .td_sum.red {
-    color: #b84a4a;
-    border-top: 1px solid #b84a4a;
-    border-bottom: 1px solid #b84a4a;
+    color: #d20000;
+    border-top: 1px solid #d20000;
+    border-bottom: 1px solid #d20000;
     background-color: #fae3e3;
   }
 
@@ -181,10 +182,11 @@
     width: 100%;
   }
 
-  .section1 .tablebox2 table td > input + span {
+  .section1 .tablebox2 table td input + span {
     display: inline-block;
     float: right;
     width: 20px;
+    line-height: 32px;
     color: #888;
     text-align: right;
   }
@@ -194,5 +196,71 @@
     width: 100%;
     border-top-right-radius: 0;
     border-top-left-radius: 0;
+  }
+}
+
+.body.buying {
+  .section1 {
+    width: 600px;
+  }
+
+  .section2 {
+    width: calc(100% - 630px);
+  }
+
+  .section1 .tablebox1 {
+    table th {
+      width: 240px;
+    }
+  }
+
+  .section1 .tablebox2 {
+    background-color: #fff;
+
+    table {
+      box-shadow: unset !important;
+      border-radius: 0 !important;
+    }
+
+    table.tbody td {
+      border-bottom: 0 !important;
+    }
+
+    table.tbodyleft,
+    table.tbodyright {
+      float: left;
+      width: 50%;
+    }
+
+    table.tbodyleft {
+      border-right: 1px solid #081a51;
+    }
+
+    .td_sum {
+      color: #e90000 !important;
+    }
+
+    .input_prdname {
+      width: 100%;
+      border-top-right-radius: 5px !important;
+      border-bottom-right-radius: 5px !important;
+    }
+
+    .inputbox {
+      float: right;
+      width: calc(100% - 101px);
+
+      input {
+        width: calc(100% - 20px);
+      }
+
+      input:first-child {
+        margin-bottom: 10px;
+      }
+    }
+
+    .span_br {
+      line-height: normal;
+    }
   }
 }

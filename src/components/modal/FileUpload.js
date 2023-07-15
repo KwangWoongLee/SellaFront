@@ -5,6 +5,7 @@ import { logger, modal } from 'util/com';
 import 'styles/Modal.scss';
 import request from 'util/request';
 import _ from 'lodash';
+
 import icon_close from 'images/icon_close.svg';
 
 const FileUpload = () => {

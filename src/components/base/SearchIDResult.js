@@ -44,34 +44,34 @@ const SearchIDResult = () => {
   return (
     <>
       <Head />
-      <Body title={`아이디찾기 성공`} myClass={'registresult'}>
-        <Form onSubmit={onSubmit} id="login-modal-form" className="formbox">
+      <Body title={`아이디 찾기 성공`} myClass={'searchresult'}>
+        <div className="formbox">
           <h3>아이디 찾기</h3>
 
           <span>고객님 정보와 일치하는 아이디입니다.</span>
 
           <p>test0001@gmail.com</p>
 
-          <Button
-            variant="primary"
-            className=""
-            onClick={() => {
-              navigate('/search/password');
-            }}
-          >
-            비밀번호 찾기
-          </Button>
-
-          <Button
-            variant="primary"
-            className="btn_blue"
-            onClick={() => {
-              navigate('/login');
-            }}
-          >
-            로그인
-          </Button>
-        </Form>
+          <div className="btnbox">
+            <Button
+              variant="primary"
+              onClick={() => {
+                navigate('/search/password');
+              }}
+            >
+              비밀번호 찾기
+            </Button>
+            <Button
+              variant="primary"
+              className="btn_blue"
+              onClick={() => {
+                navigate('/login');
+              }}
+            >
+              로그인
+            </Button>
+          </div>
+        </div>
       </Body>
       <Footer />
     </>

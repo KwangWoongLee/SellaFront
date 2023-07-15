@@ -15,6 +15,8 @@ import _ from 'lodash';
 
 import 'styles/FormManagement.scss';
 
+import icon_circle_arrow_down from 'images/icon_circle_arrow_down.svg';
+
 const FormManagement_Basic = (param) => {
   logger.render('FormManagement_Basic');
 
@@ -59,18 +61,27 @@ const FormManagement_Basic = (param) => {
     <>
       {platform && (
         <>
-          <h3>{platform.name} - 양식 확인</h3> <Button onClick={onDownload}>엑셀 양식 다운로드</Button>
-          <div>
-            제목행 : {platform.title_row}번째 / 주문 시작 행 : {platform.start_row}번째 / 끝에서부터 제거할 행의 개수 :{' '}
-            {platform.end_row}줄
-            <table className="section">
-              <caption></caption>
-              <thead></thead>
-              <tbody>
-                {rowData && rowData.map((d, key) => <FormItems key={key} index={key} d={d} />)}
-                <></>
-              </tbody>
-            </table>
+          <h3>{platform.name} - 양식 확인</h3>
+          <Button variant="primary" onClick={onDownload} className="btn_green">
+            <img src={icon_circle_arrow_down} />
+            엑셀 양식 다운로드
+          </Button>
+          <div className="tablebox">
+            <p>
+              <span>제목행</span> : {platform.title_row}번째 / <span>주문 시작 행</span> : {platform.start_row}번째 /{' '}
+              <span>끝에서부터 제거할 행의 개수</span> : {platform.end_row}줄
+            </p>
+
+            <div className="innerbox">
+              {/* 이부분 출력할 테이블 열이 옆으로 길어지면 가로스크롤이 생겨야하는데, 지금은 이정도로만 작업해둘게요! 실제 데이터 많이 들어갈때 모습 보고 만들겠습니다! */}
+              <table className="table_front">
+                <tbody>
+                  {rowData && rowData.map((d, key) => <FormItems key={key} index={key} d={d} />)}
+                  <></>
+                </tbody>
+              </table>
+
+            </div>
           </div>
         </>
       )}

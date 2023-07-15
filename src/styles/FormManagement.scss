@@ -1,9 +1,9 @@
 // form_management.
 
 .body.form_management {
+  .nav-tabs .nav-item:nth-child(3),
   .nav-tabs .nav-item:nth-child(4),
-  .nav-tabs .nav-item:nth-child(5),
-  .nav-tabs .nav-item:nth-child(6) {
+  .nav-tabs .nav-item:nth-child(5) {
     float: right;
   }
 
@@ -82,6 +82,89 @@
     width: 80%;
     height: 100%;
     overflow: visible;
+
+    h3 + button {
+      float: right;
+      margin-top: -7px;
+    }
+
+    .tablebox {
+      padding: 20px;
+
+      p {
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        font-size: 15px;
+        line-height: 15px;
+        letter-spacing: 1px;
+        border-bottom: 1px solid #ccc;
+
+        span {
+          font-weight: 600;
+        }
+      }
+
+      .innerbox {
+        position: relative;
+        width: 100%;
+        height: calc(100% - 70px);
+        overflow-x: auto;
+        border: 1px solid #ccc;
+      }
+
+      .innerbox:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 41px;
+        height: 100%;
+        z-index: 0;
+        border-right: 1px solid #ccc;
+      }
+
+      .table_front {
+        display: block;
+        min-width: 100%;
+        width: auto;
+        text-align: center;
+        border-bottom: 0;
+        background-color: transparent;
+        z-index: 1;
+
+        tbody {
+          display: table;
+          width: 100%;
+        }
+
+        tr:nth-child(1) {
+          background-color: #efefef;
+          border-bottom: 1px solid #ccc;
+
+          td:nth-child(1) {
+            background: #fff url(../images/icon_edge_br.svg) no-repeat top right;
+            background-size: 29px;
+            border-right: 1px solid #ccc;
+          }
+        }
+
+        td {
+          min-width: 80px;
+          height: 30px;
+          border: 0;
+          border-right: 1px dotted #ccc;
+          border-bottom: 1px dotted #ccc;
+          white-space: nowrap;
+        }
+
+        td:nth-child(1) {
+          width: 40px !important;
+          min-width: 40px !important;
+          max-width: 40px !important;
+          border-right-style: solid;
+        }
+      }
+    }
   }
 
   .section3 {
@@ -218,7 +301,7 @@
         margin: 0 7px;
         font-size: 15px;
         font-weight: 500;
-        color: #b84a4a;
+        color: #d20000;
       }
 
       .td_label input[type='checkbox']:before {
@@ -230,7 +313,7 @@
       }
 
       .td_label input[type='checkbox']:checked + label {
-        color: #b84a4a !important;
+        color: #d20000 !important;
       }
     }
 
@@ -247,10 +330,6 @@
       .inputbox {
         float: right;
         margin: -7px 5px 9px 0;
-
-        .btn_reset {
-          margin-left: 5px;
-        }
       }
 
       th:nth-child(1),

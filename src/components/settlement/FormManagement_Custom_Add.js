@@ -50,7 +50,10 @@ const FormManagement_Custom_Add = (param) => {
     const essential_forms = _.filter(sella_forms, { essential_flag: 1 });
     for (const sella_form of essential_forms) {
       const row_data = {};
-      if (sella_form.check_flag) row_data.check_flag = sella_form.check_flag;
+      if (sella_form.check_flag) {
+        row_data.check_flag = sella_form.check_flag;
+        row_data.checked = true;
+      }
       if (sella_form.tooltip) row_data.tooltip = sella_form.tooltip;
 
       row_data.sella_title = sella_form.title;
@@ -170,11 +173,17 @@ const FormManagement_Custom_Add = (param) => {
   };
 
   const checkedItemHandler = (d) => {
-    console.log(d);
+    const rowDatas = [...rowData];
+    const obj = _.find(rowData, { sella_code: d.sella_code });
+    obj.checked = !d.checked;
+    setRowData(rowDatas);
   };
 
   return (
     <>
+      {/* 주문양식을 불러오기 전 해당 영역은 비어있고 엑셀 업로드 버튼 한개만 떠있게 됩니다. 피그마에 나와있어요!
+    >>> '클릭하여 매칭해주세요' 를 클릭하면 옆에 데이터창이 스르륵 나왔다가 스르륵 사라집니다. 
+    애니메이션 효과는 벤치마킹한 사이트를 보면서 설명드릴게요, 작업하실때 말씀주세요!  */}
       <div className="leftbox">
         <h3>매체명</h3>
         <div className="inputbox">
@@ -261,7 +270,7 @@ const SellaForm = React.memo(({ index, d, selectRow, onClick, checkedItemHandler
         {d.check_flag && (
           <>
             <Checkbox
-              checked={true}
+              checked={d.checked}
               checkedItemHandler={() => {
                 checkedItemHandler(d);
               }}
@@ -305,12 +314,10 @@ const SellaForm = React.memo(({ index, d, selectRow, onClick, checkedItemHandler
         </td>
       ) : (
         <td className="td_click">
-          <Button onClick={onClick}>여기를 클릭하여 매칭해주세요.</Button>
+          <Button disabled={d.check_flag && !d.checked ? true : false} onClick={onClick}>
+            여기를 클릭하여 매칭해주세요.
+          </Button>
         </td>
-        // <td>
-        //   <label>배송비 수수료</label>
-        //   <input type="text" /><span>원</span>
-        // </td>
       )}
     </tr>
   );

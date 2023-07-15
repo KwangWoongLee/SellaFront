@@ -87,7 +87,7 @@ table th:last-child {
 table th.required:before {
   content: "* ";
   font-size: 15px;
-  color: #B84A4A;
+  color: #D20000;
   vertical-align: middle;
 }
 

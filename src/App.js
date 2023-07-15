@@ -17,6 +17,7 @@ import Modals from 'components/modal';
 import Login from 'components/base/Login';
 import Logout from 'components/base/Logout';
 import MyPage from 'components/base/MyPage';
+import MyProfile from 'components/base/MyProfile';
 import Regist from 'components/base/Regist';
 import RegistResult from 'components/base/RegistResult';
 import SearchID from 'components/base/SearchID';
@@ -166,6 +167,16 @@ export function App() {
               </ProtectedRoute>
             }
           />
+
+          <Route
+            path="myprofile"
+            element={
+              <ProtectedRoute>
+                <MyProfile />
+              </ProtectedRoute>
+            }
+          />
+
           <Route path="regist">
             <Route path="" element={<Regist />} />
             <Route path="result" element={<RegistResult />} />
