@@ -18,12 +18,10 @@ const StandardProduct_Search = React.memo(({ rows, selectCallback }) => {
   const [items, setItems] = useState([]);
 
   useEffect(() => {
-    if (rows && rows.length) {
-      setItems([...rows]);
-    } else {
-      const goods = [...Recoils.getState('DATA:GOODS')];
-      setItems(goods);
-    }
+    setItems([...rows]);
+    // if (rows && rows.length) {
+    // } else {
+    // }
   }, [rows]);
 
   const onSearch = (e) => {

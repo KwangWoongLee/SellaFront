@@ -24,6 +24,8 @@ import { AgGridReact } from 'ag-grid-react';
 
 const StandardProduct = () => {
   logger.render('StandardProduct');
+  const account = Recoils.useValue('CONFIG:ACCOUNT');
+  const aidx = account.aidx;
 
   const [goodsData, setGoodsData] = useState([]);
   const [matchData, setMatchData] = useState([]);
@@ -35,64 +37,10 @@ const StandardProduct = () => {
 
   //ag-grid
 
-  const gridRef = useRef();
-  const containerStyle = useMemo(() => ({ width: '100%', height: '100%' }), []);
-  const gridStyle = useMemo(() => ({ height: '1000px', width: '100%' }), []);
-  const defaultColDef = useMemo(() => {
-    return {
-      editable: false,
-      sortable: true,
-      resizable: true,
-      flex: 1,
-      minWidth: 80,
-      autoHeight: true,
-    };
-  }, []);
-
-  const [columnDefs] = useState([
-    { field: 'reg_date', sortable: true, unSortIcon: true, headerName: '연결 일시', minWidth: 160 },
-    {
-      field: 'forms_name',
-      sortable: true,
-      unSortIcon: true,
-      headerName: '주문 매체',
-      minWidth: 120,
-    },
-    {
-      field: 'forms_product_name',
-      sortable: true,
-      unSortIcon: true,
-      headerName: '상품명',
-      wrapText: true,
-      vertical: 'Center',
-      minWidth: 400,
-    },
-    {
-      field: 'forms_option_name1',
-      sortable: true,
-      unSortIcon: true,
-      headerName: '옵션',
-      wrapText: true,
-      vertical: 'Center',
-      minWidth: 200,
-    },
-    {
-      field: 'match_count',
-      valueParser: (params) => Number(params.newValue),
-      headerName: '수량',
-      minWidth: 50,
-    },
-    {
-      field: '',
-      headerName: '',
-      maxWidth: 140,
-    },
-  ]);
-
   useEffect(() => {
-    const goods = [...Recoils.getState('DATA:GOODS')];
-
-    setCategory(goods);
+    const goods = _.cloneDeep(Recoils.getState('DATA:GOODS'));
+    const category = _.uniq(_.map(goods, 'goods_category'));
+    setCategory(['전체', ...category]);
     setGoodsData(goods);
   }, []);
 
@@ -102,31 +50,36 @@ const StandardProduct = () => {
 
   const onSearch = (e) => {
     e.preventDefault();
-    // let goods_data = _.cloneDeep(goodsData);
 
-    // const category = goodsData[categoryType].goods_category;
-    // if (category !== '전체') {
-    //   goods_data = _.filter(goods_data, (goods) => {
-    //     return _.includes(goods.goods_category, category);
-    //   });
-    // }
+    const goods_data = _.cloneDeep(Recoils.getState('DATA:GOODS'));
 
-    // const name = nameRef.current.value;
-    // if (name) {
-    //   goods_data = _.filter(goods_data, (goods) => {
-    //     return _.includes(goods.name, name);
-    //   });
-    // }
+    const search_category = category[categoryType];
+    let searchData = goods_data;
+    if (categoryType != 0)
+      searchData = _.filter(goods_data, (goods) => {
+        return _.includes(goods.goods_category, search_category);
+      });
 
-    // setSearchData(goods_data);
+    const name = nameRef.current.value;
+    if (name) {
+      searchData = _.filter(searchData, (goods) => {
+        return _.includes(goods.name, name);
+      });
+    }
+
+    setGoodsData(searchData);
   };
 
   const onClickSearchRow = (e, d) => {
     e.preventDefault();
     const node = e.target.parentNode;
 
-    let forms_match = [...Recoils.getState('DATA:FORMSMATCH')];
-    let goods_match = [...Recoils.getState('DATA:GOODSMATCH')];
+    let forms_match = Recoils.getState('DATA:FORMSMATCH');
+    forms_match = forms_match && forms_match.length ? [...forms_match] : [];
+
+    let goods_match = Recoils.getState('DATA:GOODSMATCH');
+    goods_match = goods_match && goods_match.length ? [...goods_match] : [];
+
     goods_match = _.filter(goods_match, { goods_idx: d.idx });
     const result = [];
 
@@ -146,9 +99,39 @@ const StandardProduct = () => {
     setTableRow(node.rowIndex);
   };
 
-  const onUpdate = () => {};
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      onSearch(e);
+    }
+  };
 
-  const onDelete = () => {};
+  const onSave = (e, d) => {
+    request.post(`user/goods/match/save`, { aidx, save_data: d }).then((ret) => {
+      if (!ret.err) {
+        logger.info(ret.data);
+
+        Recoils.setState('DATA:GOODSMATCH', ret.data.goods_match);
+      }
+    });
+  };
+
+  const onDelete = (e, d) => {
+    e.preventDefault();
+    request.post(`user/goods/match/delete`, { aidx, save_data: d }).then((ret) => {
+      if (!ret.err) {
+        logger.info(ret.data);
+
+        Recoils.setState('DATA:FORMSMATCH', ret.data.forms_match);
+        Recoils.setState('DATA:GOODSMATCH', ret.data.goods_match);
+        setMatchData(_.filter(matchData, (item) => item.idx != d.idx));
+      }
+    });
+  };
+
+  const onChangeStandardItem = (e, d, value) => {
+    const findObj = _.find(matchData, { idx: d.idx });
+    findObj.match_count = Number(value);
+  };
 
   const onReset = () => {
     setGoodsData([]);
@@ -167,20 +150,26 @@ const StandardProduct = () => {
           <div className="section1">
             <h3>기준상품 연결 조회 </h3>
             <div className="inputbox">
-              <DropdownButton variant="" title={category.length ? category[categoryType].category : ''}>
+              <DropdownButton variant="" title={category[categoryType]}>
                 {category &&
-                  _.uniqBy(category, 'category').map((item, key) => (
+                  category.map((item, key) => (
                     <Dropdown.Item
                       key={key}
                       eventKey={key}
                       onClick={(e) => onChange(key, e)}
                       active={categoryType === key}
                     >
-                      {item.category}
+                      {category[key]}
                     </Dropdown.Item>
                   ))}
               </DropdownButton>
-              <input type="text" placeholder={'상품명'} ref={nameRef} className="input_search"></input>
+              <input
+                type="text"
+                placeholder={'상품명'}
+                ref={nameRef}
+                className="input_search"
+                onKeyDown={handleKeyDown}
+              ></input>
               <Button onClick={onSearch} className="btn_search">
                 <img src={icon_search} />
               </Button>
@@ -219,21 +208,38 @@ const StandardProduct = () => {
           </div>
           <div className="section2">
             <h3>
-              기준상품 연결 조회 <span>0</span> {/* 연결된 상품 수 출력 */}
+              기준상품 연결 조회 <span>{matchData.length}</span>
             </h3>
-            {/* 이부분 데이터가 뿌려지는 걸 못봐서 나중에 다시 스타일 잡을게요! */}
-            <div style={gridStyle} className="ag-theme-alpine">
-              <AgGridReact
-                ref={gridRef}
-                rowData={matchData}
-                columnDefs={columnDefs}
-                alwaysShowHorizontalScroll={true}
-                alwaysShowVerticalScroll={true}
-                defaultColDef={defaultColDef}
-                rowSelection={'multiple'}
-                overlayNoRowsTemplate={'데이터가 없습니다.'}
-              ></AgGridReact>
-            </div>
+            {/* 이부분 데이터가 뿌려지는 걸 못봐서 나중에 다시 스타일 잡을게요! 
+            이 부분을 AGGrid로 하자고 말씀해주셨었나요..?ㅠ 여기는 별 기능이없어
+            그냥 테이블로 바꿔놓을게요 ?*/}
+
+            <table className="standardtable">
+              <thead>
+                <th>연결일시</th>
+                <th>주문매체</th>
+                <th>상품명</th>
+                <th>옵션</th>
+                <th>수량</th>
+                <th>수수료</th>
+                <th></th>
+              </thead>
+              <tbody className="tbody">
+                <>
+                  {matchData &&
+                    matchData.map((d, key) => (
+                      <StandardProductItem
+                        key={key}
+                        index={key}
+                        d={d}
+                        onChange={onChangeStandardItem}
+                        onSave={onSave}
+                        onDelete={onDelete}
+                      />
+                    ))}
+                </>
+              </tbody>
+            </table>
           </div>
         </div>
       </Body>
@@ -252,26 +258,59 @@ const GoodsItem = React.memo(({ index, d, onClick, tableRow }) => {
       }}
     >
       <td>{d.idx}</td>
-      <td>{d.category}</td>
+      <td>{d.goods_category}</td>
       <td>{d.name}</td>
     </tr>
   );
 });
 
-const GoodsMatchItem = React.memo(({ index, d, onUpdate, onDelete }) => {
+const StandardProductItem = React.memo(({ index, d, onChange, onSave, onDelete }) => {
   logger.render('GoodsMatchItem : ', index);
+
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    inputRef.current.value = d.match_count;
+  }, [d]);
+
   return (
     <tr>
       <td>{d.reg_date}</td>
       <td>{d.forms_name}</td>
       <td>{d.forms_product_name}</td>
-      <td>{d.forms_option_name1}</td>
-      <td>{d.match_count}</td>
       <td>
-        <button className="btn-primary btn_blue btn_small" onClick={onUpdate}>
+        {d.forms_option_name1}
+        {d.forms_option_name2 && d.forms_option_name2}
+        {d.forms_option_name3 && d.forms_option_name3}
+      </td>
+      <td>
+        <input
+          type={'number'}
+          ref={inputRef}
+          defaultValue={d.match_count}
+          onChange={(e) => {
+            onChange(e, d, inputRef.current.value);
+          }}
+          className="btn_number"
+        ></input>
+      </td>
+
+      <td>{d.category_fee_rate}</td>
+      <td>
+        <button
+          className="btn-primary btn_blue btn_small"
+          onClick={(e) => {
+            onSave(e, d);
+          }}
+        >
           저장
         </button>
-        <button className="btn_del" onClick={onDelete}>
+        <button
+          className="btn_del"
+          onClick={(e) => {
+            onDelete(e, d);
+          }}
+        >
           <img src={icon_del} />
         </button>
       </td>

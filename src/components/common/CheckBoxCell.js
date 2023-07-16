@@ -3,6 +3,10 @@ import React, { useState, useEffect } from 'react';
 function Checkbox({ checked, checkedItemHandler }) {
   const [bChecked, setChecked] = useState(checked);
 
+  useEffect(() => {
+    setChecked(checked);
+  }, [checked]);
+
   const checkHandler = ({ target }) => {
     setChecked(!bChecked);
     checkedItemHandler(target.checked);

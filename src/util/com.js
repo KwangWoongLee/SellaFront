@@ -144,10 +144,10 @@ export const page_reload = () => {
 };
 
 export const is_authed = () => {
-  const id = com.storage.getItem('id');
+  const email = com.storage.getItem('email');
   const password = com.storage.getItem('password');
   const account = Recoils.getState('CONFIG:ACCOUNT');
-  if (id && password && account.grade === -1) {
+  if (email && password && account.grade === -1) {
     return false;
   }
   return true;

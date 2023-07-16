@@ -37,13 +37,6 @@ const SaleProduct = () => {
     for (const match_data of forms_match) {
       match_data.goods_match = [];
 
-      match_data.goods_match_idxs = _.transform(
-        _.split(match_data.goods_match_idxs, ','),
-        function (result, n) {
-          result.push(Number(n));
-        },
-        []
-      );
       for (const goods_match_idx of match_data.goods_match_idxs) {
         const findGoodsMatchObj = _.find(goods_match, { idx: Number(goods_match_idx) });
         if (!findGoodsMatchObj) continue;
@@ -51,6 +44,7 @@ const SaleProduct = () => {
         if (!findObj) continue;
         const goods = {
           ...findObj,
+          category_fee_rate: findGoodsMatchObj.category_fee_rate,
           match_count: findGoodsMatchObj.match_count,
           goods_match_idx: Number(goods_match_idx),
         };
@@ -61,17 +55,32 @@ const SaleProduct = () => {
     setItems([...forms_match]);
   }, []);
 
-  useEffect(() => {
-    console.log(goodsMatch);
-  }, [goodsMatch]);
-
   const onSelectFormsMatchTable = (d) => {
     // if (rowData && rowData.length && rowData[0].settlement_price) setAbledCategoryFee(false);
     // else setAbledCategoryFee(true);
 
-    const recommends = _.filter(goods_data, { name: d.forms_product_name });
-
+    let recommends = _.filter(goods_data, { name: d.forms_product_name });
+    if (recommends.length == 0) {
+      recommends = [...Recoils.getState('DATA:GOODS')];
+    }
     selectFormsMatchRef.current = d;
+
+    if (!d.goods_match || d.goods_match.length == 0) {
+      d.goods_match = [];
+      for (const goods_match_idx of d.goods_match_idxs) {
+        const findGoodsMatchObj = _.find(goods_match, { idx: Number(goods_match_idx) });
+        if (!findGoodsMatchObj) continue;
+        const findObj = _.find(goods_data, { idx: Number(findGoodsMatchObj.goods_idx) });
+        if (!findObj) continue;
+        const goods = {
+          ...findObj,
+          category_fee_rate: findGoodsMatchObj.category_fee_rate,
+          match_count: findGoodsMatchObj.match_count,
+          goods_match_idx: Number(goods_match_idx),
+        };
+        d.goods_match.push(goods);
+      }
+    }
 
     setStandardItems([...recommends]);
     setGoodsMatchs([...d.goods_match]);
@@ -118,10 +127,14 @@ const SaleProduct = () => {
 
   const onSelectStandardProduct_Search = (d) => {
     if (!selectFormsMatchRef.current) return; // TODO error
-    if (_.find(selectFormsMatchRef.current.goods_match, { idx: d.idx })) return; // TODO error
+    const findObj = _.find(selectFormsMatchRef.current.goods_match, { idx: d.idx });
+    if (findObj) {
+      alert('이미 추가된 상품입니다.');
+      return; // TODO error
+    }
 
     const new_goods_match = { ...d };
-    new_goods_match.match_count = 0;
+    new_goods_match.match_count = 1;
 
     selectFormsMatchRef.current.goods_match = [...selectFormsMatchRef.current.goods_match, new_goods_match];
     setGoodsMatchs([...selectFormsMatchRef.current.goods_match]);
@@ -138,16 +151,14 @@ const SaleProduct = () => {
   const onSave = (e) => {
     if (!selectFormsMatchRef.current) return; // TODO error
 
-    // setItems();
-    //서버보내기
-    //성공하면
-
     request.post(`user/forms/match/save`, { aidx, save_data: selectFormsMatchRef.current }).then((ret) => {
       if (!ret.err) {
         logger.info(ret.data);
 
         Recoils.setState('DATA:FORMSMATCH', ret.data.forms_match);
         Recoils.setState('DATA:GOODSMATCH', ret.data.goods_match);
+
+        setItems(_.cloneDeep(Recoils.getState('DATA:FORMSMATCH')));
       }
     });
   };

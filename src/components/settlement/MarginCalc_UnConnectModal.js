@@ -49,7 +49,11 @@ const MarginCalc_UnConnectModal = React.memo(({ modalState, setModalState, rowDa
   };
 
   const onSelectFormsMatchTable = (d) => {
-    const recommends = _.filter(goods_data, { name: d.forms_product_name });
+    let recommends = _.filter(goods_data, { name: d.forms_product_name });
+
+    if (recommends.length == 0) {
+      recommends = [...Recoils.getState('DATA:GOODS')];
+    }
 
     selectFormsMatchRef.current = d;
 
@@ -93,7 +97,7 @@ const MarginCalc_UnConnectModal = React.memo(({ modalState, setModalState, rowDa
     if (_.find(selectFormsMatchRef.current.goods_match, { idx: d.idx })) return; // TODO error
 
     const new_goods_match = { ...d };
-    new_goods_match.match_count = 0;
+    new_goods_match.match_count = 1;
 
     selectFormsMatchRef.current.goods_match = [...selectFormsMatchRef.current.goods_match, new_goods_match];
     setGoodsMatchs([...selectFormsMatchRef.current.goods_match]);
@@ -110,9 +114,20 @@ const MarginCalc_UnConnectModal = React.memo(({ modalState, setModalState, rowDa
   const onSave = (d) => {
     if (!selectFormsMatchRef.current) return; // TODO error
 
-    // setItems();
-    //서버보내기
-    //성공하면
+    let first = true;
+    let firstRate;
+    for (const good_match of selectFormsMatchRef.current.goods_match) {
+      if (first && !good_match.category_fee_rate) {
+        alert('수수료 검색창에서 연결할 상품의 수수료를 선택해주세요.');
+        return;
+      } else if (first && good_match.category_fee_rate) {
+        first = false;
+        firstRate = good_match.category_fee_rate;
+        continue;
+      }
+
+      if (!good_match.category_fee_rate) good_match.category_fee_rate = firstRate;
+    }
 
     request.post(`user/forms/match/unconnect/save`, { aidx, save_data: selectFormsMatchRef.current }).then((ret) => {
       if (!ret.err) {
@@ -122,6 +137,8 @@ const MarginCalc_UnConnectModal = React.memo(({ modalState, setModalState, rowDa
         Recoils.setState('DATA:GOODSMATCH', ret.data.goods_match);
 
         saveCallback(selectFormsMatchRef.current);
+
+        setGoodsMatchs([]);
       }
     });
   };

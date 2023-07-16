@@ -161,6 +161,25 @@ const FormManagement = () => {
     setFormsDatas([...platformRef.current]);
   };
 
+  const onDelete = () => {
+    const selectedRows = gridRef.current.api.getSelectedRows();
+    const node = selectedRows[0];
+
+    request.post(`user/forms/delete`, { aidx, forms_idx: node.idx }).then((ret) => {
+      if (!ret.err) {
+        logger.info(ret.data);
+
+        let platforms = _.cloneDeep(Recoils.getState('DATA:PLATFORMS'));
+        platforms = _.filter(platforms, (i) => i.idx != node.idx);
+
+        Recoils.setState('DATA:FORMSMATCH', ret.data.forms_match_result);
+        Recoils.setState('DATA:GOODSMATCH', ret.data.goods_match_result);
+
+        setFormsDatas(platforms);
+      }
+    });
+  };
+
   const onGridReady = () => {
     if (formsData) {
       const row0 = gridRef.current.api.getRowNode(0);
@@ -198,7 +217,7 @@ const FormManagement = () => {
               <Button variant="primary" onClick={onAddForm} className="btn_blue">
                 사용자 양식 추가
               </Button>
-              <Button variant="primary" className="btn_red">
+              <Button variant="primary" className="btn_red" onClick={onDelete}>
                 선택 양식 삭제
               </Button>
             </div>

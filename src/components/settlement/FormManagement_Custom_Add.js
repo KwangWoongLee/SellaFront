@@ -37,11 +37,13 @@ const FormManagement_Custom_Add = (param) => {
   const sella_forms = Recoils.useValue('SELLA:SELLAFORMS');
 
   const formNameRef = useRef(null);
+  const searchRef = useRef(null);
   const [modalState, setModalState] = useState(false);
   const [excelData, setExcelData] = useState([]);
   const excelDataRef = useRef(null);
   const nowSelectRef = useRef(null);
   const [selectRow, setSelectRow] = useState(0);
+  const [mode, setMode] = useState(0);
 
   useEffect(() => {
     formNameRef.current.value = platform.name;
@@ -67,8 +69,19 @@ const FormManagement_Custom_Add = (param) => {
 
   const onSaveForm = () => {
     const save_data = [...rowData];
+    if (save_data.length == 0) {
+      alert('매칭되지 않은 항목이 있습니다.');
+      return; // TODO error
+    }
+
     for (const row of save_data) {
-      if (!row.title || !row.column || !row.sella_title || !row.sella_code) return; // TODO error
+      if (row.check_flag && !row.checked) continue;
+      else {
+        if (!row.title || !row.column || !row.sella_title || !row.sella_code) {
+          alert('매칭되지 않은 항목이 있습니다.');
+          return; // TODO error
+        }
+      }
     }
     request.post(`user/forms/save`, { aidx, name: formNameRef.current.value, save_data }).then((ret) => {
       if (!ret.err) {
@@ -84,6 +97,25 @@ const FormManagement_Custom_Add = (param) => {
   };
 
   const onUpload = function () {
+    const rowDatas = [];
+
+    const essential_forms = _.filter(sella_forms, { essential_flag: 1 });
+    for (const sella_form of essential_forms) {
+      const row_data = {};
+      if (sella_form.check_flag) {
+        row_data.check_flag = sella_form.check_flag;
+        row_data.checked = true;
+      }
+      if (sella_form.tooltip) row_data.tooltip = sella_form.tooltip;
+
+      row_data.sella_title = sella_form.title;
+      row_data.sella_essential = sella_form.essential_flag;
+      row_data.sella_code = sella_form.code;
+      rowDatas.push(row_data);
+    }
+
+    setRowData(rowDatas);
+
     modal.file_upload(null, '.xlsx', '파일 업로드', {}, (ret) => {
       if (!ret.err) {
         const { files } = ret;
@@ -115,6 +147,80 @@ const FormManagement_Custom_Add = (param) => {
           }
 
           excelDataRef.current = items;
+
+          const excelDatas = [...excelDataRef.current];
+          setExcelData(excelDatas);
+          setMode(1);
+        };
+
+        if (rABS) {
+          reader.readAsBinaryString(file);
+        } else {
+          reader.readAsArrayBuffer(file);
+        }
+      }
+    });
+  };
+
+  const onNewUpload = function () {
+    excelDataRef.current = null;
+    nowSelectRef.current = null;
+    setExcelData([]);
+    setMode(0);
+
+    const rowDatas = [];
+
+    const essential_forms = _.filter(sella_forms, { essential_flag: 1 });
+    for (const sella_form of essential_forms) {
+      const row_data = {};
+      if (sella_form.check_flag) {
+        row_data.check_flag = sella_form.check_flag;
+        row_data.checked = true;
+      }
+      if (sella_form.tooltip) row_data.tooltip = sella_form.tooltip;
+
+      row_data.sella_title = sella_form.title;
+      row_data.sella_essential = sella_form.essential_flag;
+      row_data.sella_code = sella_form.code;
+      rowDatas.push(row_data);
+    }
+
+    setRowData(rowDatas);
+
+    modal.file_upload(null, '.xlsx', '파일 업로드', {}, (ret) => {
+      if (!ret.err) {
+        const { files } = ret;
+        if (!files.length) return;
+        const file = files[0];
+        const reader = new FileReader();
+        const rABS = !!reader.readAsBinaryString;
+
+        const items = [];
+        reader.onload = (e) => {
+          const bstr = e.target.result;
+          const wb = xlsx.read(bstr, { type: rABS ? 'binary' : 'array', bookVBA: true });
+
+          const wsname = wb.SheetNames[0];
+          const ws = wb.Sheets[wsname];
+
+          for (const key in ws) {
+            const prevlast = key[key.length - 2];
+            const last = key[key.length - 1];
+
+            if (isNaN(prevlast) && !isNaN(last) && Number(last) === 1) {
+              const column = key.slice(0, key.length - 1);
+              const header = ws[key]['h'];
+              let v = '-';
+              if (ws[column + '2']) v = ws[column + '2']['w'];
+
+              items.push({ column, header, value: v });
+            }
+          }
+
+          excelDataRef.current = items;
+
+          const excelDatas = [...excelDataRef.current];
+          setExcelData(excelDatas);
         };
 
         if (rABS) {
@@ -147,8 +253,8 @@ const FormManagement_Custom_Add = (param) => {
     }
 
     nowSelectRef.current = rowIndex;
-    const excelDatas = [...excelDataRef.current];
-    setExcelData(excelDatas);
+
+    setMode(2);
   };
 
   const MatchCallback = ({ title, column, value }) => {
@@ -179,6 +285,24 @@ const FormManagement_Custom_Add = (param) => {
     setRowData(rowDatas);
   };
 
+  const onSearch = (e) => {
+    e.preventDefault();
+
+    const search = searchRef.current.value;
+
+    const search_results = _.filter(excelDataRef.current, (row) => {
+      return _.includes(row.header, search);
+    });
+
+    setExcelData(search_results);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      onSearch(e);
+    }
+  };
+
   return (
     <>
       {/* 주문양식을 불러오기 전 해당 영역은 비어있고 엑셀 업로드 버튼 한개만 떠있게 됩니다. 피그마에 나와있어요!
@@ -188,8 +312,11 @@ const FormManagement_Custom_Add = (param) => {
         <h3>매체명</h3>
         <div className="inputbox">
           <input type={'text'} ref={formNameRef}></input>
-          <button className="btn-primary btn btn_blue">양식 저장</button>
+          <button onClick={onSaveForm} className="btn-primary btn btn_blue">
+            양식 저장
+          </button>
         </div>
+
         <Button variant="primary" className="btn_add" onClick={onAddSellaBasic}>
           항목 추가
         </Button>
@@ -222,33 +349,54 @@ const FormManagement_Custom_Add = (param) => {
       </div>
 
       <div className="rightbox">
-        <Button variant="primary" onClick={onUpload} className="btn_green">
-          주문 양식 불러오기
-        </Button>
-        {/* 주문양식 불러온 후 > 불러온 데이터를 뿌려주면 좋을 것 같습니다. */}
-        <div className="inputbox">
-          <input type="text" className="input_search" placeholder="항목명"></input>
-          <Button className="btn_search">
-            <img src={icon_search} />
-          </Button>
-          <Button className="btn_reset">
-            <img src={icon_reset} />
-          </Button>
-        </div>
-        <table className="thead">
-          <thead>
-            <th>열</th>
-            <th>업로드한 엑셀 항목</th>
-            <th> </th>
-          </thead>
-        </table>
-        <table className="tbody">
-          <tbody>
-            {excelData &&
-              excelData.map((d, key) => <UploadExcelItems key={key} index={key} d={d} callback={MatchCallback} />)}
-            <></>
-          </tbody>
-        </table>
+        {mode == 0 && (
+          <span>
+            <Button onClick={onUpload}>여기를 클릭</Button> 하여 주문양식을 업로드 해주세요.
+          </span>
+        )}
+        {mode == 1 && (
+          <>
+            <span>주문항목을 매칭하시려면 왼쪽 표에서 매칭할 항목을 선택해 주세요.</span>
+          </>
+        )}
+
+        {mode == 2 && (
+          <>
+            <Button variant="primary" onClick={onNewUpload} className="btn_green">
+              주문 양식 불러오기
+            </Button>
+            {/* 주문양식 불러온 후 > 불러온 데이터를 뿌려주면 좋을 것 같습니다. */}
+            <div className="inputbox">
+              <input
+                type="text"
+                className="input_search"
+                placeholder="항목명"
+                ref={searchRef}
+                onKeyDown={handleKeyDown}
+              ></input>
+              <Button className="btn_search" onClick={onSearch}>
+                <img src={icon_search} />
+              </Button>
+              <Button className="btn_reset">
+                <img src={icon_reset} />
+              </Button>
+            </div>
+            <table className="thead">
+              <thead>
+                <th>열</th>
+                <th>업로드한 엑셀 항목</th>
+                <th> </th>
+              </thead>
+            </table>
+            <table className="tbody">
+              <tbody>
+                {excelData &&
+                  excelData.map((d, key) => <UploadExcelItems key={key} index={key} d={d} callback={MatchCallback} />)}
+                <></>
+              </tbody>
+            </table>
+          </>
+        )}
       </div>
       <SellaBasicModal
         modalState={modalState}

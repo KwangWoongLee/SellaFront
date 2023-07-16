@@ -32,6 +32,16 @@ const PLFormatter = (params) => {
   return newValue;
 };
 
+const optionCellRenderer = (props) => {
+  return (
+    <>
+      {props.data.forms_option_name1}
+      {props.data.forms_option_name2 && props.data.forms_option_name2}
+      {props.data.forms_option_name3 && props.data.forms_option_name3}
+    </>
+  );
+};
+
 //
 const ROUTE_COLUMN_BASE = [
   { field: 'idx', hide: true },
@@ -62,7 +72,21 @@ const ROUTE_COLUMN_BASE = [
     width: 120,
   },
 
-  { field: 'order_no', sortable: true, unSortIcon: true, headerName: '주문번호', minWidth: 160 },
+  {
+    field: 'aggregation',
+    rowSpan: (params) => (params.data.aggregation_rowspan ? params.data.aggregation_rowspan : 1),
+    sortable: true,
+    unSortIcon: true,
+    headerName: '배송비묶음번호',
+    minWidth: 160,
+  },
+  {
+    field: 'order_no',
+    sortable: true,
+    unSortIcon: true,
+    headerName: '주문번호',
+    minWidth: 160,
+  },
   {
     field: 'forms_name',
     sortable: true,
@@ -80,13 +104,14 @@ const ROUTE_COLUMN_BASE = [
     vertical: 'Center',
   },
   {
-    field: 'forms_option_name1',
+    field: 'forms_option_name',
     sortable: true,
     unSortIcon: true,
     headerName: '옵션',
     minWidth: 300,
     wrapText: true,
     vertical: 'Center',
+    cellRenderer: optionCellRenderer,
   },
   {
     field: 'count',
@@ -182,10 +207,7 @@ const MarginCalc = () => {
     return {
       editable: false,
       sortable: true,
-      resizable: true,
-      flex: 1,
       minWidth: 80,
-      autoHeight: true,
     };
   }, []);
   const [columnDefs, setColumnDefs] = useState([]);
@@ -235,23 +257,18 @@ const MarginCalc = () => {
         const reader = new FileReader();
         const rABS = !!reader.readAsBinaryString;
 
-        const items = [];
         reader.onload = (e) => {
           const bstr = e.target.result;
           const wb = xlsx.read(bstr, { type: rABS ? 'binary' : 'array', bookVBA: true });
 
-          const title_array = platforms[platformType].title_array;
-          const title_row = platforms[platformType].title_row;
+          const titles = platforms[platformType].titles;
 
           const expected = {};
 
-          const titles = title_array.split(', ');
-          for (const ts of titles) {
-            const title_splits = ts.split('(');
-            const header = title_splits[0];
+          for (const title of titles) {
+            const header = title.title;
 
-            const match_data = title_splits[1].split(')')[0];
-            const column = match_data.split(':')[0];
+            const column = title.column;
             expected[column] = header;
           }
 
@@ -507,6 +524,7 @@ const MarginCalc = () => {
                   onRowDoubleClicked={onClick}
                   getRowStyle={getRowStyle}
                   overlayNoRowsTemplate={'데이터가 없습니다.'}
+                  suppressRowTransform={true}
                 ></AgGridReact>
               </div>
             </div>

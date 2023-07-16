@@ -18,22 +18,24 @@ const Login = () => {
   const onSubmit = (e) => {
     e.preventDefault();
 
-    const id = e.currentTarget[0].value;
+    const email = e.currentTarget[0].value;
     const password = e.currentTarget[1].value;
 
-    com.storage.setItem('id', id);
+    com.storage.setItem('email', email);
     com.storage.setItem('password', password);
 
-    request.post('login', { id, password }).then((ret) => {
+    request.post('login', { email, password }).then((ret) => {
       if (!ret.err) {
         Recoils.setState('CONFIG:ACCOUNT', {
-          id: ret.data.id,
+          email: ret.data.email,
           aidx: ret.data.aidx,
           grade: ret.data.grade,
           name: ret.data.name,
         });
 
         Recoils.setState('DATA:GOODS', ret.data.goods);
+        Recoils.setState('DATA:DELIVERY', ret.data.delivery);
+        Recoils.setState('DATA:PACKING', ret.data.packing);
         Recoils.setState('DATA:PLATFORMS', ret.data.forms);
         Recoils.setState('DATA:FORMSMATCH', ret.data.forms_match);
         Recoils.setState('DATA:GOODSMATCH', ret.data.goods_match);
@@ -45,7 +47,7 @@ const Login = () => {
       }
     });
 
-    logger.info(`submit : id = ${id}, password = ${password}`);
+    logger.info(`submit : email = ${email}, password = ${password}`);
   };
 
   return (
@@ -70,7 +72,7 @@ const Login = () => {
               type="text"
               placeholder="이메일 주소"
               aria-label="id"
-              defaultValue={com.storage.getItem('id')}
+              defaultValue={com.storage.getItem('email')}
               aria-describedby="basic-addon1"
             />
           </InputGroup>

@@ -31,7 +31,7 @@ insert_recoil('MODAL:FILEUPLOAD', {
 // account
 insert_recoil('CONFIG:ACCOUNT', {
   user: {
-    login_id: '',
+    email: '',
     aidx: 0,
   },
   email: '',
@@ -52,6 +52,10 @@ insert_recoil('SELLA:PLATFORM', {
   platform: [],
 });
 
+insert_recoil('SELLA:AGREEMENT', {
+  agreement: [],
+});
+
 // my_datas
 insert_recoil('DATA:PLATFORMS', {
   platforms: [],
@@ -59,6 +63,14 @@ insert_recoil('DATA:PLATFORMS', {
 
 insert_recoil('DATA:GOODS', {
   goods: [],
+});
+
+insert_recoil('DATA:DELIVERY', {
+  delivery: [],
+});
+
+insert_recoil('DATA:PACKING', {
+  packing: [],
 });
 
 insert_recoil('DATA:FORMSMATCH', {

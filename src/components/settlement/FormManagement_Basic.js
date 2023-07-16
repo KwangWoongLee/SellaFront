@@ -32,13 +32,11 @@ const FormManagement_Basic = (param) => {
     const basic_form_rows = [];
     const column_row = [''];
     const header_row = [`${basic_form.title_row}`];
-    const titles = basic_form.title_array.split(', ');
-    for (const ts of titles) {
-      const title_splits = ts.split('(');
-      const header = title_splits[0];
-      const match_data = title_splits[1].split(')')[0];
-      const column = match_data.split(':')[0]; //
-      const sella_code = match_data.split(':')[1];
+    const titles = basic_form.titles;
+    for (const title of titles) {
+      const header = title.title;
+      const column = title.column;
+      const sella_code = title.sella_code;
       column_row.push(column);
       header_row.push(header);
     }
@@ -80,7 +78,6 @@ const FormManagement_Basic = (param) => {
                   <></>
                 </tbody>
               </table>
-
             </div>
           </div>
         </>

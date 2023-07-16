@@ -359,6 +359,13 @@ label {
   background-size: 12px;
 }
 
+.btn-check:active + .btn-secondary,
+.btn-check:checked + .btn-secondary,
+.btn-secondary.active,
+.btn-secondary:active,
+.show > .btn-secondary.dropdown-toggle {
+  border-color: #ccc !important;
+}
 /* form */
 input {
   padding: 5px 12px !important;

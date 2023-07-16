@@ -10,6 +10,7 @@ import request from 'util/request';
 import SettlementNavTab from 'components/settlement/common/SettlementNavTab';
 import Recoils from 'recoils';
 import * as xlsx from 'xlsx';
+import _ from 'lodash';
 
 import { logger } from 'util/com';
 
@@ -31,7 +32,11 @@ const Home = () => {
   const [modalState, setModalState] = useState(false);
   const [columnControlModalState, setColumnControlModalState] = useState(false);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    let temp = _.filter(Recoils.getState('DATA:PLATFORMS'), { view: 1 });
+    temp = _.sortBy(temp, ['_order']);
+    setPlatforms(temp);
+  }, []);
 
   const onUpload = function () {
     setRowData([]);

@@ -45,7 +45,7 @@ const Login = () => {
     <>
       <Head />
       <Body title={`비밀번호 찾기 성공`} myClass={'searchresult'}>
-        <Form onSubmit={onSubmit} id="login-modal-form" className="formbox">
+        <Form onSubmit={onSubmit} id="login-modal-form" className="formbox success">
           <h3>비밀번호 찾기</h3>
 
           <span>안전한 비밀번호로 변경해주세요.</span>
@@ -60,7 +60,7 @@ const Login = () => {
             <Form.Control type="password" placeholder="새 비밀번호 확인" defaultValue={''} />
           </InputGroup>
 
-          <span className="inform">인증번호를 발송했습니다.</span>
+          <span className="inform red">8~16자 영문 대 소문자, 숫자, 특수문자를 사용하세요. </span>
 
           <div className="btnbox">
             <Button
@@ -82,6 +82,40 @@ const Login = () => {
             </Button>
           </div>
         </Form>
+        <div className="formbox fail">
+          <h3>비밀번호 찾기</h3>
+
+          <span>고객님 정보와 일치하지 않습니다.</span>
+
+          <dl>
+            <dt>비밀번호를 찾을수 없나요?</dt>
+            <dd>
+              <span>· 회원정보를 확인하여 비밀번호 찾기를 다시 시도해주세요.</span>
+              <span>· 기타 이유로 비밀번호를 찾을 수 없는 경우, 고객센터로 문의주세요.</span>
+              <span>· 고객센터 : 070-1111-1111</span>
+            </dd>
+          </dl>
+
+          <div className="btnbox">
+            <Button
+              variant="primary"
+              onClick={() => {
+                navigate('/search/password');
+              }}
+            >
+              비밀번호 찾기
+            </Button>
+            <Button
+              variant="primary"
+              className="btn_blue"
+              onClick={() => {
+                navigate('/login');
+              }}
+            >
+              로그인
+            </Button>
+          </div>
+        </div>
       </Body>
       <Footer />
     </>
