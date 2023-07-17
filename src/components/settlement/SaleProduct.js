@@ -141,6 +141,7 @@ const SaleProduct = () => {
   };
 
   const onSelectCategoryFee_Search = (d) => {
+    if (!selectFormsMatchRef.current.goods_match) return;
     for (const good_match of selectFormsMatchRef.current.goods_match) {
       good_match.category_fee_rate = d.category_fee_rate;
     }

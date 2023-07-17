@@ -57,6 +57,11 @@ insert_recoil('SELLA:AGREEMENT', {
 });
 
 // my_datas
+
+insert_recoil('DATA:ROUTES', {
+  routes: {},
+});
+
 insert_recoil('DATA:PLATFORMS', {
   platforms: [],
 });
