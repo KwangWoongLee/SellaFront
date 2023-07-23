@@ -1,3 +1,0 @@
-  # socket.io response : 인게임 채팅 퇴장 응답
-  
-  Response : {}

@@ -165,6 +165,12 @@ const FormManagement = () => {
     const selectedRows = gridRef.current.api.getSelectedRows();
     const node = selectedRows[0];
 
+    if (node.idx == -1) {
+      setFormsDatas(_.drop(formsData, 1));
+
+      return;
+    }
+
     request.post(`user/forms/delete`, { aidx, forms_idx: node.idx }).then((ret) => {
       if (!ret.err) {
         logger.info(ret.data);
@@ -172,6 +178,7 @@ const FormManagement = () => {
         let platforms = _.cloneDeep(Recoils.getState('DATA:PLATFORMS'));
         platforms = _.filter(platforms, (i) => i.idx != node.idx);
 
+        Recoils.setState('DATA:PLATFORMS', platforms);
         Recoils.setState('DATA:FORMSMATCH', ret.data.forms_match_result);
         Recoils.setState('DATA:GOODSMATCH', ret.data.goods_match_result);
 
@@ -217,9 +224,11 @@ const FormManagement = () => {
               <Button variant="primary" onClick={onAddForm} className="btn_blue">
                 사용자 양식 추가
               </Button>
-              <Button variant="primary" className="btn_red" onClick={onDelete}>
-                선택 양식 삭제
-              </Button>
+              {formMode != 1 && (
+                <Button variant="primary" className="btn_red" onClick={onDelete}>
+                  선택 양식 삭제
+                </Button>
+              )}
             </div>
           </div>
           <div className="section2">{formMode == 1 && <FormManagement_Basic platform={nextForm} />}</div>

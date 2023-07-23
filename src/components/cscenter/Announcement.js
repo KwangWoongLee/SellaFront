@@ -10,7 +10,7 @@ import CSCenterNavTab from 'components/cscenter/CSCenterNavTab';
 import Recoils from 'recoils';
 import ImageModal from 'components/common/ImageModal';
 
-import { logger } from 'util/com';
+import { logger, time_format } from 'util/com';
 
 import 'styles/CSCenter.scss';
 
@@ -90,7 +90,16 @@ const Announcement = () => {
 
   const onSearch = (e) => {
     if (title && title.length < 2) {
-      modal.alert('error', '에러', '제목명은 2글자 이상으로 입력하세요.');
+      modal.confirm(
+        '제목명은 2글자 이상으로 입력하세요.',
+        [{ strong: '', normal: '상품정보를 등록하시려면 기초정보를 등록해 주세요.' }],
+        [
+          {
+            name: '확인',
+            callback: () => {},
+          },
+        ]
+      );
       return;
     }
 
@@ -142,6 +151,7 @@ const Announcement = () => {
             다른버튼 클릭하여 조회기간 변경 시 해당 버튼에 btn_blue 클래스 넣어주시면 됩니다~  
             
               여기가 조회기간이 아니라 카테고리인데, 아래 className="period" 바꿔도 작동 문제 없이 되나요..?
+              해결되면 지워주세요
             */}
             <div className="period">
               {category_str.map((name, key) => (
@@ -183,7 +193,7 @@ const Announcement = () => {
                 {rowData.slice(offset, offset + limit).map((row, index) => (
                   <Fragment key={`${index}${row.title}`}>
                     <tr style={{ cursor: 'pointer' }} onClick={() => handleClick(index)}>
-                      <td>{row.reg_date}</td>
+                      <td>{time_format(row.reg_date)}</td>
                       <td>{row.announcement_category}</td>
                       <td>{row.title}</td>
                     </tr>
@@ -212,7 +222,9 @@ const Announcement = () => {
       {/* 이미지모달에 엑스버튼 넣고 스타일 잡으려고 하는데 어떻게 해야하는지 모르겠습니다 ㅎㅎ 
       
           이미지 모달은 src < components < common 폴더 안에있는 ImageModal.js 건드리시면 되세요ㅎㅎ
-          샘플 닫기버튼 만들어 놓았어요!                
+          샘플 닫기버튼 만들어 놓았어요!    
+
+          처리되면 지워주세요       
       */}
 
       <ImageModal modalState={modalState} setModalState={setModalState} imgUrl={imgUrl}></ImageModal>

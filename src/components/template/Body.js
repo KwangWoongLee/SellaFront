@@ -16,7 +16,7 @@ const Timer = () => {
   }, []);
 
   const onClick = () => {
-    modal.alert('success', '', time);
+    alert('success');
   };
 
   return <div onClick={onClick}>{time}</div>;

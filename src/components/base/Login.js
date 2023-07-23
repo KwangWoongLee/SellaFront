@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Button, InputGroup, Form, Nav } from 'react-bootstrap';
 import Recoils from 'recoils';
-import com, { logger, navigate } from 'util/com';
+import com, { logger, navigate, get_login_hash } from 'util/com';
 import request from 'util/request';
 
 import Head from 'components/template/Head';
@@ -21,27 +21,30 @@ const Login = () => {
     const email = e.currentTarget[0].value;
     const password = e.currentTarget[1].value;
 
-    com.storage.setItem('email', email);
-    com.storage.setItem('password', password);
-
     request.post('login', { email, password }).then((ret) => {
       if (!ret.err) {
+        const { data } = ret.data;
+
         Recoils.setState('CONFIG:ACCOUNT', {
-          email: ret.data.email,
-          aidx: ret.data.aidx,
-          grade: ret.data.grade,
-          name: ret.data.name,
+          email: data.email,
+          aidx: data.aidx,
+          grade: data.grade,
+          name: data.name,
         });
 
-        Recoils.setState('DATA:GOODS', ret.data.goods);
-        Recoils.setState('DATA:DELIVERY', ret.data.delivery);
-        Recoils.setState('DATA:PACKING', ret.data.packing);
-        Recoils.setState('DATA:PLATFORMS', ret.data.forms);
-        Recoils.setState('DATA:FORMSMATCH', ret.data.forms_match);
-        Recoils.setState('DATA:GOODSMATCH', ret.data.goods_match);
-        Recoils.setState('SELLA:PLATFORM', ret.data.platform);
-        Recoils.setState('SELLA:SELLAFORMS', ret.data.sella_forms);
-        Recoils.setState('SELLA:CATEGORIES', ret.data.sella_categories);
+        com.storage.setItem('email', email);
+        com.storage.setItem('password', password);
+        com.storage.setItem('token', data.access_token);
+
+        Recoils.setState('DATA:GOODS', data.goods);
+        Recoils.setState('DATA:DELIVERY', data.delivery);
+        Recoils.setState('DATA:PACKING', data.packing);
+        Recoils.setState('DATA:PLATFORMS', data.forms);
+        Recoils.setState('DATA:FORMSMATCH', data.forms_match);
+        Recoils.setState('DATA:GOODSMATCH', data.goods_match);
+        Recoils.setState('SELLA:PLATFORM', data.platform);
+        Recoils.setState('SELLA:SELLAFORMS', data.sella_forms);
+        Recoils.setState('SELLA:CATEGORIES', data.sella_categories);
 
         navigate('/settlement/margin_calc');
       }

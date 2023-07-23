@@ -32,9 +32,9 @@ const InputModal = React.memo(({ modalState, setModalState, callback }) => {
     const rrp = e.currentTarget[7].value;
     const memo = e.currentTarget[8].value;
 
-    if (!goods_category) return modal.alert('error', '필수항목 누락', '카테고리 항목이 비었습니다.');
-    if (!name) return modal.alert('error', '필수항목 누락', '상품명 항목이 비었습니다.');
-    if (!stock_price) return modal.alert('error', '필수항목 누락', '입고단가 항목이 비었습니다.');
+    if (!goods_category) return alert('카테고리 항목이 비었습니다.');
+    if (!name) return alert('상품명 항목이 비었습니다.');
+    if (!stock_price) return alert('입고단가 항목이 비었습니다.');
 
     request
       .post('user/goods/insert', {

@@ -65,7 +65,7 @@ const Manual = () => {
 
   const onSearch = (e) => {
     if (title && title.length < 2) {
-      modal.alert('error', '에러', '제목명은 2글자 이상으로 입력하세요.');
+      alert('제목명은 2글자 이상으로 입력하세요.');
       return;
     }
 

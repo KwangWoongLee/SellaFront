@@ -8,7 +8,7 @@ import _ from 'lodash';
 
 import { logger } from 'util/com';
 
-const SearchModal = React.memo(({ modalState, setModalState, selectCallback }) => {
+const SearchModal = React.memo(({ modalState, setModalState, selectCallback, name }) => {
   logger.render('SearchModal');
 
   const nameRef = useRef(null);
@@ -18,8 +18,13 @@ const SearchModal = React.memo(({ modalState, setModalState, selectCallback }) =
     setItems([...Recoils.getState('DATA:GOODS')]);
   }, []);
 
-  const onSearch = (e) => {
-    e.preventDefault();
+  useEffect(() => {
+    if (nameRef && nameRef.current && name) nameRef.current.value = name;
+    onSearch();
+  }, [name]);
+
+  const onSearch = () => {
+    if (!nameRef || !nameRef.current) return;
 
     const name = nameRef.current.value;
 

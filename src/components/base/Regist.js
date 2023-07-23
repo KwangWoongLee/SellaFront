@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Button, ButtonGroup, InputGroup, Form, DropdownButton, Dropdown } from 'react-bootstrap';
-import com, { logger, navigate } from 'util/com';
+import com, { modal, logger, navigate } from 'util/com';
 import Recoils from 'recoils';
 import request from 'util/request';
 import _ from 'lodash';
@@ -41,7 +41,8 @@ const Regist = () => {
     if (!agreement.length) {
       request.post('base/info/agreement', {}).then((ret) => {
         if (!ret.err) {
-          Recoils.setState('SELLA:AGREEMENT', ret.data.sella_agreement);
+          const { data } = ret.data;
+          Recoils.setState('SELLA:AGREEMENT', data.sella_agreement);
 
           const agreement_temp = _.cloneDeep(Recoils.getState('SELLA:AGREEMENT'));
           _.forEach(agreement_temp, (item) => {
@@ -62,7 +63,7 @@ const Regist = () => {
     e.preventDefault();
     for (const agreement_item of agreement) {
       if (agreement_item.essential_flag && !agreement_item.checked) {
-        alert('필수 동의 항목에 체크 해주세요.');
+        modal.alert('필수 동의 항목에 체크 해주세요.');
         return;
       }
     }
@@ -76,25 +77,25 @@ const Regist = () => {
     const password = passwordRef.current.value;
     const email = emailRef.current.value;
     if (!name) {
-      alert('이름을 입력하세요.');
+      modal.alert('이름을 입력하세요.');
       return;
     }
     if (!agency) {
-      alert('통신사를 선택하세요.');
+      modal.alert('통신사를 선택하세요.');
       return;
     }
     if (gender == -1) {
-      alert('성별을 선택하세요.');
+      modal.alert('성별을 선택하세요.');
       return;
     }
     if (local == -1) {
-      alert('국적을 선택하세요.');
+      modal.alert('국적을 선택하세요.');
       return;
     }
 
     for (const key in auth) {
       if (auth[key] == false) {
-        alert('빨간 글씨를 제거하세요.');
+        modal.alert('빨간 글씨를 제거하세요.');
         return;
       }
     }
@@ -117,12 +118,12 @@ const Regist = () => {
   const onGetPhoneAuth = (e) => {
     const phone = phoneRef.current.value;
     if (!phone) {
-      alert('휴대폰번호를 입력하세요.');
+      modal.alert('휴대폰번호를 입력하세요.');
       return;
     }
 
     if (phone)
-      request.post('phone/auth_no', { phone }).then((ret) => {
+      request.post('user/regist/auth/phone/auth_no', { phone }).then((ret) => {
         if (!ret.err) {
           const auth_temp = auth;
           auth_temp['send_phone'] = true;
@@ -134,17 +135,17 @@ const Regist = () => {
   const onSendPhoneAuth = (e) => {
     const phone = phoneRef.current.value;
     if (!phone) {
-      alert('휴대폰번호를 입력하세요.');
+      modal.alert('휴대폰번호를 입력하세요.');
       return;
     }
 
     const authNo = authNoRef.current.value;
     if (!authNo) {
-      alert('인증번호를 입력하세요.');
+      modal.alert('인증번호를 입력하세요.');
       return;
     }
 
-    request.post('phone', { authNo }).then((ret) => {
+    request.post('user/regist/auth/phone', { authNo }).then((ret) => {
       if (!ret.err) {
         const auth_temp = auth;
         auth_temp['auth_phone'] = true;
@@ -157,7 +158,7 @@ const Regist = () => {
     const email = emailRef.current.value;
 
     if (!email) {
-      alert('이메일을 입력하세요.');
+      modal.alert('이메일을 입력하세요.');
       return;
     }
 

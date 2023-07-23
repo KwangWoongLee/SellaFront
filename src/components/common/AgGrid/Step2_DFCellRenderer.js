@@ -7,6 +7,7 @@ import Recoils from 'recoils';
 
 const PopupCellRenderer = (props) => {
   const tippyRef = useRef();
+  const dropdownRef = useRef();
   const inputRef = useRef();
   const [visible, setVisible] = useState(false);
   const show = () => setVisible(true);
@@ -42,15 +43,27 @@ const PopupCellRenderer = (props) => {
       inputRef.current.value = props.data.delivery_fee;
 
       props.data.delivery_descript = df_category[selectType].delivery_category;
+      props.data.delivery_fee = inputRef.current.value;
       return;
     }
 
     inputRef.current.value = df_category[selectType].delivery_fee;
     props.data.delivery_descript = df_category[selectType].delivery_category;
+    props.data.delivery_fee = inputRef.current.value;
+
+    props.onCellValueChanged(props, onRefreshCell);
   }, [selectType]);
+
+  const onRefreshCell = (change) => {
+    // 이게 원래.. backgroud가 바뀌는게 아니라 글자색이 바뀌어야 하는데..
+    // css가 안됩니다ㅠ
+    dropdownRef.current.style.backgroundColor = change;
+    inputRef.current.style.backgroundColor = change;
+  };
 
   const onChangeInput = () => {
     props.data.delivery_fee = inputRef.current.value;
+    props.onCellValueChanged(props, onRefreshCell);
   };
 
   const dropDownContent = (
@@ -84,7 +97,12 @@ const PopupCellRenderer = (props) => {
         interactive={true}
         placement="bottom"
       >
-        <DropdownButton variant="" title={df_str[selectType]} onClick={visible ? hide : show}></DropdownButton>
+        <DropdownButton
+          ref={dropdownRef}
+          variant=""
+          title={df_str[selectType]}
+          onClick={visible ? hide : show}
+        ></DropdownButton>
       </Tippy>
       <input
         ref={inputRef}

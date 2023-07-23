@@ -44,23 +44,15 @@ const Step1 = () => {
   const aidx = account.aidx;
 
   useEffect(() => {
-    request.post(`user/delivery`, { aidx }).then((ret) => {
-      if (!ret.err) {
-        logger.info(ret.data);
+    const delivery_data = _.cloneDeep(Recoils.getState('DATA:DELIVERY'));
+    delivery_data && delivery_data.length > 1
+      ? setDeliItems(delivery_data)
+      : setDeliItems([delivery_data[0], ...DeliItem_Default]);
 
-        ret.data.length > 1 ? setDeliItems(() => ret.data) : setDeliItems([ret.data[0], ...DeliItem_Default]);
-      }
-    });
-
-    request.post(`user/packing`, { aidx }).then((ret) => {
-      if (!ret.err) {
-        logger.info(ret.data);
-
-        ret.data.length > 1 ? setPackItems(() => ret.data) : setPackItems([ret.data[0], ...PackItem_Default]);
-      }
-    });
-
-    setPackItems(PackItem_Default);
+    const packing_data = _.cloneDeep(Recoils.getState('DATA:PACKING'));
+    packing_data && packing_data.length > 1
+      ? setPackItems(packing_data)
+      : setPackItems([packing_data[0], ...PackItem_Default]);
   }, []);
 
   const onChange = (type, e) => {
@@ -110,21 +102,26 @@ const Step1 = () => {
 
   const onSave = (type, e) => {
     if (type === 'Delivery') {
-      request.post(`user/delivery/save`, { aidx, delivery_list: deliItems }).then((ret) => {
+      request.post(`user/delivery/save`, { delivery_list: deliItems }).then((ret) => {
         if (!ret.err) {
-          logger.info(ret.data);
+          const { data } = ret.data;
+          logger.info(data);
 
-          setDeliItems(() => ret.data);
-          modal.alert('success', '저장 완료', '운임비 데이터가 저장 되었습니다.');
+          Recoils.setState('DATA:DELIVERY', data);
+
+          setDeliItems(() => data);
+          modal.alert('운임비 데이터가 저장 되었습니다.');
         }
       });
     } else if (type === 'Packing') {
-      request.post(`user/packing/save`, { aidx, packing_list: packItems }).then((ret) => {
+      request.post(`user/packing/save`, { packing_list: packItems }).then((ret) => {
         if (!ret.err) {
-          logger.info(ret.data);
+          const { data } = ret.data;
+          logger.info(data);
+          Recoils.setState('DATA:PACKING', data);
 
-          setPackItems(() => ret.data);
-          modal.alert('success', '저장 완료', '포장비 데이터가 저장 되었습니다.');
+          setPackItems(() => data);
+          modal.alert('포장비 데이터가 저장 되었습니다.');
         }
       });
     }

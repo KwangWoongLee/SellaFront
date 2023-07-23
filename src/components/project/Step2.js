@@ -6,14 +6,12 @@ import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 import Step2Modal from 'components/project/Step2Modal';
 import request from 'util/request';
-import { modal, page_reload } from 'util/com';
+import { logger, modal, navigate, page_reload, time_format } from 'util/com';
 import Recoils from 'recoils';
 import _ from 'lodash';
 import * as xlsx from 'xlsx';
 import * as ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
-
-import { logger } from 'util/com';
 
 // AG Grid
 import { AgGridReact } from 'ag-grid-react';
@@ -24,8 +22,8 @@ import 'styles/Step2.scss';
 import icon_circle_arrow_down from 'images/icon_circle_arrow_down.svg';
 import icon_circle_arrow_up from 'images/icon_circle_arrow_up.svg';
 import icon_set from 'images/icon_set.svg';
-import Step2_DFCellRenderer from 'components/project/Step2_DFCellRenderer';
-import Step2_PFCellRenderer from 'components/project/Step2_PFCellRenderer';
+import Step2_DFCellRenderer from 'components//common/AgGrid//Step2_DFCellRenderer';
+import Step2_PFCellRenderer from 'components/common/AgGrid/Step2_PFCellRenderer';
 
 let rawData;
 const excel_str = [
@@ -39,9 +37,6 @@ let pf_category = [];
 
 const Step2 = () => {
   logger.render('Step2');
-  const account = Recoils.useValue('CONFIG:ACCOUNT');
-  const aidx = account.aidx;
-
   const [rowData, setDatas] = useState();
   const [excelType, setExcelType] = useState(0);
   const insertRef = useRef(false);
@@ -61,6 +56,22 @@ const Step2 = () => {
   useEffect(() => {
     if (!df_category.length) {
       const deliveryData = _.cloneDeep(Recoils.getState('DATA:DELIVERY'));
+      if (!deliveryData || deliveryData.length == 1) {
+        // GO Step1
+        modal.confirm(
+          '초기 값을 설정해 주세요.',
+          [{ strong: '', normal: '상품정보를 등록하시려면 기초정보를 등록해 주세요.' }],
+          [
+            {
+              name: '기초정보 관리로 이동',
+              callback: () => {
+                navigate('project/Step1');
+              },
+            },
+          ]
+        );
+      }
+
       if (deliveryData.length > 1) {
         df_category = deliveryData;
         df_category.push({ delivery_category: '기타', delivery_fee: 0 });
@@ -69,6 +80,23 @@ const Step2 = () => {
 
     if (!pf_category.length) {
       const packingData = _.cloneDeep(Recoils.getState('DATA:PACKING'));
+
+      if (!packingData || packingData.length == 1) {
+        // GO Step1
+        modal.confirm(
+          '초기 값을 설정해 주세요.',
+          [{ strong: '', normal: '상품정보를 등록하시려면 기초정보를 등록해 주세요.' }],
+          [
+            {
+              name: '기초정보 관리로 이동',
+              callback: () => {
+                navigate('step1');
+              },
+            },
+          ]
+        );
+      }
+
       if (packingData.length > 1) {
         pf_category = packingData;
         pf_category.push({ packing_category: '기타', packing_fee: 0 });
@@ -95,7 +123,7 @@ const Step2 = () => {
     if (insertRef.current == true) {
       const selectedRows = gridRef.current.api.getSelectedRows();
       if (selectedRows[0].idx) {
-        alert('상품 추가중엔 다른 셀을 바꿀 수 없습니다.');
+        modal.alert('상품 추가중엔 다른 셀을 바꿀 수 없습니다.');
 
         const nodes = gridRef.current.api.getSelectedNodes();
 
@@ -112,11 +140,78 @@ const Step2 = () => {
     }
   };
 
-  const onCellValueChanged = (params) => {
+  const onCellValueChanged = (params, callback) => {
     let column = params.column.colDef.field;
+    if (column == 'delivery_fee') {
+      if (insertRef.current == true) {
+        return;
+      }
+
+      if (
+        rawData &&
+        rawData[params.node.rowIndex]['delivery_fee'] &&
+        rawData[params.node.rowIndex]['delivery_fee'] !== Number(params.data.delivery_fee)
+      ) {
+        const newStyle = { color: 'red' };
+        params.column.colDef.cellStyle = newStyle;
+        callback('red');
+        params.api.refreshCells({
+          force: true,
+          columns: [column],
+          rowNodes: [params.node],
+        });
+      } else {
+        let column = params.column.colDef.field;
+        const newStyle = { color: 'black' };
+        params.column.colDef.cellStyle = newStyle;
+        callback('black');
+        params.api.refreshCells({
+          force: true,
+          columns: [column],
+          rowNodes: [params.node],
+        });
+      }
+
+      return;
+    }
+
+    if (column == 'packing_fee') {
+      if (insertRef.current == true) {
+        return;
+      }
+
+      if (
+        rawData &&
+        rawData[params.node.rowIndex]['packing_fee'] &&
+        rawData[params.node.rowIndex]['packing_fee'] !== Number(params.data.packing_fee)
+      ) {
+        const newStyle = { color: 'red' };
+        params.column.colDef.cellStyle = newStyle;
+        callback('red');
+        params.api.refreshCells({
+          force: true,
+          columns: [column],
+          rowNodes: [params.node],
+        });
+      } else {
+        let column = params.column.colDef.field;
+        const newStyle = { color: 'black' };
+        params.column.colDef.cellStyle = newStyle;
+        callback('black');
+        params.api.refreshCells({
+          force: true,
+          columns: [column],
+          rowNodes: [params.node],
+        });
+      }
+
+      return;
+    }
+
     if (rawData && rawData[params.node.rowIndex][column] && rawData[params.node.rowIndex][column] !== params.newValue) {
       const newStyle = { color: 'red' };
       params.column.colDef.cellStyle = newStyle;
+
       params.api.refreshCells({
         force: true,
         columns: [column],
@@ -203,6 +298,7 @@ const Step2 = () => {
       cellRendererParams: {
         df_category,
         rawData,
+        onCellValueChanged,
       },
       minWidth: 210,
     },
@@ -218,17 +314,9 @@ const Step2 = () => {
       cellRendererParams: {
         pf_category,
         rawData,
+        onCellValueChanged,
       },
       minWidth: 205,
-    },
-    {
-      field: 'stock_price',
-      headerName: '입고단가',
-      sortable: true,
-      unSortIcon: true,
-      valueParser: (params) => Number(params.newValue),
-      filter: false,
-      cellClass: 'ag-cell-editable',
     },
     {
       field: 'box_amount',
@@ -273,7 +361,18 @@ const Step2 = () => {
       filter: false,
       cellClass: 'ag-cell-editable',
     },
-    { field: 'reg_date', headerName: '최종 수정일', sortable: true, unSortIcon: true, filter: false, editable: false },
+    {
+      field: 'reg_date',
+      headerName: '최종 수정일',
+      sortable: true,
+      unSortIcon: true,
+      filter: false,
+      editable: false,
+      valueFormatter: (params) => {
+        if (params.value == '') return '';
+        return time_format(params.value);
+      },
+    },
     {
       field: 'modify_date',
       headerName: '최종 등록일',
@@ -281,6 +380,10 @@ const Step2 = () => {
       unSortIcon: true,
       filter: false,
       editable: false,
+      valueFormatter: (params) => {
+        if (params.value == '') return '';
+        return time_format(params.value);
+      },
     },
   ]);
 
@@ -295,13 +398,14 @@ const Step2 = () => {
 
       const selectedIdxs = _.map(selectedRows, 'idx');
 
-      request.post(`user/goods/delete`, { aidx, idxs: selectedIdxs }).then((ret) => {
+      request.post(`user/goods/delete`, { idxs: selectedIdxs }).then((ret) => {
         if (!ret.err) {
-          logger.info(ret.data);
-          Recoils.setState('DATA:GOODS', ret.data);
+          const { data } = ret.data;
+          logger.info(data);
 
-          rawData = _.cloneDeep(ret.data);
-          setDatas(ret.data);
+          Recoils.setState('DATA:GOODS', data);
+
+          page_reload();
         }
       });
     }
@@ -330,59 +434,60 @@ const Step2 = () => {
         }
 
         if (!insertNode.goods_category) {
-          alert('카테고리를 입력하세요.');
+          modal.alert('카테고리를 입력하세요.');
           return;
         }
 
         if (!insertNode.name) {
-          alert('상품명을 입력하세요.');
+          modal.alert('상품명을 입력하세요.');
           return;
         }
 
         if (insertNode.stock_price == 0 || insertNode.stock_price == '') {
-          alert('입고단가를 입력하세요.');
+          modal.alert('입고단가를 입력하세요.');
           return;
         }
 
         if (!insertNode.delivery_descript) {
-          alert('택배비 구분을 선택하세요.');
+          modal.alert('택배비 구분을 선택하세요.');
           return;
         }
 
         if (!insertNode.delivery_fee) {
-          alert('택배비를 입력하세요.');
+          modal.alert('택배비를 입력하세요.');
           return;
         }
 
         if (!insertNode.packing_descript) {
-          alert('포장비 구분을 선택하세요.');
+          modal.alert('포장비 구분을 선택하세요.');
           return;
         }
 
         if (!insertNode.packing_fee) {
-          alert('포장비를 입력하세요.');
+          modal.alert('포장비를 입력하세요.');
           return;
         }
 
         if (!insertNode.box_amount) {
-          alert('박스입수량을 입력하세요.');
+          modal.alert('박스입수량을 입력하세요.');
           return;
         }
 
         if (!insertNode.single_delivery) {
-          alert('단독배송 여부를 선택하세요.');
+          modal.alert('단독배송 여부를 선택하세요.');
           return;
         }
 
         if (!insertNode.rrp) {
-          alert('권장소비자가를 입력하세요.');
+          modal.alert('권장소비자가를 입력하세요.');
           return;
         }
 
-        request.post(`user/goods/insert`, { aidx, save_data: insertNode }).then((ret) => {
+        request.post(`user/goods/insert`, { save_data: insertNode }).then((ret) => {
           if (!ret.err) {
-            logger.info(ret.data);
-            Recoils.setState('DATA:GOODS', ret.data);
+            const { data } = ret.data;
+            logger.info(data);
+            Recoils.setState('DATA:GOODS', data);
 
             page_reload();
           }
@@ -390,11 +495,12 @@ const Step2 = () => {
         return;
       }
 
-      request.post(`user/goods/modify`, { aidx, selectedRows }).then((ret) => {
+      request.post(`user/goods/modify`, { selectedRows }).then((ret) => {
         if (!ret.err) {
-          logger.info(ret.data);
-          Recoils.setState('DATA:GOODS', ret.data);
+          const { data } = ret.data;
+          logger.info(data);
 
+          Recoils.setState('DATA:GOODS', data);
           page_reload();
         }
       });
@@ -403,7 +509,7 @@ const Step2 = () => {
 
   const onInsert = (e) => {
     if (insertRef.current == true) {
-      alert('추가 중인 상품을 선택 저장 해주세요.');
+      modal.alert('추가 중인 상품을 선택 저장 해주세요.');
       return;
     }
 
@@ -432,13 +538,16 @@ const Step2 = () => {
   };
 
   const onUpload = function () {
-    modal.file_upload('user/goods/save', '.xlsx', '상품정보 엑셀 파일을 선택해주세요.', { aidx, excelType }, (ret) => {
+    modal.file_upload('user/goods/save', '.xlsx', '상품정보 엑셀 파일을 선택해주세요.', { excelType }, (ret) => {
       if (!ret.err) {
-        logger.info(ret.data);
-        Recoils.setState('DATA:GOODS', ret.data);
+        const { data } = ret.data;
+        logger.info(data);
+        Recoils.setState('DATA:GOODS', data);
 
-        rawData = _.cloneDeep(ret.data);
-        setDatas(ret.data);
+        rawData = _.cloneDeep(data);
+        setDatas(data);
+
+        
       }
     });
   };

@@ -242,6 +242,12 @@ const Margin = () => {
     });
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      onSearch(e);
+    }
+  };
+
   return (
     <>
       <Head></Head>
@@ -304,7 +310,12 @@ const Margin = () => {
                 <tbody>
                   <tr>
                     <td>
-                      <input ref={nameRef} placeholder="상품명 입력" className="input_prdname"></input>
+                      <input
+                        ref={nameRef}
+                        onKeyDown={handleKeyDown}
+                        placeholder="상품명 입력"
+                        className="input_prdname"
+                      ></input>
                       <Button variant="primary" onClick={onSearch} className="btn btn_blue">
                         내 상품 찾기
                       </Button>
@@ -439,8 +450,12 @@ const Margin = () => {
         </div>
       </Body>
       <Footer />
-
-      <SearchModal modalState={modalState} setModalState={setModalState} selectCallback={PageCallback}></SearchModal>
+      <SearchModal
+        modalState={modalState}
+        setModalState={setModalState}
+        selectCallback={PageCallback}
+        name={nameRef.current && nameRef.current.value}
+      ></SearchModal>{' '}
     </>
   );
 };

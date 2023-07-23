@@ -3,6 +3,9 @@ import Recoils from 'recoils';
 import _ from 'lodash';
 import moment from 'moment';
 import { navigate_ref } from 'components/common/NavigateCtr';
+import dateFormat from 'dateformat';
+import conf from '../config/auth.json';
+import crypto from 'crypto';
 const com = {};
 com.storage = window.localStorage;
 com.ref = {};
@@ -22,35 +25,14 @@ export const modal = {
   login: () => {
     Recoils.setState('MODAL:LOGIN', true);
   },
-
   spinner: (visible) => {
     Recoils.setState('SPINEER', visible);
   },
-
-  alert: (type, title, msg, ...act) => {
-    const buttons = [];
-    if (typeof act[0] === 'function') {
-      buttons.push({ key: 0, name: '확인', action: act[0] });
-      if (typeof act[1] === 'function') {
-        buttons.push({ key: 1, name: '취소', action: act[1] });
-      }
-    } else {
-      _.forEach(act, (d, key) => {
-        buttons.push({ key, name: d.name, action: d.action });
-      });
-    }
-
-    Recoils.setState('ALERT', { show: true, type, title, msg, buttons: buttons.length ? buttons : undefined });
+  alert: (error) => {
+    Recoils.setState('ALERT', { show: true, error });
   },
-
-  confirm: (title, values, cb) => {
-    Recoils.setState('CONFIRM', { show: true, title, values: typeof values === 'string' ? [values] : values, cb });
-  },
-  item_select: (type, cb) => {
-    Recoils.setState('MODAL:ITEMSELECT', { show: true, type, cb });
-  },
-  item_select2: (type, cb) => {
-    Recoils.setState('MODAL:ITEMSELECT2', { show: true, type, cb });
+  confirm: (title, body, buttons) => {
+    Recoils.setState('CONFIRM', { show: true, title, body, buttons: buttons });
   },
   file_upload: (url, accept, label, frm_data, cb = null, title = null, multiple = true) => {
     Recoils.setState('MODAL:FILEUPLOAD', { show: true, url, accept, label, frm_data, title, cb, multiple });
@@ -156,6 +138,32 @@ export const is_authed = () => {
 export const boolType = (value) => {
   if (value === 'Y') return 1;
   else return 0;
+};
+
+function formatAMPM(date) {
+  let hours = date.getHours();
+  let minutes = date.getMinutes();
+  let seconds = date.getSeconds();
+  let ampm = hours >= 12 ? '오후' : '오전';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  minutes = minutes < 10 ? '0' + minutes : minutes;
+  seconds = seconds < 10 ? '0' + seconds : seconds;
+  let strTime = ampm + ' ' + hours + ':' + minutes + ':' + seconds;
+  return strTime;
+}
+
+export const time_format = (time) => {
+  const now = new Date(time);
+  const strTime = formatAMPM(now);
+  return dateFormat(now, `yyyy-mm-dd ${strTime}`);
+};
+
+export const get_login_hash = function (value) {
+  const login_secret = conf.login_secret;
+  const data = `${login_secret}${value}`;
+  const hash = crypto.createHash('sha256').update(data).digest('hex');
+  return hash;
 };
 
 export default com;

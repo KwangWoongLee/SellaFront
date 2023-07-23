@@ -70,24 +70,52 @@ const FormManagement_Custom_Add = (param) => {
   const onSaveForm = () => {
     const save_data = [...rowData];
     if (save_data.length == 0) {
-      alert('매칭되지 않은 항목이 있습니다.');
-      return; // TODO error
+      modal.alert('저장할 항목이 없습니다.');
+      return;
     }
 
     for (const row of save_data) {
       if (row.check_flag && !row.checked) continue;
       else {
         if (!row.title || !row.column || !row.sella_title || !row.sella_code) {
-          alert('매칭되지 않은 항목이 있습니다.');
+          modal.alert('매칭되지 않은 항목이 있습니다.');
           return; // TODO error
+        }
+
+        if (row.sella_code == 30032) {
+          if (!row.mf_fee_rate) {
+            modal.alert('조립비는 조립비 수수료 항목을 입력하세요.');
+            return;
+          }
+
+          row.additional = row.mf_fee_rate;
+        }
+
+        if (row.sella_code == 30033) {
+          if (!row.if_fee_rate) {
+            modal.alert('설치비는 설치비 수수료 항목을 입력하세요.');
+            return;
+          }
+
+          row.additional = row.if_fee_rate;
+        }
+
+        if (row.sella_code == 30047) {
+          if (!row.df_fee_rate) {
+            modal.alert('배송비는 배송비 수수료 항목을 입력하세요.');
+            return;
+          }
+
+          row.additional = row.df_fee_rate;
         }
       }
     }
-    request.post(`user/forms/save`, { aidx, name: formNameRef.current.value, save_data }).then((ret) => {
+    request.post(`user/forms/save`, { aidx, forms_name: formNameRef.current.value, save_data }).then((ret) => {
       if (!ret.err) {
-        logger.info(ret.data);
+        const { data } = ret.data;
+        logger.info(data);
 
-        Recoils.setState('DATA:PLATFORMS', ret.data);
+        Recoils.setState('DATA:PLATFORMS', data);
         navigate('/settlement/form_management');
       }
     });
@@ -324,13 +352,10 @@ const FormManagement_Custom_Add = (param) => {
           <thead>
             <th>셀라 표준 항목</th>
             <th>선택한 엑셀 항목</th>
-            {/* <th></th> */}
+            <th>비고</th>
           </thead>
         </table>
         <table className="tbody">
-          {/* 여기 들어오는 데이터 중 별표달린 필수값은 빨간색 텍스트인데, 해당 td에 required 클래스 넣어주면 됩니다. */}
-          {/* '정산예정금액이있습니다' 항목에 체크박스, 툴팁버튼 있습니다 */}
-          {/* '배송비 묶음번호가 있습니다' 항목에 체크박스, 툴팁버튼 있습니다 */}
           <tbody>
             {rowData &&
               rowData.map((d, key) => (
@@ -412,6 +437,28 @@ const SellaForm = React.memo(({ index, d, selectRow, onClick, checkedItemHandler
   logger.render('SellaForm TableItem : ', index);
   // 클릭 전에 항상 첫번째 tr에 포커스가 들어와 있으면 좋을것 같습니다.
   // >>> 요거 다른 항목을 클릭해도 포커스가 유지되네용 ? ㅎㅎ 첫번째 행 focus는 처음 새로고침했을때만 들어와있으면 좋을것 같습니다 ㅎㅎ
+  // 이거 잘 안돼서.. 조금만 후에 하도록할게요!
+
+  const dfFeeRateRef = useRef(null);
+  const mfFeeRateRef = useRef(null);
+  const ifFeeRateRef = useRef(null);
+
+  const onChangeInput = (type, ref) => {
+    if (ref.current) {
+      switch (type) {
+        case 'df':
+          d.df_fee_rate = ref.current.value;
+          break;
+        case 'mf':
+          d.mf_fee_rate = ref.current.value;
+          break;
+        case 'if':
+          d.if_fee_rate = ref.current.value;
+          break;
+      }
+    }
+  };
+
   return (
     <tr className={selectRow == index ? 'focus' : ''}>
       <td className={d.sella_essential ? 'td_label required' : 'td_label'}>
@@ -465,6 +512,48 @@ const SellaForm = React.memo(({ index, d, selectRow, onClick, checkedItemHandler
           <Button disabled={d.check_flag && !d.checked ? true : false} onClick={onClick}>
             여기를 클릭하여 매칭해주세요.
           </Button>
+        </td>
+      )}
+      {d.sella_code == 30047 && (
+        <td>
+          배송비 수수료{' '}
+          {
+            <input
+              ref={dfFeeRateRef}
+              onChange={() => {
+                onChangeInput('df', dfFeeRateRef);
+              }}
+            ></input>
+          }
+          %{' '}
+        </td>
+      )}
+      {d.sella_code == 30032 && (
+        <td>
+          조립비 수수료{' '}
+          {
+            <input
+              ref={mfFeeRateRef}
+              onChange={() => {
+                onChangeInput('mf', mfFeeRateRef);
+              }}
+            ></input>
+          }
+          %
+        </td>
+      )}
+      {d.sella_code == 30033 && (
+        <td>
+          설치비 수수료{' '}
+          {
+            <input
+              ref={ifFeeRateRef}
+              onChange={() => {
+                onChangeInput('if', ifFeeRateRef);
+              }}
+            ></input>
+          }
+          %
         </td>
       )}
     </tr>

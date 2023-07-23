@@ -13,14 +13,18 @@ import * as xlsx from 'xlsx';
 import * as ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import _ from 'lodash';
+import moment from 'moment';
 
 import { logger } from 'util/com';
 
+// Homd에 있는 것 옮겼는데 css가 안먹어요ㅠ
+import 'styles/Home.scss';
 import 'styles/MarginCalc.scss';
 
 import icon_circle_arrow_down from 'images/icon_circle_arrow_down.svg';
 import icon_circle_arrow_up from 'images/icon_circle_arrow_up.svg';
 import icon_set from 'images/icon_set.svg';
+import img_service from 'images/img_service.png';
 
 // AG Grid
 import { AgGridReact } from 'ag-grid-react';
@@ -190,6 +194,7 @@ const MarginCalc = () => {
 
   const account = Recoils.useValue('CONFIG:ACCOUNT');
   const aidx = account.aidx;
+  const [mode, setMode] = useState(0);
   const [viewResult, setViewResult] = useState(false);
   const [viewState, setView] = useState(true);
   const [platforms, setPlatforms] = useState([]);
@@ -213,23 +218,81 @@ const MarginCalc = () => {
   const [columnDefs, setColumnDefs] = useState([]);
 
   useEffect(() => {
+    // GO Step1
+    const deliveryData = Recoils.getState('DATA:DELIVERY');
+    const packingData = Recoils.getState('DATA:PACKING');
+
+    if (!deliveryData || deliveryData.length == 1 || !packingData || packingData.length == 1) {
+      modal.confirm(
+        '초기 값을 설정해 주세요.',
+        [{ strong: '', normal: '손익계산을 하시려면 기초정보, 상품정보를 등록해 주세요.' }],
+        [
+          {
+            name: '기초정보 관리로 이동',
+            callback: () => {
+              navigate('step1');
+            },
+          },
+        ]
+      );
+
+      return;
+    }
+
+    // GO Step2
+    const goodsData = Recoils.getState('DATA:GOODS');
+
+    if (!goodsData || goodsData.length == 0) {
+      modal.confirm(
+        '초기 값을 설정해 주세요.',
+        [{ strong: '', normal: '손익계산을 하시려면 상품정보를 등록해 주세요.' }],
+        [
+          {
+            name: '상품 관리로 이동',
+            callback: () => {
+              navigate('step2');
+            },
+          },
+        ]
+      );
+      return;
+    }
+
     let temp = _.filter(Recoils.getState('DATA:PLATFORMS'), { view: 1 });
+    if (!temp || temp.length == 0) {
+      modal.confirm(
+        '초기 값을 설정해 주세요.',
+        [{ strong: '', normal: '손익계산을 하시려면 매체별 양식을 등록해 주세요.' }],
+        [
+          {
+            name: '매체별 양식 관리로 이동',
+            callback: () => {
+              navigate('settlement/form_management');
+            },
+          },
+        ]
+      );
+
+      return;
+    }
+
     temp = _.sortBy(temp, ['_order']);
     setPlatforms(temp);
     //일단 하드코딩
-    request.post(`user/route_no`, { aidx, route_no: 0 }).then((ret) => {
+    request.post(`user/route_no`, { route_no: 0 }).then((ret) => {
       if (!ret.err) {
-        logger.info(ret.data);
+        const { data } = ret.data;
+        logger.info(data);
 
-        for (const row of ret.data) {
+        for (const row of data) {
           const findObj = _.find(ROUTE_COLUMN_BASE, { field: row.field });
           row.headerName = findObj.headerName;
         }
 
-        setViewColumns(ret.data);
+        setViewColumns(data);
 
         const field_arr = _.map(
-          _.filter(ret.data, (obj) => {
+          _.filter(data, (obj) => {
             return obj.select_flag == 1 || obj.select_flag == true;
           }),
           'field'
@@ -297,6 +360,7 @@ const MarginCalc = () => {
             .then((ret) => {
               if (!ret.err) {
                 setRowData(() => ret.data);
+                setMode(1);
               }
             });
         };
@@ -349,8 +413,8 @@ const MarginCalc = () => {
     const mimeType = { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' };
     const buffer = await workbook.xlsx.writeBuffer();
     const blob = new Blob([buffer], mimeType);
-    // TODO : 시간포함
-    saveAs(blob, '주문서다운로드.xlsx');
+    const time = moment().format('YYYYMMDDHHmmss');
+    saveAs(blob, `주문서_${time}.xlsx`);
   };
 
   const onDelete = (e) => {
@@ -415,142 +479,164 @@ const MarginCalc = () => {
       <Body title={`손익 계산`} myClass={'margin_calc'}>
         <SettlementNavTab active="/settlement/margin_calc" />
 
-        {viewState ? (
-          <div className="page">
-            <div className="inputbox">
-              <DropdownButton variant="" title={platforms.length ? platforms[platformType].name : ''}>
-                {platforms &&
-                  platforms.map((item, key) => (
-                    <Dropdown.Item
-                      key={key}
-                      eventKey={key}
-                      onClick={(e) => onChange(key, e)}
-                      active={platformType === key}
-                    >
-                      {item.name}
-                    </Dropdown.Item>
-                  ))}
-              </DropdownButton>
-              <Button variant="primary" onClick={onUpload} className="btn_green">
-                <img src={icon_circle_arrow_up} />새 주문서 업로드
-              </Button>
+        <div className="page">
+          {mode == 0 && (
+            <>
+              <div className="section1">
+                <h3>
+                  주문서를 업로드하고 손익을 관리하세요!
+                  <p>
+                    오늘 들어온 주문, <span className="txt_red">순이익</span>은 얼마인가요?
+                  </p>
+                </h3>
 
-              <div className="btnbox">
-                <Button variant="primary" onClick={onDelete} className="btn_red">
-                  선택 삭제
-                </Button>
+                <div className="btnbox">
+                  <DropdownButton variant="" title={platforms.length ? platforms[platformType].name : ''}>
+                    {platforms &&
+                      platforms.map((item, key) => (
+                        <Dropdown.Item
+                          key={key}
+                          eventKey={key}
+                          onClick={(e) => onChange(key, e)}
+                          active={platformType === key}
+                        >
+                          {item.name}
+                        </Dropdown.Item>
+                      ))}
+                  </DropdownButton>
+                  <Button variant="primary" onClick={onUpload} className="btn_green">
+                    <img src={icon_circle_arrow_up} />새 주문서 업로드
+                  </Button>
+                  <span>※ 신규 접수된 '배송준비중' 인 양식을 사용해주세요.</span>
+                </div>
 
-                <Button variant="primary" onClick={onViewResult} className="btn_blue">
-                  손익 계산
-                </Button>
-
-                {/* TODO 색 고민 해봐야.. */}
-                <Button onClick={onUpload} disabled={viewResult ? false : true}>
-                  주문서 저장
-                </Button>
-
-                <Button variant="primary" onClick={onDownload} className="btn_green">
-                  <img src={icon_circle_arrow_down} />
-                  다운로드
-                </Button>
-
-                <Button
-                  className="btn_set"
-                  onClick={() => {
-                    setColumnControlModalState(true);
-                  }}
-                >
-                  <img src={icon_set} />
-                </Button>
+                <ul>
+                  <li>판매 매체별 주문정보로 손익을 계산할 수 있습니다.</li>
+                  <li>적자 상품을 찾아 판매 가격을 수정하세요.</li>
+                  <li>오늘 업로드한 주문서를 모아서 하루동안 손익을 파악하세요.</li>
+                </ul>
               </div>
-            </div>
-
-            <ul className={viewResult ? 'viewbox' : 'viewbox off'}>
-              <li>
-                <p className="dt">총 주문</p>
-                <p className="dd">
-                  999,999
-                  <span>건</span>
-                </p>
-              </li>
-              <li>
-                <p className="dt">택배 발송</p>
-                <p className="dd">
-                  999,999
-                  <span>건</span>
-                </p>
-              </li>
-              <li>
-                <p className="dt">적자 주문</p>
-                <span className="dd txt_red">
-                  9<span className="unit txt_red">건</span>
-                </span>
-              </li>
-              <li>
-                <p className="dt">상품 결제 금액</p>
-                <p className="dd">
-                  999,999
-                  <span>원</span>
-                </p>
-              </li>
-              <li>
-                <p className="dt">받은 배송비</p>
-                <p className="dd">
-                  999,999
-                  <span>원</span>
-                </p>
-              </li>
-              {/* 손익합계 <li> className에 이익일때 profit, 손해일때 loss 넣어주세요. */}
-              {/* 이 작업도 손익 계산이 다끝나면 하게 될 것 같아요! */}
-              <li className="loss">
-                <p className="dt">손익 합계</p>
-                <p className="dd">
-                  999,999
-                  <span>원</span>
-                </p>
-              </li>
-            </ul>
-
-            <div style={containerStyle} className="tablebox">
-              <div style={gridStyle} className="ag-theme-alpine test">
-                <AgGridReact
-                  ref={gridRef}
-                  rowData={rowData}
-                  columnDefs={columnDefs}
-                  alwaysShowHorizontalScroll={true}
-                  alwaysShowVerticalScroll={true}
-                  defaultColDef={defaultColDef}
-                  rowSelection={'multiple'}
-                  onRowDoubleClicked={onClick}
-                  getRowStyle={getRowStyle}
-                  overlayNoRowsTemplate={'데이터가 없습니다.'}
-                  suppressRowTransform={true}
-                ></AgGridReact>
+              <div className="section2">
+                <img src={img_service} />
               </div>
-            </div>
-          </div>
-        ) : (
-          <Modal show={!viewState} centered className="Confirm">
-            {<Modal.Title className="text-primary">{'초기 값을 설정해 주세요.'}</Modal.Title>}
-            손익을 계산하시려면 기초정보, 상품정보를 등록 해주세요.
-            <Button
-              variant="primary"
-              onClick={() => {
-                navigate('/step1');
-              }}
-            >
-              기초정보 관리로 이동
-            </Button>
-            <Button
-              variant="primary"
-              onClick={() => {
-                navigate('/step2');
-              }}
-            >
-              상품 관리로 이동
-            </Button>
-          </Modal>
-        )}
+            </>
+          )}
+          {mode == 1 && (
+            <>
+              <div className="inputbox">
+                <DropdownButton variant="" title={platforms.length ? platforms[platformType].name : ''}>
+                  {platforms &&
+                    platforms.map((item, key) => (
+                      <Dropdown.Item
+                        key={key}
+                        eventKey={key}
+                        onClick={(e) => onChange(key, e)}
+                        active={platformType === key}
+                      >
+                        {item.name}
+                      </Dropdown.Item>
+                    ))}
+                </DropdownButton>
+                <Button variant="primary" onClick={onUpload} className="btn_green">
+                  <img src={icon_circle_arrow_up} />새 주문서 업로드
+                </Button>
+
+                <div className="btnbox">
+                  <Button variant="primary" onClick={onDelete} className="btn_red">
+                    선택 삭제
+                  </Button>
+
+                  <Button variant="primary" onClick={onViewResult} className="btn_blue">
+                    손익 계산
+                  </Button>
+
+                  {/* TODO 색 고민 해봐야.. */}
+                  <Button onClick={onUpload} disabled={viewResult ? false : true}>
+                    주문서 저장
+                  </Button>
+
+                  <Button variant="primary" onClick={onDownload} className="btn_green">
+                    <img src={icon_circle_arrow_down} />
+                    다운로드
+                  </Button>
+
+                  <Button
+                    className="btn_set"
+                    onClick={() => {
+                      setColumnControlModalState(true);
+                    }}
+                  >
+                    <img src={icon_set} />
+                  </Button>
+                </div>
+              </div>
+
+              <ul className={viewResult ? 'viewbox' : 'viewbox off'}>
+                <li>
+                  <p className="dt">총 주문</p>
+                  <p className="dd">
+                    999,999
+                    <span>건</span>
+                  </p>
+                </li>
+                <li>
+                  <p className="dt">택배 발송</p>
+                  <p className="dd">
+                    999,999
+                    <span>건</span>
+                  </p>
+                </li>
+                <li>
+                  <p className="dt">적자 주문</p>
+                  <span className="dd txt_red">
+                    9<span className="unit txt_red">건</span>
+                  </span>
+                </li>
+                <li>
+                  <p className="dt">상품 결제 금액</p>
+                  <p className="dd">
+                    999,999
+                    <span>원</span>
+                  </p>
+                </li>
+                <li>
+                  <p className="dt">받은 배송비</p>
+                  <p className="dd">
+                    999,999
+                    <span>원</span>
+                  </p>
+                </li>
+                {/* 손익합계 <li> className에 이익일때 profit, 손해일때 loss 넣어주세요. */}
+                {/* 이 작업도 손익 계산이 다끝나면 하게 될 것 같아요! */}
+                <li className="loss">
+                  <p className="dt">손익 합계</p>
+                  <p className="dd">
+                    999,999
+                    <span>원</span>
+                  </p>
+                </li>
+              </ul>
+
+              <div style={containerStyle} className="tablebox">
+                <div style={gridStyle} className="ag-theme-alpine test">
+                  <AgGridReact
+                    ref={gridRef}
+                    rowData={rowData}
+                    columnDefs={columnDefs}
+                    alwaysShowHorizontalScroll={true}
+                    alwaysShowVerticalScroll={true}
+                    defaultColDef={defaultColDef}
+                    rowSelection={'multiple'}
+                    onRowDoubleClicked={onClick}
+                    getRowStyle={getRowStyle}
+                    overlayNoRowsTemplate={'데이터가 없습니다.'}
+                    suppressRowTransform={true}
+                  ></AgGridReact>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
       </Body>
       <Footer />
       <MarginCalc_UnConnectModal

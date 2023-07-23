@@ -36,8 +36,8 @@ const FileUpload = () => {
     if (state.url) {
       request.post_form(state.url, frm, onUploadProgress).then((ret) => {
         if (!ret.err) {
-          if (typeof ret.data === 'string') modal.alert('info', '업료드 완료', ret.data);
-          else modal.alert('info', '업료드 완료', '요청하신 파일에 대한 읽기를 완료했습니다.');
+          if (typeof ret.data === 'string') alert('업료드 완료');
+          else alert('요청하신 파일에 대한 읽기를 완료했습니다.');
           if (state.cb) state.cb(ret);
         }
         setBtnDisable(false);
@@ -51,7 +51,7 @@ const FileUpload = () => {
     <Modal show={state.show} onHide={state_reset} size="lg" backdrop="static" centered>
       <Modal.Header className="d-flex justify-content-center">
         <Modal.Title className="text-primary">{state.title ? state.title : '파일 업로드'}</Modal.Title>
-        <Button variant="primary" className="btn_close">
+        <Button onClick={state_reset} variant="primary" className="btn_close">
           <img src={icon_close} />
         </Button>
       </Modal.Header>

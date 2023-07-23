@@ -1,7 +1,7 @@
 import React from 'react';
-import { Modal, Button, Form, FloatingLabel } from 'react-bootstrap';
+import { Modal, Button } from 'react-bootstrap';
 import Recoils from 'recoils';
-import { logger, modal } from 'util/com';
+import { logger } from 'util/com';
 
 import 'styles/Modal.scss';
 
@@ -9,50 +9,32 @@ const ConfirmModal = () => {
   const [state, setState] = Recoils.useState('CONFIRM');
   logger.render('ConfirmModal : ', state.show);
 
-  const onClose = () => {
-    setState({ show: false });
-  };
+  const onClose = () => {};
 
-  const onSubmit = (e) => {
-    e.preventDefault();
-
-    const ret = [];
-    for (let i = 0; i < state.values.length; i++) {
-      const { value } = e.currentTarget[i];
-      if (value.length === 0) return modal.alert('error', '', `${state.values} 항목이 비었습니다.`);
-
-      ret.push(value);
-    }
-
-    state.cb(ret);
-    setState({ show: false });
-  };
-
+  // 클라이언트 쪽에서 처리되는 에러입니다.
   return (
     <Modal show={state.show} onHide={onClose} centered className="Confirm">
-      {state.title && (
-        <Modal.Header>
-          <Modal.Title className="text-primary">{state.title}</Modal.Title>
-        </Modal.Header>
-      )}
-      <Modal.Body>
-        <Form onSubmit={onSubmit} id="confirm-modal-form">
-          {state.values &&
-            state.values.map((l, key) => (
-              <FloatingLabel key={key} controlId={`floating-input-${key}`} label={l} className="mb-1">
-                <Form.Control type="text" placeholder={String(key)} />
-              </FloatingLabel>
-            ))}
-        </Form>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="primary" type="submit" form="confirm-modal-form">
-          확인
-        </Button>
-        <Button variant="secondary" onClick={onClose}>
-          취소
-        </Button>
-      </Modal.Footer>
+      {state.title && <span>{state.title}</span>}
+      <br />
+      {state.body &&
+        state.body.map((l, key) => {
+          <>
+            *<span>{l.strong}</span>
+            <span>{l.normal}</span>
+          </>;
+        })}
+      <br />
+      {state.buttons &&
+        state.buttons.map((l, key) => (
+          <Button
+            onClick={() => {
+              l.callback();
+              setState({ show: false });
+            }}
+          >
+            {l.name}
+          </Button>
+        ))}
     </Modal>
   );
 };

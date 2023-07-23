@@ -6,7 +6,7 @@ import { modal } from 'util/com';
 import Recoils from 'recoils';
 import _ from 'lodash';
 
-import { logger } from 'util/com';
+import { logger, time_format } from 'util/com';
 
 import icon_del from 'images/icon_del.svg';
 
@@ -87,7 +87,7 @@ const GoodsMatchItem = React.memo(({ index, d, rowSpan, onClick, onDelete, onCha
 
   return (
     <tr>
-      <td>{d.reg_date}</td>
+      <td>{time_format(d.reg_date)}</td>
       <td>{d.idx}</td>
       <td>{d.name}</td>
       <td>

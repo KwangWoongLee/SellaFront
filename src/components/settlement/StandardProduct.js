@@ -8,7 +8,7 @@ import {} from 'util/com';
 import SettlementNavTab from 'components/settlement/common/SettlementNavTab';
 
 import Recoils from 'recoils';
-import { logger } from 'util/com';
+import { logger, time_format } from 'util/com';
 import request from 'util/request';
 import _ from 'lodash';
 
@@ -275,7 +275,7 @@ const StandardProductItem = React.memo(({ index, d, onChange, onSave, onDelete }
 
   return (
     <tr>
-      <td>{d.reg_date}</td>
+      <td>{time_format(d.reg_date)}</td>
       <td>{d.forms_name}</td>
       <td>{d.forms_product_name}</td>
       <td>

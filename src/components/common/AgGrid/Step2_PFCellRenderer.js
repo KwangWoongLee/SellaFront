@@ -7,13 +7,14 @@ import _ from 'lodash';
 
 const PopupCellRenderer = (props) => {
   const tippyRef = useRef();
+  const dropdownRef = useRef();
   const inputRef = useRef();
   const [visible, setVisible] = useState(false);
   const show = () => setVisible(true);
   const hide = () => setVisible(false);
   let pf_category;
   const packingData = _.cloneDeep(Recoils.getState('DATA:PACKING'));
-  if (packingData.length > 1) {
+  if (packingData && packingData.length > 1) {
     pf_category = packingData;
     pf_category.push({ packing_category: '기타', packing_fee: 0 });
   }
@@ -41,15 +42,27 @@ const PopupCellRenderer = (props) => {
       inputRef.current.value = props.data.packing_fee;
 
       props.data.packing_descript = pf_category[selectType].packing_category;
+      props.data.packing_fee = inputRef.current.value;
       return;
     }
 
     inputRef.current.value = pf_category[selectType].packing_fee1 + pf_category[selectType].packing_fee2;
     props.data.packing_descript = pf_category[selectType].packing_category;
+    props.data.packing_fee = inputRef.current.value;
+
+    props.onCellValueChanged(props, onRefreshCell);
   }, [selectType]);
+
+  const onRefreshCell = (change) => {
+    // 이게 원래.. backgroud가 바뀌는게 아니라 글자색이 바뀌어야 하는데..
+    // css가 안됩니다ㅠ
+    dropdownRef.current.style.backgroundColor = change;
+    inputRef.current.style.backgroundColor = change;
+  };
 
   const onChangeInput = () => {
     props.data.packing_fee = inputRef.current.value;
+    props.onCellValueChanged(props, onRefreshCell);
   };
 
   const dropDownContent = (
@@ -84,6 +97,7 @@ const PopupCellRenderer = (props) => {
         placement="bottom"
       >
         <DropdownButton
+          ref={dropdownRef}
           style={{ display: 'inline-block' }}
           variant=""
           title={pf_str && pf_str[selectType]}

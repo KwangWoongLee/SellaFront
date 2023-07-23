@@ -15,8 +15,6 @@ insert_recoil('CONFIRM', { show: false });
 
 // modal
 insert_recoil('MODAL:LOGIN', false);
-insert_recoil('MODAL:ITEMSELECT', { show: false });
-insert_recoil('MODAL:ITEMSELECT2', { show: false });
 insert_recoil('MODAL:FILEUPLOAD', {
   show: false,
   url: '',
