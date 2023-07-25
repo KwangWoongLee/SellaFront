@@ -39,17 +39,17 @@ const PLFormatter = (params) => {
 const optionCellRenderer = (props) => {
   return (
     <>
-      {props.data.forms_option_name1}
-      {props.data.forms_option_name2 && props.data.forms_option_name2}
-      {props.data.forms_option_name3 && props.data.forms_option_name3}
+      {props.data[30008]}
+      {props.data[30011] && props.data[30011]}
+      {props.data[30012] && props.data[30012]}
     </>
   );
 };
 
 //
 const ROUTE_COLUMN_BASE = [
-  { field: 'idx', hide: true },
   { field: '', pinned: 'left', lockPinned: true, cellClass: 'lock-pinned', checkboxSelection: true, width: 5 },
+  { field: 'idx', hide: true },
   {
     field: 'profit_loss',
     sortable: true,
@@ -64,7 +64,7 @@ const ROUTE_COLUMN_BASE = [
     valueFormatter: PLFormatter,
   },
   {
-    field: 'payment_date',
+    field: '30003',
     sortable: true,
     pinned: 'left',
     lockPinned: true,
@@ -77,7 +77,7 @@ const ROUTE_COLUMN_BASE = [
   },
 
   {
-    field: 'aggregation',
+    field: '30002',
     rowSpan: (params) => (params.data.aggregation_rowspan ? params.data.aggregation_rowspan : 1),
     sortable: true,
     unSortIcon: true,
@@ -85,7 +85,7 @@ const ROUTE_COLUMN_BASE = [
     minWidth: 160,
   },
   {
-    field: 'order_no',
+    field: '30004',
     sortable: true,
     unSortIcon: true,
     headerName: '주문번호',
@@ -99,7 +99,7 @@ const ROUTE_COLUMN_BASE = [
     minWidth: 120,
   },
   {
-    field: 'forms_product_name',
+    field: '30007',
     sortable: true,
     unSortIcon: true,
     headerName: '판매상품명',
@@ -108,7 +108,7 @@ const ROUTE_COLUMN_BASE = [
     vertical: 'Center',
   },
   {
-    field: 'forms_option_name',
+    field: '30008',
     sortable: true,
     unSortIcon: true,
     headerName: '옵션',
@@ -118,7 +118,7 @@ const ROUTE_COLUMN_BASE = [
     cellRenderer: optionCellRenderer,
   },
   {
-    field: 'count',
+    field: '30005',
     sortable: true,
     unSortIcon: true,
     valueParser: (params) => Number(params.newValue),
@@ -126,7 +126,7 @@ const ROUTE_COLUMN_BASE = [
     minWidth: 100,
   },
   {
-    field: 'sum_payment_price',
+    field: '30006',
     sortable: true,
     unSortIcon: true,
     valueParser: (params) => Number(params.newValue),
@@ -135,7 +135,7 @@ const ROUTE_COLUMN_BASE = [
   },
 
   {
-    field: 'recieved_delivery_fee',
+    field: '30047',
     sortable: true,
     unSortIcon: true,
     valueParser: (params) => Number(params.newValue),
@@ -166,27 +166,27 @@ const ROUTE_COLUMN_BASE = [
     headerName: '포장비',
     minWidth: 100,
   },
-  {
-    field: 'recieved_name',
-    sortable: true,
-    unSortIcon: true,
-    headerName: '수취인명',
-    minWidth: 120,
-  },
-  {
-    field: 'recieved_addr',
-    sortable: true,
-    unSortIcon: true,
-    headerName: '수취인 주소',
-    minWidth: 140,
-  },
-  {
-    field: 'recieved_phone',
-    sortable: true,
-    unSortIcon: true,
-    headerName: '수취인 연락처',
-    minWidth: 140,
-  },
+  // {
+  //   field: 'recieved_name',
+  //   sortable: true,
+  //   unSortIcon: true,
+  //   headerName: '수취인명',
+  //   minWidth: 120,
+  // },
+  // {
+  //   field: 'recieved_addr',
+  //   sortable: true,
+  //   unSortIcon: true,
+  //   headerName: '수취인 주소',
+  //   minWidth: 140,
+  // },
+  // {
+  //   field: 'recieved_phone',
+  //   sortable: true,
+  //   unSortIcon: true,
+  //   headerName: '수취인 연락처',
+  //   minWidth: 140,
+  // },
 ];
 
 const MarginCalc = () => {
@@ -216,6 +216,26 @@ const MarginCalc = () => {
     };
   }, []);
   const [columnDefs, setColumnDefs] = useState([]);
+
+  const SetColumnDefsFunc = () => {
+    if (!platforms[platformType]) return; // TODO Error
+    if (!platforms[platformType].titles) return; // TODO Error
+
+    const sella_codes = _.map(platforms[platformType].titles, 'sella_code');
+
+    setColumnDefs(() =>
+      _.filter(ROUTE_COLUMN_BASE, (base) => {
+        if (base.field == '') return true;
+        else if (base.field == 'profit_loss') return true;
+        else if (base.field == 'forms_name') return true;
+        else if (base.field == 'stock_price') return true;
+        else if (base.field == 'delivery_fee') return true;
+        else if (base.field == 'packing_fee') return true;
+
+        return _.includes(sella_codes, Number(base.field));
+      })
+    );
+  };
 
   useEffect(() => {
     // GO Step1
@@ -278,41 +298,43 @@ const MarginCalc = () => {
 
     temp = _.sortBy(temp, ['_order']);
     setPlatforms(temp);
-    //일단 하드코딩
-    request.post(`user/route_no`, { route_no: 0 }).then((ret) => {
-      if (!ret.err) {
-        const { data } = ret.data;
-        logger.info(data);
+    //// 일단 하드코딩
+    // request.post(`user/route_no`, { route_no: 0 }).then((ret) => {
+    //   if (!ret.err) {
+    //     const { data } = ret.data;
+    //     logger.info(data);
 
-        for (const row of data) {
-          const findObj = _.find(ROUTE_COLUMN_BASE, { field: row.field });
-          row.headerName = findObj.headerName;
-        }
+    //     for (const row of data) {
+    //       const findObj = _.find(ROUTE_COLUMN_BASE, { field: row.field });
+    //       row.headerName = findObj.headerName;
+    //     }
 
-        setViewColumns(data);
+    //     setViewColumns(data);
 
-        const field_arr = _.map(
-          _.filter(data, (obj) => {
-            return obj.select_flag == 1 || obj.select_flag == true;
-          }),
-          'field'
-        );
-        setColumnDefs(() =>
-          _.filter(ROUTE_COLUMN_BASE, (base) => {
-            if (base.field == '') return true;
+    //     const field_arr = _.map(
+    //       _.filter(data, (obj) => {
+    //         return obj.select_flag == 1 || obj.select_flag == true;
+    //       }),
+    //       'field'
+    //     );
+    //     setColumnDefs(() =>
+    //       _.filter(ROUTE_COLUMN_BASE, (base) => {
+    //         if (base.field == '') return true;
 
-            return _.includes(field_arr, base.field);
-          })
-        );
-      }
-    });
+    //         return _.includes(field_arr, base.field);
+    //       })
+    //     );
+    //   }
+    // });
   }, []);
 
   const onUpload = function () {
     setRowData([]);
     setViewResult(false);
 
-    modal.file_upload(null, '.xlsx', '파일 업로드', { aidx, platform: platforms[platformType] }, (ret) => {
+    SetColumnDefsFunc();
+
+    modal.file_upload(null, '.xlsx', '파일 업로드', { platform: platforms[platformType] }, (ret) => {
       if (!ret.err) {
         const { files } = ret;
         if (!files.length) return;
@@ -359,7 +381,8 @@ const MarginCalc = () => {
             .post_form('settlement/profit_loss', frm, () => {})
             .then((ret) => {
               if (!ret.err) {
-                setRowData(() => ret.data);
+                const { data } = ret.data;
+                setRowData(() => data);
                 setMode(1);
               }
             });
