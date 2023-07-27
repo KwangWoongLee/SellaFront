@@ -100,17 +100,15 @@ const Regist = () => {
       }
     }
 
-    request
-      .post('user/regist', { authNo, password, phone, name, email, gender, agency, local, agreement })
-      .then((ret) => {
-        if (!ret.err) {
-          com.storage.setItem('email', email);
-          com.storage.setItem('password', password);
+    request.post('/regist', { authNo, password, phone, name, email, gender, agency, local, agreement }).then((ret) => {
+      if (!ret.err) {
+        com.storage.setItem('email', email);
+        com.storage.setItem('password', password);
 
-          navigate('/regist/result');
-        } else {
-        }
-      });
+        navigate('/regist/result');
+      } else {
+      }
+    });
 
     logger.info(`submit : email = ${email}, password = ${password}`);
   };
@@ -123,7 +121,7 @@ const Regist = () => {
     }
 
     if (phone)
-      request.post('user/regist/auth/phone/auth_no', { phone }).then((ret) => {
+      request.post('regist/phone/auth_no', { phone }).then((ret) => {
         if (!ret.err) {
           const auth_temp = auth;
           auth_temp['send_phone'] = true;
@@ -145,7 +143,7 @@ const Regist = () => {
       return;
     }
 
-    request.post('user/regist/auth/phone', { authNo }).then((ret) => {
+    request.post('regist/phone', { authNo }).then((ret) => {
       if (!ret.err) {
         const auth_temp = auth;
         auth_temp['auth_phone'] = true;
@@ -163,7 +161,7 @@ const Regist = () => {
     }
 
     if (email)
-      request.post('user/info/email', { email }).then((ret) => {
+      request.post('regist/email', { email }).then((ret) => {
         if (!ret.err) {
           const auth_temp = auth;
           auth_temp['email'] = true;

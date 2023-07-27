@@ -24,15 +24,13 @@ import 'styles/FormManagement.scss';
 
 import icon_search from 'images/icon_search.svg';
 import icon_reset from 'images/icon_reset.svg';
+import icon_del from 'images/icon_del.svg';
 
 const FormManagement_Custom_Add = (param) => {
   logger.render('FormManagement_Custom_Add');
 
   const [rowData, setRowData] = useState([]);
   let { platform } = param;
-
-  const account = Recoils.useValue('CONFIG:ACCOUNT');
-  const aidx = account.aidx;
 
   const sella_forms = Recoils.useValue('SELLA:SELLAFORMS');
 
@@ -110,7 +108,7 @@ const FormManagement_Custom_Add = (param) => {
         }
       }
     }
-    request.post(`user/forms/save`, { aidx, forms_name: formNameRef.current.value, save_data }).then((ret) => {
+    request.post(`user/forms/save`, { forms_name: formNameRef.current.value, save_data }).then((ret) => {
       if (!ret.err) {
         const { data } = ret.data;
         logger.info(data);
@@ -264,7 +262,7 @@ const FormManagement_Custom_Add = (param) => {
     e.preventDefault();
     if (!excelDataRef.current) {
       setSelectRow(0);
-      alert('주문 양식을 업로드해주세요.');
+      modal.alert('주문 양식을 업로드해주세요.');
       return;
     }
 
@@ -331,6 +329,19 @@ const FormManagement_Custom_Add = (param) => {
     }
   };
 
+  const onDelete = (e) => {
+    const row = e.currentTarget.parentNode.parentNode.parentNode;
+    const rowIndex = row.rowIndex;
+    const rowDatas = [...rowData];
+    if (rowDatas[rowIndex].sella_essential) {
+      modal.alert('셀라 필수 항목은 삭제가 불가능합니다.');
+      return;
+    }
+
+    rowDatas.splice(rowIndex, 1);
+    setRowData(rowDatas);
+  };
+
   return (
     <>
       {/* 주문양식을 불러오기 전 해당 영역은 비어있고 엑셀 업로드 버튼 한개만 떠있게 됩니다. 피그마에 나와있어요!
@@ -364,6 +375,7 @@ const FormManagement_Custom_Add = (param) => {
                   index={key}
                   d={d}
                   onClick={onClick}
+                  onDelete={onDelete}
                   selectRow={selectRow}
                   checkedItemHandler={checkedItemHandler}
                 />
@@ -433,7 +445,7 @@ const FormManagement_Custom_Add = (param) => {
   );
 };
 
-const SellaForm = React.memo(({ index, d, selectRow, onClick, checkedItemHandler }) => {
+const SellaForm = React.memo(({ index, d, selectRow, onClick, onDelete, checkedItemHandler }) => {
   logger.render('SellaForm TableItem : ', index);
   // 클릭 전에 항상 첫번째 tr에 포커스가 들어와 있으면 좋을것 같습니다.
   // >>> 요거 다른 항목을 클릭해도 포커스가 유지되네용 ? ㅎㅎ 첫번째 행 focus는 처음 새로고침했을때만 들어와있으면 좋을것 같습니다 ㅎㅎ
@@ -514,6 +526,8 @@ const SellaForm = React.memo(({ index, d, selectRow, onClick, checkedItemHandler
           </Button>
         </td>
       )}
+      {d.sella_code != 30047 && d.sella_code != 30032 && d.sella_code != 30033 && <td></td>}
+
       {d.sella_code == 30047 && (
         <td>
           배송비 수수료{' '}
@@ -556,6 +570,11 @@ const SellaForm = React.memo(({ index, d, selectRow, onClick, checkedItemHandler
           %
         </td>
       )}
+      <td>
+        <button className="btn_del">
+          <img src={icon_del} alt="삭제" onClick={(e) => onDelete(e)} />
+        </button>
+      </td>
     </tr>
   );
 });

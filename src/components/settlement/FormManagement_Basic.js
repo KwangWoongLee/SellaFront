@@ -21,9 +21,7 @@ const FormManagement_Basic = (param) => {
   logger.render('FormManagement_Basic');
 
   const { platform } = param;
-
-  const account = Recoils.useValue('CONFIG:ACCOUNT');
-  const aidx = account.aidx;
+  
   const [formData, setFormData] = useState(null);
   const [rowData, setRowData] = useState([]);
 

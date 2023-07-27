@@ -27,9 +27,6 @@ import 'styles/FormManagement.scss';
 const FormManagement = () => {
   logger.render('FormManagement');
 
-  const account = Recoils.useValue('CONFIG:ACCOUNT');
-  const aidx = account.aidx;
-
   const [formsData, setFormsDatas] = useState([]);
   const [formMode, setFormMode] = useState(0);
   const [nextForm, setNextForm] = useState(null);
@@ -67,9 +64,10 @@ const FormManagement = () => {
 
   const ButtonRenderer = (props) => {
     const buttonClicked = () => {
-      request.post(`user/forms/save_view`, { aidx, idx: props.data.idx, view: !props.value }).then((ret) => {
+      request.post(`user/forms/save_view`, { idx: props.data.idx, view: !props.value }).then((ret) => {
         if (!ret.err) {
-          logger.info(ret.data);
+          const { data } = ret.data;
+          logger.info(data);
 
           const platforms = _.cloneDeep(Recoils.getState('DATA:PLATFORMS'));
           const findObj = _.find(platforms, { idx: props.data.idx });
@@ -133,15 +131,16 @@ const FormManagement = () => {
       datas.push({ ...rowNode.data });
     });
 
-    request.post(`user/forms/save_order`, { aidx, datas }).then((ret) => {
+    request.post(`user/forms/save_order`, { datas }).then((ret) => {
       if (!ret.err) {
-        logger.info(ret.data);
+        const { data } = ret.data;
+        logger.info(data);
 
         // Recoils.setState('DATA:PLATFORMS', ret.data.forms);
         const platforms = _.cloneDeep(Recoils.getState('DATA:PLATFORMS'));
-        for (const data of datas) {
-          const findObj = _.find(platforms, { idx: data.idx });
-          findObj._order = data._order;
+        for (const d of datas) {
+          const findObj = _.find(platforms, { idx: d.idx });
+          findObj._order = d._order;
         }
 
         Recoils.setState('DATA:PLATFORMS', platforms);
@@ -168,19 +167,24 @@ const FormManagement = () => {
     if (node.idx == -1) {
       setFormsDatas(_.drop(formsData, 1));
 
+      if (platformRef.current) {
+        platformRef.current = _.drop(platformRef.current, 1);
+      }
+
       return;
     }
 
-    request.post(`user/forms/delete`, { aidx, forms_idx: node.idx }).then((ret) => {
+    request.post(`user/forms/delete`, { forms_idx: node.idx }).then((ret) => {
       if (!ret.err) {
-        logger.info(ret.data);
+        const { data } = ret.data;
+        logger.info(data);
 
         let platforms = _.cloneDeep(Recoils.getState('DATA:PLATFORMS'));
         platforms = _.filter(platforms, (i) => i.idx != node.idx);
 
         Recoils.setState('DATA:PLATFORMS', platforms);
-        Recoils.setState('DATA:FORMSMATCH', ret.data.forms_match_result);
-        Recoils.setState('DATA:GOODSMATCH', ret.data.goods_match_result);
+        Recoils.setState('DATA:FORMSMATCH', data.forms_match_result);
+        Recoils.setState('DATA:GOODSMATCH', data.goods_match_result);
 
         setFormsDatas(platforms);
       }

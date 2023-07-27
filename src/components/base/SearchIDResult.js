@@ -17,30 +17,6 @@ const SearchIDResult = () => {
 
   useEffect(() => {}, []);
 
-  const onSubmit = (e) => {
-    e.preventDefault();
-
-    const id = e.currentTarget[0].value;
-    const password = e.currentTarget[1].value;
-
-    com.storage.setItem('id', id);
-    com.storage.setItem('password', password);
-
-    request.post('login', { id, password }).then((ret) => {
-      if (!ret.err) {
-        Recoils.setState('CONFIG:ACCOUNT', {
-          id: ret.data.id,
-          aidx: ret.data.aidx,
-          grade: ret.data.grade,
-          name: ret.data.name,
-        });
-      } else {
-      }
-    });
-
-    logger.info(`submit : id = ${id}, password = ${password}`);
-  };
-
   return (
     <>
       <Head />

@@ -4,7 +4,7 @@ import {} from 'react-bootstrap';
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
-import {} from 'util/com';
+import { modal } from 'util/com';
 import request from 'util/request';
 import SettlementNavTab from 'components/settlement/common/SettlementNavTab';
 import FormsMatchTable from 'components/settlement/common/FormsMatchTable';
@@ -20,8 +20,6 @@ import 'styles/SaleProduct.scss';
 
 const SaleProduct = () => {
   logger.render('SaleProduct');
-  const account = Recoils.useValue('CONFIG:ACCOUNT');
-  const aidx = account.aidx;
 
   const [items, setItems] = useState([]);
   const [abledCategoryFee, setAbledCategoryFee] = useState(true);
@@ -36,6 +34,9 @@ const SaleProduct = () => {
   useEffect(() => {
     for (const match_data of forms_match) {
       match_data.goods_match = [];
+      match_data.forms_option_name = `${match_data.forms_option_name1}`;
+      match_data.forms_option_name += match_data.forms_option_name2 ? `\n${match_data.forms_option_name2}` : '';
+      match_data.forms_option_name += match_data.forms_option_name3 ? `\n${match_data.forms_option_name3}` : '';
 
       for (const goods_match_idx of match_data.goods_match_idxs) {
         const findGoodsMatchObj = _.find(goods_match, { idx: Number(goods_match_idx) });
@@ -86,12 +87,13 @@ const SaleProduct = () => {
     setGoodsMatchs([...d.goods_match]);
   };
   const onDeleteFormsMatchTable = (d) => {
-    request.post(`user/forms/match/delete`, { aidx, idx: d.idx }).then((ret) => {
+    request.post(`user/forms/match/delete`, { forms_match_idx: d.idx }).then((ret) => {
       if (!ret.err) {
-        logger.info(ret.data);
+        const { data } = ret.data;
+        logger.info(data);
 
-        Recoils.setState('DATA:FORMSMATCH', ret.data.forms_match);
-        Recoils.setState('DATA:GOODSMATCH', ret.data.goods_match);
+        Recoils.setState('DATA:FORMSMATCH', data.forms_match);
+        Recoils.setState('DATA:GOODSMATCH', data.goods_match);
 
         setItems(
           _.filter(items, (item) => {
@@ -129,7 +131,7 @@ const SaleProduct = () => {
     if (!selectFormsMatchRef.current) return; // TODO error
     const findObj = _.find(selectFormsMatchRef.current.goods_match, { idx: d.idx });
     if (findObj) {
-      alert('이미 추가된 상품입니다.');
+      modal.alert('이미 추가된 상품입니다.');
       return; // TODO error
     }
 
@@ -152,12 +154,13 @@ const SaleProduct = () => {
   const onSave = (e) => {
     if (!selectFormsMatchRef.current) return; // TODO error
 
-    request.post(`user/forms/match/save`, { aidx, save_data: selectFormsMatchRef.current }).then((ret) => {
+    request.post(`user/forms/match/save`, { save_data: selectFormsMatchRef.current }).then((ret) => {
       if (!ret.err) {
-        logger.info(ret.data);
+        const { data } = ret.data;
+        logger.info(data);
 
-        Recoils.setState('DATA:FORMSMATCH', ret.data.forms_match);
-        Recoils.setState('DATA:GOODSMATCH', ret.data.goods_match);
+        Recoils.setState('DATA:FORMSMATCH', data.forms_match);
+        Recoils.setState('DATA:GOODSMATCH', data.goods_match);
 
         setItems(_.cloneDeep(Recoils.getState('DATA:FORMSMATCH')));
       }

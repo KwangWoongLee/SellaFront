@@ -14,9 +14,6 @@ import { logger } from 'util/com';
 const Inquiry = () => {
   logger.render('Inquiry');
 
-  const account = Recoils.useValue('CONFIG:ACCOUNT');
-  const aidx = account.aidx;
-
   useEffect(() => {}, []);
 
   return (

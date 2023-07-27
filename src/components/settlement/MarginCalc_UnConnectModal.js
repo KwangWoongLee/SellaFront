@@ -18,8 +18,6 @@ import icon_close from 'images/icon_close.svg';
 
 const MarginCalc_UnConnectModal = React.memo(({ modalState, setModalState, rowData, deleteCallback, saveCallback }) => {
   logger.render('MarginCalc_UnConnectModal');
-  const account = Recoils.useValue('CONFIG:ACCOUNT');
-  const aidx = account.aidx;
 
   const nameRef = useRef(null);
   const [abledCategoryFee, setAbledCategoryFee] = useState(true);
@@ -118,23 +116,27 @@ const MarginCalc_UnConnectModal = React.memo(({ modalState, setModalState, rowDa
     let firstRate;
     for (const good_match of selectFormsMatchRef.current.goods_match) {
       if (first && !good_match.category_fee_rate) {
-        alert('수수료 검색창에서 연결할 상품의 수수료를 선택해주세요.');
+        modal.alert('수수료 검색창에서 연결할 상품의 수수료를 선택해주세요.');
         return;
       } else if (first && good_match.category_fee_rate) {
         first = false;
         firstRate = good_match.category_fee_rate;
+        selectFormsMatchRef.current.category_fee_rate = firstRate;
         continue;
       }
 
-      if (!good_match.category_fee_rate) good_match.category_fee_rate = firstRate;
+      if (!good_match.category_fee_rate) {
+        good_match.category_fee_rate = firstRate;
+      }
     }
 
-    request.post(`user/forms/match/unconnect/save`, { aidx, save_data: selectFormsMatchRef.current }).then((ret) => {
+    request.post(`user/forms/match/unconnect/save`, { save_data: selectFormsMatchRef.current }).then((ret) => {
       if (!ret.err) {
-        logger.info(ret.data);
+        const { data } = ret.data;
+        logger.info(data);
 
-        Recoils.setState('DATA:FORMSMATCH', ret.data.forms_match);
-        Recoils.setState('DATA:GOODSMATCH', ret.data.goods_match);
+        Recoils.setState('DATA:FORMSMATCH', data.forms_match);
+        Recoils.setState('DATA:GOODSMATCH', data.goods_match);
 
         saveCallback(selectFormsMatchRef.current);
 
@@ -147,7 +149,7 @@ const MarginCalc_UnConnectModal = React.memo(({ modalState, setModalState, rowDa
     <Modal show={modalState} onHide={onClose} centered className="modal UnConnect sale_product">
       <Modal.Header>
         <Modal.Title>상품 매칭 관리</Modal.Title>
-        <Button variant="primary" className="btn_close">
+        <Button variant="primary" className="btn_close" onClick={onClose}>
           <img src={icon_close} />
         </Button>
       </Modal.Header>

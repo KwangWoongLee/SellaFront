@@ -20,7 +20,7 @@ const Buying = () => {
   logger.render('Buying');
 
   const account = Recoils.useValue('CONFIG:ACCOUNT');
-  const aidx = account.aidx;
+  const access_token = account.access_token;
 
   const [rowData, setDatas] = useState([]);
   const platformData = [...Recoils.getState('SELLA:PLATFORM')];
@@ -110,9 +110,10 @@ const Buying = () => {
   ]);
 
   useEffect(() => {
-    request.post(`user/calculator/margin`, { aidx }).then((ret) => {
+    request.post(`user/calculator/margin`, {}).then((ret) => {
       if (!ret.err) {
-        logger.info(ret.data);
+        const { data } = ret.data;
+        logger.info(data);
 
         // setDatas(() => ret.data);
       }

@@ -27,14 +27,14 @@ const Login = () => {
 
         Recoils.setState('CONFIG:ACCOUNT', {
           email: data.email,
-          aidx: data.aidx,
           grade: data.grade,
           name: data.name,
+          access_token: data.access_token,
         });
 
         com.storage.setItem('email', email);
         com.storage.setItem('password', password);
-        com.storage.setItem('token', data.access_token);
+        com.storage.setItem('access_token', data.access_token);
 
         Recoils.setState('DATA:GOODS', data.goods);
         Recoils.setState('DATA:DELIVERY', data.delivery);

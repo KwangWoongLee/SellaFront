@@ -17,8 +17,6 @@ import moment from 'moment';
 
 import { logger } from 'util/com';
 
-// Homd에 있는 것 옮겼는데 css가 안먹어요ㅠ
-import 'styles/Home.scss';
 import 'styles/MarginCalc.scss';
 
 import icon_circle_arrow_down from 'images/icon_circle_arrow_down.svg';
@@ -31,7 +29,7 @@ import { AgGridReact } from 'ag-grid-react';
 import ColumnControlModal from 'components/common/AgGrid/ColumnControlModal';
 const PLFormatter = (params) => {
   let newValue = '';
-  newValue += params.value > 0 ? '이익' : '손해';
+  newValue += params.value > 0 ? '이익 ' : '손해 ';
   newValue += params.value;
   return newValue;
 };
@@ -48,7 +46,15 @@ const optionCellRenderer = (props) => {
 
 //
 const ROUTE_COLUMN_BASE = [
-  { field: '', pinned: 'left', lockPinned: true, cellClass: 'lock-pinned', checkboxSelection: true, width: 5 },
+  {
+    field: '',
+    pinned: 'left',
+    lockPinned: true,
+    cellClass: 'lock-pinned checkcell',
+    checkboxSelection: true,
+    maxWidth: 36,
+    horizontal: 'Center',
+  },
   { field: 'idx', hide: true },
   {
     field: 'profit_loss',
@@ -73,7 +79,7 @@ const ROUTE_COLUMN_BASE = [
     headerName: '결제일',
     filter: false,
     unSortIcon: true,
-    width: 120,
+    width: 170,
   },
 
   {
@@ -82,21 +88,21 @@ const ROUTE_COLUMN_BASE = [
     sortable: true,
     unSortIcon: true,
     headerName: '배송비묶음번호',
-    minWidth: 160,
+    maxWidth: 150,
   },
   {
     field: '30004',
     sortable: true,
     unSortIcon: true,
     headerName: '주문번호',
-    minWidth: 160,
+    maxWidth: 150,
   },
   {
     field: 'forms_name',
     sortable: true,
     unSortIcon: true,
     headerName: '매체',
-    minWidth: 120,
+    width: 150,
   },
   {
     field: '30007',
@@ -105,6 +111,7 @@ const ROUTE_COLUMN_BASE = [
     headerName: '판매상품명',
     minWidth: 400,
     wrapText: true,
+    autoHeight: true,
     vertical: 'Center',
   },
   {
@@ -114,6 +121,7 @@ const ROUTE_COLUMN_BASE = [
     headerName: '옵션',
     minWidth: 300,
     wrapText: true,
+    autoHeight: true,
     vertical: 'Center',
     cellRenderer: optionCellRenderer,
   },
@@ -122,16 +130,18 @@ const ROUTE_COLUMN_BASE = [
     sortable: true,
     unSortIcon: true,
     valueParser: (params) => Number(params.newValue),
-    headerName: '주문수량',
-    minWidth: 100,
+    headerName: '수량',
+    maxWidth: 80,
+    autoHeight: true,
   },
   {
     field: '30006',
     sortable: true,
     unSortIcon: true,
     valueParser: (params) => Number(params.newValue),
-    headerName: '총 결제금액(정산예정금액)',
-    minWidth: 140,
+    headerName: '총 결제금액\n(정산예정금액)',
+    width: 130,
+    autoHeight: true,
   },
 
   {
@@ -140,7 +150,7 @@ const ROUTE_COLUMN_BASE = [
     unSortIcon: true,
     valueParser: (params) => Number(params.newValue),
     headerName: '받은 배송비',
-    minWidth: 140,
+    width: 120,
   },
   {
     field: 'stock_price',
@@ -148,7 +158,7 @@ const ROUTE_COLUMN_BASE = [
     unSortIcon: true,
     valueParser: (params) => Number(params.newValue),
     headerName: '입고단가',
-    minWidth: 120,
+    width: 120,
   },
   {
     field: 'delivery_fee',
@@ -156,7 +166,7 @@ const ROUTE_COLUMN_BASE = [
     unSortIcon: true,
     valueParser: (params) => Number(params.newValue),
     headerName: '배송비',
-    minWidth: 100,
+    width: 120,
   },
   {
     field: 'packing_fee',
@@ -164,7 +174,7 @@ const ROUTE_COLUMN_BASE = [
     unSortIcon: true,
     valueParser: (params) => Number(params.newValue),
     headerName: '포장비',
-    minWidth: 100,
+    width: 120,
   },
   // {
   //   field: 'recieved_name',
@@ -189,11 +199,17 @@ const ROUTE_COLUMN_BASE = [
   // },
 ];
 
+// const getRowHeight = useCallback((params) => {
+//   return params.data.rowHeight;
+// }, []);
+
+const rowHeight = 36;
+
 const MarginCalc = () => {
   logger.render('MarginCalc');
 
   const account = Recoils.useValue('CONFIG:ACCOUNT');
-  const aidx = account.aidx;
+  const access_token = account.access_token;
   const [mode, setMode] = useState(0);
   const [viewResult, setViewResult] = useState(false);
   const [viewState, setView] = useState(true);
@@ -213,6 +229,8 @@ const MarginCalc = () => {
       editable: false,
       sortable: true,
       minWidth: 80,
+      // wrapHeaderText: true,
+      autoHeaderHeight: true,
     };
   }, []);
   const [columnDefs, setColumnDefs] = useState([]);
@@ -374,7 +392,7 @@ const MarginCalc = () => {
 
           const frm = new FormData();
           frm.append('files', file);
-          frm.append('aidx', aidx);
+          frm.append('Authorization', access_token);
           frm.append('platform', JSON.stringify(platforms[platformType]));
 
           request
@@ -465,8 +483,15 @@ const MarginCalc = () => {
       _.transform(
         rowData,
         function (result, item) {
-          if (item.forms_product_name == d.forms_product_name && item.forms_option_name1 == d.forms_option_name1)
+          if (item.forms_product_name == d.forms_product_name && item.forms_option_name == d.forms_option_name) {
             item.connect_flag = true;
+
+            item.stock_price = getStockPrice(d);
+            item.delivery_fee = getDeliveryFee(d);
+            item.packing_fee = getPackingFee(d);
+            item.profit_loss = calcProfitLoss(d);
+          }
+
           result.push(item);
         },
         []
@@ -492,7 +517,7 @@ const MarginCalc = () => {
 
   const getRowStyle = (params) => {
     if (!params.node.data.connect_flag) {
-      return { background: 'red' };
+      return { background: '#FFEAEA' };
     }
   };
 
@@ -502,9 +527,9 @@ const MarginCalc = () => {
       <Body title={`손익 계산`} myClass={'margin_calc'}>
         <SettlementNavTab active="/settlement/margin_calc" />
 
-        <div className="page">
-          {mode == 0 && (
-            <>
+        {mode == 0 && (
+          <>
+            <div className="page before">
               <div className="section1">
                 <h3>
                   주문서를 업로드하고 손익을 관리하세요!
@@ -516,16 +541,19 @@ const MarginCalc = () => {
                 <div className="btnbox">
                   <DropdownButton variant="" title={platforms.length ? platforms[platformType].name : ''}>
                     {platforms &&
-                      platforms.map((item, key) => (
-                        <Dropdown.Item
-                          key={key}
-                          eventKey={key}
-                          onClick={(e) => onChange(key, e)}
-                          active={platformType === key}
-                        >
-                          {item.name}
-                        </Dropdown.Item>
-                      ))}
+                      platforms.map(
+                        (item, key) =>
+                          item.view && (
+                            <Dropdown.Item
+                              key={key}
+                              eventKey={key}
+                              onClick={(e) => onChange(key, e)}
+                              active={platformType === key}
+                            >
+                              {item.name}
+                            </Dropdown.Item>
+                          )
+                      )}
                   </DropdownButton>
                   <Button variant="primary" onClick={onUpload} className="btn_green">
                     <img src={icon_circle_arrow_up} />새 주문서 업로드
@@ -542,10 +570,12 @@ const MarginCalc = () => {
               <div className="section2">
                 <img src={img_service} />
               </div>
-            </>
-          )}
-          {mode == 1 && (
-            <>
+            </div>
+          </>
+        )}
+        {mode == 1 && (
+          <>
+            <div className="page after">
               <div className="inputbox">
                 <DropdownButton variant="" title={platforms.length ? platforms[platformType].name : ''}>
                   {platforms &&
@@ -654,12 +684,14 @@ const MarginCalc = () => {
                     getRowStyle={getRowStyle}
                     overlayNoRowsTemplate={'데이터가 없습니다.'}
                     suppressRowTransform={true}
+                    rowHeight={rowHeight}
+                    // getRowHeight={getRowHeight}
                   ></AgGridReact>
                 </div>
               </div>
-            </>
-          )}
-        </div>
+            </div>
+          </>
+        )}
       </Body>
       <Footer />
       <MarginCalc_UnConnectModal
@@ -678,6 +710,94 @@ const MarginCalc = () => {
       ></ColumnControlModal>
     </>
   );
+};
+const calcProfitLoss = (profit_loss_row) => {
+  let profit_loss = 0;
+  profit_loss += getAggregation(profit_loss_row);
+  profit_loss += getRealityDeliveryFee(profit_loss_row);
+  profit_loss += getAssemblyFee(profit_loss_row);
+  profit_loss += getInstallationFee(profit_loss_row);
+
+  profit_loss -= getStockPrice(profit_loss_row);
+  profit_loss -= getDeliveryFee(profit_loss_row);
+  profit_loss -= getPackingFee(profit_loss_row);
+
+  return profit_loss;
+};
+
+const getAggregation = (profit_loss_row) => {
+  let aggregation = profit_loss_row[30001] ? Number(profit_loss_row[30001]) : 0;
+  let profit_loss = 0;
+  //  정산예정금액이 있는 경우
+  if (aggregation) {
+    profit_loss += aggregation; // 1. 정산예정금액 추가
+  } else {
+    // 없는 경우
+    {
+      aggregation = 0;
+      aggregation += Number(profit_loss_row[30006]); // 1. 총 결제금액 더하기
+      aggregation += Number(profit_loss_row[30019]); // 2. 기타할인1 빼기
+      aggregation += Number(profit_loss_row[30020]); // 3. 기타할인2 빼기
+
+      aggregation *= 1 - parseFloat(profit_loss_row.category_fee_rate) / 100;
+    }
+
+    profit_loss += aggregation;
+  }
+
+  return profit_loss;
+};
+
+const getRealityDeliveryFee = (profit_loss_row) => {
+  let pay_advance = profit_loss_row[30022];
+  let delivery_fee = 0;
+  const received_delivery_fee = profit_loss_row[30047] ? Number(profit_loss_row[30047]) : 0;
+  const countryside_added_fee = profit_loss_row[30014] ? Number(profit_loss_row[30014]) : 0;
+  const df_discount = profit_loss_row[30015] ? Number(profit_loss_row[30015]) : 0;
+
+  // 배송비 선불인 경우
+  if (pay_advance) {
+    delivery_fee += received_delivery_fee;
+    delivery_fee += countryside_added_fee;
+    delivery_fee -= df_discount;
+    delivery_fee *= 1 - parseFloat(profit_loss_row['30047_additional']) / 100;
+  }
+
+  return delivery_fee;
+};
+
+const getAssemblyFee = (profit_loss_row) => {
+  let assembly_fee = profit_loss_row[30032] ? Number(profit_loss_row[30032]) : 0;
+
+  // 배송비 선불인 경우
+  if (assembly_fee) {
+    assembly_fee *= 1 - parseFloat(profit_loss_row['30032_additional']) / 100; // TODO 조립비 수수료.. 흠
+  }
+
+  return assembly_fee;
+};
+
+const getInstallationFee = (profit_loss_row) => {
+  let installation_fee = profit_loss_row[30033] ? Number(profit_loss_row[30033]) : 0;
+
+  // 배송비 선불인 경우
+  if (installation_fee) {
+    installation_fee *= 1 - parseFloat(profit_loss_row['30033_additional']) / 100; // TODO 설치비 수수료.. 흠
+  }
+
+  return installation_fee;
+};
+
+const getStockPrice = (profit_loss_row) => {
+  return _.sumBy(profit_loss_row.goods_match, 'stock_price');
+};
+
+const getDeliveryFee = (profit_loss_row) => {
+  return _.sumBy(profit_loss_row.goods_match, 'delivery_fee');
+};
+
+const getPackingFee = (profit_loss_row) => {
+  return _.sumBy(profit_loss_row.goods_match, 'packing_fee');
 };
 
 export default React.memo(MarginCalc);

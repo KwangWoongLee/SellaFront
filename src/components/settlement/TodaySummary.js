@@ -162,7 +162,8 @@ const TodaySummary = () => {
   logger.render('TodaySummary');
 
   const account = Recoils.useValue('CONFIG:ACCOUNT');
-  const aidx = account.aidx;
+  const access_token = account.access_token;
+
   const [viewResult, setViewResult] = useState(false);
   const [viewState, setView] = useState(true);
   const [platforms, setPlatforms] = useState([]);
@@ -194,40 +195,13 @@ const TodaySummary = () => {
     let temp = _.filter(Recoils.getState('DATA:PLATFORMS'), { view: 1 });
     temp = _.sortBy(temp, ['_order']);
     setPlatforms(temp);
-    //일단 하드코딩
-    request.post(`user/route_no`, { aidx, route_no: 0 }).then((ret) => {
-      if (!ret.err) {
-        logger.info(ret.data);
-
-        for (const row of ret.data) {
-          const findObj = _.find(ROUTE_COLUMN_BASE, { field: row.field });
-          row.headerName = findObj.headerName;
-        }
-
-        setViewColumns(ret.data);
-
-        const field_arr = _.map(
-          _.filter(ret.data, (obj) => {
-            return obj.select_flag == 1 || obj.select_flag == true;
-          }),
-          'field'
-        );
-        setColumnDefs(() =>
-          _.filter(ROUTE_COLUMN_BASE, (base) => {
-            if (base.field == '') return true;
-
-            return _.includes(field_arr, base.field);
-          })
-        );
-      }
-    });
   }, []);
 
   const onUpload = function () {
     setRowData([]);
     setViewResult(false);
 
-    modal.file_upload(null, '.xlsx', '파일 업로드', { aidx, platform: platforms[platformType] }, (ret) => {
+    modal.file_upload(null, '.xlsx', '파일 업로드', { platform: platforms[platformType] }, (ret) => {
       if (!ret.err) {
         const { files } = ret;
         if (!files.length) return;
@@ -272,14 +246,15 @@ const TodaySummary = () => {
 
           const frm = new FormData();
           frm.append('files', file);
-          frm.append('aidx', aidx);
+          frm.append('Authorization', access_token);
           frm.append('platform', JSON.stringify(platforms[platformType]));
 
           request
             .post_form('settlement/profit_loss', frm, () => {})
             .then((ret) => {
               if (!ret.err) {
-                setRowData(() => ret.data);
+                const { data } = ret.data;
+                setRowData(() => data);
               }
             });
         };

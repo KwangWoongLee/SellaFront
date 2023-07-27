@@ -162,9 +162,9 @@ const Step2 = () => {
         });
       } else {
         let column = params.column.colDef.field;
-        const newStyle = { color: 'black' };
+        const newStyle = { color: 'transparent' };
         params.column.colDef.cellStyle = newStyle;
-        callback('black');
+        callback('transparent');
         params.api.refreshCells({
           force: true,
           columns: [column],
@@ -195,9 +195,9 @@ const Step2 = () => {
         });
       } else {
         let column = params.column.colDef.field;
-        const newStyle = { color: 'black' };
+        const newStyle = { color: 'transparent' };
         params.column.colDef.cellStyle = newStyle;
-        callback('black');
+        callback('transparent');
         params.api.refreshCells({
           force: true,
           columns: [column],
@@ -234,11 +234,10 @@ const Step2 = () => {
       editable: false,
       headerCheckboxSelection: true,
       checkboxSelection: true,
-      cellClass: 'lock-pinned',
+      cellClass: 'lock-pinned checkcell',
       pinned: 'left',
       lockPinned: true,
-      maxWidth: 30,
-      cellClass: 'checkcell',
+      maxWidth: 36,
     },
     {
       field: 'idx',
@@ -250,6 +249,7 @@ const Step2 = () => {
       pinned: 'left',
       lockPinned: true,
       width: 120,
+      cellStyle: { 'line-height': '30px', 'text-align': 'right' },
       cellClass: 'codecell',
     },
     {
@@ -262,6 +262,7 @@ const Step2 = () => {
       pinned: 'left',
       lockPinned: true,
       width: 120,
+      cellStyle: { 'line-height': '30px', 'text-align': 'right' },
     },
     {
       field: 'name',
@@ -273,10 +274,11 @@ const Step2 = () => {
       pinned: 'left',
       lockPinned: true,
       width: 250,
+      cellStyle: { 'line-height': '30px', 'text-align': 'right' },
     },
     {
       field: 'stock_price',
-      headerName: '입고단가',
+      headerName: '입고가',
       sortable: true,
       unSortIcon: true,
       valueParser: (params) => Number(params.newValue),
@@ -284,6 +286,7 @@ const Step2 = () => {
       cellDataType: 'number', // 인풋 타입을 넘버로 바꾸고싶어요ㅠㅠ
       cellClass: 'ag-cell-editable',
       maxWidth: 90,
+      cellStyle: { 'line-height': '30px', 'text-align': 'right' },
     },
     {
       field: 'delivery_fee',
@@ -293,14 +296,14 @@ const Step2 = () => {
       filter: false,
       // cellDataType: 'number', // 인풋 타입을 넘버로 바꾸고싶어요ㅠㅠ , project 폴더에 Step2_PopupCellRenderer 쪽에서 input있는데 컨트롤 하시면됩니다^^
       editable: false,
-      // cellClass: 'ag-cell-editable',
+      cellClass: 'td_input',
       cellRenderer: Step2_DFCellRenderer,
       cellRendererParams: {
         df_category,
         rawData,
         onCellValueChanged,
       },
-      minWidth: 210,
+      minWidth: 215,
     },
     {
       field: 'packing_fee',
@@ -309,14 +312,14 @@ const Step2 = () => {
       unSortIcon: true,
       filter: false,
       editable: false,
-      // cellClass: 'ag-cell-editable',
+      cellClass: 'td_input',
       cellRenderer: Step2_PFCellRenderer,
       cellRendererParams: {
         pf_category,
         rawData,
         onCellValueChanged,
       },
-      minWidth: 205,
+      minWidth: 215,
     },
     {
       field: 'box_amount',
@@ -326,6 +329,7 @@ const Step2 = () => {
       valueParser: (params) => Number(params.newValue),
       filter: false,
       cellClass: 'ag-cell-editable',
+      cellStyle: { 'line-height': '30px', 'text-align': 'right' },
     },
     {
       field: 'single_delivery',
@@ -338,6 +342,7 @@ const Step2 = () => {
       cellEditorParams: {
         values: ['Y', 'N'],
       },
+      cellStyle: { 'line-height': '30px', 'text-align': 'right' },
     },
     {
       field: 'barcode',
@@ -346,6 +351,7 @@ const Step2 = () => {
       unSortIcon: true,
       filter: false,
       cellClass: 'ag-cell-editable',
+      cellStyle: { 'line-height': '30px', 'text-align': 'right' },
     },
     {
       field: 'rrp',
@@ -354,12 +360,14 @@ const Step2 = () => {
       unSortIcon: true,
       filter: false,
       cellClass: 'ag-cell-editable',
+      cellStyle: { 'line-height': '30px', 'text-align': 'right' },
     },
     {
       field: 'memo',
       headerName: '메모',
       filter: false,
       cellClass: 'ag-cell-editable',
+      cellStyle: { 'line-height': '30px', 'text-align': 'right' },
     },
     {
       field: 'reg_date',
@@ -372,6 +380,7 @@ const Step2 = () => {
         if (params.value == '') return '';
         return time_format(params.value);
       },
+      cellStyle: { 'line-height': '30px', 'text-align': 'right' },
     },
     {
       field: 'modify_date',
@@ -384,6 +393,7 @@ const Step2 = () => {
         if (params.value == '') return '';
         return time_format(params.value);
       },
+      cellStyle: { 'line-height': '30px', 'text-align': 'right' },
     },
   ]);
 
@@ -410,6 +420,8 @@ const Step2 = () => {
       });
     }
   };
+
+  const rowHeight = 46;
 
   const onSave = (e) => {
     const selectedRows = gridRef.current.api.getSelectedRows();
@@ -546,8 +558,6 @@ const Step2 = () => {
 
         rawData = _.cloneDeep(data);
         setDatas(data);
-
-        
       }
     });
   };
@@ -704,6 +714,7 @@ const Step2 = () => {
                 onCellEditingStopped={onCellValueChanged}
                 singleClickEdit={true}
                 onSelectionChanged={onSelectionChanged}
+                rowHeight={rowHeight}
               ></AgGridReact>
             </div>
           </div>

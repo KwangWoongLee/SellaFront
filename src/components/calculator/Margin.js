@@ -20,9 +20,6 @@ import 'styles/Margin.scss';
 const Margin = () => {
   logger.render('Margin');
 
-  const account = Recoils.useValue('CONFIG:ACCOUNT');
-  const aidx = account.aidx;
-
   const [rowData, setDatas] = useState([]);
   const platformData = [...Recoils.getState('SELLA:PLATFORM')];
   const [platformType, setplatformType] = useState(0);
@@ -111,9 +108,10 @@ const Margin = () => {
   ]);
 
   useEffect(() => {
-    request.post(`user/calculator/margin`, { aidx }).then((ret) => {
+    request.post(`user/calculator/margin`, {}).then((ret) => {
       if (!ret.err) {
-        logger.info(ret.data);
+        const { data } = ret.data;
+        logger.info(data);
 
         // setDatas(() => ret.data);
       }

@@ -24,8 +24,6 @@ import { AgGridReact } from 'ag-grid-react';
 
 const StandardProduct = () => {
   logger.render('StandardProduct');
-  const account = Recoils.useValue('CONFIG:ACCOUNT');
-  const aidx = account.aidx;
 
   const [goodsData, setGoodsData] = useState([]);
   const [matchData, setMatchData] = useState([]);
@@ -106,23 +104,25 @@ const StandardProduct = () => {
   };
 
   const onSave = (e, d) => {
-    request.post(`user/goods/match/save`, { aidx, save_data: d }).then((ret) => {
+    request.post(`user/goods/match/save`, { save_data: d }).then((ret) => {
       if (!ret.err) {
-        logger.info(ret.data);
+        const { data } = ret.data;
+        logger.info(data);
 
-        Recoils.setState('DATA:GOODSMATCH', ret.data.goods_match);
+        Recoils.setState('DATA:GOODSMATCH', data.goods_match);
       }
     });
   };
 
   const onDelete = (e, d) => {
     e.preventDefault();
-    request.post(`user/goods/match/delete`, { aidx, save_data: d }).then((ret) => {
+    request.post(`user/goods/match/delete`, { save_data: d }).then((ret) => {
       if (!ret.err) {
-        logger.info(ret.data);
+        const { data } = ret.data;
+        logger.info(data);
 
-        Recoils.setState('DATA:FORMSMATCH', ret.data.forms_match);
-        Recoils.setState('DATA:GOODSMATCH', ret.data.goods_match);
+        Recoils.setState('DATA:FORMSMATCH', data.forms_match);
+        Recoils.setState('DATA:GOODSMATCH', data.goods_match);
         setMatchData(_.filter(matchData, (item) => item.idx != d.idx));
       }
     });

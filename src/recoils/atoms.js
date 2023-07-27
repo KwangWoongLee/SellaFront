@@ -28,10 +28,7 @@ insert_recoil('MODAL:FILEUPLOAD', {
 
 // account
 insert_recoil('CONFIG:ACCOUNT', {
-  user: {
-    email: '',
-    aidx: 0,
-  },
+  access_token: '',
   email: '',
   grade: -1,
   name: '',

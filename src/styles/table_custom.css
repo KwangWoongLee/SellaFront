@@ -42,8 +42,8 @@ h3>button {
 }
 
 table thead {
-  height: 42px;
-  min-height: 42px;
+  height: 36px;
+  min-height: 36px;
   background-color: #182B65;
   overflow: hidden;
 }
@@ -70,7 +70,7 @@ table tbody:empty:before,
 }
 
 table th {
-  padding: 13px 3px 14px;
+  padding: 10px 3px 11px;
   border-right: 1px dotted #ccc;
   font-size: 13px;
   line-height: 13px;
@@ -122,20 +122,20 @@ table tr:hover td input[type='checkbox']:focus {
 }
 
 table tr:focus-within {
-  background-color: #bcdffb !important;
+  background-color: #e8f4fe !important;
 }
 
 table tr:focus-within input:not(:focus) {
-  background-color: #bcdffb !important;
+  background-color: #e8f4fe !important;
 }
 
 table tr.select {
-  background-color: #bcdffb;
+  background-color: #e8f4fe;
 }
 
 table td {
   padding: 5px 10px;
-  font-size: 13px;
+  font-size: 14px;
   color: #000;
   border-right: 1px dotted #babfc7;
   border-bottom: 1px dotted #babfc7;

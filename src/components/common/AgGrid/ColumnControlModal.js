@@ -11,8 +11,6 @@ import { logger } from 'util/com';
 
 const ColumnControlModal = React.memo(({ modalState, setModalState, callback, viewColumns }) => {
   logger.render('ColumnControlModal');
-  const account = Recoils.useValue('CONFIG:ACCOUNT');
-  const aidx = account.aidx;
 
   const [columns, setColumns] = useState([]);
   useEffect(() => {
@@ -29,9 +27,10 @@ const ColumnControlModal = React.memo(({ modalState, setModalState, callback, vi
   const onSave = (e) => {
     e.preventDefault();
 
-    request.post(`user/route_no/save`, { aidx, route_no: 0, viewColumns }).then((ret) => {
+    request.post(`user/route_no/save`, { route_no: 0, viewColumns }).then((ret) => {
       if (!ret.err) {
-        logger.info(ret.data);
+        const { data } = ret.data;
+        logger.info(data);
 
         callback(viewColumns);
         onClose();

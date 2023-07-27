@@ -26,9 +26,6 @@ const FormManagement_Custom = (param) => {
 
   let { platform } = param;
 
-  const account = Recoils.useValue('CONFIG:ACCOUNT');
-  const aidx = account.aidx;
-
   const sella_forms = Recoils.useValue('SELLA:SELLAFORMS');
 
   const [rowData, setRowData] = useState([]);
@@ -100,6 +97,11 @@ const SellaForm = React.memo(({ index, d }) => {
         {d.column}
         {'열)'}
       </td>
+      {(d.sella_code == 30047 || d.sella_code == 30032 || d.sella_code == 30033) && (
+        <td>
+          {d.sella_title} 수수료 {d.additional}%
+        </td>
+      )}
     </tr>
   );
 });

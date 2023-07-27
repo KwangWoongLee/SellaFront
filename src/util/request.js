@@ -72,7 +72,7 @@ const request = {
 
     modal.spinner(true);
     try {
-      const client = get_client({ Authorization: com.storage.token }, ...headers);
+      const client = get_client({ Authorization: com.storage.getItem('access_token') }, ...headers);
       const res = await client.post(`${url}`, send_obj);
       ret.data = res.data;
       if (res.data.err_msg) ret.err = res.data.err_msg;
@@ -102,7 +102,7 @@ const request = {
     modal.spinner(true);
 
     try {
-      const client = get_client({ Authorization: com.storage.token }, ...headers);
+      const client = get_client({ Authorization: com.storage.getItem('access_token') }, ...headers);
       const res = await client.post(`${url}`, formdata);
       ret.data = res.data;
       if (res.data.err_msg) ret.err = res.data.err_msg;

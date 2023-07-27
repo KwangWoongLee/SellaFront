@@ -26,17 +26,19 @@ const CSCenter = () => {
   useEffect(() => {
     request.post(`cscenter/announcement`, { limit: 10 }).then((ret) => {
       if (!ret.err) {
-        logger.info(ret.data);
-        const rowCount = ret.data.length;
-        rowCount ? setAnnouncements(() => ret.data) : setAnnouncements([]);
+        const { data } = ret.data;
+        logger.info(data);
+        const rowCount = data.length;
+        rowCount ? setAnnouncements(() => data) : setAnnouncements([]);
       }
     });
 
     request.post(`cscenter/faq`, { limit: 10 }).then((ret) => {
       if (!ret.err) {
-        logger.info(ret.data);
-        const rowCount = ret.data.length;
-        rowCount ? setFAQ(() => ret.data) : setFAQ([]);
+        const { data } = ret.data;
+        logger.info(data);
+        const rowCount = data.length;
+        rowCount ? setFAQ(() => data) : setFAQ([]);
       }
     });
   }, []);

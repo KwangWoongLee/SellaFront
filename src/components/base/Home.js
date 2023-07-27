@@ -18,7 +18,7 @@ const Home = () => {
   logger.render('Home');
 
   const account = Recoils.useValue('CONFIG:ACCOUNT');
-  const aidx = account.aidx;
+  const access_token = account.access_token;
   const [viewResult, setViewResult] = useState(false);
   const [viewState, setView] = useState(true);
   const [platforms, setPlatforms] = useState([]);
@@ -37,7 +37,7 @@ const Home = () => {
     setRowData([]);
     setViewResult(false);
 
-    modal.file_upload(null, '.xlsx', '파일 업로드', { aidx, platform: platforms[platformType] }, (ret) => {
+    modal.file_upload(null, '.xlsx', '파일 업로드', { platform: platforms[platformType] }, (ret) => {
       if (!ret.err) {
         const { files } = ret;
         if (!files.length) return;
@@ -82,14 +82,15 @@ const Home = () => {
 
           const frm = new FormData();
           frm.append('files', file);
-          frm.append('aidx', aidx);
+          frm.append('Authorization', access_token);
           frm.append('platform', JSON.stringify(platforms[platformType]));
 
           request
             .post_form('settlement/profit_loss', frm, () => {})
             .then((ret) => {
               if (!ret.err) {
-                setRowData(() => ret.data);
+                const { data } = ret.data;
+                setRowData([...data]);
               }
             });
         };

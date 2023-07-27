@@ -22,9 +22,6 @@ import icon_reset from 'images/icon_reset.svg';
 const FAQ = () => {
   logger.render('FAQ');
 
-  const account = Recoils.useValue('CONFIG:ACCOUNT');
-  const aidx = account.aidx;
-
   const [modalState, setModalState] = useState(false);
   const [imgUrl, setImgUrl] = useState('');
 
@@ -49,9 +46,10 @@ const FAQ = () => {
   useEffect(() => {
     request.post(`cscenter/faq`, { category: category_str[categoryType], title }).then((ret) => {
       if (!ret.err) {
-        logger.info(ret.data);
-        const rowCount = ret.data.length;
-        rowCount ? setDatas(() => ret.data) : setDatas([]);
+        const { data } = ret.data;
+        logger.info(data);
+        const rowCount = data.length;
+        rowCount ? setDatas(() => data) : setDatas([]);
         rowCount && Math.floor(rowCount / limit) ? setPageCount(Math.floor(rowCount / limit)) : setPageCount(1);
         setPage(1);
       }
@@ -96,10 +94,11 @@ const FAQ = () => {
 
     request.post(`cscenter/faq`, { category: category_str[categoryType], title }).then((ret) => {
       if (!ret.err) {
-        logger.info(ret.data);
+        const { data } = ret.data;
+        logger.info(data);
 
-        const rowCount = ret.data.length;
-        rowCount ? setDatas(() => ret.data) : setDatas([]);
+        const rowCount = data.length;
+        rowCount ? setDatas(() => data) : setDatas([]);
         rowCount && Math.floor(rowCount / limit) ? setPageCount(Math.floor(rowCount / limit)) : setPageCount(1);
         setPage(1);
       }

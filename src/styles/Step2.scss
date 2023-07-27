@@ -63,7 +63,7 @@
     .dropdown {
       display: block !important;
       float: left;
-      margin-top: 3px;
+      margin-top: 0;
       width: 100px;
     }
 
@@ -79,7 +79,7 @@
     .dropdown + input,
     .dropdown + input:disabled {
       float: left;
-      margin-top: 3px;
+      margin-top: 0;
       margin-left: 5px;
       width: 70px;
       height: 33px;
@@ -92,6 +92,7 @@
       float: left;
       line-height: 35px;
       text-indent: 5px;
+      color: #000;
     }
 
     .ag-cell-editable {

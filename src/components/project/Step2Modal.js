@@ -11,8 +11,6 @@ const sd_str = ['Y', 'N'];
 
 const InputModal = React.memo(({ modalState, setModalState, callback }) => {
   logger.render('Step2Modal');
-  const account = Recoils.useValue('CONFIG:ACCOUNT');
-  const aidx = account.aidx;
 
   const [sdType, setSDType] = useState(0);
   useEffect(() => {
@@ -38,7 +36,6 @@ const InputModal = React.memo(({ modalState, setModalState, callback }) => {
 
     request
       .post('user/goods/insert', {
-        aidx,
         goods_category,
         name,
         stock_price,
@@ -50,7 +47,8 @@ const InputModal = React.memo(({ modalState, setModalState, callback }) => {
       })
       .then((ret) => {
         if (!ret.err) {
-          callback(ret.data ? ret.data[0] : null);
+          const { data } = ret.data;
+          callback(data ? data[0] : null);
           onClose();
         }
       });

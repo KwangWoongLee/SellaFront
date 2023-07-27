@@ -40,8 +40,6 @@ const Step1 = () => {
   const [packItems, setPackItems] = useState([]);
 
   logger.render('Step1');
-  const account = Recoils.useValue('CONFIG:ACCOUNT');
-  const aidx = account.aidx;
 
   useEffect(() => {
     const delivery_data = _.cloneDeep(Recoils.getState('DATA:DELIVERY'));

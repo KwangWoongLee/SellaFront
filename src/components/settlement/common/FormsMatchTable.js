@@ -13,14 +13,13 @@ import icon_del from 'images/icon_del.svg';
 const FormsMatchTable = React.memo(({ rows, unconnect_flag, setItems, selectCallback, deleteCallback }) => {
   logger.render('FormsMatchTable');
 
-  const account = Recoils.useValue('CONFIG:ACCOUNT');
-  const aidx = account.aidx;
-
   const [rowData, setRowData] = useState([]);
   const [tableRow, setTableRow] = useState(null);
 
   useEffect(() => {
-    setRowData([...rows]);
+    if (rows) {
+      setRowData([...rows]);
+    }
   }, [rows]);
 
   const onDelete = (e, d) => {
@@ -81,7 +80,7 @@ const FormsMatchItem = React.memo(({ index, d, onClick, onDelete, tableRow }) =>
     <tr className={index == tableRow ? 'select' : ''}>
       <td onClick={onClick}>{d.forms_name}</td>
       <td onClick={onClick}>{d.forms_product_name}</td>
-      <td onClick={onClick}>{d.forms_option_name1}</td>
+      <td onClick={onClick}>{d.forms_option_name}</td>
       <td>
         <button
           className="btn_del"
