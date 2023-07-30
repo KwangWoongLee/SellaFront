@@ -126,13 +126,13 @@ const FAQ = () => {
 
           <div className="pagination">
             <Button onClick={(e) => onPageNext(false)} className="btn_arrow_left">
-              <img src={icon_arrow_left} alt="이전 페이지" />
+              <img src={`/${icon_arrow_left}`} alt="이전 페이지" />
             </Button>
             <span>
               Page {page} of {pageCount}
             </span>
             <Button onClick={(e) => onPageNext(true)} className="btn_arrow_right">
-              <img src={icon_arrow_right} alt="다음 페이지" />
+              <img src={`/${icon_arrow_right}`} alt="다음 페이지" />
             </Button>
           </div>
 
@@ -160,10 +160,10 @@ const FAQ = () => {
               }}
             />
             <Button onClick={onSearch} className="btn btn_search">
-              <img src={icon_search} />
+              <img src={`/${icon_search}`} />
             </Button>
             <Button className="btn_reset" onClick={onReset}>
-              <img src={icon_reset} />
+              <img src={`/${icon_reset}`} />
             </Button>
           </div>
 

@@ -88,7 +88,7 @@ const FormsMatchItem = React.memo(({ index, d, onClick, onDelete, tableRow }) =>
             onDelete(e, d);
           }}
         >
-          <img src={icon_del} />
+          <img src={`/${icon_del}`} />
         </button>
       </td>
     </tr>

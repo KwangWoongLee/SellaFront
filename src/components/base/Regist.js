@@ -1,6 +1,14 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Button, ButtonGroup, InputGroup, Form, DropdownButton, Dropdown } from 'react-bootstrap';
-import com, { modal, logger, navigate } from 'util/com';
+import com, {
+  modal,
+  logger,
+  navigate,
+  replace_phone,
+  is_regex_phone,
+  is_regex_password,
+  is_regex_email,
+} from 'util/com';
 import Recoils from 'recoils';
 import request from 'util/request';
 import _ from 'lodash';
@@ -18,15 +26,18 @@ const local = ['내국인', '외국인'];
 const Regist = () => {
   logger.render('Regist');
 
+  const [registButtonOn, setRegistButtonOn] = useState(false);
   const [allChecked, setAllChecked] = useState(false);
   const [agreement, setAgreement] = useState([]);
   const [agencyType, setAgencyType] = useState(0);
-  const [genderType, setGenderType] = useState(-1);
-  const [localType, setLocalType] = useState(-1);
+  const [genderType, setGenderType] = useState(0);
+  const [localType, setLocalType] = useState(0);
   const [auth, setAuth] = useState({
+    phone: false,
     send_phone: false,
     auth_phone: false,
     email: false,
+    auth_email: false,
     password: false,
     password_confirm: false,
   });
@@ -44,7 +55,7 @@ const Regist = () => {
           const { data } = ret.data;
           Recoils.setState('SELLA:AGREEMENT', data.sella_agreement);
 
-          const agreement_temp = _.cloneDeep(Recoils.getState('SELLA:AGREEMENT'));
+          const agreement_temp = _.filter(_.cloneDeep(Recoils.getState('SELLA:AGREEMENT')), { type: 'regist' });
           _.forEach(agreement_temp, (item) => {
             item.checked = false;
           });
@@ -58,6 +69,18 @@ const Regist = () => {
   useEffect(() => {
     if (allChecked && _.find(allChecked, { check: true })) setAllChecked(false);
   }, [agreement]);
+
+  useEffect(() => {
+    let isOk = true;
+    for (const key in auth) {
+      if (auth[key] == false) {
+        isOk = false;
+        break;
+      }
+    }
+
+    if (isOk) setRegistButtonOn(true);
+  }, [auth]);
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -73,80 +96,51 @@ const Regist = () => {
     const gender = genderType;
     const local = localType;
     const phone = phoneRef.current.value;
-    const authNo = authNoRef.current.value;
+
     const password = passwordRef.current.value;
     const email = emailRef.current.value;
+
     if (!name) {
-      modal.alert('이름을 입력하세요.');
-      return;
-    }
-    if (!agency) {
-      modal.alert('통신사를 선택하세요.');
-      return;
-    }
-    if (gender == -1) {
-      modal.alert('성별을 선택하세요.');
-      return;
-    }
-    if (local == -1) {
-      modal.alert('국적을 선택하세요.');
+      modal.alert('이름을 입력 해주세요.');
       return;
     }
 
-    for (const key in auth) {
-      if (auth[key] == false) {
-        modal.alert('빨간 글씨를 제거하세요.');
-        return;
-      }
+    if (agency == -1) {
+      modal.alert('통신사를 선택 해주세요.');
+      return;
     }
 
-    request.post('/regist', { authNo, password, phone, name, email, gender, agency, local, agreement }).then((ret) => {
+    request.post('/regist', { password, phone, name, email, gender, agency, local, agreement }).then((ret) => {
       if (!ret.err) {
-        com.storage.setItem('email', email);
-        com.storage.setItem('password', password);
+        com.storage.setItem('temp', email);
 
         navigate('/regist/result');
       } else {
       }
     });
 
-    logger.info(`submit : email = ${email}, password = ${password}`);
+    logger.info(`regist : email = ${email}, password = ${password}`);
   };
 
-  const onGetPhoneAuth = (e) => {
-    const phone = phoneRef.current.value;
-    if (!phone) {
-      modal.alert('휴대폰번호를 입력하세요.');
-      return;
-    }
-
-    if (phone)
-      request.post('regist/phone/auth_no', { phone }).then((ret) => {
+  const onCheckPhoneAuthNo = (e) => {
+    const auth_no = authNoRef.current.value;
+    if (auth_no)
+      request.post('auth/phone/auth_no', { auth_no }).then((ret) => {
         if (!ret.err) {
           const auth_temp = auth;
-          auth_temp['send_phone'] = true;
+          auth_temp['auth_phone'] = true;
           setAuth({ ...auth_temp });
         }
       });
   };
 
-  const onSendPhoneAuth = (e) => {
+  const onSendPhoneAuthNo = (e) => {
     const phone = phoneRef.current.value;
-    if (!phone) {
-      modal.alert('휴대폰번호를 입력하세요.');
-      return;
-    }
 
-    const authNo = authNoRef.current.value;
-    if (!authNo) {
-      modal.alert('인증번호를 입력하세요.');
-      return;
-    }
-
-    request.post('regist/phone', { authNo }).then((ret) => {
+    request.post('auth/phone', { phone }).then((ret) => {
       if (!ret.err) {
         const auth_temp = auth;
-        auth_temp['auth_phone'] = true;
+        auth_temp['send_phone'] = true;
         setAuth({ ...auth_temp });
       }
     });
@@ -155,18 +149,16 @@ const Regist = () => {
   const onEmailCheck = (e) => {
     const email = emailRef.current.value;
 
-    if (!email) {
-      modal.alert('이메일을 입력하세요.');
-      return;
-    }
-
     if (email)
       request.post('regist/email', { email }).then((ret) => {
         if (!ret.err) {
           const auth_temp = auth;
-          auth_temp['email'] = true;
+          auth_temp['auth_email'] = email;
           setAuth({ ...auth_temp });
         } else {
+          const auth_temp = auth;
+          auth_temp['auth_email'] = false;
+          setAuth({ ...auth_temp });
         }
       });
   };
@@ -188,11 +180,46 @@ const Regist = () => {
     setAllChecked(!allChecked);
   };
 
+  const onPhoneChange = (e) => {
+    let phone = phoneRef.current.value;
+    if (phone.length > 13) {
+      phoneRef.current.value = phone.substr(0, 13);
+      return;
+    }
+    phone = replace_phone(phone);
+
+    phoneRef.current.value = phone;
+    if (is_regex_phone(phone)) {
+      const auth_temp = auth;
+      auth_temp['phone'] = phone;
+      setAuth({ ...auth_temp });
+    } else {
+      const auth_temp = auth;
+      auth_temp['phone'] = false;
+      setAuth({ ...auth_temp });
+    }
+  };
+
+  const onEmailChange = (e) => {
+    const email = emailRef.current.value;
+    if (is_regex_email(email)) {
+      const auth_temp = auth;
+      auth_temp['email'] = email;
+      auth_temp['auth_email'] = false;
+      setAuth({ ...auth_temp });
+    } else {
+      const auth_temp = auth;
+      auth_temp['email'] = false;
+      auth_temp['auth_email'] = false;
+      setAuth({ ...auth_temp });
+    }
+  };
+
   const onPasswordChange = (e) => {
     const password = passwordRef.current.value;
-    if (password.length > 8) {
+    if (is_regex_password(password)) {
       const auth_temp = auth;
-      auth_temp['password'] = true;
+      auth_temp['password'] = password;
       setAuth({ ...auth_temp });
     } else {
       const auth_temp = auth;
@@ -206,7 +233,7 @@ const Regist = () => {
     const passwordConfirm = passwordConfirmRef.current.value;
     if (password == passwordConfirm) {
       const auth_temp = auth;
-      auth_temp['password_confirm'] = true;
+      auth_temp['password_confirm'] = passwordConfirm;
       setAuth({ ...auth_temp });
     } else {
       const auth_temp = auth;
@@ -214,6 +241,9 @@ const Regist = () => {
       setAuth({ ...auth_temp });
     }
   };
+
+  const onClickAgreement = (e, content) => {};
+
   return (
     <>
       <Head />
@@ -235,7 +265,9 @@ const Regist = () => {
                     }}
                   ></Checkbox>
                   <label>동의</label>
-                  <textarea>{agreement[key].content}</textarea>
+                  <textarea onClick={(e) => onClickAgreement(e, agreement[key].content)} disabled={true}>
+                    {agreement[key].content}
+                  </textarea>
                 </>
               ))}
             </div>
@@ -270,7 +302,6 @@ const Regist = () => {
               ))}
             </DropdownButton>
             <div className="btnbox">
-              {/* 버튼이 클릭됐을 때 className에 on 넣어주시면 됩니다! */}
               <ButtonGroup aria-label="gender" className="gender">
                 {gender.map((name, key) => (
                   <Button
@@ -305,39 +336,60 @@ const Regist = () => {
               </ButtonGroup>
             </div>
             <InputGroup className="inputphone1">
-              <Form.Control ref={phoneRef} type="text" placeholder="휴대폰 번호 입력" defaultValue={''} />
-              <Button variant="primary" className="btn_blue" onClick={onGetPhoneAuth}>
+              <Form.Control
+                ref={phoneRef}
+                type="text"
+                placeholder="휴대폰 번호 입력"
+                defaultValue={''}
+                onChange={onPhoneChange}
+              />
+              <Button disabled={!auth['phone']} variant="primary" className="btn_blue" onClick={onSendPhoneAuthNo}>
                 인증번호 발송
               </Button>
             </InputGroup>
             {auth['send_phone'] ? (
               <span className="inform inform1">인증번호를 발송했습니다.</span>
-            ) : (
+            ) : auth['phone'] ? (
               <span className="inform inform1 red">인증번호를 발송하세요.</span>
+            ) : (
+              <br />
             )}
             <InputGroup className="inputphone2">
               <Form.Control ref={authNoRef} type="text" placeholder="인증번호 입력" defaultValue={''} />
-              <Button variant="primary" className="btn_blue" onClick={onSendPhoneAuth}>
+              <Button
+                disabled={!auth['send_phone']}
+                variant="primary"
+                className="btn_blue"
+                onClick={onCheckPhoneAuthNo}
+              >
                 인증하기
               </Button>
             </InputGroup>
             {auth['auth_phone'] ? (
-              <span className="inform inform1">인증되었습니다!</span>
-            ) : (
+              <span className="inform inform1">인증되었습니다.</span>
+            ) : auth['send_phone'] ? (
               <span className="inform inform2 red">인증번호가 일치하지 않습니다.</span>
+            ) : (
+              <br />
             )}
 
             <label>아이디/비밀번호</label>
             <InputGroup className="inputid">
-              <Form.Control ref={emailRef} type="text" placeholder="이메일주소" defaultValue={''} />
-              <Button variant="primary" className="btn_blue" onClick={onEmailCheck}>
+              <Form.Control
+                ref={emailRef}
+                type="text"
+                placeholder="이메일주소"
+                defaultValue={''}
+                onChange={onEmailChange}
+              />
+              <Button disabled={!auth['email']} variant="primary" className="btn_blue" onClick={onEmailCheck}>
                 중복체크
               </Button>
             </InputGroup>
-            {auth['email'] ? (
+            {auth['email'] && auth['auth_email'] ? (
               <span className="inform inform3">사용가능한 이메일입니다.</span>
             ) : (
-              <span className="inform inform2 red">이미 사용한 메일입니다.</span>
+              <br />
             )}
 
             <InputGroup className="inputpw1">
@@ -368,8 +420,13 @@ const Regist = () => {
             ) : (
               <span className="inform inform4 red">비밀번호 확인 문자가 다릅니다.</span>
             )}
-
-            <Button variant="primary" type="submit" form="regist-form" className="btn_blue btn_submit">
+            <Button
+              variant="primary"
+              disabled={!registButtonOn}
+              type="submit"
+              form="regist-form"
+              className="btn_blue btn_submit"
+            >
               회원가입
             </Button>
           </div>

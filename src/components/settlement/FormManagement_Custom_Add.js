@@ -412,10 +412,10 @@ const FormManagement_Custom_Add = (param) => {
                 onKeyDown={handleKeyDown}
               ></input>
               <Button className="btn_search" onClick={onSearch}>
-                <img src={icon_search} />
+                <img src={`/${icon_search}`} />
               </Button>
               <Button className="btn_reset">
-                <img src={icon_reset} />
+                <img src={`/${icon_reset}`} />
               </Button>
             </div>
             <table className="thead">
@@ -572,7 +572,7 @@ const SellaForm = React.memo(({ index, d, selectRow, onClick, onDelete, checkedI
       )}
       <td>
         <button className="btn_del">
-          <img src={icon_del} alt="삭제" onClick={(e) => onDelete(e)} />
+          <img src={`/${icon_del}`} alt="삭제" onClick={(e) => onDelete(e)} />
         </button>
       </td>
     </tr>

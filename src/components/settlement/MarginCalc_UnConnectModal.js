@@ -150,7 +150,7 @@ const MarginCalc_UnConnectModal = React.memo(({ modalState, setModalState, rowDa
       <Modal.Header>
         <Modal.Title>상품 매칭 관리</Modal.Title>
         <Button variant="primary" className="btn_close" onClick={onClose}>
-          <img src={icon_close} />
+          <img src={`/${icon_close}`} />
         </Button>
       </Modal.Header>
       <Modal.Body>

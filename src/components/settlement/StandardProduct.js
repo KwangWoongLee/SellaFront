@@ -171,11 +171,11 @@ const StandardProduct = () => {
                 onKeyDown={handleKeyDown}
               ></input>
               <Button onClick={onSearch} className="btn_search">
-                <img src={icon_search} />
+                <img src={`/${icon_search}`} />
               </Button>
 
               <Button className="btn_reset" onClick={onReset}>
-                <img src={icon_reset} />
+                <img src={`/${icon_reset}`} />
               </Button>
             </div>
             <div className="tablebox">
@@ -311,7 +311,7 @@ const StandardProductItem = React.memo(({ index, d, onChange, onSave, onDelete }
             onDelete(e, d);
           }}
         >
-          <img src={icon_del} />
+          <img src={`/${icon_del}`} />
         </button>
       </td>
     </tr>

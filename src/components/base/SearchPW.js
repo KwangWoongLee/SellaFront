@@ -1,135 +1,412 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Button, ButtonGroup, InputGroup, Form, DropdownButton, Dropdown } from 'react-bootstrap';
 import Recoils from 'recoils';
-import com, { logger, navigate } from 'util/com';
+import com, {
+  modal,
+  logger,
+  navigate,
+  replace_day,
+  replace_year,
+  replace_phone,
+  is_regex_phone,
+  is_regex_year,
+  is_regex_day,
+} from 'util/com';
 import { AiFillMail, AiFillLock } from 'react-icons/ai';
 import request from 'util/request';
-// import _ from 'lodash';
+import _ from 'lodash';
 
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
+import Checkbox from 'components/common/CheckBoxCell';
 
 import 'styles/Login.scss';
+import AgreementModal from 'components/common/AgreementModal';
 
 const agency_str = ['통신사 선택', 'SKT', 'KT', 'LG'];
 const month_str = ['월', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
+const gender = ['남', '여'];
+const local = ['내국인', '외국인'];
 
-const Regist = () => {
-  logger.render('Regist');
+const SearchPW = () => {
+  logger.render('SearchPW');
 
-  useEffect(() => {}, []);
-
+  const [agreementModal, setAgreementModal] = useState({
+    state: false,
+    content: '',
+  });
+  const [searchButtonOn, setSearchButtonOn] = useState(false);
+  const [allChecked, setAllChecked] = useState(false);
+  const [agreement, setAgreement] = useState([]);
   const [agencyType, setAgencyType] = useState(0);
+  const [monthType, setMonthType] = useState(0);
+  const [genderType, setGenderType] = useState(0);
+  const [localType, setLocalType] = useState(0);
+  const [auth, setAuth] = useState({
+    email: false,
+    name: false,
+    all_checked: false,
+    phone: false,
+    send_phone: false,
+    auth_phone: false,
+    year: false,
+    // month: false,
+    day: false,
+    // agency: false,
+  });
+
+  const emailRef = useRef(null);
+  const nameRef = useRef(null);
+  const phoneRef = useRef(null);
+  const authNoRef = useRef(null);
+  const yearRef = useRef(null);
+  const dayRef = useRef(null);
+
   useEffect(() => {}, []);
+
+  useEffect(() => {
+    if (!agreement.length) {
+      request.post('base/info/agreement', {}).then((ret) => {
+        if (!ret.err) {
+          const { data } = ret.data;
+          Recoils.setState('SELLA:AGREEMENT', data.sella_agreement);
+
+          const agreement_temp = _.filter(_.cloneDeep(Recoils.getState('SELLA:AGREEMENT')), { type: 'search' });
+          _.forEach(agreement_temp, (item) => {
+            item.checked = false;
+          });
+
+          setAgreement(agreement_temp);
+        }
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (allChecked && _.find(allChecked, { check: true })) setAllChecked(false);
+  }, [agreement]);
+
+  useEffect(() => {
+    if (allChecked) {
+      const auth_temp = auth;
+      auth_temp['all_checked'] = true;
+      setAuth({ ...auth_temp });
+    } else {
+      const auth_temp = auth;
+      auth_temp['all_checked'] = false;
+      setAuth({ ...auth_temp });
+    }
+  }, [allChecked]);
+
+  useEffect(() => {
+    let isOk = true;
+    for (const key in auth) {
+      if (auth[key] == false) {
+        isOk = false;
+        break;
+      }
+    }
+
+    if (isOk) setSearchButtonOn(true);
+  }, [auth]);
+
+  // useEffect(() => {
+  //   if (agencyType) {
+  //     const auth_temp = auth;
+  //     auth_temp['agency'] = true;
+  //     setAuth({ ...auth_temp });
+  //   } else {
+  //     const auth_temp = auth;
+  //     auth_temp['agency'] = false;
+  //     setAuth({ ...auth_temp });
+  //   }
+  // }, [agencyType]);
+
+  // useEffect(() => {
+  //   if (monthType) {
+  //     const auth_temp = auth;
+  //     auth_temp['month'] = true;
+  //     setAuth({ ...auth_temp });
+  //   } else {
+  //     const auth_temp = auth;
+  //     auth_temp['month'] = false;
+  //     setAuth({ ...auth_temp });
+  //   }
+  // }, [monthType]);
 
   const onSubmit = (e) => {
     e.preventDefault();
 
-    const name = e.currentTarget[0].value;
-    const gender = 1;
+    const email = emailRef.current.value;
+    const name = nameRef.current.value;
+    const agency = agencyType;
+    const gender = genderType;
+    const local = localType;
+    const phone = phoneRef.current.value;
 
-    const local = 1;
-    const phone = e.currentTarget[6].value;
+    const year = yearRef.current.value;
+    const month = month_str[monthType];
+    const day = dayRef.current.value;
 
-    const id = e.currentTarget[10].value;
-    const password = e.currentTarget[12].value;
-    const email = '';
+    request.post('auth/search/password', { email, phone, name, gender, agency, local, agreement }).then((ret) => {
+      if (!ret.err) {
+        const { data } = ret.data;
+        com.storage.setItem('temp', data.success);
 
-    com.storage.setItem('id', id);
-    com.storage.setItem('password', password);
+        navigate('/search/password/result');
+      }
+    });
+  };
 
-    logger.info(`submit : id = ${id}, password = ${password}`);
+  const checkedItemHandler = (d) => {
+    const obj = _.find(agreement, { code: d.code });
+    obj.checked = !obj.checked;
+    if (obj.checked == false) setAllChecked(false);
+
+    setAgreement([...agreement]);
+  };
+
+  const onAllAgreementChange = () => {
+    for (const agreement_item of agreement) {
+      agreement_item.checked = !allChecked;
+    }
+
+    setAgreement([...agreement]);
+    setAllChecked(!allChecked);
+  };
+
+  const onEmailChange = (e) => {
+    let email = emailRef.current.value;
+    if (email.length > 0) {
+      const auth_temp = auth;
+      auth_temp['email'] = true;
+      setAuth({ ...auth_temp });
+    } else {
+      const auth_temp = auth;
+      auth_temp['email'] = false;
+      setAuth({ ...auth_temp });
+    }
+  };
+
+  const onNameChange = (e) => {
+    let name = nameRef.current.value;
+    if (name.length > 0) {
+      const auth_temp = auth;
+      auth_temp['name'] = true;
+      setAuth({ ...auth_temp });
+    } else {
+      const auth_temp = auth;
+      auth_temp['name'] = false;
+      setAuth({ ...auth_temp });
+    }
+  };
+
+  const onYearChange = (e) => {
+    let year = yearRef.current.value;
+    if (year.length > 4) {
+      yearRef.current.value = year.substr(0, 4);
+      return;
+    }
+    year = replace_year(year);
+
+    yearRef.current.value = year;
+    if (is_regex_year(year)) {
+      const auth_temp = auth;
+      auth_temp['year'] = year;
+      setAuth({ ...auth_temp });
+    } else {
+      const auth_temp = auth;
+      auth_temp['year'] = false;
+      setAuth({ ...auth_temp });
+    }
+  };
+
+  const onDayChange = (e) => {
+    let day = dayRef.current.value;
+    if (day.length > 2) {
+      dayRef.current.value = day.substr(0, 2);
+      return;
+    }
+    day = replace_day(day);
+
+    dayRef.current.value = day;
+    if (is_regex_day(day)) {
+      const auth_temp = auth;
+      auth_temp['day'] = day;
+      setAuth({ ...auth_temp });
+    } else {
+      const auth_temp = auth;
+      auth_temp['day'] = false;
+      setAuth({ ...auth_temp });
+    }
+  };
+
+  const onPhoneChange = (e) => {
+    let phone = phoneRef.current.value;
+    if (phone.length > 13) {
+      phoneRef.current.value = phone.substr(0, 13);
+      return;
+    }
+    phone = replace_phone(phone);
+
+    phoneRef.current.value = phone;
+    if (is_regex_phone(phone)) {
+      const auth_temp = auth;
+      auth_temp['phone'] = phone;
+      setAuth({ ...auth_temp });
+    } else {
+      const auth_temp = auth;
+      auth_temp['phone'] = false;
+      setAuth({ ...auth_temp });
+    }
+  };
+
+  const onAuthNoChange = (e) => {
+    let auth_no = authNoRef.current.value;
+    if (auth_no.length > 6) {
+      authNoRef.current.value = auth_no.substr(0, 6);
+      return;
+    }
+  };
+
+  const onClickAgreement = (e, content) => {
+    setAgreementModal({ state: true, content: content });
+  };
+
+  const onCheckPhoneAuthNo = (e) => {
+    const auth_no = authNoRef.current.value;
+    if (auth_no)
+      request.post('auth/phone/auth_no', { auth_no }).then((ret) => {
+        if (!ret.err) {
+          const auth_temp = auth;
+          auth_temp['auth_phone'] = true;
+          setAuth({ ...auth_temp });
+        }
+      });
+  };
+
+  const onSendPhoneAuthNo = (e) => {
+    const phone = phoneRef.current.value;
+
+    request.post('auth/phone', { phone }).then((ret) => {
+      if (!ret.err) {
+        const auth_temp = auth;
+        auth_temp['send_phone'] = true;
+        setAuth({ ...auth_temp });
+      }
+    });
   };
 
   return (
     <>
       <Head />
       <Body title={`비밀번호 찾기`} myClass={'searchpw'}>
-        <Form onSubmit={onSubmit} id="login-modal-form" className="formbox">
+        <Form onSubmit={onSubmit} id="search-pw-form" className="formbox">
           <h3>비밀번호 찾기</h3>
 
           <div className="termsbox">
             <div className="terms">
-              <input type={'checkbox'}></input>
+              <Checkbox
+                checked={allChecked}
+                checkedItemHandler={() => {
+                  onAllAgreementChange();
+                }}
+              ></Checkbox>
               <label>아래 약관에 모두 동의합니다.</label>
             </div>
             <ul className="terms">
-              <li>
-                <input type={'checkbox'}></input>
-                <label>
-                  인증시 개인정보 이용 <button>보기</button>
-                </label>
-              </li>
-              <li>
-                <input type={'checkbox'}></input>
-                <label>
-                  인증시 고유식별정보처리 <button>보기</button>
-                </label>
-              </li>
-              <li>
-                <input type={'checkbox'}></input>
-                <label>
-                  통신사 이용약관 <button>보기</button>
-                </label>
-              </li>
-              <li>
-                <input type={'checkbox'}></input>
-                <label>
-                  인증사 이용약관 <button>보기</button>
-                </label>
-              </li>
+              {agreement.map((name, key) => (
+                <>
+                  <li>
+                    <Checkbox
+                      checked={agreement[key].checked}
+                      checkedItemHandler={() => {
+                        checkedItemHandler(agreement[key]);
+                      }}
+                    ></Checkbox>
+                    <label>
+                      {agreement[key].title}{' '}
+                      <button onClick={(e) => onClickAgreement(e, agreement[key].content)}>보기</button>
+                    </label>
+                  </li>
+                </>
+              ))}
             </ul>
           </div>
-          <span className="inform inform1 red">개인정보처리에 대한 동의가 필요합니다.</span>
-
+          {!auth['all_checked'] ? (
+            <span className="inform inform1 red">개인정보처리에 대한 동의가 필요합니다.</span>
+          ) : (
+            <br />
+          )}
           <InputGroup className="inputid">
             <label>아이디</label>
-            <Form.Control type="text" placeholder="이메일 입력" defaultValue={''} />
+            <Form.Control
+              ref={emailRef}
+              type="text"
+              placeholder="이메일 입력"
+              defaultValue={''}
+              onChange={onEmailChange}
+            />
           </InputGroup>
 
+          <label>이름</label>
           <InputGroup className="inputname">
-            <label>이름</label>
-            <Form.Control type="text" placeholder="이름 입력" defaultValue={''} />
+            <Form.Control ref={nameRef} type="text" placeholder="이름 입력" defaultValue={''} onChange={onNameChange} />
           </InputGroup>
 
           <label>휴대폰 인증</label>
           <InputGroup className="inputphone1">
             <Form.Control type="text" placeholder="생년월일" defaultValue={''} disabled />
-            <Form.Control type="text" placeholder="년(4자)" defaultValue={''} />
-            <DropdownButton variant="" title={month_str[agencyType]} className="inputagency">
+            <Form.Control ref={yearRef} type="text" placeholder="년(4자)" defaultValue={''} onChange={onYearChange} />
+            <DropdownButton variant="" title={month_str[monthType]} className="inputmonth">
               {month_str.map((name, key) => (
                 <Dropdown.Item
                   key={key}
                   eventKey={key}
                   onClick={(e) => {
-                    setAgencyType(key);
+                    setMonthType(key);
                   }}
-                  active={agencyType === key}
+                  active={monthType === key}
                 >
                   {month_str[key]}
                 </Dropdown.Item>
               ))}
             </DropdownButton>
-            <Form.Control type="text" placeholder="일" defaultValue={''} />
+            <Form.Control ref={dayRef} type="text" placeholder="일" defaultValue={''} onChange={onDayChange} />
           </InputGroup>
           <div className="btnbox">
-            {/* 버튼이 클릭됐을 때 className에 on 넣어주시면 됩니다! */}
             <ButtonGroup aria-label="gender" className="gender">
-              <Button variant="secondary" className="btn-primary on">
-                남
-              </Button>
-              <Button variant="secondary" className="btn-primary">
-                여
-              </Button>
+              {gender.map((name, key) => (
+                <Button
+                  variant="secondary"
+                  className={genderType === key ? 'btn-primary on' : 'btn-primary'}
+                  key={key}
+                  eventKey={key}
+                  onClick={(e) => {
+                    setGenderType(key);
+                  }}
+                  active={genderType === key}
+                >
+                  {gender[key]}
+                </Button>
+              ))}
             </ButtonGroup>
             <ButtonGroup aria-label="local" className="local">
-              <Button variant="secondary" className="btn-primary on">
-                내국인
-              </Button>
-              <Button variant="secondary" className="btn-primary">
-                외국인
-              </Button>
+              {local.map((name, key) => (
+                <Button
+                  variant="secondary"
+                  className={localType === key ? 'btn-primary on' : 'btn-primary'}
+                  key={key}
+                  eventKey={key}
+                  onClick={(e) => {
+                    setLocalType(key);
+                  }}
+                  active={localType === key}
+                >
+                  {local[key]}
+                </Button>
+              ))}
             </ButtonGroup>
           </div>
           <InputGroup className="inputphone1">
@@ -147,29 +424,65 @@ const Regist = () => {
                 </Dropdown.Item>
               ))}
             </DropdownButton>
-            <Form.Control type="text" placeholder="휴대폰 번호 입력" defaultValue={''} />
-            <Button variant="primary" className="btn_blue">
+            <Form.Control
+              ref={phoneRef}
+              type="text"
+              placeholder="휴대폰 번호 입력"
+              defaultValue={''}
+              onChange={onPhoneChange}
+            />
+            <Button
+              // disabled={!(auth['name'] &&auth['year'] && auth['day'] && auth['agency']  && auth['month'] && auth['phone'])}
+              disabled={!(auth['name'] && auth['year'] && auth['day'] && auth['phone'])}
+              variant="primary"
+              className="btn_blue"
+              onClick={onSendPhoneAuthNo}
+            >
               인증번호 발송
             </Button>
           </InputGroup>
-          <span className="inform inform1">인증번호를 발송했습니다.</span>
+          {auth['send_phone'] ? (
+            <span className="inform inform1">인증번호를 발송했습니다.</span>
+          ) : auth['phone'] ? (
+            <span className="inform inform1 red">인증번호를 발송하세요.</span>
+          ) : (
+            <br />
+          )}
           <InputGroup className="inputphone2">
-            <Form.Control type="text" placeholder="인증번호 입력" defaultValue={''} />
-            <Button variant="primary" className="btn_blue">
+            <Form.Control
+              ref={authNoRef}
+              type="text"
+              placeholder="인증번호 입력"
+              defaultValue={''}
+              onChange={onAuthNoChange}
+            />
+            <Button disabled={!auth['send_phone']} variant="primary" className="btn_blue" onClick={onCheckPhoneAuthNo}>
               인증하기
             </Button>
+            {auth['auth_phone'] ? (
+              <span className="inform inform1">인증되었습니다.</span>
+            ) : auth['send_phone'] ? (
+              <span className="inform inform2 red">인증번호가 일치하지 않습니다.</span>
+            ) : (
+              <br />
+            )}
           </InputGroup>
-          {/* 경고 텍스트 span.inform 만들어뒀어용, 기본은 초록색으로 나오고, red 클래스로 폰트색 바꾸고 vhidden 으로 숨길수 있습니다. 
-            각 필요한 영역마다 넣어두었고 inform1 ~ inform4 까지 있습니다.*/}
-          <span className="inform inform2 red">인증번호가 일치하지 않습니다.</span>
-          <Button variant="primary" type="submit" form="regist-form" className="btn_blue btn_submit">
+          <Button
+            disabled={!searchButtonOn}
+            variant="primary"
+            type="submit"
+            form="search-pw-form"
+            className="btn_blue btn_submit"
+          >
             확인
           </Button>
         </Form>
       </Body>
       <Footer />
+
+      <AgreementModal modalState={agreementModal} setModalState={setAgreementModal}></AgreementModal>
     </>
   );
 };
 
-export default React.memo(Regist);
+export default React.memo(SearchPW);

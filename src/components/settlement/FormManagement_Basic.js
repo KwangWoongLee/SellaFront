@@ -21,7 +21,7 @@ const FormManagement_Basic = (param) => {
   logger.render('FormManagement_Basic');
 
   const { platform } = param;
-  
+
   const [formData, setFormData] = useState(null);
   const [rowData, setRowData] = useState([]);
 
@@ -59,7 +59,7 @@ const FormManagement_Basic = (param) => {
         <>
           <h3>{platform.name} - 양식 확인</h3>
           <Button variant="primary" onClick={onDownload} className="btn_green">
-            <img src={icon_circle_arrow_down} />
+            <img src={`/${icon_circle_arrow_down}`} />
             엑셀 양식 다운로드
           </Button>
           <div className="tablebox">

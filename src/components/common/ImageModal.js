@@ -26,7 +26,7 @@ const ImageModal = React.memo(({ modalState, setModalState, imgUrl }) => {
       <Modal.Header className="d-flex justify-content-center">
         <Modal.Title className="text-primary">이미지 보기</Modal.Title>
         <Button onClick={onClose} variant="primary" className="btn_close">
-          <img src={icon_close} />
+          <img src={`/${icon_close}`} />
         </Button>
       </Modal.Header>
 

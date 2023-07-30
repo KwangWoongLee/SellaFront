@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, InputGroup, Form, Nav } from 'react-bootstrap';
 import Recoils from 'recoils';
 import com, { logger, navigate, get_login_hash } from 'util/com';
@@ -7,13 +7,18 @@ import request from 'util/request';
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
+import Checkbox from 'components/common/CheckBoxCell';
 
 import 'styles/Login.scss';
 
 const Login = () => {
   logger.render('Login');
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    const idSave = com.storage.getItem('idSave');
+    if (idSave == 'true') setIdSaveChecked(true);
+  }, []);
+  const [idSaveChecked, setIdSaveChecked] = useState(false);
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -26,14 +31,20 @@ const Login = () => {
         const { data } = ret.data;
 
         Recoils.setState('CONFIG:ACCOUNT', {
-          email: data.email,
+          email: email,
           grade: data.grade,
           name: data.name,
           access_token: data.access_token,
         });
 
-        com.storage.setItem('email', email);
-        com.storage.setItem('password', password);
+        if (idSaveChecked) {
+          com.storage.setItem('idSave', true);
+          com.storage.setItem('email', email);
+        } else {
+          com.storage.setItem('idSave', false);
+          com.storage.setItem('email', '');
+        }
+
         com.storage.setItem('access_token', data.access_token);
 
         Recoils.setState('DATA:GOODS', data.goods);
@@ -50,7 +61,11 @@ const Login = () => {
       }
     });
 
-    logger.info(`submit : email = ${email}, password = ${password}`);
+    logger.info(`login : email = ${email}`);
+  };
+
+  const checkedItemHandler = (d) => {
+    setIdSaveChecked(d);
   };
 
   return (
@@ -85,13 +100,13 @@ const Login = () => {
               type="password"
               placeholder="비밀번호"
               aria-label="password"
-              defaultValue={com.storage.getItem('password')}
+              defaultValue={''}
               aria-describedby="basic-addon2"
             />
           </InputGroup>
           <div className="btnbox">
             <div className="btnbox_left">
-              <input type={'checkbox'}></input>
+              <Checkbox checked={idSaveChecked} checkedItemHandler={checkedItemHandler}></Checkbox>
               <label>ID 저장</label>
             </div>
             <div className="btnbox_right">

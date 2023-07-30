@@ -137,7 +137,7 @@ const GoodsMatchItem = React.memo(({ index, d, rowSpan, onClick, onDelete, onCha
             onDelete(e, d);
           }}
         >
-          <img src={icon_del} alt="" />
+          <img src={`/${icon_del}`} alt="" />
         </button>
       </td>
     </tr>

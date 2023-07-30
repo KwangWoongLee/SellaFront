@@ -77,10 +77,10 @@ const CategoryFee_Search = React.memo(({ abledCategoryFee, selectCallback }) => 
           className="input_search"
         ></input>
         <Button onClick={onSearch} className="btn_search">
-          <img src={icon_search} />
+          <img src={`/${icon_search}`} />
         </Button>
         <Button className="btn_reset">
-          <img src={icon_reset} />
+          <img src={`/${icon_reset}`} />
         </Button>
       </div>
       <div className="categoryfeesearch">

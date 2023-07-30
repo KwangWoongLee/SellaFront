@@ -126,10 +126,8 @@ export const page_reload = () => {
 };
 
 export const is_authed = () => {
-  const email = com.storage.getItem('email');
-  const password = com.storage.getItem('password');
   const account = Recoils.getState('CONFIG:ACCOUNT');
-  if (email && password && account.grade === -1) {
+  if (account.grade === -1 && !account.access_token) {
     return false;
   }
   return true;
@@ -164,6 +162,57 @@ export const get_login_hash = function (value) {
   const data = `${login_secret}${value}`;
   const hash = crypto.createHash('sha256').update(data).digest('hex');
   return hash;
+};
+
+export const replace_year = (year) => {
+  year = year.replace(/[^0-9]/g, '').replace(/^(\d{0,4})$/g, '$1');
+
+  return year;
+};
+
+export const is_regex_year = (year) => {
+  var regYear = /^\d{4}$/;
+
+  return regYear.test(year);
+};
+
+export const replace_day = (day) => {
+  day = day.replace(/[^0-9]/g, '').replace(/^(\d{0,2})$/g, '$1');
+
+  return day;
+};
+
+export const is_regex_day = (day) => {
+  var regDay = /^\d{1,2}$/;
+
+  return regDay.test(day);
+};
+
+export const replace_phone = (phone) => {
+  phone = phone
+    .replace(/[^0-9]/g, '')
+    .replace(/^(\d{0,3})(\d{0,4})(\d{0,4})$/g, '$1-$2-$3')
+    .replace(/(\-{1,2})$/g, '');
+
+  return phone;
+};
+
+export const is_regex_phone = (phone) => {
+  var regPhone = /^\d{3}-?\d{3,4}-?\d{4}$/;
+
+  return regPhone.test(phone);
+};
+
+export const is_regex_password = (password) => {
+  let regex = new RegExp(
+    '((?=.*[a-z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,16}))|((?=.*[A-Z])(?=.*[^A-Za-z0-9])(?=.{8,16}))|((?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9])(?=.{8,16}))'
+  );
+  return regex.test(password);
+};
+
+export const is_regex_email = (email) => {
+  let regex = /^[a-z0-9]+@[a-z]+\.[a-z]{2,3}$/;
+  return regex.test(email);
 };
 
 export default com;

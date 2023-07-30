@@ -211,7 +211,7 @@ const MarginCalc = () => {
   const account = Recoils.useValue('CONFIG:ACCOUNT');
   const access_token = account.access_token;
   const [mode, setMode] = useState(0);
-  const [viewResult, setViewResult] = useState(false);
+  const [viewResult, setViewResult] = useState({});
   const [viewState, setView] = useState(true);
   const [platforms, setPlatforms] = useState([]);
   const [platformType, setplatformType] = useState(0);
@@ -348,7 +348,7 @@ const MarginCalc = () => {
 
   const onUpload = function () {
     setRowData([]);
-    setViewResult(false);
+    setViewResult({});
 
     SetColumnDefsFunc();
 
@@ -426,7 +426,43 @@ const MarginCalc = () => {
   const onViewResult = () => {
     if (!rowData || !rowData.length) return;
 
-    setViewResult(true);
+    const unconnect_rows = _.filter(rowData, (data) => {
+      return !data.connect_flag;
+    });
+
+    if (unconnect_rows.length != 0) {
+      modal.confirm(
+        '',
+        [{ strong: '손익계산을 진행하기 전 미연결 주문건을 삭제하시겠습니까?', normal: '' }],
+        [
+          {
+            name: '취소',
+            callback: () => {},
+          },
+          {
+            name: '미연결 주문건 삭제 후 손익계산',
+            callback: () => {
+              onDeleteUnconnectRow();
+              const summary = CalcSummary(_.filter(rowData, { connect_flag: true }));
+
+              setViewResult(summary);
+            },
+          },
+        ]
+      );
+    } else {
+      const summary = CalcSummary(rowData);
+
+      setViewResult(summary);
+    }
+  };
+
+  const onDeleteUnconnectRow = () => {
+    const connect_rows = _.filter(rowData, (data) => {
+      return data.connect_flag;
+    });
+
+    setRowData(connect_rows);
   };
 
   const onDownload = async () => {
@@ -466,6 +502,52 @@ const MarginCalc = () => {
         return !_.includes(delete_arr, row.idx);
       })
     );
+  };
+
+  const onSaveTodaySummary = () => {
+    if (!rowData || !rowData.length) return;
+
+    const unconnect_rows = _.filter(rowData, (data) => {
+      return !data.connect_flag;
+    });
+
+    if (unconnect_rows.length != 0) {
+      modal.confirm(
+        '',
+        [{ strong: '저장할 수 없습니다.', normal: '미연결 주문건이 있어서 저장할 수 없습니다.' }],
+        [
+          {
+            name: '매칭하러 가기',
+            callback: () => {
+              setModalState(true);
+            },
+          },
+          {
+            name: '미연결 주문건 삭제 후 저장',
+            callback: () => {
+              onDeleteUnconnectRow();
+              request.post(`user/today_summary/save`, { save_data: viewResult }).then((ret) => {
+                if (!ret.err) {
+                  const { data } = ret.data;
+                  logger.info(data);
+
+                  setRowData(() => data);
+                }
+              });
+            },
+          },
+        ]
+      );
+    } else {
+      request.post(`user/today_summary/save`, { save_data: viewResult }).then((ret) => {
+        if (!ret.err) {
+          const { data } = ret.data;
+          logger.info(data);
+
+          setRowData(() => data);
+        }
+      });
+    }
   };
 
   const deleteCallback = (d) => {
@@ -556,7 +638,7 @@ const MarginCalc = () => {
                       )}
                   </DropdownButton>
                   <Button variant="primary" onClick={onUpload} className="btn_green">
-                    <img src={icon_circle_arrow_up} />새 주문서 업로드
+                    <img src={`/${icon_circle_arrow_up}`} />새 주문서 업로드
                   </Button>
                   <span>※ 신규 접수된 '배송준비중' 인 양식을 사용해주세요.</span>
                 </div>
@@ -568,7 +650,7 @@ const MarginCalc = () => {
                 </ul>
               </div>
               <div className="section2">
-                <img src={img_service} />
+                <img src={`/${img_service}`} />
               </div>
             </div>
           </>
@@ -591,7 +673,7 @@ const MarginCalc = () => {
                     ))}
                 </DropdownButton>
                 <Button variant="primary" onClick={onUpload} className="btn_green">
-                  <img src={icon_circle_arrow_up} />새 주문서 업로드
+                  <img src={`/${icon_circle_arrow_up}`} />새 주문서 업로드
                 </Button>
 
                 <div className="btnbox">
@@ -599,17 +681,22 @@ const MarginCalc = () => {
                     선택 삭제
                   </Button>
 
-                  <Button variant="primary" onClick={onViewResult} className="btn_blue">
+                  <Button
+                    disabled={!rowData || !rowData.length}
+                    variant="primary"
+                    onClick={onViewResult}
+                    className="btn_blue"
+                  >
                     손익 계산
                   </Button>
 
                   {/* TODO 색 고민 해봐야.. */}
-                  <Button onClick={onUpload} disabled={viewResult ? false : true}>
+                  <Button onClick={onSaveTodaySummary} disabled={_.isEmpty(viewResult)}>
                     주문서 저장
                   </Button>
 
-                  <Button variant="primary" onClick={onDownload} className="btn_green">
-                    <img src={icon_circle_arrow_down} />
+                  <Button variant="primary" onClick={onDownload} className="btn_green" disabled={!rowData.length}>
+                    <img src={`/${icon_circle_arrow_down}`} />
                     다운로드
                   </Button>
 
@@ -619,52 +706,53 @@ const MarginCalc = () => {
                       setColumnControlModalState(true);
                     }}
                   >
-                    <img src={icon_set} />
+                    <img src={`/${icon_set}`} />
                   </Button>
                 </div>
               </div>
 
-              <ul className={viewResult ? 'viewbox' : 'viewbox off'}>
+              <ul className={!_.isEmpty(viewResult) ? 'viewbox' : 'viewbox off'}>
                 <li>
                   <p className="dt">총 주문</p>
                   <p className="dd">
-                    999,999
+                    {viewResult.unique_order_no_count}
                     <span>건</span>
                   </p>
                 </li>
                 <li>
                   <p className="dt">택배 발송</p>
                   <p className="dd">
-                    999,999
+                    {viewResult.delivery_send_count}
                     <span>건</span>
                   </p>
                 </li>
                 <li>
                   <p className="dt">적자 주문</p>
                   <span className="dd txt_red">
-                    9<span className="unit txt_red">건</span>
+                    {viewResult.loss_order_no_count}
+                    <span className="unit txt_red">건</span>
                   </span>
                 </li>
                 <li>
                   <p className="dt">상품 결제 금액</p>
                   <p className="dd">
-                    999,999
+                    {viewResult.sum_payment_price}
                     <span>원</span>
                   </p>
                 </li>
                 <li>
                   <p className="dt">받은 배송비</p>
                   <p className="dd">
-                    999,999
+                    {viewResult.sum_received_delivery_fee}
                     <span>원</span>
                   </p>
                 </li>
                 {/* 손익합계 <li> className에 이익일때 profit, 손해일때 loss 넣어주세요. */}
                 {/* 이 작업도 손익 계산이 다끝나면 하게 될 것 같아요! */}
-                <li className="loss">
+                <li className={viewResult.sum_profit_loss > 0 ? 'profit' : 'loss'}>
                   <p className="dt">손익 합계</p>
                   <p className="dd">
-                    999,999
+                    {viewResult.sum_profit_loss}
                     <span>원</span>
                   </p>
                 </li>
@@ -798,6 +886,32 @@ const getDeliveryFee = (profit_loss_row) => {
 
 const getPackingFee = (profit_loss_row) => {
   return _.sumBy(profit_loss_row.goods_match, 'packing_fee');
+};
+
+const CalcSummary = (rowData) => {
+  const unique_order_no = _.uniqBy(rowData, '30004');
+  const unique_order_no_count = unique_order_no.length;
+  const delivery_send = _.uniqBy(rowData, '30002');
+  const delivery_send_count = delivery_send.length;
+  const loss_order = _.filter(rowData, (row) => {
+    return row.profit_loss < 0;
+  });
+  const loss_order_no_count = loss_order.length;
+  const sum_payment_price = _.sumBy(rowData, '30006');
+  const sum_received_delivery_fee = _.sumBy(rowData, '30047');
+  const sum_profit_loss = _.sumBy(rowData, 'profit_loss');
+
+  const summary = {
+    forms_name: rowData[0].forms_name,
+    unique_order_no_count: unique_order_no_count,
+    delivery_send_count: delivery_send_count,
+    loss_order_no_count: loss_order_no_count,
+    sum_payment_price: sum_payment_price,
+    sum_received_delivery_fee: sum_received_delivery_fee,
+    sum_profit_loss: sum_profit_loss,
+  };
+
+  return summary;
 };
 
 export default React.memo(MarginCalc);

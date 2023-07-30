@@ -13,7 +13,7 @@ import Recoils from 'recoils';
 import * as xlsx from 'xlsx';
 import * as ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
-import _ from 'lodash';
+import _, { sum } from 'lodash';
 
 import { logger } from 'util/com';
 
@@ -31,36 +31,22 @@ const PLFormatter = (params) => {
   return newValue;
 };
 
-const ROUTE_COLUMN_BASE = [
+const columnDefs = [
   { field: 'idx', hide: true },
   { field: '', pinned: 'left', lockPinned: true, cellClass: 'lock-pinned', checkboxSelection: true, width: 5 },
   {
-    field: 'profit_loss',
+    field: 'reg_date',
     sortable: true,
     pinned: 'left',
     lockPinned: true,
     cellClass: 'lock-pinned',
     editable: false,
-    headerName: '손익',
-    filter: false,
-    unSortIcon: true,
-    width: 140,
-    valueFormatter: PLFormatter,
-  },
-  {
-    field: 'payment_date',
-    sortable: true,
-    pinned: 'left',
-    lockPinned: true,
-    cellClass: 'lock-pinned',
-    editable: false,
-    headerName: '결제일',
+    headerName: '업로드 시간',
     filter: false,
     unSortIcon: true,
     width: 120,
   },
 
-  { field: 'order_no', sortable: true, unSortIcon: true, headerName: '주문번호', minWidth: 160 },
   {
     field: 'forms_name',
     sortable: true,
@@ -69,92 +55,45 @@ const ROUTE_COLUMN_BASE = [
     minWidth: 120,
   },
   {
-    field: 'forms_product_name',
-    sortable: true,
-    unSortIcon: true,
-    headerName: '판매상품명',
-    minWidth: 400,
-    wrapText: true,
-    vertical: 'Center',
-  },
-  {
-    field: 'forms_option_name1',
-    sortable: true,
-    unSortIcon: true,
-    headerName: '옵션',
-    minWidth: 300,
-    wrapText: true,
-    vertical: 'Center',
-  },
-  {
-    field: 'count',
+    field: 'unique_order_no_count',
     sortable: true,
     unSortIcon: true,
     valueParser: (params) => Number(params.newValue),
-    headerName: '주문수량',
+    headerName: '주문 수',
     minWidth: 100,
   },
+  {
+    field: 'delivery_send_count',
+    sortable: true,
+    unSortIcon: true,
+    valueParser: (params) => Number(params.newValue),
+    headerName: '택배발송',
+    minWidth: 140,
+  },
+
   {
     field: 'sum_payment_price',
     sortable: true,
     unSortIcon: true,
     valueParser: (params) => Number(params.newValue),
-    headerName: '총 결제금액(정산예정금액)',
+    headerName: '총 결제금액',
     minWidth: 140,
   },
-
   {
-    field: 'recieved_delivery_fee',
+    field: 'sum_received_delivery_fee',
     sortable: true,
     unSortIcon: true,
     valueParser: (params) => Number(params.newValue),
     headerName: '받은 배송비',
-    minWidth: 140,
-  },
-  {
-    field: 'stock_price',
-    sortable: true,
-    unSortIcon: true,
-    valueParser: (params) => Number(params.newValue),
-    headerName: '입고단가',
     minWidth: 120,
   },
   {
-    field: 'delivery_fee',
+    field: 'sum_profit_loss',
     sortable: true,
     unSortIcon: true,
     valueParser: (params) => Number(params.newValue),
-    headerName: '배송비',
+    headerName: '손익합계',
     minWidth: 100,
-  },
-  {
-    field: 'packing_fee',
-    sortable: true,
-    unSortIcon: true,
-    valueParser: (params) => Number(params.newValue),
-    headerName: '포장비',
-    minWidth: 100,
-  },
-  {
-    field: 'recieved_name',
-    sortable: true,
-    unSortIcon: true,
-    headerName: '수취인명',
-    minWidth: 120,
-  },
-  {
-    field: 'recieved_addr',
-    sortable: true,
-    unSortIcon: true,
-    headerName: '수취인 주소',
-    minWidth: 140,
-  },
-  {
-    field: 'recieved_phone',
-    sortable: true,
-    unSortIcon: true,
-    headerName: '수취인 연락처',
-    minWidth: 140,
   },
 ];
 
@@ -165,14 +104,9 @@ const TodaySummary = () => {
   const access_token = account.access_token;
 
   const [viewResult, setViewResult] = useState(false);
-  const [viewState, setView] = useState(true);
   const [platforms, setPlatforms] = useState([]);
   const [platformType, setplatformType] = useState(0);
   const [rowData, setRowData] = useState([]);
-  const [modalState, setModalState] = useState(false);
-  const [columnControlModalState, setColumnControlModalState] = useState(false);
-
-  const [viewColumns, setViewColumns] = useState([]);
   //ag-grid
   const gridRef = useRef();
   const containerStyle = useMemo(() => ({ width: '100%', height: '100%' }), []);
@@ -187,14 +121,20 @@ const TodaySummary = () => {
       autoHeight: true,
     };
   }, []);
-  const [columnDefs, setColumnDefs] = useState([]);
-
-  const [info, setInfo] = useState(null);
 
   useEffect(() => {
     let temp = _.filter(Recoils.getState('DATA:PLATFORMS'), { view: 1 });
     temp = _.sortBy(temp, ['_order']);
     setPlatforms(temp);
+
+    request.post(`user/today_summary`, {}).then((ret) => {
+      if (!ret.err) {
+        const { data } = ret.data;
+        logger.info(data);
+
+        setRowData(() => data);
+      }
+    });
   }, []);
 
   const onUpload = function () {
@@ -272,26 +212,42 @@ const TodaySummary = () => {
     setplatformType(key);
   };
 
-  const onClick = () => {
-    setModalState(true);
-  };
-
   const onDelete = (e) => {
     const selectedRows = gridRef.current.api.getSelectedRows();
-    const delete_arr = _.map(selectedRows, 'idx');
-    setRowData(
-      _.filter(rowData, (row) => {
-        return !_.includes(delete_arr, row.idx);
-      })
-    );
+    if (!selectedRows.length) return;
+    const node = selectedRows[0];
+
+    request.post('user/today_summary/delete', { idx: node.idx }).then((ret) => {
+      if (!ret.err) {
+        const { data } = ret.data;
+        setRowData(
+          _.filter(rowData, (item) => {
+            return item.idx != node.idx;
+          })
+        );
+        setViewResult({});
+      }
+    });
   };
 
-  const getRowStyle = (params) => {
-    if (!params.node.data.connect_flag) {
-      return { background: 'red' };
-    }
+  const onSelectionChanged = () => {
+    const selectedRows = gridRef.current.api.getSelectedRows();
+    const node = selectedRows[0];
+
+    const summary = {
+      forms_name: node.forms_name,
+      unique_order_no_count: node.unique_order_no_count,
+      delivery_send_count: node.delivery_send_count,
+      loss_order_no_count: node.loss_order_no_count,
+      sum_payment_price: node.sum_payment_price,
+      sum_received_delivery_fee: node.sum_received_delivery_fee,
+      sum_profit_loss: node.sum_profit_loss,
+    };
+
+    setViewResult(summary);
   };
 
+  const onClick = () => {};
   return (
     <>
       <Head />
@@ -314,7 +270,7 @@ const TodaySummary = () => {
                 ))}
             </DropdownButton>
             <Button variant="primary" onClick={onUpload} className="btn_green">
-              <img src={icon_circle_arrow_up} />새 주문서 업로드
+              <img src={`/${icon_circle_arrow_up}`} />새 주문서 업로드
             </Button>
 
             <div className="btnbox">
@@ -326,47 +282,48 @@ const TodaySummary = () => {
             </div>
           </div>
 
-          <ul className={viewResult ? 'viewbox' : 'viewbox off'}>
+          <ul className={!_.isEmpty(viewResult) ? 'viewbox' : 'viewbox off'}>
             <li>
               <p className="dt">총 주문</p>
               <p className="dd">
-                999,999
+                {viewResult.unique_order_no_count}
                 <span>건</span>
               </p>
             </li>
             <li>
               <p className="dt">택배 발송</p>
               <p className="dd">
-                999,999
+                {viewResult.delivery_send_count}
                 <span>건</span>
               </p>
             </li>
             <li>
               <p className="dt">적자 주문</p>
               <span className="dd txt_red">
-                9<span className="unit txt_red">건</span>
+                {viewResult.loss_order_no_count}
+                <span className="unit txt_red">건</span>
               </span>
             </li>
             <li>
               <p className="dt">상품 결제 금액</p>
               <p className="dd">
-                999,999
+                {viewResult.sum_payment_price}
                 <span>원</span>
               </p>
             </li>
             <li>
               <p className="dt">받은 배송비</p>
               <p className="dd">
-                999,999
+                {viewResult.sum_received_delivery_fee}
                 <span>원</span>
               </p>
             </li>
             {/* 손익합계 <li> className에 이익일때 profit, 손해일때 loss 넣어주세요. */}
             {/* 이 작업도 손익 계산이 다끝나면 하게 될 것 같아요! */}
-            <li className="loss">
+            <li className={viewResult.sum_profit_loss > 0 ? 'profit' : 'loss'}>
               <p className="dt">손익 합계</p>
               <p className="dd">
-                999,999
+                {viewResult.sum_profit_loss}
                 <span>원</span>
               </p>
             </li>
@@ -381,9 +338,9 @@ const TodaySummary = () => {
                 alwaysShowHorizontalScroll={true}
                 alwaysShowVerticalScroll={true}
                 defaultColDef={defaultColDef}
-                rowSelection={'multiple'}
+                rowSelection={'single'}
                 onRowDoubleClicked={onClick}
-                getRowStyle={getRowStyle}
+                onSelectionChanged={onSelectionChanged}
                 overlayNoRowsTemplate={'데이터가 없습니다.'}
               ></AgGridReact>
             </div>
