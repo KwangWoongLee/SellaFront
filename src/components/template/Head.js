@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Navbar, Nav, NavDropdown, DropdownButton, Form, OverlayTrigger, Popover } from 'react-bootstrap';
 import 'styles/Template.scss';
-import { navigate, modal, logger } from 'util/com';
+import { img_src, navigate, modal, logger } from 'util/com';
 import request from 'util/request';
 import Recoils from 'recoils';
 import com from 'util/com';
@@ -25,7 +25,7 @@ const Head = () => {
     <>
       <div className="header">
         <Nav.Link onClick={onLink} className="logo" name="/">
-          <img src={`/${logo_white}`} alt="로고" />
+          <img src={`${img_src}${logo_white}`} alt="로고" />
         </Nav.Link>
         <div className="menu">
           <ul className="left">
@@ -49,7 +49,7 @@ const Head = () => {
           </ul>
         </div>
         <div className="member">
-          <img src={`/${icon_calculator}`} alt="계산기" className="icon_calculator" />
+          <img src={`${img_src}${icon_calculator}`} alt="계산기" className="icon_calculator" />
           <Nav.Link className="nav-link mcalculator" onClick={onLink} name="/calculator/margin">
             <span>마진계산기</span>
           </Nav.Link>
@@ -61,17 +61,17 @@ const Head = () => {
             <span className="cscenter">고객센터</span>
           </Nav.Link>
           <Nav.Link className="nav-link cschat" name="/cschat">
-            <img src={`/${icon_kakao}`} alt="카카오" className="icon_kakao" />
+            <img src={`${img_src}${icon_kakao}`} alt="카카오" className="icon_kakao" />
             <span className="cschat">1:1문의</span>
           </Nav.Link>
           {account && account.grade != -1 ? (
             <>
               <span class="name">{account.name}</span>
               <Nav.Link className="nav-link icon_member" onClick={onLink} name="/mypage">
-                <img src={`/${icon_member}`} alt="" />
+                <img src={`${img_src}${icon_member}`} alt="" />
               </Nav.Link>
               <Nav.Link className="nav-link icon_power" onClick={onLink} name="/logout">
-                <img src={`/${icon_power}`} alt="" />
+                <img src={`${img_src}${icon_power}`} alt="" />
               </Nav.Link>
             </>
           ) : (

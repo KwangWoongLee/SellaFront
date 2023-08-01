@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 
 import { Button, DropdownButton, Dropdown, Modal, Form, FloatingLabel } from 'react-bootstrap';
 import request from 'util/request';
-import { modal } from 'util/com';
+import { img_src, modal } from 'util/com';
 import Recoils from 'recoils';
 import FormsMatchTable from 'components/settlement/common/FormsMatchTable';
 import GoodsMatchTable from 'components/settlement/common/GoodsMatchTable';
@@ -150,7 +150,7 @@ const MarginCalc_UnConnectModal = React.memo(({ modalState, setModalState, rowDa
       <Modal.Header>
         <Modal.Title>상품 매칭 관리</Modal.Title>
         <Button variant="primary" className="btn_close" onClick={onClose}>
-          <img src={`/${icon_close}`} />
+          <img src={`${img_src}${icon_close}`} />
         </Button>
       </Modal.Header>
       <Modal.Body>

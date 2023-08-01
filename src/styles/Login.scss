@@ -210,6 +210,19 @@
     }
   }
 
+  .inputphone2,
+  .inputid {
+    input {
+      border-top-right-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+    }
+
+    input + button {
+      border-top-right-radius: 5px !important;
+      border-bottom-right-radius: 5px !important;
+    }
+  }
+
   .inputpw1 {
     input {
       border-bottom-left-radius: 0 !important;
@@ -451,6 +464,8 @@
   }
 
   .inputphone2 {
+    margin-bottom: 30px;
+
     input {
       border-top-right-radius: 0 !important;
       border-bottom-right-radius: 0 !important;

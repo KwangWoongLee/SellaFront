@@ -4,6 +4,7 @@
   --ag-header-foreground-color: #fff;
   --ag-internal-calculated-line-height: auto;
   --ag-selected-row-background-color: #e8f4fe;
+  --bs-body-color: #000;
 
   display: inline-block;
   height: auto !important;
@@ -77,6 +78,7 @@
   height: auto;
   min-height: 100%;
   border-right: 1px dotted #ccc;
+  font-size: 14px;
   font-weight: 300;
   padding: 5px 10px;
   overflow: hidden;
@@ -105,25 +107,58 @@
 .ag-cell,
 .ag-full-width-row .ag-cell-wrapper.ag-row-group {
   padding: 0 3px;
+  color: #000;
 }
 
 .ag-body-horizontal-scroll-viewport {
   overflow: auto;
 }
 
-.ag-cell-editable:before {
+.ag-cell-inline-editing:before,
+.ag-cell-not-inline-editing:before {
   content: "";
   position: absolute;
   top: 5px;
   left: 10px;
   width: calc(100% - 20px);
   height: calc(100% - 10px);
+  max-height: 32px;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
 
+.ag-cell-inline-editing,
 .ag-cell-not-inline-editing {
   padding: 5px 20px !important;
+}
+
+.uneditable:before,
+.checkcell:before,
+.td_input:before {
+  display: none;
+}
+
+.ag-cell-not-inline-editing.td_input {
+  padding: 5px 10px !important;
+}
+
+.ag-cell-not-inline-editing.td_input input,
+.ag-cell-not-inline-editing.td_input input:disabled {
+  padding-right: 10px !important;
+}
+
+.ag-cell.txt_red * {
+  color: #d20000 !important;
+  font-size: 14px;
+  font-weight: 300;
+  text-align: right;
+}
+
+.ag-cell.txt_black * {
+  color: #000 !important;
+  font-size: 14px;
+  font-weight: 300;
+  text-align: right;
 }
 
 .ag-cell-inline-editing {
@@ -164,9 +199,9 @@ input[class^=ag-][type=text]:focus {
   white-space: pre-wrap !important;
 }
 
-.dropdown-menu.show {
+/* .dropdown-menu.show {
   display: none !important;
-}
+} */
 
 .dropdown.show,
 .dropdown.show+input,
@@ -182,4 +217,10 @@ input[class^=ag-][type=text]:focus {
 .checkcell,
 .codecell {
   text-indent: 0 !important;
+}
+
+.required {}
+
+.ag-cell-inline-editing .ag-cell-editor .ag-wrapper {
+  min-height: 32px;
 }

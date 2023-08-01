@@ -5,13 +5,15 @@ import moment from 'moment';
 import { navigate_ref } from 'components/common/NavigateCtr';
 import dateFormat from 'dateformat';
 import conf from '../config/auth.json';
+import conf_inapp from '../config/inapp.json';
 import crypto from 'crypto';
 const com = {};
+
 com.storage = window.localStorage;
 com.ref = {};
 
 export const storage = null; // localStorage
-
+export const img_src = conf_inapp.img_src;
 export const ArrayToTableData = (data) =>
   data.map((tr, idx) => (
     <tr key={idx}>

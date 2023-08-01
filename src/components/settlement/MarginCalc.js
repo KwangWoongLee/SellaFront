@@ -4,7 +4,7 @@ import { Button, Modal, Dropdown, DropdownButton } from 'react-bootstrap';
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
-import { modal, navigate } from 'util/com';
+import { img_src, modal, navigate } from 'util/com';
 import request from 'util/request';
 import SettlementNavTab from 'components/settlement/common/SettlementNavTab';
 import MarginCalc_UnConnectModal from 'components/settlement/MarginCalc_UnConnectModal';
@@ -45,6 +45,7 @@ const optionCellRenderer = (props) => {
 };
 
 //
+
 const ROUTE_COLUMN_BASE = [
   {
     field: '',
@@ -61,7 +62,7 @@ const ROUTE_COLUMN_BASE = [
     sortable: true,
     pinned: 'left',
     lockPinned: true,
-    cellClass: 'lock-pinned',
+    cellClass: 'lock-pinned uneditable',
     editable: false,
     headerName: '손익',
     filter: false,
@@ -74,14 +75,13 @@ const ROUTE_COLUMN_BASE = [
     sortable: true,
     pinned: 'left',
     lockPinned: true,
-    cellClass: 'lock-pinned',
+    cellClass: 'lock-pinned uneditable',
     editable: false,
     headerName: '결제일',
     filter: false,
     unSortIcon: true,
     width: 170,
   },
-
   {
     field: '30002',
     rowSpan: (params) => (params.data.aggregation_rowspan ? params.data.aggregation_rowspan : 1),
@@ -89,6 +89,7 @@ const ROUTE_COLUMN_BASE = [
     unSortIcon: true,
     headerName: '배송비묶음번호',
     maxWidth: 150,
+    cellClass: 'uneditable',
   },
   {
     field: '30004',
@@ -96,6 +97,7 @@ const ROUTE_COLUMN_BASE = [
     unSortIcon: true,
     headerName: '주문번호',
     maxWidth: 150,
+    cellClass: 'uneditable',
   },
   {
     field: 'forms_name',
@@ -103,6 +105,7 @@ const ROUTE_COLUMN_BASE = [
     unSortIcon: true,
     headerName: '매체',
     width: 150,
+    cellClass: 'uneditable',
   },
   {
     field: '30007',
@@ -113,6 +116,7 @@ const ROUTE_COLUMN_BASE = [
     wrapText: true,
     autoHeight: true,
     vertical: 'Center',
+    cellClass: 'uneditable',
   },
   {
     field: '30008',
@@ -124,6 +128,7 @@ const ROUTE_COLUMN_BASE = [
     autoHeight: true,
     vertical: 'Center',
     cellRenderer: optionCellRenderer,
+    cellClass: 'uneditable',
   },
   {
     field: '30005',
@@ -133,6 +138,7 @@ const ROUTE_COLUMN_BASE = [
     headerName: '수량',
     maxWidth: 80,
     autoHeight: true,
+    cellClass: 'uneditable',
   },
   {
     field: '30006',
@@ -142,8 +148,8 @@ const ROUTE_COLUMN_BASE = [
     headerName: '총 결제금액\n(정산예정금액)',
     width: 130,
     autoHeight: true,
+    cellClass: 'uneditable',
   },
-
   {
     field: '30047',
     sortable: true,
@@ -151,6 +157,7 @@ const ROUTE_COLUMN_BASE = [
     valueParser: (params) => Number(params.newValue),
     headerName: '받은 배송비',
     width: 120,
+    editable: true,
   },
   {
     field: 'stock_price',
@@ -159,6 +166,7 @@ const ROUTE_COLUMN_BASE = [
     valueParser: (params) => Number(params.newValue),
     headerName: '입고단가',
     width: 120,
+    editable: true,
   },
   {
     field: 'delivery_fee',
@@ -167,6 +175,7 @@ const ROUTE_COLUMN_BASE = [
     valueParser: (params) => Number(params.newValue),
     headerName: '배송비',
     width: 120,
+    editable: true,
   },
   {
     field: 'packing_fee',
@@ -175,6 +184,7 @@ const ROUTE_COLUMN_BASE = [
     valueParser: (params) => Number(params.newValue),
     headerName: '포장비',
     width: 120,
+    editable: true,
   },
   // {
   //   field: 'recieved_name',
@@ -203,7 +213,7 @@ const ROUTE_COLUMN_BASE = [
 //   return params.data.rowHeight;
 // }, []);
 
-const rowHeight = 36;
+const rowHeight = 44;
 
 const MarginCalc = () => {
   logger.render('MarginCalc');
@@ -239,11 +249,13 @@ const MarginCalc = () => {
     if (!platforms[platformType]) return; // TODO Error
     if (!platforms[platformType].titles) return; // TODO Error
 
-    const sella_codes = _.map(platforms[platformType].titles, 'sella_code');
+    const view_titles = _.filter(platforms[platformType].titles, { view: 1 });
+    const sella_codes = _.map(view_titles, 'sella_code');
 
     setColumnDefs(() =>
       _.filter(ROUTE_COLUMN_BASE, (base) => {
         if (base.field == '') return true;
+        else if (base.field == 'idx') return true;
         else if (base.field == 'profit_loss') return true;
         else if (base.field == 'forms_name') return true;
         else if (base.field == 'stock_price') return true;
@@ -315,36 +327,25 @@ const MarginCalc = () => {
     }
 
     temp = _.sortBy(temp, ['_order']);
+    const sella_forms = Recoils.getState('SELLA:SELLAFORMS');
+
+    if (platforms.length) {
+      const titles = _.cloneDeep(platforms[platformType].titles);
+      for (const title of titles) {
+        const findObj = _.find(sella_forms, { code: title.sella_code });
+        title.sella_title = findObj.title;
+      }
+      setViewColumns(titles);
+    }
+
     setPlatforms(temp);
-    //// 일단 하드코딩
-    // request.post(`user/route_no`, { route_no: 0 }).then((ret) => {
-    //   if (!ret.err) {
-    //     const { data } = ret.data;
-    //     logger.info(data);
-
-    //     for (const row of data) {
-    //       const findObj = _.find(ROUTE_COLUMN_BASE, { field: row.field });
-    //       row.headerName = findObj.headerName;
-    //     }
-
-    //     setViewColumns(data);
-
-    //     const field_arr = _.map(
-    //       _.filter(data, (obj) => {
-    //         return obj.select_flag == 1 || obj.select_flag == true;
-    //       }),
-    //       'field'
-    //     );
-    //     setColumnDefs(() =>
-    //       _.filter(ROUTE_COLUMN_BASE, (base) => {
-    //         if (base.field == '') return true;
-
-    //         return _.includes(field_arr, base.field);
-    //       })
-    //     );
-    //   }
-    // });
   }, []);
+
+  useEffect(() => {
+    if (gridRef.current) {
+      gridRef.current.api.setColumnDefs(columnDefs);
+    }
+  }, [columnDefs]);
 
   const onUpload = function () {
     setRowData([]);
@@ -364,7 +365,8 @@ const MarginCalc = () => {
           const bstr = e.target.result;
           const wb = xlsx.read(bstr, { type: rABS ? 'binary' : 'array', bookVBA: true });
 
-          const titles = platforms[platformType].titles;
+          const titles = _.cloneDeep(platforms[platformType].titles);
+          const sella_forms = Recoils.getState('SELLA:SELLAFORMS');
 
           const expected = {};
 
@@ -373,7 +375,10 @@ const MarginCalc = () => {
 
             const column = title.column;
             expected[column] = header;
+            const findObj = _.find(sella_forms, { code: title.sella_code });
+            title.sella_title = findObj.title;
           }
+          setViewColumns(titles);
 
           const wsname = wb.SheetNames[0];
           const ws = wb.Sheets[wsname];
@@ -581,20 +586,27 @@ const MarginCalc = () => {
     );
   };
 
-  const saveViewColumnsCallback = (viewColumns) => {
-    const field_arr = _.map(
-      _.filter(viewColumns, (obj) => {
-        return obj.select_flag == 1 || obj.select_flag == true;
+  const saveViewColumnsCallback = (platforms, viewColumns) => {
+    const sella_codes = _.map(
+      _.filter(viewColumns, (c) => {
+        return c.view == 1 || c.view;
       }),
-      'field'
+      'sella_code'
     );
-    setColumnDefs(() =>
-      _.filter(ROUTE_COLUMN_BASE, (base) => {
-        if (base.field == '') return true;
+    setPlatforms([...platforms]);
 
-        return _.includes(field_arr, base.field);
-      })
-    );
+    const views = _.filter(ROUTE_COLUMN_BASE, (base) => {
+      if (base.field == '') return true;
+      else if (base.field == 'idx') return true;
+      else if (base.field == 'profit_loss') return true;
+      else if (base.field == 'forms_name') return true;
+      else if (base.field == 'stock_price') return true;
+      else if (base.field == 'delivery_fee') return true;
+      else if (base.field == 'packing_fee') return true;
+
+      return _.includes(sella_codes, Number(base.field));
+    });
+    setColumnDefs(views);
   };
 
   const getRowStyle = (params) => {
@@ -638,7 +650,7 @@ const MarginCalc = () => {
                       )}
                   </DropdownButton>
                   <Button variant="primary" onClick={onUpload} className="btn_green">
-                    <img src={`/${icon_circle_arrow_up}`} />새 주문서 업로드
+                    <img src={`${img_src}${icon_circle_arrow_up}`} />새 주문서 업로드
                   </Button>
                   <span>※ 신규 접수된 '배송준비중' 인 양식을 사용해주세요.</span>
                 </div>
@@ -650,7 +662,7 @@ const MarginCalc = () => {
                 </ul>
               </div>
               <div className="section2">
-                <img src={`/${img_service}`} />
+                <img src={`${img_src}${img_service}`} />
               </div>
             </div>
           </>
@@ -673,7 +685,7 @@ const MarginCalc = () => {
                     ))}
                 </DropdownButton>
                 <Button variant="primary" onClick={onUpload} className="btn_green">
-                  <img src={`/${icon_circle_arrow_up}`} />새 주문서 업로드
+                  <img src={`${img_src}${icon_circle_arrow_up}`} />새 주문서 업로드
                 </Button>
 
                 <div className="btnbox">
@@ -696,7 +708,7 @@ const MarginCalc = () => {
                   </Button>
 
                   <Button variant="primary" onClick={onDownload} className="btn_green" disabled={!rowData.length}>
-                    <img src={`/${icon_circle_arrow_down}`} />
+                    <img src={`${img_src}${icon_circle_arrow_down}`} />
                     다운로드
                   </Button>
 
@@ -706,7 +718,7 @@ const MarginCalc = () => {
                       setColumnControlModalState(true);
                     }}
                   >
-                    <img src={`/${icon_set}`} />
+                    <img src={`${img_src}${icon_set}`} />
                   </Button>
                 </div>
               </div>
@@ -793,7 +805,9 @@ const MarginCalc = () => {
       <ColumnControlModal
         modalState={columnControlModalState}
         setModalState={setColumnControlModalState}
+        platform={platforms[platformType]}
         viewColumns={viewColumns}
+        setViewColumns={setViewColumns}
         callback={saveViewColumnsCallback}
       ></ColumnControlModal>
     </>
@@ -889,6 +903,10 @@ const getPackingFee = (profit_loss_row) => {
 };
 
 const CalcSummary = (rowData) => {
+  if (!rowData.length) {
+    modal.alert('미연결 주문건을 삭제하면 값이 없습니다.');
+  }
+
   const unique_order_no = _.uniqBy(rowData, '30004');
   const unique_order_no_count = unique_order_no.length;
   const delivery_send = _.uniqBy(rowData, '30002');

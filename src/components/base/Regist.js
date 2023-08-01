@@ -411,14 +411,13 @@ const Regist = () => {
               />
             </InputGroup>
             {auth['password'] ? (
-              <span className="inform inform4"></span>
+              auth['password_confirm'] ? (
+                <span className="inform inform4"></span>
+              ) : (
+                <span className="inform inform4 red">비밀번호 확인 문자가 다릅니다.</span>
+              )
             ) : (
               <span className="inform inform4 red">8~16자 대/소문자, 숫자, 특수문자를 사용하세요.</span>
-            )}
-            {auth['password_confirm'] ? (
-              <span className="inform inform4"></span>
-            ) : (
-              <span className="inform inform4 red">비밀번호 확인 문자가 다릅니다.</span>
             )}
             <Button
               variant="primary"

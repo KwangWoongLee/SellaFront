@@ -85,6 +85,11 @@
       height: 33px;
       border: 1px solid #ccc !important;
       border-radius: 5px !important;
+      background-color: transparent !important;
+    }
+
+    .dropdown + input:focus {
+      background-color: #fff !important;
     }
 
     .dropdown + input + span {
@@ -95,8 +100,14 @@
       color: #000;
     }
 
-    .ag-cell-editable {
+    .dropdown-menu.show {
+      display: none;
+    }
+
+    .ag-cell-not-inline-editing {
       text-overflow: ellipsis;
+      text-align: right;
+      line-height: 30px;
     }
   }
 }

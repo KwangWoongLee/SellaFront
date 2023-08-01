@@ -6,7 +6,7 @@ import { modal } from 'util/com';
 import Recoils from 'recoils';
 import _ from 'lodash';
 
-import { logger } from 'util/com';
+import { img_src, logger } from 'util/com';
 
 import icon_del from 'images/icon_del.svg';
 
@@ -88,7 +88,7 @@ const FormsMatchItem = React.memo(({ index, d, onClick, onDelete, tableRow }) =>
             onDelete(e, d);
           }}
         >
-          <img src={`/${icon_del}`} />
+          <img src={`${img_src}${icon_del}`} />
         </button>
       </td>
     </tr>

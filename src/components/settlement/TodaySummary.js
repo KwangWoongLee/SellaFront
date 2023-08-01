@@ -5,7 +5,7 @@ import {} from 'react-bootstrap';
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
-import { modal, navigate } from 'util/com';
+import { img_src, modal, navigate } from 'util/com';
 import request from 'util/request';
 import {} from 'util/com';
 import SettlementNavTab from 'components/settlement/common/SettlementNavTab';
@@ -270,7 +270,7 @@ const TodaySummary = () => {
                 ))}
             </DropdownButton>
             <Button variant="primary" onClick={onUpload} className="btn_green">
-              <img src={`/${icon_circle_arrow_up}`} />새 주문서 업로드
+              <img src={`${img_src}${icon_circle_arrow_up}`} />새 주문서 업로드
             </Button>
 
             <div className="btnbox">

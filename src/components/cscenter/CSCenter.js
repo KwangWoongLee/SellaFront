@@ -6,7 +6,7 @@ import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 import CSCenterNavTab from 'components/cscenter/CSCenterNavTab';
 import request from 'util/request';
-import { modal, navigate } from 'util/com';
+import { img_src, modal, navigate } from 'util/com';
 import com from 'util/com';
 import Recoils from 'recoils';
 import _ from 'lodash';

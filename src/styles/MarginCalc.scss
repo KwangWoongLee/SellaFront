@@ -252,4 +252,18 @@
       }
     }
   }
+  .ag-ltr .ag-cell {
+    padding-top: 9px !important;
+    padding-bottom: 9px !important;
+  }
+
+  .ag-ltr .ag-cell.checkcell {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  .ag-ltr .ag-cell.uneditable {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
 }

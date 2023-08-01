@@ -79,7 +79,7 @@ const SearchPWResult = () => {
       <Body title={`비밀번호 찾기 성공`} myClass={'searchresult'}>
         {mode == 0 && (
           <Form id="change-password-form" className="formbox success">
-            <h3>비밀번호 찾기</h3>
+            <h3>비밀번호 변경</h3>
 
             <span>안전한 비밀번호로 변경해주세요.</span>
 
@@ -108,12 +108,16 @@ const SearchPWResult = () => {
             <span className="inform red">8~16자 영문 대 소문자, 숫자, 특수문자를 사용하세요. </span>
 
             <div className="btnbox">
-              <Button disabled={!changeRefButtonOn} variant="primary" onClick={onPasswordChangeReq}>
-                비밀번호 찾기
+              <Button
+                disabled={!changeRefButtonOn}
+                variant="primary"
+                onClick={onPasswordChangeReq}
+                className="btn_blue"
+              >
+                비밀번호 변경
               </Button>
               <Button
                 variant="primary"
-                className="btn_blue"
                 onClick={() => {
                   navigate('/login');
                 }}
@@ -126,7 +130,7 @@ const SearchPWResult = () => {
 
         {mode == 1 && (
           <div className="formbox fail">
-            <h3>비밀번호 찾기</h3>
+            <h3>비밀번호를 찾을 수 없습니다.</h3>
 
             <span>고객님 정보와 일치하지 않습니다.</span>
 

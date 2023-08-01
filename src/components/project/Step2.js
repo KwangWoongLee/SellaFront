@@ -6,7 +6,7 @@ import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 import Step2Modal from 'components/project/Step2Modal';
 import request from 'util/request';
-import { logger, modal, navigate, page_reload, time_format } from 'util/com';
+import { img_src, logger, modal, navigate, page_reload, time_format } from 'util/com';
 import Recoils from 'recoils';
 import _ from 'lodash';
 import * as xlsx from 'xlsx';
@@ -152,9 +152,7 @@ const Step2 = () => {
         rawData[params.node.rowIndex]['delivery_fee'] &&
         rawData[params.node.rowIndex]['delivery_fee'] !== Number(params.data.delivery_fee)
       ) {
-        const newStyle = { color: 'red' };
-        params.column.colDef.cellStyle = newStyle;
-        callback('red');
+        params.column.colDef.cellClass = 'td_input txt_red';
         params.api.refreshCells({
           force: true,
           columns: [column],
@@ -162,9 +160,7 @@ const Step2 = () => {
         });
       } else {
         let column = params.column.colDef.field;
-        const newStyle = { color: 'transparent' };
-        params.column.colDef.cellStyle = newStyle;
-        callback('transparent');
+        params.column.colDef.cellClass = 'td_input txt_black';
         params.api.refreshCells({
           force: true,
           columns: [column],
@@ -185,9 +181,8 @@ const Step2 = () => {
         rawData[params.node.rowIndex]['packing_fee'] &&
         rawData[params.node.rowIndex]['packing_fee'] !== Number(params.data.packing_fee)
       ) {
-        const newStyle = { color: 'red' };
-        params.column.colDef.cellStyle = newStyle;
-        callback('red');
+        params.column.colDef.cellClass = 'td_input txt_red';
+        // callback('red');
         params.api.refreshCells({
           force: true,
           columns: [column],
@@ -195,9 +190,7 @@ const Step2 = () => {
         });
       } else {
         let column = params.column.colDef.field;
-        const newStyle = { color: 'transparent' };
-        params.column.colDef.cellStyle = newStyle;
-        callback('transparent');
+        params.column.colDef.cellClass = 'td_input txt_black';
         params.api.refreshCells({
           force: true,
           columns: [column],
@@ -209,9 +202,7 @@ const Step2 = () => {
     }
 
     if (rawData && rawData[params.node.rowIndex][column] && rawData[params.node.rowIndex][column] !== params.newValue) {
-      const newStyle = { color: 'red' };
-      params.column.colDef.cellStyle = newStyle;
-
+      params.column.colDef.cellClass = 'txt_red';
       params.api.refreshCells({
         force: true,
         columns: [column],
@@ -219,8 +210,7 @@ const Step2 = () => {
       });
     } else {
       let column = params.column.colDef.field;
-      const newStyle = { color: 'black' };
-      params.column.colDef.cellStyle = newStyle;
+      params.column.colDef.cellClass = 'txt_black';
       params.api.refreshCells({
         force: true,
         columns: [column],
@@ -241,24 +231,23 @@ const Step2 = () => {
     },
     {
       field: 'idx',
-      headerName: '상품코드',
+      headerName: '* 상품코드',
       sortable: true,
       editable: false,
       filter: false,
-      cellClass: 'lock-pinned',
       pinned: 'left',
       lockPinned: true,
       width: 120,
       cellStyle: { 'line-height': '30px', 'text-align': 'right' },
-      cellClass: 'codecell',
+      cellClass: 'codecell uneditable',
     },
     {
       field: 'goods_category',
-      headerName: '카테고리',
+      headerName: '* 카테고리',
       sortable: true,
       unSortIcon: true,
       filter: false,
-      cellClass: 'ag-cell-editable lock-pinned',
+      cellClass: 'lock-pinned',
       pinned: 'left',
       lockPinned: true,
       width: 120,
@@ -266,11 +255,11 @@ const Step2 = () => {
     },
     {
       field: 'name',
-      headerName: '상품명',
+      headerName: '* 상품명',
       sortable: true,
       unSortIcon: true,
       filter: false,
-      cellClass: 'ag-cell-editable lock-pinned prd_name',
+      cellClass: 'lock-pinned prd_name',
       pinned: 'left',
       lockPinned: true,
       width: 250,
@@ -278,7 +267,7 @@ const Step2 = () => {
     },
     {
       field: 'stock_price',
-      headerName: '입고가',
+      headerName: '* 입고가',
       sortable: true,
       unSortIcon: true,
       valueParser: (params) => Number(params.newValue),
@@ -290,7 +279,7 @@ const Step2 = () => {
     },
     {
       field: 'delivery_fee',
-      headerName: '택배비',
+      headerName: '* 택배비',
       sortable: true,
       unSortIcon: true,
       filter: false,
@@ -307,7 +296,7 @@ const Step2 = () => {
     },
     {
       field: 'packing_fee',
-      headerName: '포장비',
+      headerName: '* 포장비',
       sortable: true,
       unSortIcon: true,
       filter: false,
@@ -376,6 +365,7 @@ const Step2 = () => {
       unSortIcon: true,
       filter: false,
       editable: false,
+      cellClass: 'uneditable',
       valueFormatter: (params) => {
         if (params.value == '') return '';
         return time_format(params.value);
@@ -389,6 +379,7 @@ const Step2 = () => {
       unSortIcon: true,
       filter: false,
       editable: false,
+      cellClass: 'uneditable',
       valueFormatter: (params) => {
         if (params.value == '') return '';
         return time_format(params.value);
@@ -567,7 +558,7 @@ const Step2 = () => {
     const worksheet = workbook.addWorksheet('상품입고용');
 
     worksheet.columns = [
-      { header: '상품번호', key: 'idx', width: 10 },
+      { header: '상품번호', key: 'idx', width: 20 },
       { header: '카테고리', key: 'goods_category', width: 32 },
       { header: '상품명', key: 'name', width: 10 },
       { header: '입고단가', key: 'stock_price', width: 10 },
@@ -646,6 +637,8 @@ const Step2 = () => {
         break;
     }
 
+    worksheet.getColumn('idx').numFmt = '0';
+
     const mimeType = { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' };
     const buffer = await workbook.xlsx.writeBuffer();
     const blob = new Blob([buffer], mimeType);
@@ -677,7 +670,7 @@ const Step2 = () => {
           </div>
           <div className="btnbox_right">
             <Button variant="primary" onClick={onUpload} className="btn_green">
-              <img src={icon_circle_arrow_up} />
+              <img src={`${img_src}${icon_circle_arrow_down}`} />
               상품 엑셀 업로드
             </Button>{' '}
             <DropdownButton variant="" title={excel_str[excelType]}>
@@ -694,11 +687,11 @@ const Step2 = () => {
               }}
               className="btn_green"
             >
-              <img src={icon_circle_arrow_down} />
+              <img src={`${img_src}${icon_circle_arrow_down}`} />
               상품 엑셀 다운로드
             </Button>
             <Button className="btn_set">
-              <img src={icon_set} />
+              <img src={`${img_src}${icon_set}`} />
             </Button>
           </div>
           <div style={containerStyle} className="tablebox">

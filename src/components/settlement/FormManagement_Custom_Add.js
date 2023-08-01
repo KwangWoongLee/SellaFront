@@ -4,7 +4,7 @@ import { Button, Modal, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
-import { modal, navigate } from 'util/com';
+import { img_src, modal, navigate } from 'util/com';
 import request from 'util/request';
 import Recoils from 'recoils';
 import SettlementNavTab from 'components/settlement/common/SettlementNavTab';
@@ -412,10 +412,10 @@ const FormManagement_Custom_Add = (param) => {
                 onKeyDown={handleKeyDown}
               ></input>
               <Button className="btn_search" onClick={onSearch}>
-                <img src={`/${icon_search}`} />
+                <img src={`${img_src}${icon_search}`} />
               </Button>
               <Button className="btn_reset">
-                <img src={`/${icon_reset}`} />
+                <img src={`${img_src}${icon_reset}`} />
               </Button>
             </div>
             <table className="thead">
@@ -572,7 +572,7 @@ const SellaForm = React.memo(({ index, d, selectRow, onClick, onDelete, checkedI
       )}
       <td>
         <button className="btn_del">
-          <img src={`/${icon_del}`} alt="삭제" onClick={(e) => onDelete(e)} />
+          <img src={`${img_src}${icon_del}`} alt="삭제" onClick={(e) => onDelete(e)} />
         </button>
       </td>
     </tr>

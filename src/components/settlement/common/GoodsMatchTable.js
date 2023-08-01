@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 
 import { Button, DropdownButton, Dropdown, Modal, Form, FloatingLabel } from 'react-bootstrap';
 import request from 'util/request';
-import { modal } from 'util/com';
+import { img_src, modal } from 'util/com';
 import Recoils from 'recoils';
 import _ from 'lodash';
 
@@ -137,7 +137,7 @@ const GoodsMatchItem = React.memo(({ index, d, rowSpan, onClick, onDelete, onCha
             onDelete(e, d);
           }}
         >
-          <img src={`/${icon_del}`} alt="" />
+          <img src={`${img_src}${icon_del}`} alt="" />
         </button>
       </td>
     </tr>

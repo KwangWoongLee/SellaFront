@@ -5,7 +5,7 @@ import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 import request from 'util/request';
-import { modal } from 'util/com';
+import { img_src, modal } from 'util/com';
 import Recoils from 'recoils';
 import _ from 'lodash';
 
@@ -100,6 +100,14 @@ const Step1 = () => {
 
   const onSave = (type, e) => {
     if (type === 'Delivery') {
+      const fault_item = _.find(deliItems, (item) => {
+        return _.trim(item.delivery_category) == '';
+      });
+      if (fault_item) {
+        modal.alert(`'구분' 값을 확인해주세요.`);
+        return;
+      }
+
       request.post(`user/delivery/save`, { delivery_list: deliItems }).then((ret) => {
         if (!ret.err) {
           const { data } = ret.data;
@@ -108,10 +116,18 @@ const Step1 = () => {
           Recoils.setState('DATA:DELIVERY', data);
 
           setDeliItems(() => data);
-          modal.alert('운임비 데이터가 저장 되었습니다.');
+          modal.alert('택배비 데이터가 저장되었습니다.');
         }
       });
     } else if (type === 'Packing') {
+      const fault_item = _.find(packItems, (item) => {
+        return _.trim(item.packing_category) == '';
+      });
+      if (fault_item) {
+        modal.alert(`'구분' 값을 확인해주세요.`);
+        return;
+      }
+
       request.post(`user/packing/save`, { packing_list: packItems }).then((ret) => {
         if (!ret.err) {
           const { data } = ret.data;
@@ -164,7 +180,7 @@ const Step1 = () => {
                       className={`btn_add ${deliItems.length >= 8 ? 'btn_off' : 'btn_of'}`}
                       onClick={(e) => onClickAdd('Delivery', e)}
                     >
-                      <img src={icon_add} alt="추가" />
+                      <img src={`${img_src}${icon_add}`} alt="추가" />
                     </button>
                   </td>
                 </tr>
@@ -207,7 +223,7 @@ const Step1 = () => {
                       className={`btn_add ${packItems.length >= 8 ? 'btn_off' : 'btn_of'}`}
                       onClick={(e) => onClickAdd('Packing', e)}
                     >
-                      <img src={icon_add} alt="추가" />
+                      <img src={`${img_src}${icon_add}`} alt="추가" />
                     </button>
                   </td>
                 </tr>
@@ -246,7 +262,7 @@ const DeliveryFeeItem = React.memo(({ index, d, onChange, onDelete }) => {
       ) : (
         <td>
           <button className="btn_del">
-            <img src={icon_del} alt="삭제" onClick={(e) => onDelete('Delivery', e)} />
+            <img src={`${img_src}${icon_del}`} alt="삭제" onClick={(e) => onDelete('Delivery', e)} />
           </button>
         </td>
       )}
@@ -289,7 +305,7 @@ const PackingFeeItem = React.memo(({ index, d, onChange, onDelete }) => {
       ) : (
         <td>
           <button className="btn_del">
-            <img src={icon_del} alt="삭제" onClick={(e) => onDelete('Packing', e)} />
+            <img src={`${img_src}${icon_del}`} alt="삭제" onClick={(e) => onDelete('Packing', e)} />
           </button>
         </td>
       )}

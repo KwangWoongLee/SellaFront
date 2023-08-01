@@ -4,7 +4,7 @@ import { Table, Button, Modal, DropdownButton, Dropdown } from 'react-bootstrap'
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
-import { useInput, modal, navigate } from 'util/com';
+import { img_src, useInput, modal, navigate } from 'util/com';
 import request from 'util/request';
 import CSCenterNavTab from 'components/cscenter/CSCenterNavTab';
 import Recoils from 'recoils';
@@ -100,13 +100,13 @@ const Manual = () => {
 
           <div className="pagination">
             <Button onClick={(e) => onPageNext(false)} className="btn_arrow_left">
-              <img src={`/${icon_arrow_left}`} alt="이전 페이지" />
+              <img src={`${img_src}${icon_arrow_left}`} alt="이전 페이지" />
             </Button>
             <span>
               Page {page} of {pageCount}
             </span>
             <Button onClick={(e) => onPageNext(true)} className="btn_arrow_right">
-              <img src={`/${icon_arrow_right}`} alt="다음 페이지" />
+              <img src={`${img_src}${icon_arrow_right}`} alt="다음 페이지" />
             </Button>
           </div>
 
@@ -134,10 +134,10 @@ const Manual = () => {
               }}
             />
             <Button onClick={onSearch} className="btn btn_search">
-              <img src={`/${icon_search}`} />
+              <img src={`${img_src}${icon_search}`} />
             </Button>
             <Button className="btn_reset" onClick={onReset}>
-              <img src={`/${icon_reset}`} />
+              <img src={`${img_src}${icon_reset}`} />
             </Button>
           </div>
 

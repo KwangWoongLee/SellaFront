@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, Button, Form, ProgressBar } from 'react-bootstrap';
 import Recoils from 'recoils';
-import { logger, modal } from 'util/com';
+import { img_src, logger, modal } from 'util/com';
 import 'styles/Modal.scss';
 import request from 'util/request';
 import _ from 'lodash';
@@ -52,7 +52,7 @@ const FileUpload = () => {
       <Modal.Header className="d-flex justify-content-center">
         <Modal.Title className="text-primary">{state.title ? state.title : '파일 업로드'}</Modal.Title>
         <Button onClick={state_reset} variant="primary" className="btn_close">
-          <img src={icon_close} />
+          <img src={`${img_src}${icon_close}`} />
         </Button>
       </Modal.Header>
       <Modal.Body>

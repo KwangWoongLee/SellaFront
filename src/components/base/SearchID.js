@@ -109,29 +109,29 @@ const SearchID = () => {
     if (isOk) setSearchButtonOn(true);
   }, [auth]);
 
-  // useEffect(() => {
-  //   if (agencyType) {
-  //     const auth_temp = auth;
-  //     auth_temp['agency'] = true;
-  //     setAuth({ ...auth_temp });
-  //   } else {
-  //     const auth_temp = auth;
-  //     auth_temp['agency'] = false;
-  //     setAuth({ ...auth_temp });
-  //   }
-  // }, [agencyType]);
+  useEffect(() => {
+    if (agencyType) {
+      const auth_temp = auth;
+      auth_temp['agency'] = true;
+      setAuth({ ...auth_temp });
+    } else {
+      const auth_temp = auth;
+      auth_temp['agency'] = false;
+      setAuth({ ...auth_temp });
+    }
+  }, [agencyType]);
 
-  // useEffect(() => {
-  //   if (monthType) {
-  //     const auth_temp = auth;
-  //     auth_temp['month'] = true;
-  //     setAuth({ ...auth_temp });
-  //   } else {
-  //     const auth_temp = auth;
-  //     auth_temp['month'] = false;
-  //     setAuth({ ...auth_temp });
-  //   }
-  // }, [monthType]);
+  useEffect(() => {
+    if (monthType) {
+      const auth_temp = auth;
+      auth_temp['month'] = true;
+      setAuth({ ...auth_temp });
+    } else {
+      const auth_temp = auth;
+      auth_temp['month'] = false;
+      setAuth({ ...auth_temp });
+    }
+  }, [monthType]);
 
   const onSubmit = (e) => {
     e.preventDefault();

@@ -4,7 +4,7 @@ import { Button, Modal } from 'react-bootstrap';
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
-import { modal } from 'util/com';
+import { img_src, modal } from 'util/com';
 import request from 'util/request';
 import Recoils from 'recoils';
 import SettlementNavTab from 'components/settlement/common/SettlementNavTab';
@@ -59,7 +59,7 @@ const FormManagement_Basic = (param) => {
         <>
           <h3>{platform.name} - 양식 확인</h3>
           <Button variant="primary" onClick={onDownload} className="btn_green">
-            <img src={`/${icon_circle_arrow_down}`} />
+            <img src={`${img_src}${icon_circle_arrow_down}`} />
             엑셀 양식 다운로드
           </Button>
           <div className="tablebox">

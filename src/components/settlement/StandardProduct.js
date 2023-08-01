@@ -8,7 +8,7 @@ import {} from 'util/com';
 import SettlementNavTab from 'components/settlement/common/SettlementNavTab';
 
 import Recoils from 'recoils';
-import { logger, time_format } from 'util/com';
+import { img_src, logger, time_format } from 'util/com';
 import request from 'util/request';
 import _ from 'lodash';
 
@@ -171,11 +171,11 @@ const StandardProduct = () => {
                 onKeyDown={handleKeyDown}
               ></input>
               <Button onClick={onSearch} className="btn_search">
-                <img src={`/${icon_search}`} />
+                <img src={`${img_src}${icon_search}`} />
               </Button>
 
               <Button className="btn_reset" onClick={onReset}>
-                <img src={`/${icon_reset}`} />
+                <img src={`${img_src}${icon_reset}`} />
               </Button>
             </div>
             <div className="tablebox">
@@ -311,7 +311,7 @@ const StandardProductItem = React.memo(({ index, d, onChange, onSave, onDelete }
             onDelete(e, d);
           }}
         >
-          <img src={`/${icon_del}`} />
+          <img src={`${img_src}${icon_del}`} />
         </button>
       </td>
     </tr>

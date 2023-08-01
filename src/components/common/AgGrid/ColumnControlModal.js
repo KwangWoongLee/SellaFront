@@ -9,74 +9,78 @@ import Checkbox from 'components/common/CheckBoxCell';
 
 import { logger } from 'util/com';
 
-const ColumnControlModal = React.memo(({ modalState, setModalState, callback, viewColumns }) => {
-  logger.render('ColumnControlModal');
+const ColumnControlModal = React.memo(
+  ({ modalState, setModalState, callback, platform, viewColumns, setViewColumns }) => {
+    logger.render('ColumnControlModal');
+    let forms_idx;
+    if (platform) {
+      forms_idx = platform.idx;
+    }
 
-  const [columns, setColumns] = useState([]);
-  useEffect(() => {
-    if (viewColumns) setColumns([...viewColumns]);
-  }, [viewColumns]);
+    const checkedItemHandler = (d) => {
+      const obj = _.find(viewColumns, { sella_code: d.sella_code });
+      obj.view = !d.view;
 
-  const checkedItemHandler = (d) => {
-    const obj = _.find(viewColumns, { idx: d.idx });
-    obj.select_flag = !d.select_flag;
+      setViewColumns([...viewColumns]);
+    };
 
-    setColumns([...viewColumns]);
-  };
+    const onSave = (e) => {
+      e.preventDefault();
 
-  const onSave = (e) => {
-    e.preventDefault();
+      if (forms_idx)
+        request.post(`user/forms/array/save`, { forms_idx, viewColumns }).then((ret) => {
+          if (!ret.err) {
+            const { data } = ret.data;
+            logger.info(data);
 
-    request.post(`user/route_no/save`, { route_no: 0, viewColumns }).then((ret) => {
-      if (!ret.err) {
-        const { data } = ret.data;
-        logger.info(data);
+            callback(data, viewColumns);
+            onClose();
+          }
+        });
+    };
 
-        callback(viewColumns);
-        onClose();
-      }
-    });
-  };
+    const onClose = () => setModalState(false);
 
-  const onClose = () => setModalState(false);
-
-  return (
-    <Modal show={modalState} onHide={onClose} centered className="modal step2">
-      <Modal.Header>
-        <Modal.Title>조회 항목 관리</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <table className="columncontrol thead">
-          <thead></thead>
-        </table>
-        <table className="columncontrol tbody">
-          <tbody>
-            <>
-              {columns &&
-                columns.map((d, key) => <Column key={key} index={key} d={d} checkedItemHandler={checkedItemHandler} />)}
-            </>
-          </tbody>
-        </table>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={onClose}>
-          취소
-        </Button>
-        <Button variant="primary" form="column-form" onClick={onSave}>
-          저장
-        </Button>
-      </Modal.Footer>
-    </Modal>
-  );
-});
+    return (
+      <Modal show={modalState} onHide={onClose} centered className="modal step2">
+        <Modal.Header>
+          <Modal.Title>조회 항목 관리</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <table className="columncontrol thead">
+            <thead></thead>
+          </table>
+          <table className="columncontrol tbody">
+            <tbody>
+              <>
+                {viewColumns &&
+                  viewColumns.map((d, key) => (
+                    <Column key={key} index={key} d={d} checkedItemHandler={checkedItemHandler} />
+                  ))}
+              </>
+            </tbody>
+          </table>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={onClose}>
+            취소
+          </Button>
+          <Button variant="primary" form="column-form" onClick={onSave}>
+            저장
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    );
+  }
+);
 
 const Column = React.memo(({ index, d, checkedItemHandler }) => {
   logger.render('Column : ', index);
   return (
     <tr>
-      <td>{d.headerName}</td>
+      <td>{d.sella_title}</td>
       <Checkbox
-        checked={d.select_flag}
+        checked={d.view}
         checkedItemHandler={() => {
           checkedItemHandler(d);
         }}

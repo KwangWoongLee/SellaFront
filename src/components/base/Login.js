@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, InputGroup, Form, Nav } from 'react-bootstrap';
 import Recoils from 'recoils';
-import com, { logger, navigate, get_login_hash } from 'util/com';
+import com, { logger, navigate, get_login_hash, modal } from 'util/com';
 import request from 'util/request';
 
 import Head from 'components/template/Head';
@@ -25,6 +25,12 @@ const Login = () => {
 
     const email = e.currentTarget[0].value;
     const password = e.currentTarget[1].value;
+
+    if (!email || !password) {
+      modal.alert(`아이디 또는 비밀번호를 잘못 입력했습니다.
+      입력하신 내용을 다시 확인해주세요.`);
+      return;
+    }
 
     request.post('login', { email, password }).then((ret) => {
       if (!ret.err) {

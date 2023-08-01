@@ -6,7 +6,7 @@ import { modal } from 'util/com';
 import Recoils from 'recoils';
 import _ from 'lodash';
 
-import { logger } from 'util/com';
+import { img_src, logger } from 'util/com';
 
 import icon_search from 'images/icon_search.svg';
 import icon_reset from 'images/icon_reset.svg';
@@ -77,10 +77,10 @@ const CategoryFee_Search = React.memo(({ abledCategoryFee, selectCallback }) => 
           className="input_search"
         ></input>
         <Button onClick={onSearch} className="btn_search">
-          <img src={`/${icon_search}`} />
+          <img src={`${img_src}${icon_search}`} />
         </Button>
         <Button className="btn_reset">
-          <img src={`/${icon_reset}`} />
+          <img src={`${img_src}${icon_reset}`} />
         </Button>
       </div>
       <div className="categoryfeesearch">
