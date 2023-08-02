@@ -28,10 +28,41 @@ import img_service from 'images/img_service.png';
 import { AgGridReact } from 'ag-grid-react';
 import ColumnControlModal from 'components/common/AgGrid/ColumnControlModal';
 const PLFormatter = (params) => {
+  if (params.data && params.data.connect_flag == false) {
+    return '미연결';
+  }
   let newValue = '';
   newValue += params.value > 0 ? '이익 ' : '손해 ';
   newValue += params.value;
   return newValue;
+};
+
+const _30006Renderer = (params) => {
+  return (
+    <>
+      {params.data[30006] && `${params.data[30006]}`}
+
+      {params.data[30001] && (
+        <>
+          <br />({params.data[30001]})
+        </>
+      )}
+    </>
+  );
+};
+
+const _30047Renderer = (params) => {
+  return (
+    <>
+      {params.data[30047] && `${params.data[30047]}`}
+
+      {params.data['30047_additional'] && (
+        <>
+          <br />({params.data['30047_additional']})
+        </>
+      )}
+    </>
+  );
 };
 
 const optionCellRenderer = (props) => {
@@ -144,20 +175,20 @@ const ROUTE_COLUMN_BASE = [
     field: '30006',
     sortable: true,
     unSortIcon: true,
-    valueParser: (params) => Number(params.newValue),
     headerName: '총 결제금액\n(정산예정금액)',
     width: 130,
     autoHeight: true,
     cellClass: 'uneditable',
+    cellRenderer: _30006Renderer,
   },
   {
     field: '30047',
     sortable: true,
     unSortIcon: true,
-    valueParser: (params) => Number(params.newValue),
-    headerName: '받은 배송비',
+    headerName: '받은 배송비\n(배송비 수수료)',
     width: 120,
     editable: true,
+    cellRenderer: _30047Renderer,
   },
   {
     field: 'stock_price',
@@ -424,7 +455,11 @@ const MarginCalc = () => {
     setplatformType(key);
   };
 
-  const onClick = () => {
+  const onClick = (param) => {
+    if (param.data && param.data.connect_flag == true) {
+      return;
+    }
+
     setModalState(true);
   };
 
@@ -549,7 +584,7 @@ const MarginCalc = () => {
           const { data } = ret.data;
           logger.info(data);
 
-          setRowData(() => data);
+          navigate('settlement/today_summary');
         }
       });
     }

@@ -11,7 +11,7 @@ import { logger } from 'util/com';
 import icon_search from 'images/icon_search.svg';
 import icon_reset from 'images/icon_reset.svg';
 
-const StandardProduct_Search = React.memo(({ rows, selectCallback }) => {
+const StandardProduct_Search = React.memo(({ rows, selectCallback, resetCallback }) => {
   logger.render('StandardProduct_Search');
 
   const goodsNameRef = useRef(null);
@@ -51,6 +51,10 @@ const StandardProduct_Search = React.memo(({ rows, selectCallback }) => {
     }
   };
 
+  const onReset = () => {
+    resetCallback();
+  };
+
   return (
     <>
       <div class="inputbox">
@@ -64,7 +68,7 @@ const StandardProduct_Search = React.memo(({ rows, selectCallback }) => {
         <Button onClick={onSearch} className="btn_search">
           <img src={`${img_src}${icon_search}`} />
         </Button>
-        <Button className="btn_reset">
+        <Button className="btn_reset" onClick={onReset}>
           <img src={`${img_src}${icon_reset}`} />
         </Button>
       </div>

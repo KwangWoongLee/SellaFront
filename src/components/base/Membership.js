@@ -8,8 +8,8 @@ import { logger } from 'util/com';
 
 import 'styles/Mypage.scss';
 
-const MyPage = () => {
-  logger.render('MyPage');
+const Membership = () => {
+  logger.render('Membership');
 
   useEffect(() => {}, []);
 
@@ -17,7 +17,7 @@ const MyPage = () => {
     <>
       <Head />
       <Body title={`ver ${process.env.REACT_APP_VERSION}`} myClass={'mypage'}>
-        <MyPageNavTab active="/base/mypage" />
+        <MyPageNavTab active="/mypage/membership" />
 
         <div className="page">
           <div className="innerbox">
@@ -97,4 +97,4 @@ for (const name in process.env) {
   logger.info(`${name} = ${process.env[name]}`);
 }
 
-export default React.memo(MyPage);
+export default React.memo(Membership);

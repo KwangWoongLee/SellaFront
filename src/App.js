@@ -16,8 +16,8 @@ import Modals from 'components/modal';
 
 import Login from 'components/base/Login';
 import Logout from 'components/base/Logout';
-import MyPage from 'components/base/MyPage';
-import MyProfile from 'components/base/MyProfile';
+import Membership from 'components/base/Membership';
+import Profile from 'components/base/Profile';
 import Regist from 'components/base/Regist';
 import RegistResult from 'components/base/RegistResult';
 import SearchID from 'components/base/SearchID';
@@ -159,24 +159,25 @@ export function App() {
             />
           </Route>
 
-          <Route
-            path="mypage"
-            element={
-              <ProtectedRoute>
-                <MyPage />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="mypage">
+            <Route
+              path="membership"
+              element={
+                <ProtectedRoute>
+                  <Membership />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="myprofile"
-            element={
-              <ProtectedRoute>
-                <MyProfile />
-              </ProtectedRoute>
-            }
-          />
-
+            <Route
+              path="profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
           <Route path="regist">
             <Route path="" element={<Regist />} />
             <Route path="result" element={<RegistResult />} />

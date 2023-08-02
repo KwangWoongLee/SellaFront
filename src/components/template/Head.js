@@ -67,7 +67,7 @@ const Head = () => {
           {account && account.grade != -1 ? (
             <>
               <span class="name">{account.name}</span>
-              <Nav.Link className="nav-link icon_member" onClick={onLink} name="/mypage">
+              <Nav.Link className="nav-link icon_member" onClick={onLink} name="/mypage/membership">
                 <img src={`${img_src}${icon_member}`} alt="" />
               </Nav.Link>
               <Nav.Link className="nav-link icon_power" onClick={onLink} name="/logout">

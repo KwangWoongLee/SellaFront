@@ -127,11 +127,20 @@ export const page_reload = () => {
   setTimeout(() => navigate_ref.current.navigate(pathname), 1);
 };
 
+let margin_calc = false;
+
 export const is_authed = () => {
   const account = Recoils.getState('CONFIG:ACCOUNT');
   if (account.grade === -1 && !account.access_token) {
     return false;
   }
+
+  return true;
+};
+
+export const is_margin_calc = () => {
+  if (margin_calc == true) return false;
+
   return true;
 };
 

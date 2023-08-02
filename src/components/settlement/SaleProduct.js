@@ -151,6 +151,13 @@ const SaleProduct = () => {
     setGoodsMatchs([...selectFormsMatchRef.current.goods_match]);
   };
 
+  const onResetStandardProduct_Search = () => {
+    selectFormsMatchRef.current = null;
+
+    setGoodsMatchs([]);
+    setStandardItems([]);
+  };
+
   const onSave = (e) => {
     if (!selectFormsMatchRef.current) return; // TODO error
 
@@ -196,6 +203,7 @@ const SaleProduct = () => {
             <h3>연결할 기준 상품 검색</h3>
             <StandardProduct_Search
               rows={standardItems}
+              resetCallback={onResetStandardProduct_Search}
               selectCallback={onSelectStandardProduct_Search}
             ></StandardProduct_Search>
             <h3>수수료 검색</h3>

@@ -10,8 +10,8 @@ import { logger } from 'util/com';
 
 import 'styles/Login.scss';
 
-const MyProfile = () => {
-  logger.render('MyProfile');
+const Profile = () => {
+  logger.render('Profile');
 
   useEffect(() => {}, []);
 
@@ -19,7 +19,7 @@ const MyProfile = () => {
     <>
       <Head />
       <Body title={`ver ${process.env.REACT_APP_VERSION}`} myClass={'myprofile'}>
-        <MyPageNavTab active="/base/myprofile" />
+        <MyPageNavTab active="/mypage/profile" />
 
         <div className="page">
           <div className="formbox">
@@ -83,4 +83,4 @@ for (const name in process.env) {
   logger.info(`${name} = ${process.env[name]}`);
 }
 
-export default React.memo(MyProfile);
+export default React.memo(Profile);

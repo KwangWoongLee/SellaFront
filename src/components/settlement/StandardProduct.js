@@ -134,7 +134,11 @@ const StandardProduct = () => {
   };
 
   const onReset = () => {
-    setGoodsData([]);
+    const goods = _.cloneDeep(Recoils.getState('DATA:GOODS'));
+    const category = _.uniq(_.map(goods, 'goods_category'));
+    setCategory(['전체', ...category]);
+    setGoodsData(goods);
+
     setMatchData([]);
     setCategoryType(0);
     setTableRow(null);
