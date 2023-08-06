@@ -2,9 +2,9 @@ import React from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import Recoils from 'recoils';
 import { img_src, logger } from 'util/com';
+import 'styles/Modal.scss';
 import _ from 'lodash';
 
-import 'styles/Modal.scss';
 import icon_close from 'images/icon_close.svg';
 
 const AlertModal = () => {
@@ -19,21 +19,26 @@ const AlertModal = () => {
   // 여기 에러메시지는 서버에서 보낸
   return (
     <Modal show={state.show} onHide={onClose} centered className="Alert">
-      <Button variant="primary" className="btn_close" onClick={onClose}>
-        <img src={`${img_src}${icon_close}`} />
-      </Button>
-      {state.error &&
-        _.split(state.error, '\n').map((d, key) => {
-          if (key == _.split(state.error, '\n').length - 1) return <>{d}</>;
-          else
-            return (
-              <>
-                {d}
-                <br />
-              </>
-            );
-        })}
-      <div class="btnbox">
+      <Modal.Header className="d-flex justify-content-center">
+        <Modal.Title className="text-primary"></Modal.Title>
+        <Button variant="primary" className="btn_close" onClick={onClose}>
+          <img src={`${img_src}${icon_close}`} />
+        </Button>
+      </Modal.Header>
+      <Modal.Body>
+        {state.error &&
+          _.split(state.error, '\n').map((d, key) => {
+            if (key == _.split(state.error, '\n').length - 1) return <>{d}</>;
+            else
+              return (
+                <>
+                  {d}
+                  <br />
+                </>
+              );
+          })}
+      </Modal.Body>
+      <Modal.Footer>
         <Button
           onClick={() => {
             setState({ show: false });
@@ -41,7 +46,7 @@ const AlertModal = () => {
         >
           확인
         </Button>
-      </div>
+      </Modal.Footer>
     </Modal>
   );
 };

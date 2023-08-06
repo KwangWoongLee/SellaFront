@@ -161,6 +161,14 @@ button:hover {
   box-shadow: unset !important;
 }
 
+.btn-primary.disabled,
+.btn-primary:disabled {
+  background-color: #d9d9d9;
+  border-color: #b7b7b7;
+  color: #444;
+  cursor: not-allowed;
+}
+
 .btn_small {
   min-width: unset;
   padding: 5px 10px;

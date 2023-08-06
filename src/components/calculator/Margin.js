@@ -8,8 +8,9 @@ import CalculatorNavTab from 'components/calculator/CalculatorNavTab';
 import SearchModal from 'components/calculator/SearchModal';
 import Recoils from 'recoils';
 
-import { logger } from 'util/com';
+import { modal, logger, page_reload } from 'util/com';
 import request from 'util/request';
+import _ from 'lodash';
 
 // AG Grid
 import { AgGridReact } from 'ag-grid-react';
@@ -25,8 +26,6 @@ const Margin = () => {
   const [platformType, setplatformType] = useState(0);
   const [modalState, setModalState] = useState(false);
 
-  const saveRef = useRef({});
-
   //inputs
   const nameRef = useRef(null);
   const sellPriceRef = useRef(null);
@@ -36,6 +35,7 @@ const Margin = () => {
   const platformFeeRateRef = useRef(null);
   const platformDeliverFeeRateRef = useRef(null);
   const lowestMarginRateRef = useRef(null);
+  const saveDataRef = useRef({});
   //
 
   const [resultData, setResultData] = useState({
@@ -66,7 +66,7 @@ const Margin = () => {
   const [columnDefs] = useState([
     { field: '', pinned: 'left', lockPinned: true, cellClass: 'lock-pinned', checkboxSelection: true, width: 5 },
     {
-      field: '',
+      field: 'forms_name',
       sortable: true,
       pinned: 'left',
       lockPinned: true,
@@ -76,7 +76,7 @@ const Margin = () => {
       filter: true,
     },
 
-    { field: 'name', sortable: true, unSortIcon: true, headerName: '상품명', filter: true },
+    { field: 'goods_name', sortable: true, unSortIcon: true, headerName: '상품명', filter: true },
     {
       field: 'revenue_sum_price',
       sortable: true,
@@ -113,23 +113,57 @@ const Margin = () => {
         const { data } = ret.data;
         logger.info(data);
 
-        // setDatas(() => ret.data);
+        setDatas(() => data);
       }
     });
   }, []);
 
+  useEffect(() => {
+    let platformFeeRate = Number(platformData[platformType].fee_rate);
+    platformFeeRate = platformFeeRate.toFixed(2);
+    platformFeeRateRef.current.value = platformFeeRate;
+
+    let platformDeliverFeeRate = Number(platformData[platformType].delivery_fee_rate);
+    platformDeliverFeeRate = platformDeliverFeeRate.toFixed(2);
+    platformDeliverFeeRateRef.current.value = platformDeliverFeeRate;
+  }, [platformType]);
+
   const onSave = () => {
-    // if (saveRef.current) {
-    //   const saveData = saveRef.current;
-    // }
     const name = nameRef.current.value;
-    const sellPrice = sellPriceRef.current.value;
-    const sellDeliveryFee = sellDeliveryFeeRef.current.value;
-    const stockPrice = stockPriceRef.current.value;
-    const savedDPFee = savedDPFeeRef.current.value;
-    const platformFeeRate = platformFeeRateRef.current.value;
-    const platformDeliverFeeRate = platformDeliverFeeRateRef.current.value;
-    const lowestMarginRate = lowestMarginRateRef.current.value;
+    if (!name) {
+      modal.alert('상품명을 입력해주세요.');
+      return;
+    }
+
+    if (sumPlus != 0 && !sumPlus) {
+      modal.alert('계산하기를 먼저 실행해주세요.');
+      return;
+    }
+
+    if (sumMinus != 0 && !sumMinus) {
+      modal.alert('계산하기를 먼저 실행해주세요.');
+      return;
+    }
+
+    if (_.isEmpty(saveDataRef.current)) {
+      modal.alert('계산하기를 먼저 실행해주세요.');
+      return;
+    }
+
+    if (!platformData[platformType]) {
+      modal.alert('고객센터에 문의해주세요.');
+      return;
+    }
+
+    saveDataRef.current = { ...saveDataRef.current, goods_name: name };
+
+    request.post(`user/calculator/margin/save`, { save_data: saveDataRef.current }).then((ret) => {
+      if (!ret.err) {
+        const { data } = ret.data;
+
+        setDatas([...data]);
+      }
+    });
   };
   const onSearch = () => {
     setModalState(true);
@@ -143,13 +177,22 @@ const Margin = () => {
     // sellDeliveryFeeRef.current.value;
   };
 
-  const onDelete = () => {};
+  const onDelete = () => {
+    const selectedRows = gridRef.current.api.getSelectedRows();
+    if (selectedRows && selectedRows.length > 0) {
+      const selectedIdxs = _.map(selectedRows, 'idx');
+      request.post(`user/calculator/margin/delete`, { idxs: selectedIdxs }).then((ret) => {
+        if (!ret.err) {
+          const { data } = ret.data;
+          logger.info(data);
+          setDatas([...data]);
+        }
+      });
+    }
+  };
 
   const onChange = (key, e) => {
     setplatformType(key);
-
-    platformFeeRateRef.current.value = platformData[key].fee_rate;
-    platformDeliverFeeRateRef.current.value = platformData[key].delivery_fee_rate;
   };
 
   const onChangeInput = (e, ref) => {
@@ -166,57 +209,105 @@ const Margin = () => {
     let lowestMarginRate = lowestMarginRateRef.current.value;
 
     let platformFeeRate = platformFeeRateRef.current.value;
-    platformFeeRate = platformFeeRate / 100;
     let platformDeliverFeeRate = platformDeliverFeeRateRef.current.value;
-    platformDeliverFeeRate = platformDeliverFeeRate / 100;
 
-    if (isNaN(sellPrice)) return;
-    if (isNaN(sellDeliveryFee)) return;
-    if (isNaN(stockPrice)) return;
-    if (isNaN(savedDPFee)) return;
-    if (isNaN(lowestMarginRate)) return;
+    if (isNaN(sellPrice) || sellPrice == '') {
+      modal.alert('판매가격을 입력해주세요.');
+      return;
+    }
+    if (isNaN(sellDeliveryFee) || sellDeliveryFee == '') {
+      modal.alert('받은 배송비를 입력해주세요.');
+      return;
+    }
+    if (isNaN(stockPrice) || stockPrice == '') {
+      modal.alert('매입가를 입력해주세요.');
+      return;
+    }
+    if (isNaN(savedDPFee) || savedDPFee == '') {
+      modal.alert('택배비·포장비 를 입력해주세요.');
+      return;
+    }
+    if (isNaN(lowestMarginRate) || lowestMarginRate == '') {
+      lowestMarginRate = 0;
+      lowestMarginRateRef.current.value = 0;
+    }
 
     sellPrice = Number(sellPrice);
-    if (sellPrice < 0) return;
+    if (sellPrice == 0) {
+      modal.alert('판매가격은 0원 일 수 없습니다.');
+      return;
+    }
 
     sellDeliveryFee = Number(sellDeliveryFee);
-    if (sellDeliveryFee < 0) return;
-
     stockPrice = Number(stockPrice);
-    if (stockPrice < 0) return;
-
     savedDPFee = Number(savedDPFee);
-    if (savedDPFee < 0) return;
 
     lowestMarginRate = Number(lowestMarginRate);
-    if (lowestMarginRate < 0 || lowestMarginRate >= 100) return;
+    if (lowestMarginRate < 0 || lowestMarginRate >= 100) {
+      modal.alert('최저마진율을 0~100% 사이로 입력해주세요.');
+      return;
+    }
     lowestMarginRate = lowestMarginRate / 100;
+
+    platformFeeRate = Number(platformFeeRate);
+    if (platformFeeRate < 0 || platformFeeRate >= 100) {
+      modal.alert('매체 수수료율을 0~100% 사이로 입력해주세요.');
+      return;
+    }
+    platformFeeRate = platformFeeRate / 100;
+    platformFeeRate = Number(platformFeeRate.toFixed(2));
+
+    platformDeliverFeeRate = Number(platformDeliverFeeRate);
+    if (platformDeliverFeeRate < 0 || platformDeliverFeeRate >= 100) {
+      modal.alert('배송비 수수료율을 0~100% 사이로 입력해주세요.');
+      return;
+    }
+
+    platformDeliverFeeRate = platformDeliverFeeRate / 100;
+    platformDeliverFeeRate = Number(platformDeliverFeeRate.toFixed(2));
 
     let platformFee = sellPrice * platformFeeRate;
     let platformDeliveryFee = sellDeliveryFee * platformDeliverFeeRate;
 
-    const sum_minus = stockPrice + savedDPFee;
+    const sum_minus = stockPrice + savedDPFee; // 비용합계
     setSumMinus(sum_minus);
 
-    const sum_plus = sellPrice + sellDeliveryFee;
+    const sum_plus = sellPrice + sellDeliveryFee; // 수익합계
     setSumPlus(sum_plus);
 
-    const margin = sum_plus - sumMinus - platformFee - platformDeliveryFee;
-    const marginRate = (margin / sellPrice) * 100;
+    const settlement_price = sellPrice - platformFee + sellDeliveryFee - platformDeliveryFee;
+
+    let margin = settlement_price - sum_minus;
+    margin = Number(Math.round(margin));
+    let marginRate = (margin / sellPrice) * 100;
+    marginRate = Number(marginRate.toFixed(1));
 
     const test = lowestMarginRate + platformFeeRate - 1;
-    if (test == 0) return;
+    if (test == 0) {
+      modal.alert('최저마진율 + 매체 수수료는 1이 될 수 없습니다.');
+      return;
+    }
 
-    const low =
+    let low =
       (sellDeliveryFee - stockPrice - savedDPFee - platformDeliveryFee) / (lowestMarginRate + platformFeeRate - 1);
+    low = Number(low.toFixed(1));
 
-    setLowestPrice(Math.floor(low));
+    setLowestPrice(low);
 
     const result = {
       sell_price: sellPrice,
-      settlement_price: 0,
-      margin: Math.floor(margin),
-      margin_rate: marginRate ? Math.floor(marginRate * 10) / 10 : 0,
+      settlement_price: settlement_price,
+      margin: margin,
+      margin_rate: marginRate,
+    };
+
+    saveDataRef.current = {
+      forms_name: platformData[platformType].name,
+      sell_price: sellPrice,
+      revenue_sum_price: sum_plus,
+      expense_sum_price: sum_minus,
+      margin_price: margin,
+      lowest_standard_price: low,
     };
 
     setResultData({ ...result });
@@ -238,6 +329,8 @@ const Margin = () => {
       margin: 0,
       margin_rate: 0,
     });
+    setplatformType(0);
+    saveDataRef.current = {};
   };
 
   const handleKeyDown = (e) => {
@@ -257,7 +350,8 @@ const Margin = () => {
               <Button variant="primary" onClick={onReset}>
                 초기화
               </Button>
-              <Button variant="primary" onClick={onSave} className="btn_blue">
+
+              <Button disabled={rowData && rowData.length > 9} variant="primary" onClick={onSave} className="btn_blue">
                 저장
               </Button>
             </div>
@@ -287,7 +381,8 @@ const Margin = () => {
                   <tr>
                     <th>순이익</th>
                     <td className="txt_green">
-                      <span>이익 + </span>
+                      <span>이익 </span>
+                      {resultData.margin > 0 && '+'}
                       {resultData.margin}
                       <span> 원</span>
                     </td>

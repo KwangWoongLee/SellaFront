@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Navbar, Nav, NavDropdown, DropdownButton, Form, OverlayTrigger, Popover } from 'react-bootstrap';
 import 'styles/Template.scss';
+import { useLocation } from 'react-router-dom';
+
 import { img_src, navigate, modal, logger } from 'util/com';
 import request from 'util/request';
 import Recoils from 'recoils';
@@ -14,12 +16,15 @@ import icon_kakao from 'images/icon_kakao.svg';
 const Head = () => {
   logger.render('Template Head');
   const account = Recoils.useValue('CONFIG:ACCOUNT');
+  const location = useLocation();
+
   useEffect(() => {}, []);
   const onLink = (e) => {
     e.preventDefault();
-    const href = e.currentTarget.name;
-    logger.debug('href : ', href);
-    navigate(href);
+    logger.debug('href : ', e.currentTarget.name);
+    navigate(e.currentTarget.name);
+
+    logger.render('NavigateCtr :');
   };
   return (
     <>
@@ -29,19 +34,19 @@ const Head = () => {
         </Nav.Link>
         <div className="menu">
           <ul className="left">
-            <li>
+            <li className={location.pathname == '/settlement/margin_calc' ? 'on' : ''}>
               <Nav.Link className="nav-link" onClick={onLink} name="/settlement/margin_calc">
                 <span>정산해보기!</span>손익 관리
               </Nav.Link>
             </li>
           </ul>
           <ul className="right">
-            <li>
+            <li className={location.pathname == '/step1' ? 'on' : ''}>
               <Nav.Link className="nav-link" onClick={onLink} name="/step1">
                 <span>1단계</span>기초 정보 관리
               </Nav.Link>
             </li>
-            <li>
+            <li className={location.pathname == '/step2' ? 'on' : ''}>
               <Nav.Link onClick={onLink} name="/step2">
                 <span>2단계</span>상품 관리
               </Nav.Link>

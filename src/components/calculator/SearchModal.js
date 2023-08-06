@@ -18,10 +18,10 @@ const SearchModal = React.memo(({ modalState, setModalState, selectCallback, nam
     setItems([...Recoils.getState('DATA:GOODS')]);
   }, []);
 
-  useEffect(() => {
-    if (nameRef && nameRef.current && name) nameRef.current.value = name;
-    onSearch();
-  }, [name]);
+  // useEffect(() => {
+  //   if (nameRef && nameRef.current && name) nameRef.current.value = name;
+  //   onSearch();
+  // }, [name]);
 
   const onSearch = () => {
     if (!nameRef || !nameRef.current) return;
@@ -40,7 +40,10 @@ const SearchModal = React.memo(({ modalState, setModalState, selectCallback, nam
     selectCallback(d);
     onClose();
   };
-  const onClose = () => setModalState(false);
+  const onClose = () => {
+    setItems([...Recoils.getState('DATA:GOODS')]);
+    setModalState(false);
+  };
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {

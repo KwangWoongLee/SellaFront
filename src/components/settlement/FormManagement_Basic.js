@@ -8,7 +8,9 @@ import { img_src, modal } from 'util/com';
 import request from 'util/request';
 import Recoils from 'recoils';
 import SettlementNavTab from 'components/settlement/common/SettlementNavTab';
-import * as xlsx from 'xlsx';
+
+import * as ExcelJS from 'exceljs';
+import { saveAs } from 'file-saver';
 
 import { logger } from 'util/com';
 import _ from 'lodash';
@@ -49,8 +51,29 @@ const FormManagement_Basic = (param) => {
     setRowData(basic_form_rows);
   }, []);
 
-  const onDownload = () => {
-    if (!formData) return;
+  const onDownload = async () => {
+    if (!platform) return;
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Sheet1');
+
+    const columns = [];
+
+    for (const title of platform.titles) {
+      const obj = {
+        header: title.title,
+        key: title.sella_code,
+        width: 30,
+      };
+
+      columns.push(obj);
+    }
+    worksheet.columns = columns;
+
+    const mimeType = { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' };
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], mimeType);
+    saveAs(blob, '셀라 기본 양식_네이버스마트스토어.xlsx');
   };
 
   return (

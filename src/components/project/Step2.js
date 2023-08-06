@@ -4,12 +4,10 @@ import { Button, DropdownButton, Dropdown } from 'react-bootstrap';
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
-import Step2Modal from 'components/project/Step2Modal';
 import request from 'util/request';
 import { img_src, logger, modal, navigate, page_reload, time_format } from 'util/com';
 import Recoils from 'recoils';
 import _ from 'lodash';
-import * as xlsx from 'xlsx';
 import * as ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 
@@ -398,17 +396,36 @@ const Step2 = () => {
       }
 
       const selectedIdxs = _.map(selectedRows, 'idx');
+      let delete_flag = false;
+      modal.confirm(
+        '데이터를 삭제하시겠습니까?',
+        [{ strong: '', normal: '' }],
+        [
+          {
+            name: '예',
+            callback: () => {
+              delete_flag = true;
+            },
+          },
 
-      request.post(`user/goods/delete`, { idxs: selectedIdxs }).then((ret) => {
-        if (!ret.err) {
-          const { data } = ret.data;
-          logger.info(data);
+          {
+            name: '아니오',
+            callback: () => {},
+          },
+        ]
+      );
 
-          Recoils.setState('DATA:GOODS', data);
+      if (delete_flag)
+        request.post(`user/goods/delete`, { idxs: selectedIdxs }).then((ret) => {
+          if (!ret.err) {
+            const { data } = ret.data;
+            logger.info(data);
 
-          page_reload();
-        }
-      });
+            Recoils.setState('DATA:GOODS', data);
+
+            page_reload();
+          }
+        });
     }
   };
 

@@ -109,14 +109,51 @@ export const useInput = (init) => {
   return [state, onChange, dispatch];
 };
 
-export const navigate = (path) => {
+export const navigate = (path, flag) => {
   const pathname = navigate_ref.current.location.pathname;
 
+  if (pathname == '/settlement/margin_calc' && !flag) {
+    const exist_margin_calc_data = com.storage.getItem('exist_margin_calc_data');
+
+    if (exist_margin_calc_data == '1') {
+      modal.confirm(
+        '다른 페이지로 이동하시면 손익데이터가 삭제됩니다.',
+        [{ strong: '', normal: '이동하시겠습니까?' }],
+        [
+          {
+            name: '예',
+            callback: () => {
+              com.storage.setItem('exist_margin_calc_data', '');
+              navigate(path, true);
+            },
+          },
+          {
+            name: '아니오',
+            callback: () => {},
+          },
+        ]
+      );
+
+      return;
+    } else {
+      flag = true;
+    }
+  }
+
   //console.log('pathname : ', pathname, ', arg : ', path);
-  if (pathname === path) {
-    page_reload();
-  } else {
-    navigate_ref.current.navigate(path);
+  if (pathname != '/settlement/margin_calc')
+    if (pathname === path) {
+      page_reload();
+    } else {
+      navigate_ref.current.navigate(path);
+    }
+  else {
+    if (flag)
+      if (pathname === path) {
+        page_reload();
+      } else {
+        navigate_ref.current.navigate(path);
+      }
   }
   // navigate_ref.current.navigate(path);
 };

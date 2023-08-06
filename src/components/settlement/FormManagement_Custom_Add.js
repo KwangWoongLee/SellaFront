@@ -59,6 +59,7 @@ const FormManagement_Custom_Add = (param) => {
       row_data.sella_title = sella_form.title;
       row_data.sella_essential = sella_form.essential_flag;
       row_data.sella_code = sella_form.code;
+
       rowDatas.push(row_data);
     }
 
@@ -67,6 +68,11 @@ const FormManagement_Custom_Add = (param) => {
 
   const onSaveForm = () => {
     const save_data = [...rowData];
+    if (formNameRef.current.value == '') {
+      modal.alert('양식을 저장하시려면\n매체명을 입력해주세요.');
+      return;
+    }
+
     if (save_data.length == 0) {
       modal.alert('저장할 항목이 없습니다.');
       return;
@@ -76,8 +82,17 @@ const FormManagement_Custom_Add = (param) => {
       if (row.check_flag && !row.checked) continue;
       else {
         if (!row.title || !row.column || !row.sella_title || !row.sella_code) {
-          modal.alert('매칭되지 않은 항목이 있습니다.');
-          return; // TODO error
+          modal.confirm(
+            '양식을 저장하시려면 필수값을 입력해주세요.',
+            [{ strong: '', normal: '정산 예정금액 항목이 없다면 체크를 해제해주세요.' }],
+            [
+              {
+                name: '확인',
+                callback: () => {},
+              },
+            ]
+          );
+          return;
         }
 
         if (row.sella_code == 30032) {
@@ -137,6 +152,7 @@ const FormManagement_Custom_Add = (param) => {
       row_data.sella_title = sella_form.title;
       row_data.sella_essential = sella_form.essential_flag;
       row_data.sella_code = sella_form.code;
+      if (row_data.sella_code == 30047) row_data.df_fee_rate = '3.3';
       rowDatas.push(row_data);
     }
 
@@ -175,6 +191,9 @@ const FormManagement_Custom_Add = (param) => {
           excelDataRef.current = items;
 
           const excelDatas = [...excelDataRef.current];
+
+          modal.alert('주문양식 데이터를\n성공적으로 불러왔습니다.');
+
           setExcelData(excelDatas);
           setMode(1);
         };
@@ -208,6 +227,7 @@ const FormManagement_Custom_Add = (param) => {
       row_data.sella_title = sella_form.title;
       row_data.sella_essential = sella_form.essential_flag;
       row_data.sella_code = sella_form.code;
+      if (row_data.sella_code == 30047) row_data.df_fee_rate = '3.3';
       rowDatas.push(row_data);
     }
 
@@ -247,6 +267,8 @@ const FormManagement_Custom_Add = (param) => {
 
           const excelDatas = [...excelDataRef.current];
           setExcelData(excelDatas);
+
+          modal.alert('주문양식 데이터를\n성공적으로 불러왔습니다.');
         };
 
         if (rABS) {
@@ -289,6 +311,7 @@ const FormManagement_Custom_Add = (param) => {
     row.title = title;
     row.column = column;
     row.value = value;
+
     setRowData(rowDatas);
   };
 
@@ -440,6 +463,7 @@ const FormManagement_Custom_Add = (param) => {
         setModalState={setModalState}
         sella_forms={sella_forms}
         AddItemCallback={AddItemCallback}
+        rowData={rowData}
       ></SellaBasicModal>
     </>
   );
@@ -447,13 +471,15 @@ const FormManagement_Custom_Add = (param) => {
 
 const SellaForm = React.memo(({ index, d, selectRow, onClick, onDelete, checkedItemHandler }) => {
   logger.render('SellaForm TableItem : ', index);
-  // 클릭 전에 항상 첫번째 tr에 포커스가 들어와 있으면 좋을것 같습니다.
-  // >>> 요거 다른 항목을 클릭해도 포커스가 유지되네용 ? ㅎㅎ 첫번째 행 focus는 처음 새로고침했을때만 들어와있으면 좋을것 같습니다 ㅎㅎ
-  // 이거 잘 안돼서.. 조금만 후에 하도록할게요!
-
   const dfFeeRateRef = useRef(null);
   const mfFeeRateRef = useRef(null);
   const ifFeeRateRef = useRef(null);
+  useEffect(() => {
+    if (dfFeeRateRef && dfFeeRateRef.current) {
+      dfFeeRateRef.current.value = 3.3;
+      d.df_fee_rate = dfFeeRateRef.current.value;
+    }
+  }, []);
 
   const onChangeInput = (type, ref) => {
     if (ref.current) {
@@ -522,7 +548,7 @@ const SellaForm = React.memo(({ index, d, selectRow, onClick, onDelete, checkedI
       ) : (
         <td className="td_click">
           <Button disabled={d.check_flag && !d.checked ? true : false} onClick={onClick}>
-            여기를 클릭하여 매칭해주세요.
+            클릭하여 매칭해주세요.
           </Button>
         </td>
       )}
@@ -603,14 +629,14 @@ const UploadExcelItems = React.memo(({ index, d, callback }) => {
   );
 });
 
-const SellaBasicModal = React.memo(({ modalState, setModalState, sella_forms, AddItemCallback }) => {
+const SellaBasicModal = React.memo(({ modalState, setModalState, sella_forms, AddItemCallback, rowData }) => {
   logger.render('SellaBasicModal');
-  const unessential_forms = _.filter(sella_forms, { essential_flag: 0 });
-
-  useEffect(() => {
-    if (modalState) {
-    }
-  }, [modalState]);
+  let unessential_forms = _.filter(sella_forms, { essential_flag: 0 });
+  unessential_forms = _.filter(unessential_forms, (item) => {
+    const findObj = _.find(rowData, { sella_code: item.code });
+    if (findObj) return false;
+    return true;
+  });
 
   const onClose = () => setModalState(false);
 

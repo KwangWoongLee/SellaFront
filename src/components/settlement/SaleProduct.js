@@ -22,6 +22,7 @@ const SaleProduct = () => {
   logger.render('SaleProduct');
 
   const [items, setItems] = useState([]);
+  const [formsMatchSelect, setFormsMatchSelect] = useState(-1);
   const [abledCategoryFee, setAbledCategoryFee] = useState(true);
   const [goodsMatch, setGoodsMatchs] = useState([]);
   const [standardItems, setStandardItems] = useState([]);
@@ -56,6 +57,21 @@ const SaleProduct = () => {
     setItems([...forms_match]);
   }, []);
 
+  useEffect(() => {
+    const standards = _.cloneDeep(standardItems);
+
+    const goods_match_selects = _.map(goodsMatch, 'name');
+    for (const standard of standards) {
+      if (_.includes(goods_match_selects, standard.name)) {
+        standard.select = true;
+      } else {
+        standard.select = false;
+      }
+    }
+
+    setStandardItems(standards);
+  }, [goodsMatch]);
+
   const onSelectFormsMatchTable = (d) => {
     // if (rowData && rowData.length && rowData[0].settlement_price) setAbledCategoryFee(false);
     // else setAbledCategoryFee(true);
@@ -85,6 +101,7 @@ const SaleProduct = () => {
 
     setStandardItems([...recommends]);
     setGoodsMatchs([...d.goods_match]);
+    setFormsMatchSelect(-1);
   };
   const onDeleteFormsMatchTable = (d) => {
     request.post(`user/forms/match/delete`, { forms_match_idx: d.idx }).then((ret) => {
@@ -119,6 +136,7 @@ const SaleProduct = () => {
       },
       []
     );
+    setGoodsMatchs([...selectFormsMatchRef.current.goods_match]);
   };
 
   const onChangeGoodsMatchTable = (goods_match) => {
@@ -142,6 +160,16 @@ const SaleProduct = () => {
     setGoodsMatchs([...selectFormsMatchRef.current.goods_match]);
   };
 
+  const onUnSelectStandardProduct_Search = (d) => {
+    if (!selectFormsMatchRef.current) return; // TODO error
+    _.remove(selectFormsMatchRef.current.goods_match, (goods_match) => {
+      return goods_match.idx == d.idx;
+    });
+
+    onDeleteGoodsMatchTable(selectFormsMatchRef.current.goods_match);
+    setGoodsMatchs([...selectFormsMatchRef.current.goods_match]);
+  };
+
   const onSelectCategoryFee_Search = (d) => {
     if (!selectFormsMatchRef.current.goods_match) return;
     for (const good_match of selectFormsMatchRef.current.goods_match) {
@@ -156,6 +184,8 @@ const SaleProduct = () => {
 
     setGoodsMatchs([]);
     setStandardItems([]);
+    setFormsMatchSelect(null);
+    //카테고리도 해야한다. 수수료 데이터 넘겨받으면 그때!
   };
 
   const onSave = (e) => {
@@ -186,6 +216,7 @@ const SaleProduct = () => {
               rows={items}
               selectCallback={onSelectFormsMatchTable}
               deleteCallback={onDeleteFormsMatchTable}
+              onParentSelect={formsMatchSelect}
             ></FormsMatchTable>
             <h3>연결 상품</h3>
             <button onClick={onSave} className="btn_blue btn-primary">
@@ -205,6 +236,7 @@ const SaleProduct = () => {
               rows={standardItems}
               resetCallback={onResetStandardProduct_Search}
               selectCallback={onSelectStandardProduct_Search}
+              unSelectCallback={onUnSelectStandardProduct_Search}
             ></StandardProduct_Search>
             <h3>수수료 검색</h3>
             <CategoryFee_Search

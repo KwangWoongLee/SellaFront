@@ -11,7 +11,7 @@ import { logger } from 'util/com';
 import icon_search from 'images/icon_search.svg';
 import icon_reset from 'images/icon_reset.svg';
 
-const StandardProduct_Search = React.memo(({ rows, selectCallback, resetCallback }) => {
+const StandardProduct_Search = React.memo(({ rows, selectCallback, unSelectCallback, resetCallback }) => {
   logger.render('StandardProduct_Search');
 
   const goodsNameRef = useRef(null);
@@ -45,6 +45,12 @@ const StandardProduct_Search = React.memo(({ rows, selectCallback, resetCallback
     selectCallback(d);
   };
 
+  const onUnSelect = (e, d) => {
+    e.preventDefault();
+
+    unSelectCallback(d);
+  };
+
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       onSearch(e);
@@ -52,6 +58,7 @@ const StandardProduct_Search = React.memo(({ rows, selectCallback, resetCallback
   };
 
   const onReset = () => {
+    goodsNameRef.current.value = '';
     resetCallback();
   };
 
@@ -76,7 +83,10 @@ const StandardProduct_Search = React.memo(({ rows, selectCallback, resetCallback
         <table>
           <tbody>
             <>
-              {items && items.map((d, key) => <StandardProductItem key={key} index={key} d={d} onSelect={onSelect} />)}
+              {items &&
+                items.map((d, key) => (
+                  <StandardProductItem key={key} index={key} d={d} onSelect={onSelect} onUnSelect={onUnSelect} />
+                ))}
             </>
           </tbody>
         </table>
@@ -85,20 +95,33 @@ const StandardProduct_Search = React.memo(({ rows, selectCallback, resetCallback
   );
 });
 
-const StandardProductItem = React.memo(({ index, d, onSelect }) => {
+const StandardProductItem = React.memo(({ index, d, onSelect, onUnSelect }) => {
   logger.render('StandardProductItem : ', index);
   return (
     <tr>
       <td>{d.name}</td>
       <td className="td_small">
-        <button
-          className="btn-primary btn_blue btn_small"
-          onClick={(e) => {
-            onSelect(e, d);
-          }}
-        >
-          선택
-        </button>
+        {d.select ? (
+          <button
+            className="btn-primary btn_blue btn_small"
+            onClick={(e) => {
+              onUnSelect(e, d);
+            }}
+          >
+            해제
+          </button>
+        ) : (
+          <>
+            <button
+              className="btn-primary btn_blue btn_small"
+              onClick={(e) => {
+                onSelect(e, d);
+              }}
+            >
+              선택
+            </button>
+          </>
+        )}
       </td>
     </tr>
   );

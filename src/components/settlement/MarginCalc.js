@@ -4,7 +4,7 @@ import { Button, Modal, Dropdown, DropdownButton } from 'react-bootstrap';
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
-import { img_src, modal, navigate } from 'util/com';
+import com, { img_src, modal, navigate } from 'util/com';
 import request from 'util/request';
 import SettlementNavTab from 'components/settlement/common/SettlementNavTab';
 import MarginCalc_UnConnectModal from 'components/settlement/MarginCalc_UnConnectModal';
@@ -378,11 +378,18 @@ const MarginCalc = () => {
     }
   }, [columnDefs]);
 
+  useEffect(() => {
+    if (rowData && rowData.length > 0) {
+      com.storage.setItem('exist_margin_calc_data', '1');
+    }
+  }, [rowData]);
+
   const onUpload = function () {
     setRowData([]);
     setViewResult({});
 
     SetColumnDefsFunc();
+    com.storage.setItem('exist_margin_calc_data', '');
 
     modal.file_upload(null, '.xlsx', '파일 업로드', { platform: platforms[platformType] }, (ret) => {
       if (!ret.err) {
@@ -593,7 +600,7 @@ const MarginCalc = () => {
   const deleteCallback = (d) => {
     setRowData(
       _.filter(rowData, (item) => {
-        return;
+        return !(item.forms_product_name == d.forms_product_name && item.forms_option_name == d.forms_option_name);
       })
     );
   };
@@ -940,6 +947,7 @@ const getPackingFee = (profit_loss_row) => {
 const CalcSummary = (rowData) => {
   if (!rowData.length) {
     modal.alert('미연결 주문건을 삭제하면 값이 없습니다.');
+    return {};
   }
 
   const unique_order_no = _.uniqBy(rowData, '30004');

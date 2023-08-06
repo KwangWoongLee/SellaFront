@@ -19,7 +19,7 @@ import icon_close from 'images/icon_close.svg';
 const MarginCalc_UnConnectModal = React.memo(({ modalState, setModalState, rowData, deleteCallback, saveCallback }) => {
   logger.render('MarginCalc_UnConnectModal');
 
-  const nameRef = useRef(null);
+  const [formsMatchSelect, setFormsMatchSelect] = useState(-1);
   const [abledCategoryFee, setAbledCategoryFee] = useState(true);
   const [items, setItems] = useState([]);
   const [goodsMatch, setGoodsMatchs] = useState([]);
@@ -40,6 +40,21 @@ const MarginCalc_UnConnectModal = React.memo(({ modalState, setModalState, rowDa
     setItems(unique_arr);
   }, [rowData]);
 
+  useEffect(() => {
+    const standards = _.cloneDeep(standardItems);
+
+    const goods_match_selects = _.map(goodsMatch, 'name');
+    for (const standard of standards) {
+      if (_.includes(goods_match_selects, standard.name)) {
+        standard.select = true;
+      } else {
+        standard.select = false;
+      }
+    }
+
+    setStandardItems(standards);
+  }, [goodsMatch]);
+
   const onClose = () => {
     setGoodsMatchs([]);
     setStandardItems([]);
@@ -57,13 +72,13 @@ const MarginCalc_UnConnectModal = React.memo(({ modalState, setModalState, rowDa
 
     setStandardItems([...recommends]);
     setGoodsMatchs([...d.goods_match]);
+    setFormsMatchSelect(-1);
   };
   const onDeleteFormsMatchTable = (d) => {
-    setItems(
-      _.filter(items, (item) => {
-        return item.aggregation != d.aggregation;
-      })
-    );
+    const filtered_items = _.filter(items, (item) => {
+      return item.idx != d.idx;
+    });
+    setItems(filtered_items);
 
     setGoodsMatchs([]);
     setStandardItems([]);
@@ -83,6 +98,8 @@ const MarginCalc_UnConnectModal = React.memo(({ modalState, setModalState, rowDa
       },
       []
     );
+
+    setGoodsMatchs([...selectFormsMatchRef.current.goods_match]);
   };
   const onChangeGoodsMatchTable = (goods_match) => {
     if (!selectFormsMatchRef.current) return; // TODO error
@@ -101,12 +118,31 @@ const MarginCalc_UnConnectModal = React.memo(({ modalState, setModalState, rowDa
     setGoodsMatchs([...selectFormsMatchRef.current.goods_match]);
   };
 
+  const onUnSelectStandardProduct_Search = (d) => {
+    if (!selectFormsMatchRef.current) return; // TODO error
+    _.remove(selectFormsMatchRef.current.goods_match, (goods_match) => {
+      return goods_match.idx == d.idx;
+    });
+
+    onDeleteGoodsMatchTable(selectFormsMatchRef.current.goods_match);
+    setGoodsMatchs([...selectFormsMatchRef.current.goods_match]);
+  };
+
   const onSelectCategoryFee_Search = (d) => {
     for (const good_match of selectFormsMatchRef.current.goods_match) {
       good_match.category_fee_rate = d.category_fee_rate;
     }
 
     setGoodsMatchs([...selectFormsMatchRef.current.goods_match]);
+  };
+
+  const onResetStandardProduct_Search = () => {
+    selectFormsMatchRef.current = null;
+
+    setGoodsMatchs([]);
+    setStandardItems([]);
+    setFormsMatchSelect(null);
+    //카테고리도 해야한다. 수수료 데이터 넘겨받으면 그때!
   };
 
   const onSave = (d) => {
@@ -141,6 +177,8 @@ const MarginCalc_UnConnectModal = React.memo(({ modalState, setModalState, rowDa
         saveCallback(selectFormsMatchRef.current);
 
         setGoodsMatchs([]);
+        setStandardItems([]);
+        setFormsMatchSelect(null);
       }
     });
   };
@@ -162,6 +200,7 @@ const MarginCalc_UnConnectModal = React.memo(({ modalState, setModalState, rowDa
             rows={items}
             selectCallback={onSelectFormsMatchTable}
             deleteCallback={onDeleteFormsMatchTable}
+            onParentSelect={formsMatchSelect}
           ></FormsMatchTable>
           <h3>연결 상품</h3>
           <button onClick={onSave} className="btn_blue btn-primary">
@@ -180,6 +219,8 @@ const MarginCalc_UnConnectModal = React.memo(({ modalState, setModalState, rowDa
           <StandardProduct_Search
             rows={standardItems}
             selectCallback={onSelectStandardProduct_Search}
+            resetCallback={onResetStandardProduct_Search}
+            unSelectCallback={onUnSelectStandardProduct_Search}
           ></StandardProduct_Search>
           <h3>수수료 검색</h3>
           <CategoryFee_Search

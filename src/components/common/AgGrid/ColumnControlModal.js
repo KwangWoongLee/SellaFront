@@ -7,7 +7,9 @@ import Recoils from 'recoils';
 import _ from 'lodash';
 import Checkbox from 'components/common/CheckBoxCell';
 
-import { logger } from 'util/com';
+import { img_src, logger } from 'util/com';
+
+import icon_close from 'images/icon_close.svg';
 
 const ColumnControlModal = React.memo(
   ({ modalState, setModalState, callback, platform, viewColumns, setViewColumns }) => {
@@ -42,9 +44,15 @@ const ColumnControlModal = React.memo(
     const onClose = () => setModalState(false);
 
     return (
-      <Modal show={modalState} onHide={onClose} centered className="modal step2">
+      <Modal show={modalState} onHide={onClose} centered className="modal MarginCalc">
         <Modal.Header>
-          <Modal.Title>조회 항목 관리</Modal.Title>
+          <Modal.Title>
+            조회 항목 관리
+            <span className="sub">테이블에 표시될 항목을 체크해주세요.</span>
+          </Modal.Title>
+          <Button variant="primary" className="btn_close" onClick={onClose}>
+            <img src={`${img_src}${icon_close}`} />
+          </Button>
         </Modal.Header>
         <Modal.Body>
           <table className="columncontrol thead">
