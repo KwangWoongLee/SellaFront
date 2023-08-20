@@ -8,9 +8,10 @@ import { img_src, useInput, modal, navigate } from 'util/com';
 import request from 'util/request';
 import CSCenterNavTab from 'components/cscenter/CSCenterNavTab';
 import Recoils from 'recoils';
+import _ from 'lodash';
 import ImageModal from 'components/common/ImageModal';
 
-import { logger, time_format } from 'util/com';
+import com, { logger, time_format } from 'util/com';
 
 import 'styles/CSCenter.scss';
 
@@ -44,17 +45,35 @@ const Announcement = () => {
   //
 
   useEffect(() => {
-    request.post(`cscenter/announcement`, { category: category_str[categoryType], title }).then((ret) => {
-      if (!ret.err) {
-        const { data } = ret.data;
-        logger.info(data);
-        const rowCount = data.length;
-        rowCount ? setDatas(() => data) : setDatas([]);
-        rowCount && Math.floor(rowCount / limit) ? setPageCount(Math.floor(rowCount / limit)) : setPageCount(1);
-        setPage(1);
-      }
-    });
+    request
+      .post(`cscenter/announcement`, {
+        category: category_str[categoryType] == '전체' ? '' : category_str[categoryType],
+        title,
+      })
+      .then((ret) => {
+        if (!ret.err) {
+          const { data } = ret.data;
+          logger.info(data);
+          const rowCount = data.length;
+          rowCount ? setDatas(() => data) : setDatas([]);
+          rowCount && Math.floor(rowCount / limit) ? setPageCount(Math.floor(rowCount / limit)) : setPageCount(1);
+          setPage(1);
+        }
+      });
   }, []);
+
+  useEffect(() => {
+    if (rowData && rowData.length > 0) {
+      const nav_clicked_row_idx = com.storage.getItem('nav_announcement');
+      if (nav_clicked_row_idx) {
+        const findIndex = _.findIndex(rowData, (row) => row.idx == nav_clicked_row_idx);
+        if (findIndex != -1) {
+          handleClick(findIndex);
+          com.storage.setItem('nav_announcement', '');
+        }
+      }
+    }
+  }, [rowData]);
 
   const handleClick = (index) => {
     const updatedState = rowData[index];
@@ -90,7 +109,12 @@ const Announcement = () => {
     if (title && title.length < 2) {
       modal.confirm(
         '제목명은 2글자 이상으로 입력하세요.',
-        [{ strong: '', normal: '상품정보를 등록하시려면 기초정보를 등록해 주세요.' }],
+        [
+          {
+            strong: '',
+            normal: '상품정보를 등록하시려면 기초정보를 등록해 주세요.',
+          },
+        ],
         [
           {
             name: '확인',

@@ -511,14 +511,22 @@ const SellaForm = React.memo(({ index, d, selectRow, onClick, onDelete, checkedI
           </>
         )}
         <label>
-          {d.sella_title} {d.sella_essential ? '*' : ''}
+          {d.sella_title}
+          {d.sella_title == '정산예정금액' ? '이 있습니다.' : ''}
+          {d.sella_title == '배송비 묶음번호' ? '가 있습니다.' : ''}
+          {d.sella_essential ? '*' : ''}
         </label>
         {d.tooltip && (
           <>
             <OverlayTrigger
               placement="right"
               overlay={
-                <Tooltip id="tooltip">
+                <Tooltip
+                  id="tooltip"
+                  style={{
+                    background: 'yellow',
+                  }}
+                >
                   <strong>{d.tooltip.title}</strong>
                   {d.tooltip.contents.map((d, key) => (
                     <>

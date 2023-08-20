@@ -29,7 +29,7 @@ const Head = () => {
   return (
     <>
       <div className="header">
-        <Nav.Link onClick={onLink} className="logo" name="/">
+        <Nav.Link onClick={onLink} className="logo" name="/settlement/margin_calc">
           <img src={`${img_src}${logo_white}`} alt="로고" />
         </Nav.Link>
         <div className="menu">

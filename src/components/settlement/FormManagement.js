@@ -164,31 +164,47 @@ const FormManagement = () => {
     const selectedRows = gridRef.current.api.getSelectedRows();
     const node = selectedRows[0];
 
-    if (node.idx == -1) {
-      setFormsDatas(_.drop(formsData, 1));
+    modal.confirm(
+      `${node.name} 양식을 삭제하시겠습니까?`,
+      [{ strong: '다시 복원할 수 없습니다.', normal: '' }],
+      [
+        {
+          name: '삭제',
+          callback: () => {
+            if (node.idx == -1) {
+              setFormsDatas(_.drop(formsData, 1));
 
-      if (platformRef.current) {
-        platformRef.current = _.drop(platformRef.current, 1);
-      }
+              if (platformRef.current) {
+                platformRef.current = _.drop(platformRef.current, 1);
+              }
 
-      return;
-    }
+              return;
+            }
 
-    request.post(`user/forms/delete`, { forms_idx: node.idx }).then((ret) => {
-      if (!ret.err) {
-        const { data } = ret.data;
-        logger.info(data);
+            request.post(`user/forms/delete`, { forms_idx: node.idx }).then((ret) => {
+              if (!ret.err) {
+                const { data } = ret.data;
+                logger.info(data);
 
-        let platforms = _.cloneDeep(Recoils.getState('DATA:PLATFORMS'));
-        platforms = _.filter(platforms, (i) => i.idx != node.idx);
+                let platforms = _.cloneDeep(Recoils.getState('DATA:PLATFORMS'));
+                platforms = _.filter(platforms, (i) => i.idx != node.idx);
 
-        Recoils.setState('DATA:PLATFORMS', platforms);
-        Recoils.setState('DATA:FORMSMATCH', data.forms_match_result);
-        Recoils.setState('DATA:GOODSMATCH', data.goods_match_result);
+                Recoils.setState('DATA:PLATFORMS', platforms);
+                Recoils.setState('DATA:FORMSMATCH', data.forms_match_result);
+                Recoils.setState('DATA:GOODSMATCH', data.goods_match_result);
 
-        setFormsDatas(platforms);
-      }
-    });
+                setFormsDatas(platforms);
+              }
+            });
+          },
+        },
+
+        {
+          name: '취소',
+          callback: () => {},
+        },
+      ]
+    );
   };
 
   const onGridReady = () => {

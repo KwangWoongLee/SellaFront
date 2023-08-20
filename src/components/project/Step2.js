@@ -62,6 +62,7 @@ const Step2 = () => {
           [
             {
               name: '기초정보 관리로 이동',
+              className: 'red',
               callback: () => {
                 navigate('project/Step1');
               },

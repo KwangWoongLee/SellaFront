@@ -27,16 +27,28 @@ import img_service from 'images/img_service.png';
 // AG Grid
 import { AgGridReact } from 'ag-grid-react';
 import ColumnControlModal from 'components/common/AgGrid/ColumnControlModal';
-const PLFormatter = (params) => {
+const PLRenderer = (params) => {
   if (params.data && params.data.connect_flag == false) {
-    return '미연결';
+    return <>미연결</>;
   }
-  let newValue = '';
-  newValue += params.value > 0 ? '이익 ' : '손해 ';
-  newValue += params.value;
-  return newValue;
-};
 
+  return (
+    <>
+      {params.value > 0 ? (
+        <>
+          <span className="profit">이익</span>
+          <br />
+        </>
+      ) : (
+        <>
+          <span className="loss">손해</span>
+          <br />
+        </>
+      )}
+      {params.value}
+    </>
+  );
+};
 const _30006Renderer = (params) => {
   return (
     <>
@@ -58,7 +70,7 @@ const _30047Renderer = (params) => {
 
       {params.data['30047_additional'] && (
         <>
-          <br />({params.data['30047_additional']})
+          <br />({(params.data[30047] * Number(params.data['30047_additional'])) / 100})
         </>
       )}
     </>
@@ -99,7 +111,7 @@ const ROUTE_COLUMN_BASE = [
     filter: false,
     unSortIcon: true,
     width: 140,
-    valueFormatter: PLFormatter,
+    cellRenderer: PLRenderer,
   },
   {
     field: '30003',
@@ -259,6 +271,7 @@ const MarginCalc = () => {
   const [rowData, setRowData] = useState([]);
   const [modalState, setModalState] = useState(false);
   const [columnControlModalState, setColumnControlModalState] = useState(false);
+  const [unConnectModalSelectData, setUnConnectModalSelectData] = useState({});
 
   const [viewColumns, setViewColumns] = useState([]);
   //ag-grid
@@ -306,7 +319,12 @@ const MarginCalc = () => {
     if (!deliveryData || deliveryData.length == 1 || !packingData || packingData.length == 1) {
       modal.confirm(
         '초기 값을 설정해 주세요.',
-        [{ strong: '', normal: '손익계산을 하시려면 기초정보, 상품정보를 등록해 주세요.' }],
+        [
+          {
+            strong: '',
+            normal: '손익계산을 하시려면 기초정보, 상품정보를 등록해 주세요.',
+          },
+        ],
         [
           {
             name: '기초정보 관리로 이동',
@@ -326,7 +344,12 @@ const MarginCalc = () => {
     if (!goodsData || goodsData.length == 0) {
       modal.confirm(
         '초기 값을 설정해 주세요.',
-        [{ strong: '', normal: '손익계산을 하시려면 상품정보를 등록해 주세요.' }],
+        [
+          {
+            strong: '',
+            normal: '손익계산을 하시려면 상품정보를 등록해 주세요.',
+          },
+        ],
         [
           {
             name: '상품 관리로 이동',
@@ -379,8 +402,41 @@ const MarginCalc = () => {
   }, [columnDefs]);
 
   useEffect(() => {
+    if (!rowData || !rowData.length) return;
+
     if (rowData && rowData.length > 0) {
       com.storage.setItem('exist_margin_calc_data', '1');
+    }
+
+    if (modalState) return;
+
+    const unconnect_rows = _.filter(rowData, (data) => {
+      return !data.connect_flag;
+    });
+
+    if (unconnect_rows.length != 0) {
+      modal.confirm(
+        '미연결 주문건이 있습니다. 연결하시겠습니까?',
+        [
+          {
+            strong: '',
+            normal: '',
+          },
+        ],
+        [
+          {
+            name: '상품매칭관리',
+            callback: () => {
+              setModalState(true);
+              setUnConnectModalSelectData({});
+            },
+          },
+          {
+            name: '취소',
+            callback: () => {},
+          },
+        ]
+      );
     }
   }, [rowData]);
 
@@ -467,6 +523,7 @@ const MarginCalc = () => {
       return;
     }
 
+    setUnConnectModalSelectData(param);
     setModalState(true);
   };
 
@@ -479,8 +536,13 @@ const MarginCalc = () => {
 
     if (unconnect_rows.length != 0) {
       modal.confirm(
-        '',
-        [{ strong: '손익계산을 진행하기 전 미연결 주문건을 삭제하시겠습니까?', normal: '' }],
+        '손익계산을 진행하기 전 미연결 주문건을 삭제하시겠습니까?',
+        [
+          {
+            strong: '',
+            normal: '',
+          },
+        ],
         [
           {
             name: '취소',
@@ -560,8 +622,8 @@ const MarginCalc = () => {
 
     if (unconnect_rows.length != 0) {
       modal.confirm(
-        '',
-        [{ strong: '저장할 수 없습니다.', normal: '미연결 주문건이 있어서 저장할 수 없습니다.' }],
+        '저장할 수 없습니다.',
+        [{ strong: '', normal: '미연결 주문건이 있어서 저장할 수 없습니다.' }],
         [
           {
             name: '매칭하러 가기',
@@ -843,6 +905,7 @@ const MarginCalc = () => {
         unconnect_flag={true}
         deleteCallback={deleteCallback}
         saveCallback={saveCallback}
+        selectData={unConnectModalSelectData}
       ></MarginCalc_UnConnectModal>
       <ColumnControlModal
         modalState={columnControlModalState}

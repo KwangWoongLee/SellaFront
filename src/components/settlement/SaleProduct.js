@@ -69,7 +69,12 @@ const SaleProduct = () => {
       }
     }
 
-    setStandardItems(standards);
+    if (!standards || standards.length == 0) {
+      let recommends = [...Recoils.getState('DATA:GOODS')];
+      setStandardItems([...recommends]);
+    } else {
+      setStandardItems(standards);
+    }
   }, [goodsMatch]);
 
   const onSelectFormsMatchTable = (d) => {
@@ -183,13 +188,19 @@ const SaleProduct = () => {
     selectFormsMatchRef.current = null;
 
     setGoodsMatchs([]);
-    setStandardItems([]);
+
+    let recommends = [...Recoils.getState('DATA:GOODS')];
+    setStandardItems([...recommends]);
+
     setFormsMatchSelect(null);
     //카테고리도 해야한다. 수수료 데이터 넘겨받으면 그때!
   };
 
   const onSave = (e) => {
-    if (!selectFormsMatchRef.current) return; // TODO error
+    if (!selectFormsMatchRef.current) {
+      modal.alert('왼쪽에서 판매 상품을 선택하세요.');
+      return; // TODO error
+    }
 
     request.post(`user/forms/match/save`, { save_data: selectFormsMatchRef.current }).then((ret) => {
       if (!ret.err) {

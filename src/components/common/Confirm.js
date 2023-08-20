@@ -11,7 +11,9 @@ const ConfirmModal = () => {
   const [state, setState] = Recoils.useState('CONFIRM');
   logger.render('ConfirmModal : ', state.show);
 
-  const onClose = () => {};
+  const onClose = () => {
+    setState({ show: false });
+  };
 
   // 클라이언트 쪽에서 처리되는 에러입니다.
   return (
@@ -21,22 +23,27 @@ const ConfirmModal = () => {
         <Button variant="primary" className="btn_close" onClick={onClose}>
           <img src={`${img_src}${icon_close}`} />
         </Button>
-      </Modal.Header>
-      <Modal.Body>
         {state.title && <span>{state.title}</span>}
-        <br />
+      </Modal.Header>
+      {/*요 안에 형식은 주희님 편하신대로! 
+      현재는 strong : 진한글자 , normal : 일반글자
+      다만 여기는 alert 제외한 모든 confirm 모달의 요구사항이 포함되어야 하니
+      원하는 디자인 말씀해주시면! 넣도록 할게요!
+      */}
+      <Modal.Body>
         {state.body &&
-          state.body.map((l, key) => {
+          state.body.map((l, key) => (
             <>
-              *<span>{l.strong}</span>
+              <strong>{l.strong}</strong>
               <span>{l.normal}</span>
-            </>;
-          })}
+            </>
+          ))}
       </Modal.Body>
       <Modal.Footer>
         {state.buttons &&
           state.buttons.map((l, key) => (
             <Button
+              className={l.className ? l.className : ''}
               onClick={() => {
                 l.callback();
                 setState({ show: false });

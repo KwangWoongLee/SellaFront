@@ -255,7 +255,7 @@ const Margin = () => {
       return;
     }
     platformFeeRate = platformFeeRate / 100;
-    platformFeeRate = Number(platformFeeRate.toFixed(2));
+    platformFeeRate = Number(platformFeeRate.toFixed(5));
 
     platformDeliverFeeRate = Number(platformDeliverFeeRate);
     if (platformDeliverFeeRate < 0 || platformDeliverFeeRate >= 100) {
@@ -264,7 +264,7 @@ const Margin = () => {
     }
 
     platformDeliverFeeRate = platformDeliverFeeRate / 100;
-    platformDeliverFeeRate = Number(platformDeliverFeeRate.toFixed(2));
+    platformDeliverFeeRate = Number(platformDeliverFeeRate.toFixed(5));
 
     let platformFee = sellPrice * platformFeeRate;
     let platformDeliveryFee = sellDeliveryFee * platformDeliverFeeRate;
@@ -307,7 +307,16 @@ const Margin = () => {
       revenue_sum_price: sum_plus,
       expense_sum_price: sum_minus,
       margin_price: margin,
+      margin_rate: marginRate,
       lowest_standard_price: low,
+      settlement_price: settlement_price,
+      received_delivery_fee: sellDeliveryFee,
+      stock_price: stockPrice,
+      saved_dp_fee: savedDPFee,
+      platform: platformData[platformType].name,
+      platform_fee_rate: Number((platformFeeRate * 100).toFixed(2)),
+      platform_delivery_fee_rate: Number((platformDeliverFeeRate * 100).toFixed(2)),
+      lowest_margin_rate: lowestMarginRate,
     };
 
     setResultData({ ...result });
@@ -337,6 +346,37 @@ const Margin = () => {
     if (e.key === 'Enter') {
       onSearch(e);
     }
+  };
+
+  const onSelectionChanged = (params) => {
+    const selectedRows = gridRef.current.api.getSelectedRows();
+    const row = selectedRows[0];
+
+    nameRef.current.value = `${row.goods_name}`;
+    sellPriceRef.current.value = `${row.sell_price}`;
+    sellDeliveryFeeRef.current.value = `${row.received_delivery_fee}`;
+    stockPriceRef.current.value = `${row.stock_price}`;
+    savedDPFeeRef.current.value = `${row.saved_dp_fee}`;
+    lowestMarginRateRef.current.value = `${row.lowest_margin_rate}`;
+    setLowestPrice(row.lowest_standard_price);
+    setSumMinus(row.expense_sum_price);
+    setSumPlus(row.revenue_sum_price);
+    setResultData({
+      sell_price: row.sell_price,
+      settlement_price: row.settlement_price,
+      margin: row.margin_price,
+      margin_rate: row.margin_rate,
+    });
+
+    const findIndex = _.findIndex(platformData, (p) => p.name == row.forms_name);
+    if (findIndex != -1) {
+      setplatformType(findIndex);
+
+      platformFeeRateRef.current.value = row.platform_fee_rate;
+      platformDeliverFeeRateRef.current.value = row.platform_delivery_fee_rate;
+    }
+
+    saveDataRef.current = row;
   };
 
   return (
@@ -524,6 +564,8 @@ const Margin = () => {
               <Button variant="primary" onClick={onDelete}>
                 선택 삭제
               </Button>
+              {/* 향후 회원등급 생기면 수정예정입니다. */}
+              <span> {rowData.length} / 10 </span>
             </div>
             <div style={containerStyle} className="tablebox">
               <div style={gridStyle} className="ag-theme-alpine">
@@ -534,8 +576,9 @@ const Margin = () => {
                   alwaysShowHorizontalScroll={true}
                   alwaysShowVerticalScroll={true}
                   defaultColDef={defaultColDef}
-                  rowSelection={'multiple'}
+                  rowSelection={'single'}
                   overlayNoRowsTemplate={'데이터가 없습니다.'}
+                  onSelectionChanged={onSelectionChanged}
                 ></AgGridReact>
               </div>
             </div>

@@ -5,7 +5,7 @@ import {} from 'react-bootstrap';
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
-import { img_src, modal, navigate } from 'util/com';
+import { img_src, modal, navigate, time_format } from 'util/com';
 import request from 'util/request';
 import {} from 'util/com';
 import SettlementNavTab from 'components/settlement/common/SettlementNavTab';
@@ -38,6 +38,9 @@ const columnDefs = [
     filter: false,
     unSortIcon: true,
     width: 120,
+    valueFormatter: (params) => {
+      return time_format(params.value);
+    },
   },
 
   {
@@ -171,7 +174,6 @@ const TodaySummary = () => {
             return item.idx != node.idx;
           })
         );
-        setViewResult({});
       }
     });
   };
@@ -254,8 +256,6 @@ const TodaySummary = () => {
                 <span>원</span>
               </p>
             </li>
-            {/* 손익합계 <li> className에 이익일때 profit, 손해일때 loss 넣어주세요. */}
-            {/* 이 작업도 손익 계산이 다끝나면 하게 될 것 같아요! */}
             <li className={viewResult.sum_profit_loss > 0 ? 'profit' : 'loss'}>
               <p className="dt">손익 합계</p>
               <p className="dd">

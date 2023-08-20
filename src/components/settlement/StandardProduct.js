@@ -116,7 +116,7 @@ const StandardProduct = () => {
 
   const onDelete = (e, d) => {
     e.preventDefault();
-    request.post(`user/goods/match/delete`, { save_data: d }).then((ret) => {
+    request.post(`user/goods/match/delete`, { delete_data: d }).then((ret) => {
       if (!ret.err) {
         const { data } = ret.data;
         logger.info(data);

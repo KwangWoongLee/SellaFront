@@ -4,10 +4,11 @@ import { Table, Button, Modal, DropdownButton, Dropdown } from 'react-bootstrap'
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
-import { img_src, useInput, modal, navigate } from 'util/com';
+import com, { img_src, useInput, modal, navigate } from 'util/com';
 import request from 'util/request';
 import CSCenterNavTab from 'components/cscenter/CSCenterNavTab';
 import Recoils from 'recoils';
+import _ from 'lodash';
 import ImageModal from 'components/common/ImageModal';
 
 import { logger } from 'util/com';
@@ -43,7 +44,36 @@ const Manual = () => {
   const offset = (page - 1) * limit;
   //
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    request
+      .post(`cscenter/manual`, {
+        category: category_str[categoryType] == '전체' ? '' : category_str[categoryType],
+        title,
+      })
+      .then((ret) => {
+        if (!ret.err) {
+          const { data } = ret.data;
+          logger.info(data);
+          const rowCount = data.length;
+          rowCount ? setDatas(() => data) : setDatas([]);
+          rowCount && Math.floor(rowCount / limit) ? setPageCount(Math.floor(rowCount / limit)) : setPageCount(1);
+          setPage(1);
+        }
+      });
+  }, []);
+
+  useEffect(() => {
+    if (rowData && rowData.length > 0) {
+      const nav_clicked_row_idx = com.storage.getItem('nav_manual');
+      if (nav_clicked_row_idx) {
+        const findIndex = _.findIndex(rowData, (row) => row.idx == nav_clicked_row_idx);
+        if (findIndex != -1) {
+          handleClick(findIndex);
+          com.storage.setItem('nav_manual', '');
+        }
+      }
+    }
+  }, [rowData]);
 
   const onPageNext = (next) => {
     if (next) {
@@ -60,23 +90,43 @@ const Manual = () => {
     setModalState(true);
   };
 
+  const handleClick = (index) => {
+    const updatedState = rowData[index];
+
+    if (updatedState.other) {
+      delete updatedState.other;
+      setCollapseState(!collapseState);
+    } else {
+      updatedState.other = {
+        img_url: 'https://images.pexels.com/photos/20787/pexels-photo.jpg?auto=compress&cs=tinysrgb&h=350',
+        content: rowData[index].content,
+      };
+      setCollapseState(!collapseState);
+    }
+  };
+
   const onSearch = (e) => {
     if (title && title.length < 2) {
       alert('제목명은 2글자 이상으로 입력하세요.');
       return;
     }
 
-    request.post(`cscenter/faq`, { category: category_str[categoryType], title }).then((ret) => {
-      if (!ret.err) {
-        const { data } = ret.data;
-        logger.info(data);
+    request
+      .post(`cscenter/manual`, {
+        category: category_str[categoryType] == '전체' ? '' : category_str[categoryType],
+        title,
+      })
+      .then((ret) => {
+        if (!ret.err) {
+          const { data } = ret.data;
+          logger.info(data);
 
-        const rowCount = data.length;
-        rowCount ? setDatas(() => data) : setDatas([]);
-        rowCount && Math.floor(rowCount / limit) ? setPageCount(Math.floor(rowCount / limit)) : setPageCount(1);
-        setPage(1);
-      }
-    });
+          const rowCount = data.length;
+          rowCount ? setDatas(() => data) : setDatas([]);
+          rowCount && Math.floor(rowCount / limit) ? setPageCount(Math.floor(rowCount / limit)) : setPageCount(1);
+          setPage(1);
+        }
+      });
   };
 
   const onReset = () => {
@@ -145,14 +195,34 @@ const Manual = () => {
             <table className="thead">
               <thead>
                 <tr>
-                  <th>날짜</th>
                   <th>카테고리</th>
                   <th>제목</th>
                 </tr>
               </thead>
             </table>
             <table className="tbody">
-              <tbody></tbody>
+              <tbody>
+                {rowData.slice(offset, offset + limit).map((row, index) => (
+                  <Fragment key={`${index}${row.title}`}>
+                    <tr style={{ cursor: 'pointer' }} onClick={() => handleClick(index)}>
+                      <td>{row.manual_category}</td>
+                      <td>{row.title}</td>
+                    </tr>
+                    {row.other ? (
+                      <tr className="toggle-row">
+                        <td
+                          onClick={(e) => {
+                            onModalImage(e, row.other.img_url);
+                          }}
+                        >
+                          <img src={row.other.img_url} alt="" />
+                        </td>
+                        <td colSpan={2}>{row.other.content}</td>
+                      </tr>
+                    ) : null}
+                  </Fragment>
+                ))}
+              </tbody>
             </table>
           </div>
         </div>

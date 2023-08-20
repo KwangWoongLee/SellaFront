@@ -15,13 +15,14 @@ import logo_symbol from 'images/logo_symbol.svg';
 
 import 'styles/CSCenter.scss';
 
-import { logger, time_format } from 'util/com';
+import { logger, time_format, time_format_none_time } from 'util/com';
 
 const CSCenter = () => {
   logger.render('CSCenter');
 
   const [announcement, setAnnouncements] = useState([]);
   const [faq, setFAQ] = useState([]);
+  const [manual, setManual] = useState([]);
 
   useEffect(() => {
     request.post(`cscenter/announcement`, { limit: 10 }).then((ret) => {
@@ -41,14 +42,30 @@ const CSCenter = () => {
         rowCount ? setFAQ(() => data) : setFAQ([]);
       }
     });
+
+    request.post(`cscenter/manual`, { limit: 10 }).then((ret) => {
+      if (!ret.err) {
+        const { data } = ret.data;
+        logger.info(data);
+        const rowCount = data.length;
+        rowCount ? setManual(() => data) : setManual([]);
+      }
+    });
   }, []);
 
   const onClickAnnouncement = (e, row) => {
-    // 어떻게할까요 ? 페이지 이동 ? modal로 내용 보여주기.. 정책이 필요하네요!
+    com.storage.setItem('nav_announcement', row.idx);
+    navigate('/cscenter/announcement');
   };
 
   const onClickFAQ = (e, row) => {
-    // 어떻게할까요 ? 페이지 이동 ? modal로 내용 보여주기.. 정책이 필요하네요!
+    com.storage.setItem('nav_faq', row.idx);
+    navigate('/cscenter/faq');
+  };
+
+  const onClickManual = (e, row) => {
+    com.storage.setItem('nav_manual', row.idx);
+    navigate('/cscenter/manual');
   };
 
   return (
@@ -87,7 +104,7 @@ const CSCenter = () => {
                       }}
                     >
                       <td>{row.title}</td>
-                      <td>{time_format(row.reg_date)}</td>
+                      <td>{time_format_none_time(row.reg_date)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -115,7 +132,7 @@ const CSCenter = () => {
                       <td>
                         <i>{row.faq_category}</i> {row.title}
                       </td>
-                      <td>{time_format(row.reg_date)}</td>
+                      <td>{time_format_none_time(row.reg_date)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -132,11 +149,18 @@ const CSCenter = () => {
               </h4>
               <table>
                 <tbody>
-                  {/* 사용방법은 figma에 아직 화면이 아직없네요 */}
-                  <tr>
-                    <td>사용방법사용방법사용방법사용방법</td>
-                    <td>2023-05-22</td>
-                  </tr>
+                  {manual.map((row, index) => (
+                    <tr
+                      onClick={(e) => {
+                        onClickManual(e, row);
+                      }}
+                    >
+                      <td>
+                        <i>{row.manual_category}</i> {row.title}
+                      </td>
+                      <td>{time_format_none_time(row.reg_date)}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>

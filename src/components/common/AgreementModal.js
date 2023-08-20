@@ -11,14 +11,16 @@ import { logger } from 'util/com';
 
 import icon_close from 'images/icon_close.svg';
 
-const AgreementModal = React.memo(({ modalState, setModalState }) => {
+const AgreementModal = React.memo(({ modalState, setModalState, content }) => {
   logger.render('AgreementModal');
 
-  const onClose = () => setModalState({ state: false, content: '' });
+  const onClose = () => {
+    // setModalState(false)
+  };
 
   return (
-    <Modal show={modalState.state} onHide={onClose} centered className="agreementmodal">
-      <Modal.Body>{modalState.content}</Modal.Body>
+    <Modal show={modalState} onHide={onClose} centered>
+      <Modal.Body>{content}</Modal.Body>
     </Modal>
   );
 });

@@ -205,6 +205,11 @@ export const time_format = (time) => {
   return dateFormat(now, `yyyy-mm-dd ${strTime}`);
 };
 
+export const time_format_none_time = (time) => {
+  const now = new Date(time);
+  return dateFormat(now, `yyyy-mm-dd`);
+};
+
 export const get_login_hash = function (value) {
   const login_secret = conf.login_secret;
   const data = `${login_secret}${value}`;

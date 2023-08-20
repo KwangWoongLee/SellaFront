@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Button, ButtonGroup, InputGroup, Form, DropdownButton, Dropdown } from 'react-bootstrap';
+import { Button, ButtonGroup, InputGroup, Form, DropdownButton, Dropdown, Modal } from 'react-bootstrap';
 import Recoils from 'recoils';
 import com, {
   modal,
@@ -32,10 +32,8 @@ const local = ['내국인', '외국인'];
 const SearchPW = () => {
   logger.render('SearchPW');
 
-  const [agreementModal, setAgreementModal] = useState({
-    state: false,
-    content: '',
-  });
+  const [agreementModal, setAgreementModal] = useState(false);
+  const [agreementModalContent, setAgreementModalContent] = useState('');
   const [searchButtonOn, setSearchButtonOn] = useState(false);
   const [allChecked, setAllChecked] = useState(false);
   const [agreement, setAgreement] = useState([]);
@@ -271,7 +269,8 @@ const SearchPW = () => {
   };
 
   const onClickAgreement = (e, content) => {
-    setAgreementModal({ state: true, content: content });
+    setAgreementModalContent(content);
+    setAgreementModal(true);
   };
 
   const onCheckPhoneAuthNo = (e) => {
@@ -302,7 +301,7 @@ const SearchPW = () => {
     <>
       <Head />
       <Body title={`비밀번호 찾기`} myClass={'searchpw'}>
-        <Form onSubmit={onSubmit} id="search-pw-form" className="formbox">
+        <Form id="search-form" className="formbox">
           <h3>비밀번호 찾기</h3>
 
           <div className="termsbox">
@@ -468,10 +467,10 @@ const SearchPW = () => {
             )}
           </InputGroup>
           <Button
+            onClick={onSubmit}
             disabled={!searchButtonOn}
             variant="primary"
-            type="submit"
-            form="search-pw-form"
+            form="search-form"
             className="btn_blue btn_submit"
           >
             확인
@@ -480,7 +479,15 @@ const SearchPW = () => {
       </Body>
       <Footer />
 
-      <AgreementModal modalState={agreementModal} setModalState={setAgreementModal}></AgreementModal>
+      <Modal show={agreementModal} centered>
+        <Modal.Body>{agreementModalContent}</Modal.Body>
+      </Modal>
+
+      {/* <AgreementModal
+        modalState={agreementModal}
+        setModalState={setAgreementModal}
+        content={agreementModalContent}
+      ></AgreementModal> */}
     </>
   );
 };
