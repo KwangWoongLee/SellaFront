@@ -889,6 +889,7 @@ const MarginCalc = () => {
                     overlayNoRowsTemplate={'데이터가 없습니다.'}
                     suppressRowTransform={true}
                     rowHeight={rowHeight}
+                    singleClickEdit={true}
                     // getRowHeight={getRowHeight}
                   ></AgGridReact>
                 </div>

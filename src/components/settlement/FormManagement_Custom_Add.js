@@ -1,18 +1,16 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback, Component } from 'react';
 
 import { Button, Modal, Tooltip, OverlayTrigger } from 'react-bootstrap';
-import Head from 'components/template/Head';
-import Footer from 'components/template/Footer';
-import Body from 'components/template/Body';
 import { img_src, modal, navigate } from 'util/com';
 import request from 'util/request';
 import Recoils from 'recoils';
 import SettlementNavTab from 'components/settlement/common/SettlementNavTab';
 import * as xlsx from 'xlsx';
 import Checkbox from 'components/common/CheckBoxCell';
-
+import { Transition } from 'react-transition-group';
 import { logger } from 'util/com';
 import _ from 'lodash';
+import { CSSTransition } from 'react-transition-group';
 
 // AG Grid
 import { AgGridReact } from 'ag-grid-react';
@@ -42,6 +40,8 @@ const FormManagement_Custom_Add = (param) => {
   const nowSelectRef = useRef(null);
   const [selectRow, setSelectRow] = useState(0);
   const [mode, setMode] = useState(0);
+  const nodeRef = useRef(null);
+  const [transition, setTransition] = useState(false);
 
   useEffect(() => {
     formNameRef.current.value = platform.name;
@@ -78,49 +78,50 @@ const FormManagement_Custom_Add = (param) => {
       return;
     }
 
+    _.remove(save_data, (row) => {
+      return row.check_flag && !row.checked;
+    });
+
     for (const row of save_data) {
-      if (row.check_flag && !row.checked) continue;
-      else {
-        if (!row.title || !row.column || !row.sella_title || !row.sella_code) {
-          modal.confirm(
-            '양식을 저장하시려면 필수값을 입력해주세요.',
-            [{ strong: '', normal: '정산 예정금액 항목이 없다면 체크를 해제해주세요.' }],
-            [
-              {
-                name: '확인',
-                callback: () => {},
-              },
-            ]
-          );
+      if (!row.title || !row.column || !row.sella_title || !row.sella_code) {
+        modal.confirm(
+          '양식을 저장하시려면 필수값을 입력해주세요.',
+          [{ strong: '', normal: '정산 예정금액 항목이 없다면 체크를 해제해주세요.' }],
+          [
+            {
+              name: '확인',
+              callback: () => {},
+            },
+          ]
+        );
+        return;
+      }
+
+      if (row.sella_code == 30032) {
+        if (!row.mf_fee_rate) {
+          modal.alert('조립비는 조립비 수수료 항목을 입력하세요.');
           return;
         }
 
-        if (row.sella_code == 30032) {
-          if (!row.mf_fee_rate) {
-            modal.alert('조립비는 조립비 수수료 항목을 입력하세요.');
-            return;
-          }
+        row.additional = row.mf_fee_rate;
+      }
 
-          row.additional = row.mf_fee_rate;
+      if (row.sella_code == 30033) {
+        if (!row.if_fee_rate) {
+          modal.alert('설치비는 설치비 수수료 항목을 입력하세요.');
+          return;
         }
 
-        if (row.sella_code == 30033) {
-          if (!row.if_fee_rate) {
-            modal.alert('설치비는 설치비 수수료 항목을 입력하세요.');
-            return;
-          }
+        row.additional = row.if_fee_rate;
+      }
 
-          row.additional = row.if_fee_rate;
+      if (row.sella_code == 30047) {
+        if (!row.df_fee_rate) {
+          modal.alert('배송비는 배송비 수수료 항목을 입력하세요.');
+          return;
         }
 
-        if (row.sella_code == 30047) {
-          if (!row.df_fee_rate) {
-            modal.alert('배송비는 배송비 수수료 항목을 입력하세요.');
-            return;
-          }
-
-          row.additional = row.df_fee_rate;
-        }
+        row.additional = row.df_fee_rate;
       }
     }
     request.post(`user/forms/save`, { forms_name: formNameRef.current.value, save_data }).then((ret) => {
@@ -191,8 +192,6 @@ const FormManagement_Custom_Add = (param) => {
           excelDataRef.current = items;
 
           const excelDatas = [...excelDataRef.current];
-
-          modal.alert('주문양식 데이터를\n성공적으로 불러왔습니다.');
 
           setExcelData(excelDatas);
           setMode(1);
@@ -302,6 +301,7 @@ const FormManagement_Custom_Add = (param) => {
 
     nowSelectRef.current = rowIndex;
 
+    setTransition(true);
     setMode(2);
   };
 
@@ -365,11 +365,13 @@ const FormManagement_Custom_Add = (param) => {
     setRowData(rowDatas);
   };
 
+  const onReset = (e) => {
+    searchRef.current.value = '';
+    onSearch(e);
+  };
+
   return (
     <>
-      {/* 주문양식을 불러오기 전 해당 영역은 비어있고 엑셀 업로드 버튼 한개만 떠있게 됩니다. 피그마에 나와있어요!
-    >>> '클릭하여 매칭해주세요' 를 클릭하면 옆에 데이터창이 스르륵 나왔다가 스르륵 사라집니다. 
-    애니메이션 효과는 벤치마킹한 사이트를 보면서 설명드릴게요, 작업하실때 말씀주세요!  */}
       <div className="leftbox">
         <h3>매체명</h3>
         <div className="inputbox">
@@ -437,24 +439,25 @@ const FormManagement_Custom_Add = (param) => {
               <Button className="btn_search" onClick={onSearch}>
                 <img src={`${img_src}${icon_search}`} />
               </Button>
-              <Button className="btn_reset">
+              <Button className="btn_reset" onClick={onReset}>
                 <img src={`${img_src}${icon_reset}`} />
               </Button>
             </div>
-            <table className="thead">
-              <thead>
-                <th>열</th>
-                <th>업로드한 엑셀 항목</th>
-                <th> </th>
-              </thead>
-            </table>
-            <table className="tbody">
-              <tbody>
-                {excelData &&
-                  excelData.map((d, key) => <UploadExcelItems key={key} index={key} d={d} callback={MatchCallback} />)}
-                <></>
-              </tbody>
-            </table>
+
+            <CSSTransition
+              in={transition}
+              nodeRef={nodeRef}
+              timeout={300}
+              classNames="form-add-transition"
+              unmountOnExit
+            >
+              <TabContent
+                nodeRef={nodeRef}
+                excelData={excelData}
+                MatchCallback={MatchCallback}
+                setTransition={setTransition}
+              ></TabContent>
+            </CSSTransition>
           </>
         )}
       </div>
@@ -613,7 +616,7 @@ const SellaForm = React.memo(({ index, d, selectRow, onClick, onDelete, checkedI
   );
 });
 
-const UploadExcelItems = React.memo(({ index, d, callback }) => {
+const UploadExcelItems = React.memo(({ index, d, callback, setTransition }) => {
   logger.render('SellaForm TableItem : ', index);
   return (
     <tr>
@@ -626,6 +629,7 @@ const UploadExcelItems = React.memo(({ index, d, callback }) => {
         <Button
           disabled={d.disabled}
           onClick={() => {
+            setTransition(false);
             callback({ title: d.header, column: d.column, value: d.value });
           }}
           className="btn_blue"
@@ -665,6 +669,27 @@ const SellaBasicModal = React.memo(({ modalState, setModalState, sella_forms, Ad
           ))}
       </Modal.Body>
     </Modal>
+  );
+});
+
+const TabContent = React.memo(({ nodeRef, excelData, MatchCallback, setTransition }) => {
+  logger.render('TransitionTab');
+
+  return (
+    <table ref={nodeRef}>
+      <thead className="thead">
+        <th>열</th>
+        <th>업로드한 엑셀 항목</th>
+        <th> </th>
+      </thead>
+      <tbody className="tbody">
+        {excelData &&
+          excelData.map((d, key) => (
+            <UploadExcelItems key={key} index={key} d={d} callback={MatchCallback} setTransition={setTransition} />
+          ))}
+        <></>
+      </tbody>
+    </table>
   );
 });
 

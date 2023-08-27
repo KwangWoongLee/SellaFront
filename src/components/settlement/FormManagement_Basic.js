@@ -73,7 +73,7 @@ const FormManagement_Basic = (param) => {
     const mimeType = { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' };
     const buffer = await workbook.xlsx.writeBuffer();
     const blob = new Blob([buffer], mimeType);
-    saveAs(blob, '셀라 기본 양식_네이버스마트스토어.xlsx');
+    saveAs(blob, `셀라 기본 양식_${platform.name}.xlsx`);
   };
 
   return (

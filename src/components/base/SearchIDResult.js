@@ -19,7 +19,6 @@ const SearchIDResult = () => {
 
   useEffect(() => {
     const temp = com.storage.getItem('temp');
-    com.storage.setItem('temp', '');
     if (temp) {
       setMode(1);
       setSearchedEmail(temp);
@@ -27,13 +26,15 @@ const SearchIDResult = () => {
       setMode(0);
       setSearchedEmail('');
     }
+
+    com.storage.setItem('temp', '');
   }, []);
 
   return (
     <>
       <Head />
       <Body title={`아이디 찾기 성공`} myClass={'searchresult'}>
-        {mode == 0 && (
+        {mode == 1 && (
           <div className="formbox success">
             <h3>아이디 찾기</h3>
 
@@ -54,6 +55,7 @@ const SearchIDResult = () => {
                 variant="primary"
                 className="btn_blue"
                 onClick={() => {
+                  com.storage.setItem('email', searchedEmail);
                   navigate('/login');
                 }}
               >
@@ -62,7 +64,7 @@ const SearchIDResult = () => {
             </div>
           </div>
         )}
-        {mode == 1 && (
+        {mode == 0 && (
           <div className="formbox fail">
             <h3>아이디 찾기</h3>
 

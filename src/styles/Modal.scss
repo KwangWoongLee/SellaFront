@@ -1,5 +1,14 @@
 // Modal.
 
+.Confirm {
+  .modal-title {
+    margin: 0 auto;
+  }
+  .btn {
+    margin: 0 auto;
+  }
+}
+
 .modal-dialog {
   height: 100%;
   max-height: calc(100% - 60px);
@@ -67,17 +76,126 @@
   height: auto;
   border-top: 0;
   text-align: center;
-}
 
-.Confirm {
-  .modal-title {
-    margin: 0 auto;
-  }
   .btn {
-    margin: 0 auto;
+    margin: 0 5px;
   }
 }
 
 .modal-90w {
   min-width: 90%;
+}
+
+.modal.step2 {
+  .modal-dialog {
+    width: 90%;
+    max-width: unset;
+  }
+
+  .modal-header {
+    .btnbox {
+      float: right;
+      width: auto;
+      height: 48px;
+
+      .btn_close {
+        margin-left: 20px;
+      }
+    }
+  }
+
+  .modal-body {
+    table {
+      th:nth-child(1),
+      td:nth-child(1) {
+        width: 150px;
+      }
+
+      th:nth-child(2),
+      td:nth-child(2) {
+        width: 300px;
+      }
+
+      th:nth-child(3),
+      td:nth-child(3) {
+        width: 110px;
+      }
+
+      th:nth-child(4),
+      td:nth-child(4),
+      th:nth-child(5),
+      td:nth-child(5) {
+        width: 200px;
+      }
+
+      th:nth-child(6),
+      td:nth-child(6) {
+        width: 110px;
+      }
+
+      th:nth-child(7),
+      td:nth-child(7) {
+        width: 70px;
+      }
+
+      th:nth-child(8),
+      td:nth-child(8) {
+        width: 120px;
+      }
+
+      th:nth-child(9),
+      td:nth-child(9) {
+        width: 120px;
+      }
+
+      th:last-child,
+      td:last-child {
+        width: 42px;
+      }
+    }
+
+    table.tbody {
+      height: auto;
+
+      tbody {
+        width: 100%;
+      }
+
+      input {
+        width: 100%;
+        height: 32px;
+        font-size: 14px !important;
+      }
+
+      td:nth-child(1) {
+        border-left: 1px solid #ddd;
+      }
+
+      td:nth-child(4),
+      td:nth-child(5) {
+        button {
+          float: left;
+          width: 50%;
+        }
+        input {
+          float: right;
+          width: calc(50% - 5px);
+        }
+      }
+
+      td:nth-child(7) {
+        button {
+          width: 100%;
+        }
+      }
+    }
+
+    table.tfoot {
+      td {
+        width: 100%;
+        height: 42px;
+        text-align: center;
+      }
+    }
+  }
 }

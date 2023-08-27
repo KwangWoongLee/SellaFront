@@ -231,6 +231,14 @@ button:hover {
   color: #017efa;
 }
 
+.btn_more2:before {
+  content: '공지사항 전체보기';
+  padding-left: 5px;
+  font-size: 13px;
+  line-height: 19.5px;
+  color: #017efa;
+}
+
 .btn_tip {
   padding: 0 !important;
   width: 22px !important;
@@ -263,6 +271,14 @@ button:hover {
     width: 20px;
     height: auto;
   }
+}
+
+.btn_excel_click {
+  width: 150px;
+  height: auto;
+  vertical-align: middle;
+  background-color: transparent;
+  border: 0;
 }
 
 .btn_red,

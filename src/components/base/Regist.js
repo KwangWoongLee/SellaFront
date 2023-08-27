@@ -122,6 +122,14 @@ const Regist = () => {
     logger.info(`regist : email = ${email}, password = ${password}`);
   };
 
+  const onAuthNoChange = (e) => {
+    let auth_no = authNoRef.current.value;
+    if (auth_no.length > 6) {
+      authNoRef.current.value = auth_no.substr(0, 6);
+      return;
+    }
+  };
+
   const onCheckPhoneAuthNo = (e) => {
     const auth_no = authNoRef.current.value;
     if (auth_no)
@@ -355,7 +363,13 @@ const Regist = () => {
               <br />
             )}
             <InputGroup className="inputphone2">
-              <Form.Control ref={authNoRef} type="text" placeholder="인증번호 입력" defaultValue={''} />
+              <Form.Control
+                ref={authNoRef}
+                type="text"
+                placeholder="인증번호 입력"
+                defaultValue={''}
+                onChange={onAuthNoChange}
+              />
               <Button
                 disabled={!auth['send_phone']}
                 variant="primary"

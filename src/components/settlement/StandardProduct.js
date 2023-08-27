@@ -212,38 +212,42 @@ const StandardProduct = () => {
           </div>
           <div className="section2">
             <h3>
-              기준상품 연결 조회 <span>{matchData.length}</span>
+              연결한 판매상품 <span>{matchData.length}</span>
             </h3>
             {/* 이부분 데이터가 뿌려지는 걸 못봐서 나중에 다시 스타일 잡을게요! 
             이 부분을 AGGrid로 하자고 말씀해주셨었나요..?ㅠ 여기는 별 기능이없어
             그냥 테이블로 바꿔놓을게요 ?*/}
 
-            <table className="standardtable">
-              <thead>
-                <th>연결일시</th>
-                <th>주문매체</th>
-                <th>상품명</th>
-                <th>옵션</th>
-                <th>수량</th>
-                <th>수수료</th>
-                <th></th>
-              </thead>
-              <tbody className="tbody">
-                <>
-                  {matchData &&
-                    matchData.map((d, key) => (
-                      <StandardProductItem
-                        key={key}
-                        index={key}
-                        d={d}
-                        onChange={onChangeStandardItem}
-                        onSave={onSave}
-                        onDelete={onDelete}
-                      />
-                    ))}
-                </>
-              </tbody>
-            </table>
+            <div className="tablebox">
+              <table className="thead">
+                <thead>
+                  <th>연결일시</th>
+                  <th>주문매체</th>
+                  <th>상품명</th>
+                  <th>옵션</th>
+                  <th>수량</th>
+                  <th>수수료</th>
+                  <th></th>
+                </thead>
+              </table>
+              <table className="tbody">
+                <tbody>
+                  <>
+                    {matchData &&
+                      matchData.map((d, key) => (
+                        <StandardProductItem
+                          key={key}
+                          index={key}
+                          d={d}
+                          onChange={onChangeStandardItem}
+                          onSave={onSave}
+                          onDelete={onDelete}
+                        />
+                      ))}
+                  </>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </Body>
@@ -299,7 +303,7 @@ const StandardProductItem = React.memo(({ index, d, onChange, onSave, onDelete }
         ></input>
       </td>
 
-      <td>{d.category_fee_rate}</td>
+      <td>{d.category_fee_rate && Number(d.category_fee_rate).toFixed(1)}</td>
       <td>
         <button
           className="btn-primary btn_blue btn_small"

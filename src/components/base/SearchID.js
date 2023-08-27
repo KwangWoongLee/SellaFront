@@ -32,10 +32,8 @@ const local = ['내국인', '외국인'];
 const SearchID = () => {
   logger.render('SearchID');
 
-  const [agreementModal, setAgreementModal] = useState({
-    state: false,
-    content: '',
-  });
+  const [agreementModal, setAgreementModal] = useState(false);
+  const [agreementModalContent, setAgreementModalContent] = useState('');
   const [searchButtonOn, setSearchButtonOn] = useState(false);
   const [allChecked, setAllChecked] = useState(false);
   const [agreement, setAgreement] = useState([]);
@@ -255,7 +253,8 @@ const SearchID = () => {
   };
 
   const onClickAgreement = (e, content) => {
-    setAgreementModal({ state: true, content: content });
+    setAgreementModalContent(content);
+    setAgreementModal(true);
   };
 
   const onCheckPhoneAuthNo = (e) => {
@@ -454,7 +453,11 @@ const SearchID = () => {
       </Body>
       <Footer />
 
-      <AgreementModal modalState={agreementModal} setModalState={setAgreementModal}></AgreementModal>
+      <AgreementModal
+        modalState={agreementModal}
+        setModalState={setAgreementModal}
+        content={agreementModalContent}
+      ></AgreementModal>
     </>
   );
 };

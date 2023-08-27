@@ -35,6 +35,17 @@
     margin-right: 10px;
   }
 
+  .btnbox .count {
+    font-size: 13px;
+    font-weight: 400;
+    color: #999;
+
+    b {
+      font-weight: 600;
+      color: #000;
+    }
+  }
+
   .section table,
   .section .tablebox {
     width: 100%;

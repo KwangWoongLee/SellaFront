@@ -9,6 +9,8 @@ import Checkbox from 'components/common/CheckBoxCell';
 
 import { img_src, logger } from 'util/com';
 
+import 'styles/ColumnControlModal.scss';
+
 import icon_close from 'images/icon_close.svg';
 
 const ColumnControlModal = React.memo(
@@ -44,7 +46,7 @@ const ColumnControlModal = React.memo(
     const onClose = () => setModalState(false);
 
     return (
-      <Modal show={modalState} onHide={onClose} centered className="modal MarginCalc">
+      <Modal show={modalState} onHide={onClose} centered className="modal columnControlModal">
         <Modal.Header>
           <Modal.Title>
             조회 항목 관리
@@ -55,9 +57,6 @@ const ColumnControlModal = React.memo(
           </Button>
         </Modal.Header>
         <Modal.Body>
-          <table className="columncontrol thead">
-            <thead></thead>
-          </table>
           <table className="columncontrol tbody">
             <tbody>
               <>
@@ -87,12 +86,14 @@ const Column = React.memo(({ index, d, checkedItemHandler }) => {
   return (
     <tr>
       <td>{d.sella_title}</td>
-      <Checkbox
-        checked={d.view}
-        checkedItemHandler={() => {
-          checkedItemHandler(d);
-        }}
-      ></Checkbox>
+      <td>
+        <Checkbox
+          checked={d.view}
+          checkedItemHandler={() => {
+            checkedItemHandler(d);
+          }}
+        ></Checkbox>
+      </td>
     </tr>
   );
 });

@@ -66,25 +66,34 @@ const Buying = () => {
   }, []);
 
   const [columnDefs] = useState([
-    { field: '', pinned: 'left', lockPinned: true, cellClass: 'lock-pinned', checkboxSelection: true, width: 5 },
+    {
+      field: '',
+      pinned: 'left',
+      lockPinned: true,
+      headerCheckboxSelection: true,
+      cellClass: 'lock-pinned checkcell',
+      checkboxSelection: true,
+      maxWidth: 36,
+    },
     {
       field: '',
       sortable: true,
       pinned: 'left',
       lockPinned: true,
-      cellClass: 'lock-pinned',
+      cellClass: 'lock-pinned uneditable',
       editable: false,
       headerName: '판매매체',
       filter: true,
     },
 
-    { field: 'name', sortable: true, unSortIcon: true, headerName: '상품명', filter: true },
+    { field: 'name', sortable: true, unSortIcon: true, headerName: '상품명', filter: true, cellClass: 'uneditable' },
     {
       field: 'revenue_sum_price',
       sortable: true,
       unSortIcon: true,
       valueParser: (params) => Number(params.newValue),
       headerName: '수익합계',
+      cellClass: 'uneditable',
     },
     {
       field: 'expense_sum_price',
@@ -92,6 +101,7 @@ const Buying = () => {
       unSortIcon: true,
       valueParser: (params) => Number(params.newValue),
       headerName: '비용합계',
+      cellClass: 'uneditable',
     },
     {
       field: 'margin_price',
@@ -99,6 +109,7 @@ const Buying = () => {
       unSortIcon: true,
       valueParser: (params) => Number(params.newValue),
       headerName: '순수익',
+      cellClass: 'uneditable',
     },
     {
       field: 'lowest_standard_price',
@@ -106,6 +117,7 @@ const Buying = () => {
       unSortIcon: true,
       valueParser: (params) => Number(params.newValue),
       headerName: '최저기준가',
+      cellClass: 'uneditable',
     },
   ]);
 
@@ -520,6 +532,9 @@ const Buying = () => {
               <Button variant="primary" onClick={onDelete}>
                 선택 삭제
               </Button>
+              <span className="count">
+                <b>10</b> / 10개
+              </span>
             </div>
             <div style={containerStyle} className="tablebox">
               <div style={gridStyle} className="ag-theme-alpine">

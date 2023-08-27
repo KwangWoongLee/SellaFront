@@ -88,24 +88,30 @@ const FormManagement = () => {
       field: 'idx',
       headerName: 'idx',
       hide: true,
+      cellClass: 'uneditable',
     },
     {
       field: '',
-      maxWidth: 50,
+      maxWidth: 38,
       rowDrag: true,
+      cellClass: 'uneditable',
     },
     {
       field: 'name',
       headerName: '양식명',
       width: 220,
+      cellClass: 'uneditable',
     },
     {
       field: 'view',
       headerName: 'on/off',
       cellRenderer: ButtonRenderer,
       maxWidth: 73,
+      cellClass: 'uneditable',
     },
   ]);
+
+  const rowHeight = 42;
 
   const onSelectionChanged = () => {
     const selectedRows = gridRef.current.api.getSelectedRows();
@@ -238,6 +244,7 @@ const FormManagement = () => {
                 animateRows={true}
                 onSelectionChanged={onSelectionChanged}
                 onGridReady={onGridReady}
+                rowHeight={rowHeight}
               ></AgGridReact>
             </div>
             <div className="btnbox">

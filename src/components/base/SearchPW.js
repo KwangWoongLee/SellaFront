@@ -109,29 +109,29 @@ const SearchPW = () => {
     if (isOk) setSearchButtonOn(true);
   }, [auth]);
 
-  // useEffect(() => {
-  //   if (agencyType) {
-  //     const auth_temp = auth;
-  //     auth_temp['agency'] = true;
-  //     setAuth({ ...auth_temp });
-  //   } else {
-  //     const auth_temp = auth;
-  //     auth_temp['agency'] = false;
-  //     setAuth({ ...auth_temp });
-  //   }
-  // }, [agencyType]);
+  useEffect(() => {
+    if (agencyType) {
+      const auth_temp = auth;
+      auth_temp['agency'] = true;
+      setAuth({ ...auth_temp });
+    } else {
+      const auth_temp = auth;
+      auth_temp['agency'] = false;
+      setAuth({ ...auth_temp });
+    }
+  }, [agencyType]);
 
-  // useEffect(() => {
-  //   if (monthType) {
-  //     const auth_temp = auth;
-  //     auth_temp['month'] = true;
-  //     setAuth({ ...auth_temp });
-  //   } else {
-  //     const auth_temp = auth;
-  //     auth_temp['month'] = false;
-  //     setAuth({ ...auth_temp });
-  //   }
-  // }, [monthType]);
+  useEffect(() => {
+    if (monthType) {
+      const auth_temp = auth;
+      auth_temp['month'] = true;
+      setAuth({ ...auth_temp });
+    } else {
+      const auth_temp = auth;
+      auth_temp['month'] = false;
+      setAuth({ ...auth_temp });
+    }
+  }, [monthType]);
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -326,7 +326,9 @@ const SearchPW = () => {
                     ></Checkbox>
                     <label>
                       {agreement[key].title}{' '}
-                      <button onClick={(e) => onClickAgreement(e, agreement[key].content)}>보기</button>
+                      <span onClick={(e) => onClickAgreement(e, agreement[key].content)}>
+                        <strong style={{ textDecoration: 'underline' }}>보기</strong>
+                      </span>
                     </label>
                   </li>
                 </>
@@ -466,13 +468,7 @@ const SearchPW = () => {
               <br />
             )}
           </InputGroup>
-          <Button
-            onClick={onSubmit}
-            disabled={!searchButtonOn}
-            variant="primary"
-            form="search-form"
-            className="btn_blue btn_submit"
-          >
+          <Button onClick={onSubmit} disabled={!searchButtonOn} variant="primary" className="btn_blue btn_submit">
             확인
           </Button>
         </Form>
@@ -483,11 +479,11 @@ const SearchPW = () => {
         <Modal.Body>{agreementModalContent}</Modal.Body>
       </Modal>
 
-      {/* <AgreementModal
+      <AgreementModal
         modalState={agreementModal}
         setModalState={setAgreementModal}
         content={agreementModalContent}
-      ></AgreementModal> */}
+      ></AgreementModal>
     </>
   );
 };

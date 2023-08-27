@@ -4,10 +4,12 @@ import { Button, DropdownButton, Dropdown } from 'react-bootstrap';
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
+import Step2Modal from 'components/project/Step2Modal';
 import request from 'util/request';
 import { img_src, logger, modal, navigate, page_reload, time_format } from 'util/com';
 import Recoils from 'recoils';
 import _ from 'lodash';
+import * as xlsx from 'xlsx';
 import * as ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 
@@ -26,17 +28,20 @@ import Step2_PFCellRenderer from 'components/common/AgGrid/Step2_PFCellRenderer'
 let rawData;
 const excel_str = [
   '신규 등록용',
-  '상품정보 수집용(전체)',
-  '상품정보 수집용(카테고리,상품명)',
-  '상품정보 수집용(입고단가,택배비,포장비)',
+  '상품정보 수정용(전체)',
+  '상품정보 수정용(카테고리,상품명)',
+  '상품정보 수정용(입고단가,택배비,포장비)',
 ];
 let df_category = [];
 let pf_category = [];
 
 const Step2 = () => {
   logger.render('Step2');
-  const [rowData, setDatas] = useState();
+  const account = Recoils.useValue('CONFIG:ACCOUNT');
   const [excelType, setExcelType] = useState(0);
+
+  const [rowData, setDatas] = useState();
+  const access_token = account.access_token;
   const insertRef = useRef(false);
   const gridRef = useRef();
   const containerStyle = useMemo(() => ({ width: '100%', height: '100%' }), []);
@@ -559,14 +564,41 @@ const Step2 = () => {
   };
 
   const onUpload = function () {
-    modal.file_upload('user/goods/save', '.xlsx', '상품정보 엑셀 파일을 선택해주세요.', { excelType }, (ret) => {
+    modal.file_upload(null, '.xlsx', '상품정보 엑셀 파일을 선택해주세요.', {}, (ret) => {
       if (!ret.err) {
-        const { data } = ret.data;
-        logger.info(data);
-        Recoils.setState('DATA:GOODS', data);
+        const { files } = ret;
+        if (!files.length) return;
+        const file = files[0];
+        const reader = new FileReader();
+        const rABS = !!reader.readAsBinaryString;
 
-        rawData = _.cloneDeep(data);
-        setDatas(data);
+        reader.onload = (e) => {
+          const bstr = e.target.result;
+          const wb = xlsx.read(bstr, { type: rABS ? 'binary' : 'array', bookVBA: true });
+
+          const frm = new FormData();
+          frm.append('files', file);
+          frm.append('Authorization', access_token);
+
+          request
+            .post_form('user/goods/save', frm, () => {})
+            .then((ret) => {
+              if (!ret.err) {
+                const { data } = ret.data;
+                logger.info(data);
+                Recoils.setState('DATA:GOODS', data);
+
+                rawData = _.cloneDeep(data);
+                setDatas(_.cloneDeep(data));
+              }
+            });
+        };
+
+        if (rABS) {
+          reader.readAsBinaryString(file);
+        } else {
+          reader.readAsArrayBuffer(file);
+        }
       }
     });
   };
@@ -576,19 +608,17 @@ const Step2 = () => {
     const worksheet = workbook.addWorksheet('상품입고용');
 
     worksheet.columns = [
-      { header: '상품번호', key: 'idx', width: 20 },
-      { header: '카테고리', key: 'goods_category', width: 32 },
-      { header: '상품명', key: 'name', width: 10 },
+      { header: '상품번호', key: 'idx', width: 18 },
+      { header: '카테고리', key: 'goods_category', width: 18 },
+      { header: '상품명', key: 'name', width: 25 },
       { header: '입고단가', key: 'stock_price', width: 10 },
-      { header: '택배비구분', key: 'delivery_descript', width: 10 },
       { header: '택배비', key: 'delivery_fee', width: 10 },
-      { header: '포장비구분', key: 'packing_descript', width: 10 },
       { header: '포장비', key: 'packing_fee', width: 10 },
       { header: '박스입수량', key: 'box_amount', width: 10 },
       { header: '단독배송', key: 'single_delivery', width: 10 },
       { header: '바코드', key: 'barcode', width: 10 },
       { header: '권장소비자가', key: 'rrp', width: 10 },
-      { header: '메모', key: 'memo', width: 10 },
+      { header: '메모', key: 'memo', width: 30 },
     ];
 
     switch (type) {
@@ -603,7 +633,7 @@ const Step2 = () => {
               item.fill = {
                 type: 'pattern',
                 pattern: 'solid',
-                fgColor: { argb: '2563EB' },
+                fgColor: { argb: 'cccccc' },
               };
             }
 
@@ -626,7 +656,7 @@ const Step2 = () => {
               item.fill = {
                 type: 'pattern',
                 pattern: 'solid',
-                fgColor: { argb: '2563EB' },
+                fgColor: { argb: 'cccccc' },
               };
             }
 
@@ -643,7 +673,7 @@ const Step2 = () => {
       case 0:
         break;
       default:
-        let columnData = _.cloneDeep(rawData);
+        let columnData = _.cloneDeep(rowData);
         _.map(columnData, (obj) => {
           _.unset(obj, 'reg_date');
           _.unset(obj, 'modify_date');

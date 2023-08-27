@@ -118,7 +118,7 @@ export const navigate = (path, flag) => {
     if (exist_margin_calc_data == '1') {
       modal.confirm(
         '다른 페이지로 이동하시면 손익데이터가 삭제됩니다.',
-        [{ strong: '', normal: '이동하시겠습니까?' }],
+        [{ strong: '', normal: ' 이동하시겠습니까?' }],
         [
           {
             name: '예',

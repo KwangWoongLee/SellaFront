@@ -1,0 +1,22 @@
+// ColumnControlModal.
+
+.columnControlModal {
+  .modal-header {
+    height: auto;
+    min-height: 48px;
+    .modal-title {
+      span.sub {
+        display: block;
+        font-size: 14px;
+      }
+    }
+  }
+
+  .modal-body {
+    padding: 0;
+
+    thead {
+      display: none;
+    }
+  }
+}

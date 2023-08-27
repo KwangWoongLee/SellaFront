@@ -193,7 +193,7 @@ table input[type='checkbox'] {
 
 table.thead {
   display: block;
-  height: 42px !important;
+  height: 36px !important;
   border-bottom-left-radius: 0 !important;
   border-bottom-right-radius: 0 !important;
 }

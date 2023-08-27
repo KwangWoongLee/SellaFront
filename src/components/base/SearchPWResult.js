@@ -65,7 +65,7 @@ const SearchPWResult = () => {
   const onPasswordChangeReq = () => {
     const password = passwordRef.current.value;
     if (password)
-      request.post('auth/change/password', { password }).then((ret) => {
+      request.post('auth/patch/password', { password }).then((ret) => {
         if (!ret.err) {
           modal.alert('변경되었습니다.');
           navigate('login');
@@ -77,7 +77,7 @@ const SearchPWResult = () => {
     <>
       <Head />
       <Body title={`비밀번호 찾기 성공`} myClass={'searchresult'}>
-        {mode == 0 && (
+        {mode == 1 && (
           <Form id="change-password-form" className="formbox success">
             <h3>비밀번호 변경</h3>
 
@@ -128,7 +128,7 @@ const SearchPWResult = () => {
           </Form>
         )}
 
-        {mode == 1 && (
+        {mode == 0 && (
           <div className="formbox fail">
             <h3>비밀번호를 찾을 수 없습니다.</h3>
 

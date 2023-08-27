@@ -2,11 +2,16 @@ import React, { useState, useEffect } from 'react';
 
 import { Button, DropdownButton, Dropdown, Modal, Form, FloatingLabel } from 'react-bootstrap';
 import request from 'util/request';
-import { modal } from 'util/com';
+import { img_src, modal } from 'util/com';
 import Recoils from 'recoils';
 import _ from 'lodash';
 
 import { logger } from 'util/com';
+
+import icon_del from 'images/icon_del.svg';
+import icon_add from 'images/icon_add.svg';
+import icon_close from 'images/icon_close.svg';
+
 const sd_str = ['Y', 'N'];
 
 const InputModal = React.memo(({ modalState, setModalState, callback }) => {
@@ -60,58 +65,560 @@ const InputModal = React.memo(({ modalState, setModalState, callback }) => {
     <Modal show={modalState} onHide={onClose} centered className="modal step2">
       <Modal.Header>
         <Modal.Title>상품추가</Modal.Title>
+        <div className="btnbox">
+          <Button variant="primary" className="btn_blue">
+            저장
+          </Button>
+          <Button variant="primary" className="btn_close" onClick={onClose}>
+            <img src={`${img_src}${icon_close}`} />
+          </Button>
+        </div>
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={onSubmit} id="insert-form">
-          <div>
-            <FloatingLabel label="카테고리" className="mb-1">
-              <Form.Control type="text" placeholder="카테고리" defaultValue={''} />
-            </FloatingLabel>
-            <FloatingLabel label="상품명" className="mb-1">
-              <Form.Control type="text" placeholder="상품명" defaultValue={''} />
-            </FloatingLabel>
-            <FloatingLabel label="입고단가" className="mb-1">
-              <Form.Control type="number" placeholder="입고단가" defaultValue={''} />
-            </FloatingLabel>
-            <FloatingLabel label="박스입수량" className="mb-1">
-              <Form.Control type="number" placeholder="박스입수량" defaultValue={''} />
-            </FloatingLabel>
-            <Form.Control type="hidden" defaultValue={sd_str[sdType]} />
-            단독배송
-            <DropdownButton variant="" title={sd_str[sdType]}>
-              {sd_str.map((name, key) => (
-                <Dropdown.Item
-                  key={key}
-                  eventKey={key}
-                  onClick={(e) => {
-                    setSDType(key);
-                  }}
-                  active={sdType === key}
-                >
-                  {sd_str[key]}
-                </Dropdown.Item>
-              ))}
-            </DropdownButton>
-            <FloatingLabel label="바코드" className="mb-1">
-              <Form.Control type="text" placeholder="바코드" defaultValue={''} />
-            </FloatingLabel>
-            <FloatingLabel label="권장소비자가" className="mb-1">
-              <Form.Control type="number" placeholder="권장소비자가" defaultValue={''} />
-            </FloatingLabel>
-            <FloatingLabel label="메모" className="mb-1">
-              <Form.Control type="text" placeholder="메모" defaultValue={''} />
-            </FloatingLabel>
+          <div className="tablebox">
+            <table className="thead">
+              <thead>
+                <th>* 카테고리</th>
+                <th>* 상품명</th>
+                <th>* 입고단가</th>
+                <th>* 택배비</th>
+                <th>* 포장비</th>
+                <th>박스입수량</th>
+                <th>단독배송</th>
+                <th>바코드</th>
+                <th>권장소비자가</th>
+                <th>메모</th>
+                <th></th>
+              </thead>
+            </table>
+            <table className="tbody">
+              <tbody>
+                <tr>
+                  <td>
+                    <input type="text" placeholder="카테고리" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="상품명" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="입고단가" />
+                  </td>
+                  <td>
+                    <div class="dropdown">
+                      <button type="button" class="dropdown-toggle btn">
+                        기본값
+                      </button>
+                    </div>
+                    <input type="text" placeholder=""></input>
+                  </td>
+                  <td>
+                    <div class="dropdown">
+                      <button type="button" class="dropdown-toggle btn">
+                        기본값
+                      </button>
+                    </div>
+                    <input type="text" placeholder=""></input>
+                  </td>
+                  <td>
+                    <input type="text" placeholder="박스입수량" />
+                  </td>
+                  <td>
+                    <div class="dropdown">
+                      <button type="button" class="dropdown-toggle btn">
+                        Y
+                      </button>
+                    </div>
+                  </td>
+                  <td>
+                    <input type="text" placeholder="바코드" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="권장소비자가" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="메모" />
+                  </td>
+                  <td>
+                    <button className="btn_del">
+                      <img src={`${img_src}${icon_del}`} alt="삭제" />
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <input type="text" placeholder="카테고리" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="상품명" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="입고단가" />
+                  </td>
+                  <td>
+                    <div class="dropdown">
+                      <button type="button" class="dropdown-toggle btn">
+                        기본값
+                      </button>
+                    </div>
+                    <input type="text" placeholder=""></input>
+                  </td>
+                  <td>
+                    <div class="dropdown">
+                      <button type="button" class="dropdown-toggle btn">
+                        기본값
+                      </button>
+                    </div>
+                    <input type="text" placeholder=""></input>
+                  </td>
+                  <td>
+                    <input type="text" placeholder="박스입수량" />
+                  </td>
+                  <td>
+                    <div class="dropdown">
+                      <button type="button" class="dropdown-toggle btn">
+                        Y
+                      </button>
+                    </div>
+                  </td>
+                  <td>
+                    <input type="text" placeholder="바코드" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="권장소비자가" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="메모" />
+                  </td>
+                  <td>
+                    <button className="btn_del">
+                      <img src={`${img_src}${icon_del}`} alt="삭제" />
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <input type="text" placeholder="카테고리" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="상품명" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="입고단가" />
+                  </td>
+                  <td>
+                    <div class="dropdown">
+                      <button type="button" class="dropdown-toggle btn">
+                        기본값
+                      </button>
+                    </div>
+                    <input type="text" placeholder=""></input>
+                  </td>
+                  <td>
+                    <div class="dropdown">
+                      <button type="button" class="dropdown-toggle btn">
+                        기본값
+                      </button>
+                    </div>
+                    <input type="text" placeholder=""></input>
+                  </td>
+                  <td>
+                    <input type="text" placeholder="박스입수량" />
+                  </td>
+                  <td>
+                    <div class="dropdown">
+                      <button type="button" class="dropdown-toggle btn">
+                        Y
+                      </button>
+                    </div>
+                  </td>
+                  <td>
+                    <input type="text" placeholder="바코드" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="권장소비자가" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="메모" />
+                  </td>
+                  <td>
+                    <button className="btn_del">
+                      <img src={`${img_src}${icon_del}`} alt="삭제" />
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <input type="text" placeholder="카테고리" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="상품명" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="입고단가" />
+                  </td>
+                  <td>
+                    <div class="dropdown">
+                      <button type="button" class="dropdown-toggle btn">
+                        기본값
+                      </button>
+                    </div>
+                    <input type="text" placeholder=""></input>
+                  </td>
+                  <td>
+                    <div class="dropdown">
+                      <button type="button" class="dropdown-toggle btn">
+                        기본값
+                      </button>
+                    </div>
+                    <input type="text" placeholder=""></input>
+                  </td>
+                  <td>
+                    <input type="text" placeholder="박스입수량" />
+                  </td>
+                  <td>
+                    <div class="dropdown">
+                      <button type="button" class="dropdown-toggle btn">
+                        Y
+                      </button>
+                    </div>
+                  </td>
+                  <td>
+                    <input type="text" placeholder="바코드" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="권장소비자가" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="메모" />
+                  </td>
+                  <td>
+                    <button className="btn_del">
+                      <img src={`${img_src}${icon_del}`} alt="삭제" />
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <input type="text" placeholder="카테고리" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="상품명" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="입고단가" />
+                  </td>
+                  <td>
+                    <div class="dropdown">
+                      <button type="button" class="dropdown-toggle btn">
+                        기본값
+                      </button>
+                    </div>
+                    <input type="text" placeholder=""></input>
+                  </td>
+                  <td>
+                    <div class="dropdown">
+                      <button type="button" class="dropdown-toggle btn">
+                        기본값
+                      </button>
+                    </div>
+                    <input type="text" placeholder=""></input>
+                  </td>
+                  <td>
+                    <input type="text" placeholder="박스입수량" />
+                  </td>
+                  <td>
+                    <div class="dropdown">
+                      <button type="button" class="dropdown-toggle btn">
+                        Y
+                      </button>
+                    </div>
+                  </td>
+                  <td>
+                    <input type="text" placeholder="바코드" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="권장소비자가" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="메모" />
+                  </td>
+                  <td>
+                    <button className="btn_del">
+                      <img src={`${img_src}${icon_del}`} alt="삭제" />
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <input type="text" placeholder="카테고리" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="상품명" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="입고단가" />
+                  </td>
+                  <td>
+                    <div class="dropdown">
+                      <button type="button" class="dropdown-toggle btn">
+                        기본값
+                      </button>
+                    </div>
+                    <input type="text" placeholder=""></input>
+                  </td>
+                  <td>
+                    <div class="dropdown">
+                      <button type="button" class="dropdown-toggle btn">
+                        기본값
+                      </button>
+                    </div>
+                    <input type="text" placeholder=""></input>
+                  </td>
+                  <td>
+                    <input type="text" placeholder="박스입수량" />
+                  </td>
+                  <td>
+                    <div class="dropdown">
+                      <button type="button" class="dropdown-toggle btn">
+                        Y
+                      </button>
+                    </div>
+                  </td>
+                  <td>
+                    <input type="text" placeholder="바코드" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="권장소비자가" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="메모" />
+                  </td>
+                  <td>
+                    <button className="btn_del">
+                      <img src={`${img_src}${icon_del}`} alt="삭제" />
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <input type="text" placeholder="카테고리" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="상품명" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="입고단가" />
+                  </td>
+                  <td>
+                    <div class="dropdown">
+                      <button type="button" class="dropdown-toggle btn">
+                        기본값
+                      </button>
+                    </div>
+                    <input type="text" placeholder=""></input>
+                  </td>
+                  <td>
+                    <div class="dropdown">
+                      <button type="button" class="dropdown-toggle btn">
+                        기본값
+                      </button>
+                    </div>
+                    <input type="text" placeholder=""></input>
+                  </td>
+                  <td>
+                    <input type="text" placeholder="박스입수량" />
+                  </td>
+                  <td>
+                    <div class="dropdown">
+                      <button type="button" class="dropdown-toggle btn">
+                        Y
+                      </button>
+                    </div>
+                  </td>
+                  <td>
+                    <input type="text" placeholder="바코드" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="권장소비자가" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="메모" />
+                  </td>
+                  <td>
+                    <button className="btn_del">
+                      <img src={`${img_src}${icon_del}`} alt="삭제" />
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <input type="text" placeholder="카테고리" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="상품명" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="입고단가" />
+                  </td>
+                  <td>
+                    <div class="dropdown">
+                      <button type="button" class="dropdown-toggle btn">
+                        기본값
+                      </button>
+                    </div>
+                    <input type="text" placeholder=""></input>
+                  </td>
+                  <td>
+                    <div class="dropdown">
+                      <button type="button" class="dropdown-toggle btn">
+                        기본값
+                      </button>
+                    </div>
+                    <input type="text" placeholder=""></input>
+                  </td>
+                  <td>
+                    <input type="text" placeholder="박스입수량" />
+                  </td>
+                  <td>
+                    <div class="dropdown">
+                      <button type="button" class="dropdown-toggle btn">
+                        Y
+                      </button>
+                    </div>
+                  </td>
+                  <td>
+                    <input type="text" placeholder="바코드" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="권장소비자가" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="메모" />
+                  </td>
+                  <td>
+                    <button className="btn_del">
+                      <img src={`${img_src}${icon_del}`} alt="삭제" />
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <input type="text" placeholder="카테고리" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="상품명" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="입고단가" />
+                  </td>
+                  <td>
+                    <div class="dropdown">
+                      <button type="button" class="dropdown-toggle btn">
+                        기본값
+                      </button>
+                    </div>
+                    <input type="text" placeholder=""></input>
+                  </td>
+                  <td>
+                    <div class="dropdown">
+                      <button type="button" class="dropdown-toggle btn">
+                        기본값
+                      </button>
+                    </div>
+                    <input type="text" placeholder=""></input>
+                  </td>
+                  <td>
+                    <input type="text" placeholder="박스입수량" />
+                  </td>
+                  <td>
+                    <div class="dropdown">
+                      <button type="button" class="dropdown-toggle btn">
+                        Y
+                      </button>
+                    </div>
+                  </td>
+                  <td>
+                    <input type="text" placeholder="바코드" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="권장소비자가" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="메모" />
+                  </td>
+                  <td>
+                    <button className="btn_del">
+                      <img src={`${img_src}${icon_del}`} alt="삭제" />
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <input type="text" placeholder="카테고리" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="상품명" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="입고단가" />
+                  </td>
+                  <td>
+                    <div class="dropdown">
+                      <button type="button" class="dropdown-toggle btn">
+                        기본값
+                      </button>
+                    </div>
+                    <input type="text" placeholder=""></input>
+                  </td>
+                  <td>
+                    <div class="dropdown">
+                      <button type="button" class="dropdown-toggle btn">
+                        기본값
+                      </button>
+                    </div>
+                    <input type="text" placeholder=""></input>
+                  </td>
+                  <td>
+                    <input type="text" placeholder="박스입수" />
+                  </td>
+                  <td>
+                    <div class="dropdown">
+                      <button type="button" class="dropdown-toggle btn">
+                        Y
+                      </button>
+                    </div>
+                  </td>
+                  <td>
+                    <input type="text" placeholder="바코드" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="권장소비자가" />
+                  </td>
+                  <td>
+                    <input type="text" placeholder="메모" />
+                  </td>
+                  <td>
+                    <button className="btn_del">
+                      <img src={`${img_src}${icon_del}`} alt="삭제" />
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <table className="tfoot">
+              <tr>
+                <td className="td_btn_add">
+                  <span className="txt_small">10행 추가</span>
+                  <button className="btn_add btn_on">
+                    <img src={`${img_src}${icon_add}`} alt="추가" />
+                  </button>
+                </td>
+              </tr>
+            </table>
           </div>
         </Form>
       </Modal.Body>
-      <Modal.Footer>
-        <Button variant="primary" type="submit" form="insert-form">
-          추가
-        </Button>
-        <Button variant="secondary" onClick={onClose}>
-          취소
-        </Button>
-      </Modal.Footer>
     </Modal>
   );
 });

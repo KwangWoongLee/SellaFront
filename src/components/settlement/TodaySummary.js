@@ -26,13 +26,21 @@ import { AgGridReact } from 'ag-grid-react';
 
 const columnDefs = [
   { field: 'idx', hide: true },
-  { field: '', pinned: 'left', lockPinned: true, cellClass: 'lock-pinned', checkboxSelection: true, width: 5 },
+  {
+    field: '',
+    pinned: 'left',
+    lockPinned: true,
+    cellClass: 'lock-pinned checkcell',
+    checkboxSelection: true,
+    maxWidth: 36,
+    horizontal: 'Center',
+  },
   {
     field: 'reg_date',
     sortable: true,
     pinned: 'left',
     lockPinned: true,
-    cellClass: 'lock-pinned',
+    cellClass: 'lock-pinned uneditable',
     editable: false,
     headerName: '업로드 시간',
     filter: false,
@@ -48,6 +56,7 @@ const columnDefs = [
     sortable: true,
     unSortIcon: true,
     headerName: '매체',
+    cellClass: 'uneditable',
     minWidth: 120,
   },
   {
@@ -56,6 +65,7 @@ const columnDefs = [
     unSortIcon: true,
     valueParser: (params) => Number(params.newValue),
     headerName: '주문 수',
+    cellClass: 'uneditable',
     minWidth: 100,
   },
   {
@@ -64,6 +74,7 @@ const columnDefs = [
     unSortIcon: true,
     valueParser: (params) => Number(params.newValue),
     headerName: '택배발송',
+    cellClass: 'uneditable',
     minWidth: 140,
   },
 
@@ -73,6 +84,7 @@ const columnDefs = [
     unSortIcon: true,
     valueParser: (params) => Number(params.newValue),
     headerName: '총 결제금액',
+    cellClass: 'uneditable',
     minWidth: 140,
   },
   {
@@ -81,6 +93,7 @@ const columnDefs = [
     unSortIcon: true,
     valueParser: (params) => Number(params.newValue),
     headerName: '받은 배송비',
+    cellClass: 'uneditable',
     minWidth: 120,
   },
   {
@@ -89,9 +102,12 @@ const columnDefs = [
     unSortIcon: true,
     valueParser: (params) => Number(params.newValue),
     headerName: '손익합계',
+    cellClass: 'uneditable',
     minWidth: 100,
   },
 ];
+
+const rowHeight = 34;
 
 const TodaySummary = () => {
   logger.render('TodaySummary');
@@ -215,8 +231,6 @@ const TodaySummary = () => {
               <Button variant="primary" onClick={onDelete} className="btn_red">
                 선택 삭제
               </Button>
-
-              <span className="txt_red">※ 무료 서비스의 경우 매일 자정을 기준으로 저장된 주문서가 삭제됩니다.</span>
             </div>
           </div>
 

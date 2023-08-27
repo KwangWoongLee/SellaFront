@@ -70,8 +70,6 @@ const FormManagement_Custom = (param) => {
   );
 };
 
-// 나머지 화면은 조금더 만들어주시면 다시 볼게요!
-
 const SellaForm = React.memo(({ index, d }) => {
   logger.render('SellaForm TableItem : ', index);
   return (

@@ -67,6 +67,13 @@ const Head = () => {
           </Nav.Link>
           <Nav.Link className="nav-link cschat" name="/cschat">
             <img src={`${img_src}${icon_kakao}`} alt="카카오" className="icon_kakao" />
+            <button
+              onClick={() => {
+                window.open('http://pf.kakao.com/_xmCykxj/chat');
+              }}
+            >
+              123
+            </button>
             <span className="cschat">1:1문의</span>
           </Nav.Link>
           {account && account.grade != -1 ? (

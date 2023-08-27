@@ -1,5 +1,11 @@
 // Mypage.
 
+.body.myprofile {
+  .nav-tabs .nav-item:last-child {
+    float: right;
+  }
+}
+
 .body.mypage {
   .nav-tabs .nav-item:last-child {
     float: right;

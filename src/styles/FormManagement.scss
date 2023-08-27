@@ -1,9 +1,8 @@
 // form_management.
 
 .body.form_management {
-  .nav-tabs .nav-item:nth-child(3),
-  .nav-tabs .nav-item:nth-child(4),
-  .nav-tabs .nav-item:nth-child(5) {
+  .nav-tabs .nav-item:nth-child(2),
+  .nav-tabs .nav-item:nth-child(3) {
     float: right;
   }
 
@@ -32,6 +31,11 @@
     }
     .ag-header {
       display: none;
+    }
+
+    .ag-ltr .ag-cell {
+      padding: 0 10px !important;
+      line-height: 40px;
     }
 
     h3 + button {
@@ -178,7 +182,7 @@
     }
 
     table.tbody {
-      height: calc(100% - 120px) !important;
+      height: calc(100% - 114px) !important;
     }
 
     th,
@@ -361,6 +365,117 @@
     }
   }
 
+  .section3 {
+    .leftbox.read {
+      width: 100%;
+
+      .tbody,
+      tr {
+        background-color: #fff;
+      }
+
+      th:nth-child(1),
+      td:nth-child(1) {
+        width: 40%;
+        font-weight: 400;
+      }
+
+      td:nth-child(2) {
+        color: #333;
+      }
+
+      th:nth-child(3),
+      td:nth-child(3) {
+        width: 20%;
+      }
+    }
+
+    .leftbox.read + .rightbox {
+      display: none;
+    }
+
+    .leftbox.add {
+      td.notdel .btn_del {
+        display: none;
+      }
+
+      th:nth-child(1),
+      td:nth-child(1) {
+        width: 320px;
+      }
+
+      th:nth-child(3),
+      td:nth-child(3) {
+        width: 150px;
+        padding: 0 7px;
+
+        input {
+          margin: 0 5px;
+          width: 50px;
+        }
+      }
+
+      th:nth-child(4),
+      td:nth-child(4) {
+        width: 34px;
+        padding: 0 7px;
+      }
+
+      th:last-child {
+        width: 8px;
+      }
+    }
+
+    .leftbox.add + .rightbox {
+      .btn_excel_click {
+        width: 100% !important;
+        height: 100% !important;
+        text-align: center;
+        border-radius: 10px;
+
+        img {
+          display: block;
+          margin: 0 auto;
+          width: 150px;
+          height: auto;
+        }
+
+        span {
+          display: block;
+          margin-top: 10px;
+          font-size: 16px;
+          font-weight: 500;
+          color: #444;
+        }
+      }
+
+      .upload_excel_complete {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100% !important;
+        height: 100% !important;
+        text-align: center;
+        opacity: 0.4;
+
+        img {
+          display: block;
+          margin: 0 auto;
+          width: 150px;
+          height: auto;
+        }
+
+        span {
+          display: block;
+          margin-top: 20px;
+          font-size: 16px;
+          font-weight: 500;
+          color: #444;
+        }
+      }
+    }
+  }
+
   .section4 {
     float: left;
     margin-left: 30px;
@@ -373,5 +488,19 @@
   .section3:empty,
   .section4:empty {
     display: none;
+  }
+  .form-add-transition-enter {
+    transform: translateX(100%);
+  }
+  .form-add-transition-enter-active {
+    transform: translateX(0);
+    transition: all 0.4s ease;
+  }
+  .form-add-transition-exit {
+    transform: translateX(0);
+  }
+  .form-add-transition-exit-active {
+    transform: translateX(100%);
+    transition: all 0.4s ease;
   }
 }

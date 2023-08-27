@@ -21,8 +21,26 @@ const CategoryFee_Search = React.memo(({ abledCategoryFee, selectCallback }) => 
   const platform_str = _.uniq(_.map(sella_categories, 'name'));
 
   useEffect(() => {
-    setItems([...sella_categories]);
+    let search_results = [...sella_categories];
+    if (platform_str[platformType]) {
+      search_results = _.filter(search_results, (category) => {
+        return _.includes(category.name, platform_str[platformType]);
+      });
+    }
+
+    setItems(search_results);
   }, []);
+
+  useEffect(() => {
+    let search_results = [...sella_categories];
+    if (platform_str[platformType]) {
+      search_results = _.filter(search_results, (category) => {
+        return _.includes(category.name, platform_str[platformType]);
+      });
+    }
+
+    setItems(search_results);
+  }, [platformType]);
 
   const onSearch = (e) => {
     e.preventDefault();
@@ -59,6 +77,12 @@ const CategoryFee_Search = React.memo(({ abledCategoryFee, selectCallback }) => 
     }
   };
 
+  const onReset = (e) => {
+    e.preventDefault();
+    categoryRef.current.value = '';
+    setPlatformType(0);
+  };
+
   return (
     <>
       <div className="inputbox">
@@ -79,7 +103,7 @@ const CategoryFee_Search = React.memo(({ abledCategoryFee, selectCallback }) => 
         <Button onClick={onSearch} className="btn_search">
           <img src={`${img_src}${icon_search}`} />
         </Button>
-        <Button className="btn_reset">
+        <Button className="btn_reset" onClick={onReset}>
           <img src={`${img_src}${icon_reset}`} />
         </Button>
       </div>
@@ -100,10 +124,12 @@ const CategoryFee_Search = React.memo(({ abledCategoryFee, selectCallback }) => 
 
 const SelectItem = React.memo(({ index, d, onSelect }) => {
   logger.render('SelectItem : ', index);
+
+  const category_fee_rate = d.category_fee_rate ? Number(d.category_fee_rate).toFixed(1) : '';
   return (
     <tr>
       <td>{d.category}</td>
-      <td>{d.category_fee_rate}%</td>
+      <td>{category_fee_rate}%</td>
       <td className="td_small">
         <button
           className="btn-primary btn_blue btn_small"

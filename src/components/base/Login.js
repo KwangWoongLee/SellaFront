@@ -81,8 +81,8 @@ const Login = () => {
         <iframe
           width="653"
           height="367"
-          src="https://www.youtube.com/embed/nLjVRnO1R2c"
-          title="쿠팡 광고수익률 2,131%.. 죄송합니다.. 쿠팡 광고 찢어버렸네요.."
+          src="https://www.youtube.com/embed/DfSuw44goMM"
+          title="유튜브 쇼핑몰 채널 따라해서 연 매출 25억 달성한 사장님의 성공 스토리"
           frameborder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowfullscreen
