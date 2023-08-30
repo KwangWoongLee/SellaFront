@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import Recoils from 'recoils';
-import { img_src, logger } from 'util/com';
+import { return_newline_render, img_src, logger } from 'util/com';
 
 import 'styles/Modal.scss';
 
@@ -23,7 +23,7 @@ const ConfirmModal = () => {
         <Button variant="primary" className="btn_close" onClick={onClose}>
           <img src={`${img_src}${icon_close}`} />
         </Button>
-        {state.title && <span>{state.title}</span>}
+        {state.title && <span className="css-fix-line">{state.title}</span>}
       </Modal.Header>
       {/*요 안에 형식은 주희님 편하신대로! 
       현재는 strong : 진한글자 , normal : 일반글자
@@ -34,8 +34,8 @@ const ConfirmModal = () => {
         {state.body &&
           state.body.map((l, key) => (
             <>
-              <strong>{l.strong}</strong>
-              <span>{l.normal}</span>
+              <strong className="css-fix-line">{l.strong}</strong>
+              <span className="css-fix-line">{l.normal}</span>
             </>
           ))}
       </Modal.Body>

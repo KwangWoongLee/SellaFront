@@ -25,19 +25,7 @@ const AlertModal = () => {
           <img src={`${img_src}${icon_close}`} />
         </Button>
       </Modal.Header>
-      <Modal.Body>
-        {state.error &&
-          _.split(state.error, '\n').map((d, key) => {
-            if (key == _.split(state.error, '\n').length - 1) return <>{d}</>;
-            else
-              return (
-                <>
-                  {d}
-                  <br />
-                </>
-              );
-          })}
-      </Modal.Body>
+      <Modal.Body className="css-fix-line">{state.error && state.error}</Modal.Body>
       <Modal.Footer>
         <Button
           onClick={() => {

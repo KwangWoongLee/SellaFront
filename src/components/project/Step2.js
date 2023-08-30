@@ -64,7 +64,7 @@ const Step2 = () => {
         // GO Step1
         modal.confirm(
           '초기 값을 설정해 주세요.',
-          [{ strong: '', normal: '상품정보를 등록하시려면 기초정보를 등록해 주세요.' }],
+          [{ strong: '', normal: '상품정보를 등록하시려면 \n기초정보를 등록해 주세요.' }],
           [
             {
               name: '기초정보 관리로 이동',
