@@ -163,6 +163,26 @@
   .ag-checkbox-input-wrapper.ag-checked::after {
     // left: -10px;
   }
+
+  .ag-cell-inline-editing:before {
+    top: 9px;
+  }
+
+  .subtxt {
+    font-size: 13px;
+    margin-left: 3px;
+    color: #d20000;
+  }
+
+  .ag-cell-value .loss {
+    color: #d20000;
+    font-weight: 500;
+  }
+
+  .ag-cell-value .profit {
+    color: #006d00;
+    font-weight: 500;
+  }
 }
 
 // before

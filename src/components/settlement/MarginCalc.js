@@ -36,16 +36,21 @@ const PLRenderer = (params) => {
     <>
       {params.value > 0 ? (
         <>
-          <span className="profit">이익</span>
-          <br />
+          <span className="profit">
+            이익
+            <br />
+            {params.value}
+          </span>
         </>
       ) : (
         <>
-          <span className="loss">손해</span>
-          <br />
+          <span className="loss">
+            손해
+            <br />
+            {params.value}
+          </span>
         </>
       )}
-      {params.value}
     </>
   );
 };
@@ -56,7 +61,7 @@ const _30006Renderer = (params) => {
 
       {params.data[30001] && (
         <>
-          <br />({params.data[30001]})
+          <span class="subtxt">({params.data[30001]})</span>
         </>
       )}
     </>
@@ -70,7 +75,7 @@ const _30047Renderer = (params) => {
 
       {params.data['30047_additional'] && (
         <>
-          <br />({(params.data[30047] * Number(params.data['30047_additional'])) / 100})
+          <span class="subtxt">({(params.data[30047] * Number(params.data['30047_additional'])) / 100})</span>
         </>
       )}
     </>
@@ -108,6 +113,8 @@ const ROUTE_COLUMN_BASE = [
     cellClass: 'lock-pinned uneditable',
     editable: false,
     headerName: '손익',
+    wrapText: true,
+    autoHeight: true,
     filter: false,
     unSortIcon: true,
     width: 140,
@@ -198,7 +205,7 @@ const ROUTE_COLUMN_BASE = [
     sortable: true,
     unSortIcon: true,
     headerName: '받은 배송비\n(배송비 수수료)',
-    width: 120,
+    width: 130,
     editable: true,
     cellRenderer: _30047Renderer,
   },
@@ -229,27 +236,6 @@ const ROUTE_COLUMN_BASE = [
     width: 120,
     editable: true,
   },
-  // {
-  //   field: 'recieved_name',
-  //   sortable: true,
-  //   unSortIcon: true,
-  //   headerName: '수취인명',
-  //   minWidth: 120,
-  // },
-  // {
-  //   field: 'recieved_addr',
-  //   sortable: true,
-  //   unSortIcon: true,
-  //   headerName: '수취인 주소',
-  //   minWidth: 140,
-  // },
-  // {
-  //   field: 'recieved_phone',
-  //   sortable: true,
-  //   unSortIcon: true,
-  //   headerName: '수취인 연락처',
-  //   minWidth: 140,
-  // },
 ];
 
 // const getRowHeight = useCallback((params) => {
@@ -416,16 +402,17 @@ const MarginCalc = () => {
 
     if (unconnect_rows.length != 0) {
       modal.confirm(
-        '미연결 주문건이 있습니다. 연결하시겠습니까?',
+        '',
         [
           {
-            strong: '',
+            strong: '미연결 주문건이 있습니다. 연결하시겠습니까?',
             normal: '',
           },
         ],
         [
           {
             name: '상품매칭관리',
+            className: 'btn_blue',
             callback: () => {
               setModalState(true);
               setUnConnectModalSelectData({});
@@ -536,10 +523,10 @@ const MarginCalc = () => {
 
     if (unconnect_rows.length != 0) {
       modal.confirm(
-        '손익계산을 진행하기 전 미연결 주문건을 삭제하시겠습니까?',
+        '',
         [
           {
-            strong: '',
+            strong: '손익계산을 진행하기 전 미연결 주문건을 삭제하시겠습니까?',
             normal: '',
           },
         ],
@@ -623,7 +610,7 @@ const MarginCalc = () => {
     if (unconnect_rows.length != 0) {
       modal.confirm(
         '저장할 수 없습니다.',
-        [{ strong: '', normal: '미연결 주문건이 있어서 저장할 수 없습니다.' }],
+        [{ strong: '미연결 주문건이 있어서 저장할 수 없습니다.', normal: '' }],
         [
           {
             name: '매칭하러 가기',

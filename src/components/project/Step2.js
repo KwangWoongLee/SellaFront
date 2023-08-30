@@ -41,6 +41,7 @@ const Step2 = () => {
   const [excelType, setExcelType] = useState(0);
 
   const [rowData, setDatas] = useState();
+  const [modalState, setModalState] = useState(false);
   const access_token = account.access_token;
   const insertRef = useRef(false);
   const gridRef = useRef();
@@ -378,7 +379,7 @@ const Step2 = () => {
     },
     {
       field: 'modify_date',
-      headerName: '최종 등록일',
+      headerName: '최초 등록일',
       sortable: true,
       unSortIcon: true,
       filter: false,
@@ -534,33 +535,49 @@ const Step2 = () => {
   };
 
   const onInsert = (e) => {
-    if (insertRef.current == true) {
-      modal.alert('추가 중인 상품을 선택 저장 해주세요.');
-      return;
+    // if (insertRef.current == true) {
+    //   modal.alert('추가 중인 상품을 선택 저장 해주세요.');
+    //   return;
+    // }
+
+    // const newRow = {
+    //   barcode: '',
+    //   box_amount: '',
+    //   delivery_descript: '',
+    //   delivery_fee: '',
+    //   goods_category: '',
+    //   idx: '',
+    //   memo: '',
+    //   modify_date: '',
+    //   name: '',
+    //   packing_descript: '',
+    //   packing_fee: '',
+    //   reg_date: '',
+    //   rrp: '',
+    //   single_delivery: '',
+    //   stock_price: '',
+    // };
+
+    // const PageCallback = (newRow) => {
+    //   if (newRow) {
+    //     rawData = _.cloneDeep([newRow, ...rowData]);
+    //     setDatas([newRow, ...rowData]);
+    //   }
+    // };
+
+    // rawData = _.cloneDeep([newRow, ...rowData]);
+    // setDatas([newRow, ...rowData]);
+
+    // insertRef.current = true;
+
+    setModalState(true);
+  };
+
+  const PageCallback = (newRow) => {
+    if (newRow) {
+      rawData = _.cloneDeep([newRow, ...rowData]);
+      setDatas([newRow, ...rowData]);
     }
-
-    const newRow = {
-      barcode: '',
-      box_amount: '',
-      delivery_descript: '',
-      delivery_fee: '',
-      goods_category: '',
-      idx: '',
-      memo: '',
-      modify_date: '',
-      name: '',
-      packing_descript: '',
-      packing_fee: '',
-      reg_date: '',
-      rrp: '',
-      single_delivery: '',
-      stock_price: '',
-    };
-
-    rawData = _.cloneDeep([newRow, ...rowData]);
-    setDatas([newRow, ...rowData]);
-
-    insertRef.current = true;
   };
 
   const onUpload = function () {
@@ -762,6 +779,8 @@ const Step2 = () => {
         </div>
       </Body>
       <Footer />
+
+      <Step2Modal modalState={modalState} setModalState={setModalState} callback={PageCallback}></Step2Modal>
     </>
   );
 };

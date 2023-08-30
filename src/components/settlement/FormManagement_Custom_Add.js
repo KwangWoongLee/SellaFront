@@ -66,6 +66,12 @@ const FormManagement_Custom_Add = (param) => {
     setRowData(rowDatas);
   }, []);
 
+  useEffect(() => {
+    if (transition) {
+      setMode(2);
+    }
+  }, [transition]);
+
   const onSaveForm = () => {
     const save_data = [...rowData];
     if (formNameRef.current.value == '') {
@@ -266,8 +272,6 @@ const FormManagement_Custom_Add = (param) => {
 
           const excelDatas = [...excelDataRef.current];
           setExcelData(excelDatas);
-
-          modal.alert('주문양식 데이터를\n성공적으로 불러왔습니다.');
         };
 
         if (rABS) {
@@ -301,8 +305,8 @@ const FormManagement_Custom_Add = (param) => {
 
     nowSelectRef.current = rowIndex;
 
+    setTransition(false);
     setTransition(true);
-    setMode(2);
   };
 
   const MatchCallback = ({ title, column, value }) => {
@@ -448,8 +452,9 @@ const FormManagement_Custom_Add = (param) => {
               in={transition}
               nodeRef={nodeRef}
               timeout={300}
+              appear={true}
               classNames="form-add-transition"
-              unmountOnExit
+              unmountOnExit={true}
             >
               <TabContent
                 nodeRef={nodeRef}
@@ -527,7 +532,8 @@ const SellaForm = React.memo(({ index, d, selectRow, onClick, onDelete, checkedI
                 <Tooltip
                   id="tooltip"
                   style={{
-                    background: 'yellow',
+                    'font-size': '13px',
+                    'line-height': '18px',
                   }}
                 >
                   <strong>{d.tooltip.title}</strong>

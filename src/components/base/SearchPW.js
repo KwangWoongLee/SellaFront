@@ -49,9 +49,9 @@ const SearchPW = () => {
     send_phone: false,
     auth_phone: false,
     year: false,
-    // month: false,
+    month: false,
     day: false,
-    // agency: false,
+    agency: false,
   });
 
   const emailRef = useRef(null);
@@ -433,8 +433,9 @@ const SearchPW = () => {
               onChange={onPhoneChange}
             />
             <Button
-              // disabled={!(auth['name'] &&auth['year'] && auth['day'] && auth['agency']  && auth['month'] && auth['phone'])}
-              disabled={!(auth['name'] && auth['year'] && auth['day'] && auth['phone'])}
+              disabled={
+                !(auth['name'] && auth['year'] && auth['day'] && auth['agency'] && auth['month'] && auth['phone'])
+              }
               variant="primary"
               className="btn_blue"
               onClick={onSendPhoneAuthNo}

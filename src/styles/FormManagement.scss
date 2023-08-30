@@ -489,6 +489,13 @@
   .section4:empty {
     display: none;
   }
+  .form-add-transition-appear {
+    transform: translateX(100%);
+  }
+  .form-add-transition-appear-active {
+    transform: translateX(0);
+    transition: all 0.4s ease;
+  }
   .form-add-transition-enter {
     transform: translateX(100%);
   }

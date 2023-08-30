@@ -51,6 +51,11 @@ const Head = () => {
                 <span>2단계</span>상품 관리
               </Nav.Link>
             </li>
+            <li className={location.pathname == '/settlement/form_management' ? 'on' : ''}>
+              <Nav.Link onClick={onLink} name="/settlement/form_management">
+                <span>3단계</span>매체 관리
+              </Nav.Link>
+            </li>
           </ul>
         </div>
         <div className="member">

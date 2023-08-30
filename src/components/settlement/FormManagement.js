@@ -7,7 +7,7 @@ import Body from 'components/template/Body';
 import { modal } from 'util/com';
 import request from 'util/request';
 import Recoils from 'recoils';
-import SettlementNavTab from 'components/settlement/common/SettlementNavTab';
+import FormManagementNavTab from 'components/settlement/common/FormManagementNavTab';
 import FormManagement_Basic from 'components/settlement/FormManagement_Basic';
 import FormManagement_Custom from 'components/settlement/FormManagement_Custom';
 import FormManagement_Custom_Add from 'components/settlement/FormManagement_Custom_Add';
@@ -224,7 +224,7 @@ const FormManagement = () => {
     <>
       <Head />
       <Body title={`매체별 양식관리`} myClass={'form_management'}>
-        <SettlementNavTab active="/settlement/form_management" />
+        <FormManagementNavTab active="/settlement/form_management" />
         <div className="page">
           <div className="section1">
             <h3>판매매체</h3>

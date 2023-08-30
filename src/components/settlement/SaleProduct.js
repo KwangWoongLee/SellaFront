@@ -6,7 +6,7 @@ import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 import { modal } from 'util/com';
 import request from 'util/request';
-import SettlementNavTab from 'components/settlement/common/SettlementNavTab';
+import FormManagementNavTab from 'components/settlement/common/FormManagementNavTab';
 import FormsMatchTable from 'components/settlement/common/FormsMatchTable';
 import GoodsMatchTable from 'components/settlement/common/GoodsMatchTable';
 import CategoryFee_Search from 'components/settlement/common/CategoryFee_Search';
@@ -219,7 +219,7 @@ const SaleProduct = () => {
     <>
       <Head />
       <Body title={`판매상품 연결조회`} myClass={'sale_product'}>
-        <SettlementNavTab active="/settlement/sale_product" />
+        <FormManagementNavTab active="/settlement/sale_product" />
         <div className="page">
           <div className="section1">
             <h3>판매 상품 연결 조회</h3>

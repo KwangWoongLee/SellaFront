@@ -5,7 +5,7 @@ import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 import {} from 'util/com';
-import SettlementNavTab from 'components/settlement/common/SettlementNavTab';
+import FormManagementNavTab from 'components/settlement/common/FormManagementNavTab';
 
 import Recoils from 'recoils';
 import { img_src, logger, time_format } from 'util/com';
@@ -149,7 +149,7 @@ const StandardProduct = () => {
     <>
       <Head />
       <Body title={`기준상품 연결 조회`} myClass={'standard_product'}>
-        <SettlementNavTab active="/settlement/standard_product" />
+        <FormManagementNavTab active="/settlement/standard_product" />
         <div className="page">
           <div className="section1">
             <h3>기준상품 연결 조회 </h3>

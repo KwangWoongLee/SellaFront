@@ -50,8 +50,7 @@ const FormManagement_Custom = (param) => {
     <>
       {/* 이 페이지도 '새 양식추가' 할때랑 같은 기능을 가진 페이지여야 하는데, 작업해주시면 다시 스타일 잡겠습니다! */}
       <div className="leftbox">
-        <h3>매체 명</h3>
-        {platform.name}
+        <h3>{platform.name} - 양식 확인</h3>
         <table className="thead">
           <thead>
             <th>셀라 표준 항목</th>

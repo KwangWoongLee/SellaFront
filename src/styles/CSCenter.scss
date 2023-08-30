@@ -147,7 +147,8 @@
   }
 }
 
-.body.cscenter.faq {
+.body.cscenter.faq,
+.body.cscenter.manual {
   th:nth-child(1),
   td:nth-child(1) {
     width: 400px !important;

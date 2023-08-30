@@ -8,6 +8,11 @@ import _ from 'lodash';
 
 import { logger } from 'util/com';
 
+import icon_close from 'images/icon_close.svg';
+import icon_search from 'images/icon_search.svg';
+import icon_reset from 'images/icon_reset.svg';
+
+import 'styles/SearchModal.scss';
 const SearchModal = React.memo(({ modalState, setModalState, selectCallback, name }) => {
   logger.render('SearchModal');
 
@@ -51,20 +56,42 @@ const SearchModal = React.memo(({ modalState, setModalState, selectCallback, nam
     }
   };
 
+  const onReset = () => {
+    nameRef.current.value = '';
+    onSearch();
+  };
+
   return (
-    <Modal show={modalState} onHide={onClose} centered className="modal step2">
+    <Modal show={modalState} onHide={onClose} centered className="modal searchmodal_calculator">
       <Modal.Header>
         <Modal.Title>상품선택</Modal.Title>
+        <Button variant="primary" className="btn_close" onClick={onClose}>
+          <img src={icon_close} />
+        </Button>
       </Modal.Header>
       <Modal.Body>
-        <input type="text" ref={nameRef} onKeyDown={handleKeyDown}></input>
-        <Button onClick={onSearch}>찾기</Button>
-
-        <table className="section">
-          <tbody>
-            <>{items && items.map((d, key) => <SelectItem key={key} index={key} d={d} onSelect={onSelect} />)}</>
-          </tbody>
-        </table>
+        <div class="inputbox">
+          <input
+            type="text"
+            placeholder={'상품명'}
+            ref={nameRef}
+            onKeyDown={handleKeyDown}
+            className="input_search"
+          ></input>
+          <Button onClick={onSearch} className="btn_search">
+            <img src={icon_search} />
+          </Button>
+          <Button className="btn_reset" onClick={onReset}>
+            <img src={icon_reset} />
+          </Button>
+        </div>
+        <div className="tablebox">
+          <table>
+            <tbody>
+              <>{items && items.map((d, key) => <SelectItem key={key} index={key} d={d} onSelect={onSelect} />)}</>
+            </tbody>
+          </table>
+        </div>
       </Modal.Body>
     </Modal>
   );
@@ -77,7 +104,7 @@ const SelectItem = React.memo(({ index, d, onSelect }) => {
       <td>{d.name}</td>
       <td>
         <button
-          className="btn_del"
+          className="btn-primary btn_blue btn_small"
           onClick={(e) => {
             onSelect(e, d);
           }}
