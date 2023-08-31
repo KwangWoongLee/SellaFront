@@ -602,6 +602,7 @@ const Margin = () => {
                   rowSelection={'single'}
                   overlayNoRowsTemplate={'데이터가 없습니다.'}
                   onSelectionChanged={onSelectionChanged}
+                  rowHeight={rowHeight}
                 ></AgGridReact>
               </div>
             </div>

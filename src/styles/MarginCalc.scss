@@ -188,6 +188,11 @@
 // before
 
 .body.margin_calc {
+  .page.before {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
   .before {
     display: flex;
     align-items: center;
@@ -364,6 +369,7 @@
       float: right;
     }
   }
+
   .ag-ltr .ag-cell {
     padding-top: 9px !important;
     padding-bottom: 9px !important;
@@ -377,5 +383,24 @@
   .ag-ltr .ag-cell.uneditable {
     padding-left: 10px !important;
     padding-right: 10px !important;
+  }
+
+  .ag-cell-editable.ag-cell-focus {
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+  }
+
+  .ag-cell-editable.ag-cell-focus::before {
+    display: none;
+  }
+}
+
+.body.today_summary {
+  .btnbox {
+    display: block;
+    float: left;
+    padding-top: 46px;
+    width: auto;
+    height: auto;
   }
 }

@@ -235,6 +235,26 @@ export const replace_day = (day) => {
   return day;
 };
 
+export const replace_1000 = (num) => {
+  let numStr;
+  if (typeof num == 'number') {
+    numStr = num.toString();
+  } else numStr = num;
+  numStr = numStr.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',');
+
+  return numStr;
+};
+
+export const revert_1000 = (num) => {
+  let numStr;
+  if (typeof num == 'number') {
+    numStr = num.toString();
+  } else numStr = num;
+  numStr = numStr.replace(/[^\d]+/g, '');
+
+  return Number(numStr);
+};
+
 export const is_regex_day = (day) => {
   var regDay = /^\d{1,2}$/;
 

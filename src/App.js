@@ -57,6 +57,14 @@ export function App() {
         <RecoilNexus />
         <NavigateCtr />
         <Routes>
+          <Route
+            path=""
+            element={
+              <ProtectedRoute>
+                <MarginCalc />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/logout" element={<Logout />} />
@@ -71,14 +79,6 @@ export function App() {
             />
             <Route
               path="today_summary"
-              element={
-                <ProtectedRoute>
-                  <TodaySummary />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path=""
               element={
                 <ProtectedRoute>
                   <TodaySummary />

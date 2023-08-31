@@ -17,7 +17,7 @@
 .body.searchid,
 .body.searchresult,
 .body.searchpw,
-.body.myprofile {
+.mypage .formbox {
   .videobox {
     display: block;
     float: left;
@@ -128,7 +128,7 @@
 .body.regist,
 .body.searchid,
 .body.searchpw,
-.body.myprofile {
+.mypage .formbox {
   .formbox {
     margin-left: 0;
     width: 750px;
@@ -490,7 +490,7 @@
   }
 }
 
-.body.myprofile {
+.mypage .formbox {
   .page {
     display: flex;
     justify-content: center;

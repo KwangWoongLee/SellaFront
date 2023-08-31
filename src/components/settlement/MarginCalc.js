@@ -207,6 +207,7 @@ const ROUTE_COLUMN_BASE = [
     headerName: '받은 배송비\n(배송비 수수료)',
     width: 130,
     editable: true,
+    cellClass: 'ag-cell-editable',
     cellRenderer: _30047Renderer,
   },
   {
@@ -217,6 +218,7 @@ const ROUTE_COLUMN_BASE = [
     headerName: '입고단가',
     width: 120,
     editable: true,
+    cellClass: 'ag-cell-editable',
   },
   {
     field: 'delivery_fee',
@@ -226,6 +228,7 @@ const ROUTE_COLUMN_BASE = [
     headerName: '배송비',
     width: 120,
     editable: true,
+    cellClass: 'ag-cell-editable',
   },
   {
     field: 'packing_fee',
@@ -235,6 +238,7 @@ const ROUTE_COLUMN_BASE = [
     headerName: '포장비',
     width: 120,
     editable: true,
+    cellClass: 'ag-cell-editable',
   },
 ];
 

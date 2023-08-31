@@ -106,8 +106,12 @@
 
     .ag-cell-not-inline-editing {
       text-overflow: ellipsis;
-      text-align: right;
+      text-align: left !important;
       line-height: 30px;
+    }
+
+    input {
+      text-align: left !important;
     }
   }
 }

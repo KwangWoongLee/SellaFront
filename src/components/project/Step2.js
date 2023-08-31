@@ -6,7 +6,7 @@ import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 import Step2Modal from 'components/project/Step2Modal';
 import request from 'util/request';
-import { img_src, logger, modal, navigate, page_reload, time_format } from 'util/com';
+import { img_src, logger, modal, navigate, page_reload, replace_1000, revert_1000, time_format } from 'util/com';
 import Recoils from 'recoils';
 import _ from 'lodash';
 import * as xlsx from 'xlsx';
@@ -275,7 +275,13 @@ const Step2 = () => {
       headerName: '* 입고가',
       sortable: true,
       unSortIcon: true,
-      valueParser: (params) => Number(params.newValue),
+      valueParser: (params) => {
+        return Number.isNaN(Number(params.newValue)) ? params.oldValue : Number(params.newValue);
+      },
+      valueFormatter: (params) => {
+        if (params.value == '') return 0;
+        return replace_1000(params.value);
+      },
       filter: false,
       cellDataType: 'number', // 인풋 타입을 넘버로 바꾸고싶어요ㅠㅠ
       cellClass: 'ag-cell-editable',
@@ -355,6 +361,13 @@ const Step2 = () => {
       filter: false,
       cellClass: 'ag-cell-editable',
       cellStyle: { 'line-height': '30px', 'text-align': 'right' },
+      valueParser: (params) => {
+        return Number.isNaN(Number(params.newValue)) ? params.oldValue : Number(params.newValue);
+      },
+      valueFormatter: (params) => {
+        if (params.value == '') return 0;
+        return replace_1000(params.value);
+      },
     },
     {
       field: 'memo',
@@ -365,7 +378,7 @@ const Step2 = () => {
     },
     {
       field: 'reg_date',
-      headerName: '최종 수정일',
+      headerName: '최초 등록일',
       sortable: true,
       unSortIcon: true,
       filter: false,
@@ -379,7 +392,7 @@ const Step2 = () => {
     },
     {
       field: 'modify_date',
-      headerName: '최초 등록일',
+      headerName: '최종 수정일',
       sortable: true,
       unSortIcon: true,
       filter: false,
@@ -441,8 +454,14 @@ const Step2 = () => {
   const onSave = (e) => {
     const selectedRows = gridRef.current.api.getSelectedRows();
     if (selectedRows && selectedRows.length > 0) {
+      const selectedCopyRows = _.cloneDeep(selectedRows);
+      for (const row of selectedCopyRows) {
+        row.delivery_fee = revert_1000(row.delivery_fee);
+        row.packing_fee = revert_1000(row.packing_fee);
+      }
+
       if (insertRef.current == true) {
-        const insertNode = selectedRows[0];
+        const insertNode = selectedCopyRows[0];
 
         if (!insertNode.delivery_fee) {
           if (insertNode.delivery_descript != '기타') {
@@ -522,7 +541,7 @@ const Step2 = () => {
         return;
       }
 
-      request.post(`user/goods/modify`, { selectedRows }).then((ret) => {
+      request.post(`user/goods/modify`, { selectedRows: selectedCopyRows }).then((ret) => {
         if (!ret.err) {
           const { data } = ret.data;
           logger.info(data);

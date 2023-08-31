@@ -1,76 +1,57 @@
 // Mypage.
 
-.body.myprofile {
-  .nav-tabs .nav-item:last-child {
-    float: right;
-  }
-}
-
 .body.mypage {
-  .nav-tabs .nav-item:last-child {
-    float: right;
-  }
-
   .page {
     display: flex;
     justify-content: center;
     padding-top: 70px;
 
-    .innerbox {
+    .paymentbox {
       display: inline-block;
-      width: 55%;
+      width: 400px;
       height: auto;
+      margin-right: 70px;
     }
-  }
 
-  h4 {
-    display: inline-block;
-    margin-bottom: 15px;
-    width: 100%;
-    height: auto;
-    font-size: 14px;
-    line-height: 14px;
-    font-weight: 500;
-    color: #0051ff;
+    .formbox {
+      display: inline-block;
+      width: 450px;
+      height: auto;
+
+      .btn_submit {
+        margin: 30px 0 20px;
+      }
+
+      .btn_txt {
+        height: auto;
+      }
+    }
   }
 
   h3 {
     width: 100%;
     height: auto;
-    font-size: 40px;
+    font-size: 30px;
     line-height: 40px;
     font-weight: 600;
     color: #000;
-
-    span {
-      display: block;
-      margin-top: 20px;
-      width: 100%;
-      height: auto;
-      font-size: 15px;
-      line-height: 15px;
-      font-weight: 400;
-      color: #777;
-    }
-
-    span:after {
-      display: none;
-    }
   }
 
-  .planbox {
+  h4 {
     display: block;
-    margin-top: 50px;
     width: 100%;
     height: auto;
+    font-size: 14px;
+    line-height: 14px;
+    font-weight: 500;
+    color: #999;
   }
 
-  .planbox > div {
+  .innerbox {
     display: block;
-    float: left;
-    margin-right: 30px;
+    margin-top: 30px;
     padding: 30px;
-    width: calc((100% - 60px) / 3);
+    width: 100%;
     height: auto;
     background-color: #fff;
     border-radius: 10px;
@@ -141,10 +122,7 @@
 
     button {
       width: 100%;
+      height: 40px;
     }
-  }
-
-  .plan3 {
-    margin-right: 0 !important;
   }
 }

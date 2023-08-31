@@ -23,6 +23,9 @@ import 'styles/FormManagement.scss';
 import icon_search from 'images/icon_search.svg';
 import icon_reset from 'images/icon_reset.svg';
 import icon_del from 'images/icon_del.svg';
+import icon_close from 'images/icon_close.svg';
+import icon_excel_click from 'images/icon_excel_click.svg';
+import icon_excel_check from 'images/icon_excel_check.svg';
 
 const FormManagement_Custom_Add = (param) => {
   logger.render('FormManagement_Custom_Add');
@@ -376,7 +379,7 @@ const FormManagement_Custom_Add = (param) => {
 
   return (
     <>
-      <div className="leftbox">
+      <div className="leftbox add">
         <h3>매체명</h3>
         <div className="inputbox">
           <input type={'text'} ref={formNameRef}></input>
@@ -393,6 +396,7 @@ const FormManagement_Custom_Add = (param) => {
             <th>셀라 표준 항목</th>
             <th>선택한 엑셀 항목</th>
             <th>비고</th>
+            <th>삭제</th>
           </thead>
         </table>
         <table className="tbody">
@@ -416,13 +420,26 @@ const FormManagement_Custom_Add = (param) => {
 
       <div className="rightbox">
         {mode == 0 && (
-          <span>
-            <Button onClick={onUpload}>여기를 클릭</Button> 하여 주문양식을 업로드 해주세요.
-          </span>
+          <Button onClick={onUpload} className="btn_excel_click">
+            <img src={`${img_src}${icon_excel_click}`} />
+            <span>
+              여기를 클릭하여
+              <br />
+              주문양식을 업로드 해주세요.
+            </span>
+          </Button>
         )}
         {mode == 1 && (
           <>
-            <span>주문항목을 매칭하시려면 왼쪽 표에서 매칭할 항목을 선택해 주세요.</span>
+            <Button onClick={onUpload} className="upload_excel_complete">
+              <img src={`${img_src}${icon_excel_check}`} />
+              <span>
+                주문항목을 매칭하시려면
+                <br />
+                왼쪽 표에서 매칭할 항목을 선택해 주세요.
+              </span>
+            </Button>
+            <span></span>
           </>
         )}
 
@@ -565,7 +582,7 @@ const SellaForm = React.memo(({ index, d, selectRow, onClick, onDelete, checkedI
       ) : (
         <td className="td_click">
           <Button disabled={d.check_flag && !d.checked ? true : false} onClick={onClick}>
-            클릭하여 매칭해주세요.
+            여기를 클릭하여 매칭해주세요.
           </Button>
         </td>
       )}
@@ -659,7 +676,13 @@ const SellaBasicModal = React.memo(({ modalState, setModalState, sella_forms, Ad
   const onClose = () => setModalState(false);
 
   return (
-    <Modal show={modalState} onHide={onClose} centered>
+    <Modal show={modalState} onHide={onClose} centered className="add_item">
+      <Modal.Header>
+        <Modal.Title>항목 추가</Modal.Title>
+        <Button variant="primary" className="btn_close" onClick={onClose}>
+          <img src={`${img_src}${icon_close}`} />
+        </Button>
+      </Modal.Header>
       <Modal.Body>
         {unessential_forms &&
           unessential_forms.map((d, key) => (
@@ -682,13 +705,8 @@ const TabContent = React.memo(({ nodeRef, excelData, MatchCallback, setTransitio
   logger.render('TransitionTab');
 
   return (
-    <table ref={nodeRef}>
-      <thead className="thead">
-        <th>열</th>
-        <th>업로드한 엑셀 항목</th>
-        <th> </th>
-      </thead>
-      <tbody className="tbody">
+    <table className="tbody" ref={nodeRef}>
+      <tbody>
         {excelData &&
           excelData.map((d, key) => (
             <UploadExcelItems key={key} index={key} d={d} callback={MatchCallback} setTransition={setTransition} />

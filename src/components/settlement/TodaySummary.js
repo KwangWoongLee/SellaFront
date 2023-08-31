@@ -201,8 +201,7 @@ const TodaySummary = () => {
         <SettlementNavTab active="/settlement/today_summary" />
 
         <div className="page">
-          <div className="inputbox">
-            <DropdownButton variant="" title={platforms.length ? platforms[platformType].name : ''}>
+          {/* <DropdownButton variant="" title={platforms.length ? platforms[platformType].name : ''}>
               {platforms &&
                 platforms.map((item, key) => (
                   <Dropdown.Item
@@ -225,13 +224,12 @@ const TodaySummary = () => {
               className="btn_green"
             >
               <img src={`${img_src}${icon_circle_arrow_up}`} />새 주문서 업로드
-            </Button>
+            </Button> */}
 
-            <div className="btnbox">
-              <Button variant="primary" onClick={onDelete} className="btn_red">
-                선택 삭제
-              </Button>
-            </div>
+          <div className="btnbox">
+            <Button variant="primary" onClick={onDelete} className="btn_red">
+              선택 삭제
+            </Button>
           </div>
 
           <ul className={!_.isEmpty(viewResult) ? 'viewbox' : 'viewbox off'}>

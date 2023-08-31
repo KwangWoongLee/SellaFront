@@ -49,7 +49,7 @@ const FormManagement_Custom = (param) => {
   return (
     <>
       {/* 이 페이지도 '새 양식추가' 할때랑 같은 기능을 가진 페이지여야 하는데, 작업해주시면 다시 스타일 잡겠습니다! */}
-      <div className="leftbox">
+      <div className="leftbox read">
         <h3>{platform.name} - 양식 확인</h3>
         <table className="thead">
           <thead>

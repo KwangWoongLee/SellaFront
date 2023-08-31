@@ -334,7 +334,10 @@ label {
   background: transparent;
 }
 
-.btn_txt:hover {
+.btn_txt:hover,
+.btn_txt:focus,
+.btn_txt:active,
+.btn_txt:visited {
   background-color: transparent;
 }
 

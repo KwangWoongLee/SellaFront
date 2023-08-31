@@ -4,8 +4,9 @@ import { logger } from 'util/com';
 import CommonNavTab from 'components/common/CommonNavTab';
 
 const data = [
-  { name: '/mypage/membership', desc: '고객님께선 현재 BASIC(무료회원)이십니다.' },
-  { name: '/mypage/profile', desc: '회원정보관리' },
+  //{ name: '/mypage/membership', desc: '고객님께선 현재 [유료서비스]를 이용 중이십니다.' },
+  { name: '/mypage/membership', desc: '고객님께선 현재 [무료서비스]를 이용 중이십니다.' },
+  //{ name: '/mypage/profile', desc: '회원정보관리' },
 ];
 const CalculatorNavTab = ({ active }) => {
   logger.render('CalculatorNavTab');

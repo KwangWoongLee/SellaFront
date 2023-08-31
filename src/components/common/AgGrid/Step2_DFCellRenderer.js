@@ -3,6 +3,7 @@ import React from 'react';
 import Tippy from '@tippyjs/react';
 import { DropdownButton, Dropdown } from 'react-bootstrap';
 import _ from 'lodash';
+import { replace_1000, revert_1000 } from 'util/com';
 import Recoils from 'recoils';
 
 const PopupCellRenderer = (props) => {
@@ -40,16 +41,15 @@ const PopupCellRenderer = (props) => {
 
   useEffect(() => {
     if (df_category.length != 0 && selectType == df_category.length - 1) {
-      inputRef.current.value = props.data.delivery_fee;
+      inputRef.current.value = replace_1000(revert_1000(props.data.delivery_fee));
 
       props.data.delivery_descript = df_category[selectType].delivery_category;
-      props.data.delivery_fee = inputRef.current.value;
       return;
     }
 
-    inputRef.current.value = df_category[selectType].delivery_fee;
+    inputRef.current.value = replace_1000(revert_1000(df_category[selectType].delivery_fee));
     props.data.delivery_descript = df_category[selectType].delivery_category;
-    props.data.delivery_fee = inputRef.current.value;
+    props.data.delivery_fee = replace_1000(revert_1000(inputRef.current.value));
 
     props.onCellValueChanged(props, onRefreshCell);
   }, [selectType]);
@@ -62,7 +62,8 @@ const PopupCellRenderer = (props) => {
   };
 
   const onChangeInput = () => {
-    props.data.delivery_fee = inputRef.current.value;
+    inputRef.current.value = replace_1000(revert_1000(inputRef.current.value));
+    props.data.delivery_fee = replace_1000(revert_1000(inputRef.current.value));
     props.onCellValueChanged(props, onRefreshCell);
   };
 

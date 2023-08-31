@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
 
+import { Button, InputGroup, Form } from 'react-bootstrap';
+
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
@@ -20,70 +22,82 @@ const Membership = () => {
         <MyPageNavTab active="/mypage/membership" />
 
         <div className="page">
-          <div className="innerbox">
-            <h4>고객님은 현재 [Basic] 플랜을 사용하고 계십니다.</h4>
-            <h3>
-              멤버십 혜택 안내<span>고객님께 꼭 필요한 기능을 준비했습니다.</span>
-            </h3>
+          <div className="paymentbox">
+            <h3>멤버십 혜택 안내</h3>
+            {/* <h4>유료서비스 사용기간이 [30]일 남았습니다.</h4> */}
+            <h4>무료서비스 사용기간이 [7]일 남았습니다.</h4>
 
-            <div className="planbox">
-              <div className="plan1">
-                <dl>
-                  <dt>Basic</dt>
-                  <dd>무료</dd>
-                  <dd>정산에 최적화된 플랜</dd>
-                </dl>
+            <div className="innerbox">
+              <dl>
+                <dt>Basic</dt>
+                <dd>9,900원 / 월</dd>
+                <dd>고객님께 꼭 필요한 기능을 준비했습니다.</dd>
+              </dl>
 
-                <ul>
-                  <li>주문 별 손익계산</li>
-                  <li>오늘 주문 손익 합계</li>
-                  <li>마진율 계산기</li>
-                  <li>사입 계산기</li>
-                  <li>엑셀 양식 설정</li>
-                </ul>
+              <ul>
+                <li>주문 별 손익계산</li>
+                <li>오늘 주문 손익 합계</li>
+                <li>마진율 계산기</li>
+                <li>사입 계산기</li>
+                <li>엑셀 양식 설정</li>
+              </ul>
 
-                <button className="btn-primary">사용중</button>
-              </div>
+              {/* <button className="btn-primary">사용중</button> */}
+              <button className="btn-primary btn_flblue">결제하기</button>
+            </div>
+          </div>
 
-              <div className="plan2">
-                <dl>
-                  <dt>Standard</dt>
-                  <dd>29,900원 / 월</dd>
-                  <dd>주문처리를 간편하게! (샵마인)</dd>
-                </dl>
+          <div className="formbox">
+            <h3>회원정보관리</h3>
+            <h4>회원님의 정보를 관리하세요.</h4>
 
-                <ul>
-                  <li>Basic의 모든 기능</li>
-                  <li>쇼핑몰 연동, 일괄 주문수집</li>
-                  <li>수집된 주문건 자동 손익 계산</li>
-                  <li>신규주문부터 발송처리, 구매확정 관리</li>
-                  <li>반품/교환/취소 관리</li>
-                  <li>주문서 인쇄, 택배사 연동, 송창 출력</li>
-                  <li>손익 데이터 1년치 저장</li>
-                  <li>정산예정금액, 통계 보기</li>
-                </ul>
+            <div className="innerbox">
+              <InputGroup className="inputid">
+                <label>ID</label>
+                <Form.Control type="text" placeholder="이메일 주소" aria-label="id" defaultValue={''} />
+              </InputGroup>
 
-                <button className="btn-primary btn_flblue">구독하기</button>
-              </div>
+              <InputGroup className="inputpw1">
+                <label>현재 비밀번호</label>
+                <Form.Control type="password" placeholder="비밀번호" defaultValue={''} />
+              </InputGroup>
 
-              <div className="plan3">
-                <dl>
-                  <dt>Premium</dt>
-                  <dd>49,900원 / 월</dd>
-                  <dd>상품관리까지 완벽하게! (토글)</dd>
-                </dl>
+              <InputGroup className="inputpw2">
+                <label>새 비밀번호</label>
+                <Form.Control type="password" placeholder="새 비밀번호" defaultValue={''} />
+                <Form.Control type="password" placeholder="새 비밀번호 확인" defaultValue={''} />
+              </InputGroup>
+              <span className="inform inform1">8~16자 대/소문자, 숫자, 특수문자를 사용하세요.</span>
 
-                <ul>
-                  <li>Basic, Standard의 모든 기능</li>
-                  <li>연동 쇼핑몰의 판매 상품관리, 상품등록</li>
-                  <li>CS 문의 관리, 평점 낮은 리뷰 관리</li>
-                  <li>상품/옵션 별 재고관리</li>
-                  <li>연동 쇼핑몰의 판매상품 자동 품절처리</li>
-                  <li>구독 만료시까지 데이터 저장</li>
-                </ul>
+              <InputGroup className="inputname">
+                <label>이름</label>
+                <Form.Control type="text" placeholder="이름" aria-label="id" defaultValue={''} />
+              </InputGroup>
 
-                <button className="btn-primary btn_flblue">구독하기</button>
-              </div>
+              <InputGroup className="inputphone">
+                <label>휴대폰 번호</label>
+                <Form.Control type="text" placeholder="휴대폰번호" aria-label="id" defaultValue={''} />
+              </InputGroup>
+
+              <span className="inform inform2">‘-’ 를 제외한 숫자만 입력해주세요.</span>
+
+              <InputGroup className="inputcompany">
+                <label>회사명</label>
+                <Form.Control type="text" placeholder="회사명" aria-label="id" defaultValue={''} />
+              </InputGroup>
+
+              <InputGroup className="inputbusinessno">
+                <label>사업자 번호</label>
+                <Form.Control type="text" placeholder="사업자 번호" aria-label="id" defaultValue={''} />
+              </InputGroup>
+
+              <Button variant="primary" type="submit" form="regist-form" className="btn_blue btn_submit">
+                수정완료
+              </Button>
+
+              <Button variant="primary" className="btn_txt">
+                회원 탈퇴하기
+              </Button>
             </div>
           </div>
         </div>

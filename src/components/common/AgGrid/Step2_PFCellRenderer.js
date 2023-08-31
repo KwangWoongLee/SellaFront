@@ -3,6 +3,7 @@ import React from 'react';
 import Tippy from '@tippyjs/react';
 import { DropdownButton, Dropdown } from 'react-bootstrap';
 import Recoils from 'recoils';
+import { replace_1000, revert_1000 } from 'util/com';
 import _ from 'lodash';
 
 const PopupCellRenderer = (props) => {
@@ -39,16 +40,17 @@ const PopupCellRenderer = (props) => {
 
   useEffect(() => {
     if (pf_category.length != 0 && selectType == pf_category.length - 1) {
-      inputRef.current.value = props.data.packing_fee;
+      inputRef.current.value = replace_1000(revert_1000(props.data.packing_fee));
 
       props.data.packing_descript = pf_category[selectType].packing_category;
-      props.data.packing_fee = inputRef.current.value;
       return;
     }
 
-    inputRef.current.value = pf_category[selectType].packing_fee1 + pf_category[selectType].packing_fee2;
+    inputRef.current.value = replace_1000(
+      revert_1000(pf_category[selectType].packing_fee1 + pf_category[selectType].packing_fee2)
+    );
     props.data.packing_descript = pf_category[selectType].packing_category;
-    props.data.packing_fee = inputRef.current.value;
+    props.data.packing_fee = replace_1000(revert_1000(inputRef.current.value));
 
     props.onCellValueChanged(props, onRefreshCell);
   }, [selectType]);
@@ -61,7 +63,8 @@ const PopupCellRenderer = (props) => {
   };
 
   const onChangeInput = () => {
-    props.data.packing_fee = inputRef.current.value;
+    inputRef.current.value = replace_1000(revert_1000(inputRef.current.value));
+    props.data.packing_fee = replace_1000(revert_1000(inputRef.current.value));
     props.onCellValueChanged(props, onRefreshCell);
   };
 
