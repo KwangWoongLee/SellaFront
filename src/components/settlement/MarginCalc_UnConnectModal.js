@@ -213,7 +213,6 @@ const MarginCalc_UnConnectModal = React.memo(
           Recoils.setState('DATA:GOODSMATCH', data.goods_match);
 
           saveCallback(selectFormsMatchRef.current);
-
           setGoodsMatchs([]);
           setStandardItems([]);
           setFormsMatchSelect(null);

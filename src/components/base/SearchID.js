@@ -12,7 +12,6 @@ import com, {
   is_regex_year,
   is_regex_day,
 } from 'util/com';
-import { AiFillMail, AiFillLock } from 'react-icons/ai';
 import request from 'util/request';
 import _ from 'lodash';
 
@@ -58,8 +57,6 @@ const SearchID = () => {
   const authNoRef = useRef(null);
   const yearRef = useRef(null);
   const dayRef = useRef(null);
-
-  useEffect(() => {}, []);
 
   useEffect(() => {
     if (!agreement.length) {
@@ -147,7 +144,7 @@ const SearchID = () => {
     request.post('auth/search/id', { phone, name, gender, agency, local, agreement }).then((ret) => {
       if (!ret.err) {
         const { data } = ret.data;
-        com.storage.setItem('temp', data.email);
+        com.storage.setItem('searchIdtemp', data.email);
 
         navigate('/search/id/result');
       }

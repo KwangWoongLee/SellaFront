@@ -43,7 +43,6 @@ const Step2 = () => {
   const [rowData, setDatas] = useState();
   const [modalState, setModalState] = useState(false);
   const access_token = account.access_token;
-  const insertRef = useRef(false);
   const gridRef = useRef();
   const containerStyle = useMemo(() => ({ width: '100%', height: '100%' }), []);
   const gridStyle = useMemo(() => ({ height: '1000px', width: '100%' }), []);
@@ -115,43 +114,9 @@ const Step2 = () => {
     setDatas(goodsData);
   }, []);
 
-  useEffect(() => {
-    if (insertRef.current == true) {
-      const nodeToSelect = gridRef.current.api.getDisplayedRowAtIndex(0);
-      if (nodeToSelect) {
-        nodeToSelect.setSelected(true);
-      }
-    }
-  }, [rowData]);
-
-  const onSelectionChanged = (params) => {
-    if (insertRef.current == true) {
-      const selectedRows = gridRef.current.api.getSelectedRows();
-      if (selectedRows[0].idx) {
-        modal.alert('상품 추가중엔 다른 셀을 바꿀 수 없습니다.');
-
-        const nodes = gridRef.current.api.getSelectedNodes();
-
-        const nodeToUnSelect = gridRef.current.api.getDisplayedRowAtIndex(nodes[0].rowIndex);
-        if (nodeToUnSelect) {
-          nodeToUnSelect.setSelected(false);
-        }
-
-        const nodeToSelect = gridRef.current.api.getDisplayedRowAtIndex(0);
-        if (nodeToSelect) {
-          nodeToSelect.setSelected(true);
-        }
-      }
-    }
-  };
-
   const onCellValueChanged = (params, callback) => {
     let column = params.column.colDef.field;
     if (column == 'delivery_fee') {
-      if (insertRef.current == true) {
-        return;
-      }
-
       if (
         rawData &&
         rawData[params.node.rowIndex]['delivery_fee'] &&
@@ -177,10 +142,6 @@ const Step2 = () => {
     }
 
     if (column == 'packing_fee') {
-      if (insertRef.current == true) {
-        return;
-      }
-
       if (
         rawData &&
         rawData[params.node.rowIndex]['packing_fee'] &&
@@ -409,14 +370,7 @@ const Step2 = () => {
   const onDelete = (e) => {
     const selectedRows = gridRef.current.api.getSelectedRows();
     if (selectedRows && selectedRows.length > 0) {
-      if (insertRef.current == true) {
-        setDatas(_.drop(rowData, 1));
-        insertRef.current = false;
-        return;
-      }
-
       const selectedIdxs = _.map(selectedRows, 'idx');
-      let delete_flag = false;
       modal.confirm(
         '데이터를 삭제하시겠습니까?',
         [{ strong: '', normal: '' }],
@@ -424,7 +378,16 @@ const Step2 = () => {
           {
             name: '예',
             callback: () => {
-              delete_flag = true;
+              request.post(`user/goods/delete`, { idxs: selectedIdxs }).then((ret) => {
+                if (!ret.err) {
+                  const { data } = ret.data;
+                  logger.info(data);
+
+                  Recoils.setState('DATA:GOODS', data);
+
+                  page_reload();
+                }
+              });
             },
           },
 
@@ -434,111 +397,18 @@ const Step2 = () => {
           },
         ]
       );
-
-      if (delete_flag)
-        request.post(`user/goods/delete`, { idxs: selectedIdxs }).then((ret) => {
-          if (!ret.err) {
-            const { data } = ret.data;
-            logger.info(data);
-
-            Recoils.setState('DATA:GOODS', data);
-
-            page_reload();
-          }
-        });
     }
   };
 
   const rowHeight = 46;
 
-  const onSave = (e) => {
+  const onModify = (e) => {
     const selectedRows = gridRef.current.api.getSelectedRows();
     if (selectedRows && selectedRows.length > 0) {
       const selectedCopyRows = _.cloneDeep(selectedRows);
       for (const row of selectedCopyRows) {
         row.delivery_fee = revert_1000(row.delivery_fee);
         row.packing_fee = revert_1000(row.packing_fee);
-      }
-
-      if (insertRef.current == true) {
-        const insertNode = selectedCopyRows[0];
-
-        if (!insertNode.delivery_fee) {
-          if (insertNode.delivery_descript != '기타') {
-            const findObj = _.find(df_category, { delivery_category: insertNode.delivery_descript });
-            const delivery_fee = findObj.delivery_fee;
-            insertNode.delivery_fee = delivery_fee;
-          }
-        }
-
-        if (!insertNode.packing_fee) {
-          if (insertNode.packing_descript != '기타') {
-            const findObj = _.find(pf_category, { packing_category: insertNode.packing_descript });
-            const packing_fee = findObj.packing_fee1 + findObj.packing_fee2;
-            insertNode.packing_fee = packing_fee;
-          }
-        }
-
-        if (!insertNode.goods_category) {
-          modal.alert('카테고리를 입력하세요.');
-          return;
-        }
-
-        if (!insertNode.name) {
-          modal.alert('상품명을 입력하세요.');
-          return;
-        }
-
-        if (insertNode.stock_price == 0 || insertNode.stock_price == '') {
-          modal.alert('입고단가를 입력하세요.');
-          return;
-        }
-
-        if (!insertNode.delivery_descript) {
-          modal.alert('택배비 구분을 선택하세요.');
-          return;
-        }
-
-        if (!insertNode.delivery_fee) {
-          modal.alert('택배비를 입력하세요.');
-          return;
-        }
-
-        if (!insertNode.packing_descript) {
-          modal.alert('포장비 구분을 선택하세요.');
-          return;
-        }
-
-        if (!insertNode.packing_fee) {
-          modal.alert('포장비를 입력하세요.');
-          return;
-        }
-
-        if (!insertNode.box_amount) {
-          modal.alert('박스입수량을 입력하세요.');
-          return;
-        }
-
-        if (!insertNode.single_delivery) {
-          modal.alert('단독배송 여부를 선택하세요.');
-          return;
-        }
-
-        if (!insertNode.rrp) {
-          modal.alert('권장소비자가를 입력하세요.');
-          return;
-        }
-
-        request.post(`user/goods/insert`, { save_data: insertNode }).then((ret) => {
-          if (!ret.err) {
-            const { data } = ret.data;
-            logger.info(data);
-            Recoils.setState('DATA:GOODS', data);
-
-            page_reload();
-          }
-        });
-        return;
       }
 
       request.post(`user/goods/modify`, { selectedRows: selectedCopyRows }).then((ret) => {
@@ -554,49 +424,7 @@ const Step2 = () => {
   };
 
   const onInsert = (e) => {
-    // if (insertRef.current == true) {
-    //   modal.alert('추가 중인 상품을 선택 저장 해주세요.');
-    //   return;
-    // }
-
-    // const newRow = {
-    //   barcode: '',
-    //   box_amount: '',
-    //   delivery_descript: '',
-    //   delivery_fee: '',
-    //   goods_category: '',
-    //   idx: '',
-    //   memo: '',
-    //   modify_date: '',
-    //   name: '',
-    //   packing_descript: '',
-    //   packing_fee: '',
-    //   reg_date: '',
-    //   rrp: '',
-    //   single_delivery: '',
-    //   stock_price: '',
-    // };
-
-    // const PageCallback = (newRow) => {
-    //   if (newRow) {
-    //     rawData = _.cloneDeep([newRow, ...rowData]);
-    //     setDatas([newRow, ...rowData]);
-    //   }
-    // };
-
-    // rawData = _.cloneDeep([newRow, ...rowData]);
-    // setDatas([newRow, ...rowData]);
-
-    // insertRef.current = true;
-
     setModalState(true);
-  };
-
-  const PageCallback = (newRow) => {
-    if (newRow) {
-      rawData = _.cloneDeep([newRow, ...rowData]);
-      setDatas([newRow, ...rowData]);
-    }
   };
 
   const onUpload = function () {
@@ -665,7 +493,15 @@ const Step2 = () => {
         worksheet.columns = _.transform(
           worksheet.columns,
           function (result, item) {
-            if (item.key != 'goods_category' && item.key != 'name') {
+            if (item.key == 'idx') {
+              item.fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'cccccc' },
+              };
+            }
+
+            if (item.key != 'idx' && item.key != 'goods_category' && item.key != 'name') {
               item.fill = {
                 type: 'pattern',
                 pattern: 'solid',
@@ -715,8 +551,6 @@ const Step2 = () => {
           _.unset(obj, 'modify_date');
         });
 
-        if (insertRef.current == true) columnData = _.drop(columnData, 1);
-
         worksheet.addRows(columnData);
         break;
     }
@@ -742,7 +576,7 @@ const Step2 = () => {
             <Button variant="primary" onClick={onDelete} className="btn_red">
               선택 삭제
             </Button>{' '}
-            <Button variant="primary" onClick={onSave} className="btn_blue">
+            <Button variant="primary" onClick={onModify} className="btn_blue">
               선택 저장
             </Button>{' '}
             <Button variant="primary" onClick={onInsert}>
@@ -790,7 +624,6 @@ const Step2 = () => {
                 rowSelection={'multiple'}
                 onCellEditingStopped={onCellValueChanged}
                 singleClickEdit={true}
-                onSelectionChanged={onSelectionChanged}
                 rowHeight={rowHeight}
               ></AgGridReact>
             </div>
@@ -799,7 +632,7 @@ const Step2 = () => {
       </Body>
       <Footer />
 
-      <Step2Modal modalState={modalState} setModalState={setModalState} callback={PageCallback}></Step2Modal>
+      <Step2Modal modalState={modalState} setModalState={setModalState}></Step2Modal>
     </>
   );
 };

@@ -23,6 +23,17 @@ const SearchPWResult = () => {
   const passwordConfirmRef = useRef(null);
 
   useEffect(() => {
+    const temp = com.storage.getItem('searchPasswordTemp');
+    if (temp === 'undefined' || temp === '') {
+      setMode(0);
+    } else {
+      setMode(1);
+
+      com.storage.setItem('searchPasswordTemp', '');
+    }
+  }, []);
+
+  useEffect(() => {
     let isOk = true;
     for (const key in auth) {
       if (auth[key] == false) {

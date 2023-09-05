@@ -150,7 +150,7 @@ const SearchPW = () => {
     request.post('auth/search/password', { email, phone, name, gender, agency, local, agreement }).then((ret) => {
       if (!ret.err) {
         const { data } = ret.data;
-        com.storage.setItem('temp', data.success);
+        com.storage.setItem('searchPasswordTemp', data.msg);
 
         navigate('/search/password/result');
       }

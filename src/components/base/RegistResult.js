@@ -12,10 +12,7 @@ import 'styles/Login.scss';
 
 const RegistResult = () => {
   logger.render('RegistResult');
-  const email = com.storage.getItem('temp');
-  com.storage.setItem('temp', '');
-
-  useEffect(() => {}, []);
+  const email = com.storage.getItem('tempRegistResult');
 
   const onClick = () => {
     navigate('/login');

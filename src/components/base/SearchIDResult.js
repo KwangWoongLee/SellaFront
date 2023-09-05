@@ -18,16 +18,16 @@ const SearchIDResult = () => {
   const [mode, setMode] = useState(0);
 
   useEffect(() => {
-    const temp = com.storage.getItem('temp');
-    if (temp) {
-      setMode(1);
-      setSearchedEmail(temp);
-    } else {
+    const temp = com.storage.getItem('searchIdtemp');
+    if (temp === 'undefined' || temp === '') {
       setMode(0);
       setSearchedEmail('');
-    }
+    } else {
+      setMode(1);
+      setSearchedEmail(temp);
 
-    com.storage.setItem('temp', '');
+      com.storage.setItem('searchIdtemp', '');
+    }
   }, []);
 
   return (

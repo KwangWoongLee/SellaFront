@@ -5,7 +5,7 @@ import {} from 'react-bootstrap';
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
-import { img_src, modal, navigate, time_format } from 'util/com';
+import { img_src, modal, navigate, replace_1000, revert_1000, time_format } from 'util/com';
 import request from 'util/request';
 import {} from 'util/com';
 import SettlementNavTab from 'components/settlement/common/SettlementNavTab';
@@ -63,7 +63,13 @@ const columnDefs = [
     field: 'unique_order_no_count',
     sortable: true,
     unSortIcon: true,
-    valueParser: (params) => Number(params.newValue),
+    valueParser: (params) => {
+      return Number.isNaN(Number(params.newValue)) ? params.oldValue : Number(params.newValue);
+    },
+    valueFormatter: (params) => {
+      if (params.value == '') return 0;
+      return replace_1000(params.value);
+    },
     headerName: '주문 수',
     cellClass: 'uneditable',
     minWidth: 100,
@@ -72,7 +78,13 @@ const columnDefs = [
     field: 'delivery_send_count',
     sortable: true,
     unSortIcon: true,
-    valueParser: (params) => Number(params.newValue),
+    valueParser: (params) => {
+      return Number.isNaN(Number(params.newValue)) ? params.oldValue : Number(params.newValue);
+    },
+    valueFormatter: (params) => {
+      if (params.value == '') return 0;
+      return replace_1000(params.value);
+    },
     headerName: '택배발송',
     cellClass: 'uneditable',
     minWidth: 140,
@@ -82,7 +94,13 @@ const columnDefs = [
     field: 'sum_payment_price',
     sortable: true,
     unSortIcon: true,
-    valueParser: (params) => Number(params.newValue),
+    valueParser: (params) => {
+      return Number.isNaN(Number(params.newValue)) ? params.oldValue : Number(params.newValue);
+    },
+    valueFormatter: (params) => {
+      if (params.value == '') return 0;
+      return replace_1000(params.value);
+    },
     headerName: '총 결제금액',
     cellClass: 'uneditable',
     minWidth: 140,
@@ -91,7 +109,13 @@ const columnDefs = [
     field: 'sum_received_delivery_fee',
     sortable: true,
     unSortIcon: true,
-    valueParser: (params) => Number(params.newValue),
+    valueParser: (params) => {
+      return Number.isNaN(Number(params.newValue)) ? params.oldValue : Number(params.newValue);
+    },
+    valueFormatter: (params) => {
+      if (params.value == '') return 0;
+      return replace_1000(params.value);
+    },
     headerName: '받은 배송비',
     cellClass: 'uneditable',
     minWidth: 120,
@@ -100,7 +124,13 @@ const columnDefs = [
     field: 'sum_profit_loss',
     sortable: true,
     unSortIcon: true,
-    valueParser: (params) => Number(params.newValue),
+    valueParser: (params) => {
+      return Number.isNaN(Number(params.newValue)) ? params.oldValue : Number(params.newValue);
+    },
+    valueFormatter: (params) => {
+      if (params.value == '') return 0;
+      return replace_1000(params.value);
+    },
     headerName: '손익합계',
     cellClass: 'uneditable',
     minWidth: 100,
@@ -161,12 +191,12 @@ const TodaySummary = () => {
 
     if (rowData && rowData.length > 0) {
       summary = {
-        unique_order_no_count: _.sumBy(rowData, 'unique_order_no_count'),
-        delivery_send_count: _.sumBy(rowData, 'delivery_send_count'),
-        loss_order_no_count: _.sumBy(rowData, 'loss_order_no_count'),
-        sum_payment_price: _.sumBy(rowData, 'sum_payment_price'),
-        sum_received_delivery_fee: _.sumBy(rowData, 'sum_received_delivery_fee'),
-        sum_profit_loss: _.sumBy(rowData, 'sum_profit_loss'),
+        unique_order_no_count: replace_1000(revert_1000(_.sumBy(rowData, 'unique_order_no_count'))),
+        delivery_send_count: replace_1000(revert_1000(_.sumBy(rowData, 'delivery_send_count'))),
+        loss_order_no_count: replace_1000(revert_1000(_.sumBy(rowData, 'loss_order_no_count'))),
+        sum_payment_price: replace_1000(revert_1000(_.sumBy(rowData, 'sum_payment_price'))),
+        sum_received_delivery_fee: replace_1000(revert_1000(_.sumBy(rowData, 'sum_received_delivery_fee'))),
+        sum_profit_loss: replace_1000(revert_1000(_.sumBy(rowData, 'sum_profit_loss'))),
       };
     }
 
@@ -268,7 +298,7 @@ const TodaySummary = () => {
                 <span>원</span>
               </p>
             </li>
-            <li className={viewResult.sum_profit_loss > 0 ? 'profit' : 'loss'}>
+            <li className={viewResult && revert_1000(viewResult.sum_profit_loss) > 0 ? 'profit' : 'loss'}>
               <p className="dt">손익 합계</p>
               <p className="dd">
                 {viewResult.sum_profit_loss}

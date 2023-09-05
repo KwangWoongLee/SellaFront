@@ -221,69 +221,7 @@ const FormManagement_Custom_Add = (param) => {
     setExcelData([]);
     setMode(0);
 
-    const rowDatas = [];
-
-    const essential_forms = _.filter(sella_forms, { essential_flag: 1 });
-    for (const sella_form of essential_forms) {
-      const row_data = {};
-      if (sella_form.check_flag) {
-        row_data.check_flag = sella_form.check_flag;
-        row_data.checked = true;
-      }
-      if (sella_form.tooltip) row_data.tooltip = sella_form.tooltip;
-
-      row_data.sella_title = sella_form.title;
-      row_data.sella_essential = sella_form.essential_flag;
-      row_data.sella_code = sella_form.code;
-      if (row_data.sella_code == 30047) row_data.df_fee_rate = '3.3';
-      rowDatas.push(row_data);
-    }
-
-    setRowData(rowDatas);
-
-    modal.file_upload(null, '.xlsx', '파일 업로드', {}, (ret) => {
-      if (!ret.err) {
-        const { files } = ret;
-        if (!files.length) return;
-        const file = files[0];
-        const reader = new FileReader();
-        const rABS = !!reader.readAsBinaryString;
-
-        const items = [];
-        reader.onload = (e) => {
-          const bstr = e.target.result;
-          const wb = xlsx.read(bstr, { type: rABS ? 'binary' : 'array', bookVBA: true });
-
-          const wsname = wb.SheetNames[0];
-          const ws = wb.Sheets[wsname];
-
-          for (const key in ws) {
-            const prevlast = key[key.length - 2];
-            const last = key[key.length - 1];
-
-            if (isNaN(prevlast) && !isNaN(last) && Number(last) === 1) {
-              const column = key.slice(0, key.length - 1);
-              const header = ws[key]['h'];
-              let v = '-';
-              if (ws[column + '2']) v = ws[column + '2']['w'];
-
-              items.push({ column, header, value: v });
-            }
-          }
-
-          excelDataRef.current = items;
-
-          const excelDatas = [...excelDataRef.current];
-          setExcelData(excelDatas);
-        };
-
-        if (rABS) {
-          reader.readAsBinaryString(file);
-        } else {
-          reader.readAsArrayBuffer(file);
-        }
-      }
-    });
+    onUpload();
   };
 
   const onClick = (e) => {

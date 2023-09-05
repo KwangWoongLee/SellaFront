@@ -25,6 +25,7 @@ const Margin = () => {
   const platformData = [...Recoils.getState('SELLA:PLATFORM')];
   const [platformType, setplatformType] = useState(0);
   const [modalState, setModalState] = useState(false);
+  const [abledSaveButton, setAbledSaveButton] = useState(false);
 
   //inputs
   const nameRef = useRef(null);
@@ -135,6 +136,12 @@ const Margin = () => {
         const { data } = ret.data;
         logger.info(data);
 
+        if (data && data.length > 9) {
+          setAbledSaveButton(false);
+        } else {
+          setAbledSaveButton(true);
+        }
+
         setDatas(() => data);
       }
     });
@@ -179,13 +186,23 @@ const Margin = () => {
 
     saveDataRef.current = { ...saveDataRef.current, goods_name: name };
 
-    request.post(`user/calculator/margin/save`, { save_data: saveDataRef.current }).then((ret) => {
-      if (!ret.err) {
-        const { data } = ret.data;
+    if (saveDataRef.current.idx !== null || saveDataRef.current.idx !== undefined) {
+      request.post(`user/calculator/margin/modify`, { save_data: saveDataRef.current }).then((ret) => {
+        if (!ret.err) {
+          const { data } = ret.data;
 
-        setDatas([...data]);
-      }
-    });
+          page_reload();
+        }
+      });
+    } else {
+      request.post(`user/calculator/margin/save`, { save_data: saveDataRef.current }).then((ret) => {
+        if (!ret.err) {
+          const { data } = ret.data;
+
+          page_reload();
+        }
+      });
+    }
   };
   const onSearch = () => {
     setModalState(true);
@@ -207,7 +224,7 @@ const Margin = () => {
         if (!ret.err) {
           const { data } = ret.data;
           logger.info(data);
-          setDatas([...data]);
+          page_reload();
         }
       });
     }
@@ -324,6 +341,7 @@ const Margin = () => {
     };
 
     saveDataRef.current = {
+      idx: saveDataRef.current.idx ? saveDataRef.current.idx : null,
       forms_name: platformData[platformType].name,
       sell_price: sellPrice,
       revenue_sum_price: sum_plus,
@@ -340,6 +358,10 @@ const Margin = () => {
       platform_delivery_fee_rate: Number((platformDeliverFeeRate * 100).toFixed(2)),
       lowest_margin_rate: lowestMarginRate,
     };
+
+    if (saveDataRef.current.idx !== null) {
+      setAbledSaveButton(true);
+    }
 
     setResultData({ ...result });
   };
@@ -371,6 +393,7 @@ const Margin = () => {
   };
 
   const onSelectionChanged = (params) => {
+    setAbledSaveButton(false);
     const selectedRows = gridRef.current.api.getSelectedRows();
     const row = selectedRows[0];
 
@@ -413,7 +436,7 @@ const Margin = () => {
                 초기화
               </Button>
 
-              <Button disabled={rowData && rowData.length > 9} variant="primary" onClick={onSave} className="btn_blue">
+              <Button disabled={!abledSaveButton} variant="primary" onClick={onSave} className="btn_blue">
                 저장
               </Button>
             </div>

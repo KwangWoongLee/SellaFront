@@ -15,7 +15,7 @@ import { saveAs } from 'file-saver';
 import _ from 'lodash';
 import moment from 'moment';
 
-import { logger } from 'util/com';
+import { logger, replace_1000, revert_1000 } from 'util/com';
 
 import 'styles/MarginCalc.scss';
 
@@ -27,6 +27,7 @@ import img_service from 'images/img_service.png';
 // AG Grid
 import { AgGridReact } from 'ag-grid-react';
 import ColumnControlModal from 'components/common/AgGrid/ColumnControlModal';
+import { fi } from 'faker/lib/locales';
 const PLRenderer = (params) => {
   if (params.data && params.data.connect_flag == false) {
     return <>미연결</>;
@@ -34,21 +35,33 @@ const PLRenderer = (params) => {
 
   return (
     <>
-      {params.value > 0 ? (
+      {params.value == '-' || isNaN(params.value) ? (
         <>
-          <span className="profit">
-            이익
+          <span>
+            계산 전
             <br />
-            {params.value}
+            {'-'}
           </span>
         </>
       ) : (
         <>
-          <span className="loss">
-            손해
-            <br />
-            {params.value}
-          </span>
+          {params.value > 0 ? (
+            <>
+              <span className="profit">
+                이익
+                <br />
+                {params.value}
+              </span>
+            </>
+          ) : (
+            <>
+              <span className="loss">
+                손해
+                <br />
+                {params.value}
+              </span>
+            </>
+          )}
         </>
       )}
     </>
@@ -57,11 +70,11 @@ const PLRenderer = (params) => {
 const _30006Renderer = (params) => {
   return (
     <>
-      {params.data[30006] && `${params.data[30006]}`}
+      {params.data[30006] && `${replace_1000(revert_1000(params.data[30006]))}`}
 
       {params.data[30001] && (
         <>
-          <span class="subtxt">({params.data[30001]})</span>
+          <span class="subtxt">({replace_1000(revert_1000(params.data[30001]))})</span>
         </>
       )}
     </>
@@ -71,11 +84,17 @@ const _30006Renderer = (params) => {
 const _30047Renderer = (params) => {
   return (
     <>
-      {params.data[30047] && `${params.data[30047]}`}
+      {params.data[30047] && `${replace_1000(revert_1000(params.data[30047]))}`}
 
       {params.data['30047_additional'] && (
         <>
-          <span class="subtxt">({(params.data[30047] * Number(params.data['30047_additional'])) / 100})</span>
+          <span class="subtxt">
+            (
+            {replace_1000(
+              revert_1000(((params.data[30047] * Number(params.data['30047_additional'])) / 100).toFixed(0))
+            )}
+            )
+          </span>
         </>
       )}
     </>
@@ -91,8 +110,6 @@ const optionCellRenderer = (props) => {
     </>
   );
 };
-
-//
 
 const ROUTE_COLUMN_BASE = [
   {
@@ -134,7 +151,6 @@ const ROUTE_COLUMN_BASE = [
   },
   {
     field: '30002',
-    rowSpan: (params) => (params.data.aggregation_rowspan ? params.data.aggregation_rowspan : 1),
     sortable: true,
     unSortIcon: true,
     headerName: '배송비묶음번호',
@@ -214,7 +230,13 @@ const ROUTE_COLUMN_BASE = [
     field: 'stock_price',
     sortable: true,
     unSortIcon: true,
-    valueParser: (params) => Number(params.newValue),
+    valueParser: (params) => {
+      return Number.isNaN(Number(params.newValue)) ? params.oldValue : Number(params.newValue);
+    },
+    valueFormatter: (params) => {
+      if (params.value == '') return 0;
+      return replace_1000(params.value);
+    },
     headerName: '입고단가',
     width: 120,
     editable: true,
@@ -224,7 +246,13 @@ const ROUTE_COLUMN_BASE = [
     field: 'delivery_fee',
     sortable: true,
     unSortIcon: true,
-    valueParser: (params) => Number(params.newValue),
+    valueParser: (params) => {
+      return Number.isNaN(Number(params.newValue)) ? params.oldValue : Number(params.newValue);
+    },
+    valueFormatter: (params) => {
+      if (params.value == '') return 0;
+      return replace_1000(params.value);
+    },
     headerName: '배송비',
     width: 120,
     editable: true,
@@ -234,7 +262,13 @@ const ROUTE_COLUMN_BASE = [
     field: 'packing_fee',
     sortable: true,
     unSortIcon: true,
-    valueParser: (params) => Number(params.newValue),
+    valueParser: (params) => {
+      return Number.isNaN(Number(params.newValue)) ? params.oldValue : Number(params.newValue);
+    },
+    valueFormatter: (params) => {
+      if (params.value == '') return 0;
+      return replace_1000(params.value);
+    },
     headerName: '포장비',
     width: 120,
     editable: true,
@@ -255,7 +289,6 @@ const MarginCalc = () => {
   const access_token = account.access_token;
   const [mode, setMode] = useState(0);
   const [viewResult, setViewResult] = useState({});
-  const [viewState, setView] = useState(true);
   const [platforms, setPlatforms] = useState([]);
   const [platformType, setplatformType] = useState(0);
   const [rowData, setRowData] = useState([]);
@@ -279,26 +312,30 @@ const MarginCalc = () => {
   }, []);
   const [columnDefs, setColumnDefs] = useState([]);
 
-  const SetColumnDefsFunc = () => {
-    if (!platforms[platformType]) return; // TODO Error
-    if (!platforms[platformType].titles) return; // TODO Error
+  const SetColumnDefsFunc = (now_platform) => {
+    if (!now_platform) return; // TODO Error
+    if (!now_platform.titles) return; // TODO Error
 
-    const view_titles = _.filter(platforms[platformType].titles, { view: 1 });
-    const sella_codes = _.map(view_titles, 'sella_code');
+    const view_titles = _.filter(now_platform.titles, { view: 1 });
+    const not_yet_added_fields = _.filter(view_titles, (view_title) => {
+      return !_.find(ROUTE_COLUMN_BASE, (route_title) => {
+        return view_title.sella_code == Number(route_title.field);
+      });
+    });
 
-    setColumnDefs(() =>
-      _.filter(ROUTE_COLUMN_BASE, (base) => {
-        if (base.field == '') return true;
-        else if (base.field == 'idx') return true;
-        else if (base.field == 'profit_loss') return true;
-        else if (base.field == 'forms_name') return true;
-        else if (base.field == 'stock_price') return true;
-        else if (base.field == 'delivery_fee') return true;
-        else if (base.field == 'packing_fee') return true;
+    const sella_forms = Recoils.getState('SELLA:SELLAFORMS');
 
-        return _.includes(sella_codes, Number(base.field));
-      })
-    );
+    const toAddFields = [];
+    for (const field_data of not_yet_added_fields) {
+      const findObj = _.find(sella_forms, { code: field_data.sella_code });
+      if (findObj.type == 1) {
+        toAddFields.push(GetColonField(field_data.title, field_data.sella_code));
+      } else {
+        toAddFields.push(GetField(field_data.title, field_data.sella_code));
+      }
+    }
+
+    setColumnDefs([...ROUTE_COLUMN_BASE, ...toAddFields]);
   };
 
   useEffect(() => {
@@ -371,16 +408,6 @@ const MarginCalc = () => {
     }
 
     temp = _.sortBy(temp, ['_order']);
-    const sella_forms = Recoils.getState('SELLA:SELLAFORMS');
-
-    if (platforms.length) {
-      const titles = _.cloneDeep(platforms[platformType].titles);
-      for (const title of titles) {
-        const findObj = _.find(sella_forms, { code: title.sella_code });
-        title.sella_title = findObj.title;
-      }
-      setViewColumns(titles);
-    }
 
     setPlatforms(temp);
   }, []);
@@ -390,6 +417,12 @@ const MarginCalc = () => {
       gridRef.current.api.setColumnDefs(columnDefs);
     }
   }, [columnDefs]);
+
+  useEffect(() => {
+    setRowData([]);
+    setViewResult({});
+    SetColumnDefsFunc(platforms[platformType]);
+  }, [platforms, platformType]);
 
   useEffect(() => {
     if (!rowData || !rowData.length) return;
@@ -435,7 +468,6 @@ const MarginCalc = () => {
     setRowData([]);
     setViewResult({});
 
-    SetColumnDefsFunc();
     com.storage.setItem('exist_margin_calc_data', '');
 
     modal.file_upload(null, '.xlsx', '파일 업로드', { platform: platforms[platformType] }, (ret) => {
@@ -462,8 +494,9 @@ const MarginCalc = () => {
             expected[column] = header;
             const findObj = _.find(sella_forms, { code: title.sella_code });
             title.sella_title = findObj.title;
+            title.sella_form_type = findObj.type;
           }
-          setViewColumns(titles);
+          // setViewColumns(titles);
 
           const wsname = wb.SheetNames[0];
           const ws = wb.Sheets[wsname];
@@ -671,8 +704,8 @@ const MarginCalc = () => {
             item.stock_price = getStockPrice(d);
             item.delivery_fee = getDeliveryFee(d);
             item.packing_fee = getPackingFee(d);
-            item.profit_loss = calcProfitLoss(d);
           }
+          item.goods_match = [];
 
           result.push(item);
         },
@@ -681,27 +714,8 @@ const MarginCalc = () => {
     );
   };
 
-  const saveViewColumnsCallback = (platforms, viewColumns) => {
-    const sella_codes = _.map(
-      _.filter(viewColumns, (c) => {
-        return c.view == 1 || c.view;
-      }),
-      'sella_code'
-    );
-    setPlatforms([...platforms]);
-
-    const views = _.filter(ROUTE_COLUMN_BASE, (base) => {
-      if (base.field == '') return true;
-      else if (base.field == 'idx') return true;
-      else if (base.field == 'profit_loss') return true;
-      else if (base.field == 'forms_name') return true;
-      else if (base.field == 'stock_price') return true;
-      else if (base.field == 'delivery_fee') return true;
-      else if (base.field == 'packing_fee') return true;
-
-      return _.includes(sella_codes, Number(base.field));
-    });
-    setColumnDefs(views);
+  const saveViewColumnsCallback = (nowPlatform) => {
+    SetColumnDefsFunc(nowPlatform);
   };
 
   const getRowStyle = (params) => {
@@ -822,44 +836,43 @@ const MarginCalc = () => {
                 <li>
                   <p className="dt">총 주문</p>
                   <p className="dd">
-                    {viewResult.unique_order_no_count}
+                    {viewResult.unique_order_no_count && replace_1000(revert_1000(viewResult.unique_order_no_count))}
                     <span>건</span>
                   </p>
                 </li>
                 <li>
                   <p className="dt">택배 발송</p>
                   <p className="dd">
-                    {viewResult.delivery_send_count}
+                    {viewResult.delivery_send_count && replace_1000(revert_1000(viewResult.delivery_send_count))}
                     <span>건</span>
                   </p>
                 </li>
                 <li>
                   <p className="dt">적자 주문</p>
                   <span className="dd txt_red">
-                    {viewResult.loss_order_no_count}
+                    {viewResult.loss_order_no_count && replace_1000(revert_1000(viewResult.loss_order_no_count))}
                     <span className="unit txt_red">건</span>
                   </span>
                 </li>
                 <li>
                   <p className="dt">상품 결제 금액</p>
                   <p className="dd">
-                    {viewResult.sum_payment_price}
+                    {viewResult.sum_payment_price && replace_1000(revert_1000(viewResult.sum_payment_price))}
                     <span>원</span>
                   </p>
                 </li>
                 <li>
                   <p className="dt">받은 배송비</p>
                   <p className="dd">
-                    {viewResult.sum_received_delivery_fee}
+                    {viewResult.sum_received_delivery_fee &&
+                      replace_1000(revert_1000(viewResult.sum_received_delivery_fee))}
                     <span>원</span>
                   </p>
                 </li>
-                {/* 손익합계 <li> className에 이익일때 profit, 손해일때 loss 넣어주세요. */}
-                {/* 이 작업도 손익 계산이 다끝나면 하게 될 것 같아요! */}
                 <li className={viewResult.sum_profit_loss > 0 ? 'profit' : 'loss'}>
                   <p className="dt">손익 합계</p>
                   <p className="dd">
-                    {viewResult.sum_profit_loss}
+                    {viewResult.sum_profit_loss && replace_1000(revert_1000(viewResult.sum_profit_loss))}
                     <span>원</span>
                   </p>
                 </li>
@@ -903,8 +916,6 @@ const MarginCalc = () => {
         modalState={columnControlModalState}
         setModalState={setColumnControlModalState}
         platform={platforms[platformType]}
-        viewColumns={viewColumns}
-        setViewColumns={setViewColumns}
         callback={saveViewColumnsCallback}
       ></ColumnControlModal>
     </>
@@ -935,8 +946,8 @@ const getAggregation = (profit_loss_row) => {
     {
       aggregation = 0;
       aggregation += Number(profit_loss_row[30006]); // 1. 총 결제금액 더하기
-      aggregation += Number(profit_loss_row[30019]); // 2. 기타할인1 빼기
-      aggregation += Number(profit_loss_row[30020]); // 3. 기타할인2 빼기
+      if (profit_loss_row[30019]) aggregation += Number(profit_loss_row[30019]); // 2. 기타할인1 빼기
+      if (profit_loss_row[30020]) aggregation += Number(profit_loss_row[30020]); // 3. 기타할인2 빼기
 
       aggregation *= 1 - parseFloat(profit_loss_row.category_fee_rate) / 100;
     }
@@ -1007,15 +1018,71 @@ const CalcSummary = (rowData) => {
 
   const unique_order_no = _.uniqBy(rowData, '30004');
   const unique_order_no_count = unique_order_no.length;
-  const delivery_send = _.uniqBy(rowData, '30002');
-  const delivery_send_count = delivery_send.length;
+
+  let delivery_send;
+  const changes = {};
+
+  if (_.includes(Object.keys(rowData[0]), '30002')) {
+    //배송비 묶음 번호가 있는 경우
+
+    delivery_send = _.uniqBy(rowData, '30002');
+
+    let prev_30002 = rowData[0]['30002'];
+    let prev_df = rowData[0]['delivery_fee'];
+    let prev_received_df = rowData[0]['30047'];
+    let prev_received_df_additional = rowData[0]['30047_additional'];
+    for (let r = 1; r < rowData.length; ++r) {
+      if (prev_30002 != rowData[r]['30002']) {
+        changes[prev_30002] = {
+          df: prev_df,
+          received_df: prev_received_df,
+          received_df_additional: prev_received_df_additional,
+        };
+        prev_30002 = rowData[r]['30002'];
+      } else {
+        prev_df = _.max([prev_df, rowData[r].delivery_fee]);
+        prev_received_df = _.max([prev_received_df, rowData[r]['30047']]);
+        prev_received_df_additional = rowData[r]['30047_additional'];
+      }
+    }
+
+    changes[prev_30002] = {
+      df: prev_df,
+      received_df: prev_received_df,
+      received_df_additional: prev_received_df_additional,
+    };
+
+    prev_30002 = rowData[0]['30002'];
+    for (let r = 1; r < rowData.length; ++r) {
+      if (rowData[r]['30002'] != prev_30002) {
+        rowData[r]['delivery_fee'] = changes[rowData[r]['30002']].df;
+        rowData[r]['30047'] = changes[rowData[r]['30002']].received_df;
+        rowData[r]['30047_additional'] = changes[rowData[r]['30002']].received_df_additional;
+      } else {
+        rowData[r]['delivery_fee'] = 0;
+        rowData[r]['30047'] = 0;
+        rowData[r]['30047_additional'] = 0;
+      }
+
+      prev_30002 = rowData[r]['30002'];
+    }
+  }
+
+  console.log(rowData);
+
+  for (const row of rowData) {
+    row.profit_loss = calcProfitLoss(row);
+  }
+
+  const delivery_send_count = delivery_send ? delivery_send.length : unique_order_no_count;
   const loss_order = _.filter(rowData, (row) => {
     return row.profit_loss < 0;
   });
   const loss_order_no_count = loss_order.length;
   const sum_payment_price = _.sumBy(rowData, '30006');
   const sum_received_delivery_fee = _.sumBy(rowData, '30047');
-  const sum_profit_loss = _.sumBy(rowData, 'profit_loss');
+  let sum_profit_loss = _.sumBy(rowData, 'profit_loss');
+  sum_profit_loss = _.floor(sum_profit_loss, 0);
 
   const summary = {
     forms_name: rowData[0].forms_name,
@@ -1028,6 +1095,41 @@ const CalcSummary = (rowData) => {
   };
 
   return summary;
+};
+
+const GetField = (title, code) => {
+  const ret = {
+    field: `${code}`,
+    sortable: true,
+    unSortIcon: true,
+    headerName: `${title}`,
+    width: 120,
+    editable: true,
+    cellClass: 'ag-cell-editable',
+  };
+
+  return ret;
+};
+
+const GetColonField = (title, code) => {
+  const ret = {
+    field: `${code}`,
+    sortable: true,
+    unSortIcon: true,
+    valueParser: (params) => {
+      return Number.isNaN(Number(params.newValue)) ? params.oldValue : Number(params.newValue);
+    },
+    valueFormatter: (params) => {
+      if (params.value == '' || !params.value) return 0;
+      return replace_1000(params.value);
+    },
+    headerName: `${title}`,
+    width: 120,
+    editable: true,
+    cellClass: 'ag-cell-editable',
+  };
+
+  return ret;
 };
 
 export default React.memo(MarginCalc);

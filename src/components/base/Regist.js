@@ -112,10 +112,11 @@ const Regist = () => {
 
     request.post('/regist', { password, phone, name, email, gender, agency, local, agreement }).then((ret) => {
       if (!ret.err) {
-        com.storage.setItem('temp', email);
+        com.storage.setItem('tempRegistResult', email);
 
         navigate('/regist/result');
       } else {
+        com.storage.setItem('tempRegistResult', '');
       }
     });
 

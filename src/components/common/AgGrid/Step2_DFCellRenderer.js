@@ -50,9 +50,17 @@ const PopupCellRenderer = (props) => {
     inputRef.current.value = replace_1000(revert_1000(df_category[selectType].delivery_fee));
     props.data.delivery_descript = df_category[selectType].delivery_category;
     props.data.delivery_fee = replace_1000(revert_1000(inputRef.current.value));
-
     props.onCellValueChanged(props, onRefreshCell);
   }, [selectType]);
+
+  useEffect(() => {
+    if (props.rowData) {
+      let selectIdx = _.indexOf(df_str, props.data.delivery_descript);
+      if (selectIdx < 0) selectIdx = 0;
+
+      setSelectType(selectIdx);
+    }
+  }, [props.data]);
 
   const onRefreshCell = (change) => {
     // 이게 원래.. backgroud가 바뀌는게 아니라 글자색이 바뀌어야 하는데..
@@ -64,6 +72,7 @@ const PopupCellRenderer = (props) => {
   const onChangeInput = () => {
     inputRef.current.value = replace_1000(revert_1000(inputRef.current.value));
     props.data.delivery_fee = replace_1000(revert_1000(inputRef.current.value));
+
     props.onCellValueChanged(props, onRefreshCell);
   };
 

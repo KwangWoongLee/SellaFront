@@ -28,6 +28,8 @@ const FormManagement_Basic = (param) => {
   const [rowData, setRowData] = useState([]);
 
   useEffect(() => {
+    if (!platform || !platform.basic_form_flag) return;
+
     const basic_form = platform;
     const basic_form_rows = [];
     const column_row = [''];
@@ -49,7 +51,7 @@ const FormManagement_Basic = (param) => {
     basic_form_rows.push(header_row);
 
     setRowData(basic_form_rows);
-  }, []);
+  }, [param]);
 
   const onDownload = async () => {
     if (!platform) return;

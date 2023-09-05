@@ -96,7 +96,7 @@ const Login = () => {
               type="text"
               placeholder="이메일 주소"
               aria-label="id"
-              defaultValue={com.storage.getItem('email')}
+              defaultValue={com.storage.getItem('email') !== 'undefined' ? com.storage.getItem('email') : ''}
               aria-describedby="basic-addon1"
             />
           </InputGroup>

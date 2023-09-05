@@ -76,9 +76,7 @@ const Head = () => {
               onClick={() => {
                 window.open('http://pf.kakao.com/_xmCykxj/chat');
               }}
-            >
-              123
-            </button>
+            ></button>
             <span className="cschat">1:1문의</span>
           </Nav.Link>
           {account && account.grade != -1 ? (

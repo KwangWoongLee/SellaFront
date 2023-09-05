@@ -55,6 +55,15 @@ const PopupCellRenderer = (props) => {
     props.onCellValueChanged(props, onRefreshCell);
   }, [selectType]);
 
+  useEffect(() => {
+    if (props.rowData) {
+      let selectIdx = _.indexOf(pf_str, props.data.packing_descript);
+      if (selectIdx < 0) selectIdx = 0;
+
+      setSelectType(selectIdx);
+    }
+  }, [props.data]);
+
   const onRefreshCell = (change) => {
     // 이게 원래.. backgroud가 바뀌는게 아니라 글자색이 바뀌어야 하는데..
     // css가 안됩니다ㅠ
