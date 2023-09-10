@@ -34,7 +34,7 @@ h3 span {
 h3 span:after {
   content: ' 건';
   color: #888;
-  font-weight: 300;
+  font-weight: 400;
 }
 
 h3>button {
@@ -74,7 +74,7 @@ table th {
   border-right: 1px dotted #ccc;
   font-size: 13px;
   line-height: 13px;
-  font-weight: 300;
+  font-weight: 400;
   color: #fff;
   vertical-align: middle;
   text-align: center;
@@ -149,9 +149,6 @@ table td:last-child {
 table .btn_del {
   display: block;
   margin: 0 auto;
-  width: auto;
-  height: auto;
-  vertical-align: middle;
 }
 
 table .btn_add {}

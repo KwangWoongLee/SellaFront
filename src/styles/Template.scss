@@ -44,9 +44,8 @@
   font-size: 13px;
   line-height: 20px;
   font-weight: 100;
-  color: #fff;
+  color: #fff !important;
   text-align: left;
-  opacity: 0.7;
 }
 .header > .menu > ul.right {
   float: left;
@@ -74,7 +73,8 @@
 }
 .header > .menu > ul > li.on > .nav-link,
 .header > .menu > ul > li.on > .nav-link > span {
-  color: #081a51;
+  color: #081a51 !important;
+  font-weight: 400;
 }
 .header > .member {
   display: flex;

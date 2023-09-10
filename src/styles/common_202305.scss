@@ -176,15 +176,21 @@ button:hover {
 }
 
 .btn_del {
+  padding: 0;
   width: 22px;
+  min-width: unset;
   height: auto;
   vertical-align: middle;
+  border: 0;
 }
 
 .btn_add {
+  padding: 0;
   width: 22px;
+  min-width: 22px;
   height: auto;
   vertical-align: middle;
+  border: 0;
 }
 
 .btn_off {
@@ -347,7 +353,7 @@ label {
   line-height: 16px;
   background-color: #fff;
   border: 1px solid #ccc;
-  border-radius: 7px;
+  border-radius: 5px;
 }
 
 .btn_number {
@@ -399,7 +405,7 @@ input {
   border: 1px solid #ccc !important;
   border-radius: 5px !important;
   font-size: 15px !important;
-  font-weight: 300;
+  font-weight: 400;
   color: #222 !important;
 }
 

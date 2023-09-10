@@ -16,6 +16,9 @@ import _ from 'lodash';
 import moment from 'moment';
 
 import { logger, replace_1000, revert_1000 } from 'util/com';
+import Slider from 'react-slick';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 
 import 'styles/MarginCalc.scss';
 
@@ -27,7 +30,7 @@ import img_service from 'images/img_service.png';
 // AG Grid
 import { AgGridReact } from 'ag-grid-react';
 import ColumnControlModal from 'components/common/AgGrid/ColumnControlModal';
-import { fi } from 'faker/lib/locales';
+
 const PLRenderer = (params) => {
   if (params.data && params.data.connect_flag == false) {
     return <>미연결</>;
@@ -274,6 +277,33 @@ const ROUTE_COLUMN_BASE = [
     editable: true,
     cellClass: 'ag-cell-editable',
   },
+  {
+    field: '30048',
+    sortable: true,
+    unSortIcon: true,
+    headerName: '수취인명',
+    width: 130,
+    editable: true,
+    cellClass: 'ag-cell-editable',
+  },
+  {
+    field: '30050',
+    sortable: true,
+    unSortIcon: true,
+    headerName: '수취인주소',
+    width: 130,
+    editable: true,
+    cellClass: 'ag-cell-editable',
+  },
+  {
+    field: '30049',
+    sortable: true,
+    unSortIcon: true,
+    headerName: '수취인연락처',
+    width: 130,
+    editable: true,
+    cellClass: 'ag-cell-editable',
+  },
 ];
 
 // const getRowHeight = useCallback((params) => {
@@ -292,9 +322,11 @@ const MarginCalc = () => {
   const [platforms, setPlatforms] = useState([]);
   const [platformType, setplatformType] = useState(0);
   const [rowData, setRowData] = useState([]);
+  const [announcement, setAnnouncement] = useState([]);
   const [modalState, setModalState] = useState(false);
   const [columnControlModalState, setColumnControlModalState] = useState(false);
   const [unConnectModalSelectData, setUnConnectModalSelectData] = useState({});
+  const [sliderState, setSliderState] = useState(false);
 
   const [viewColumns, setViewColumns] = useState([]);
   //ag-grid
@@ -326,17 +358,32 @@ const MarginCalc = () => {
     const sella_forms = Recoils.getState('SELLA:SELLAFORMS');
 
     const toAddFields = [];
-    for (const field_data of not_yet_added_fields) {
-      const findObj = _.find(sella_forms, { code: field_data.sella_code });
-      if (findObj.type == 1) {
-        toAddFields.push(GetColonField(field_data.title, field_data.sella_code));
-      } else {
-        toAddFields.push(GetField(field_data.title, field_data.sella_code));
-      }
-    }
+    // for (const field_data of not_yet_added_fields) {
+    //   const findObj = _.find(sella_forms, { code: field_data.sella_code });
+    //   if (findObj.type == 1) {
+    //     toAddFields.push(GetColonField(field_data.title, field_data.sella_code));
+    //   } else {
+    //     toAddFields.push(GetField(field_data.title, field_data.sella_code));
+    //   }
+    // }
 
     setColumnDefs([...ROUTE_COLUMN_BASE, ...toAddFields]);
   };
+
+  useEffect(() => {
+    request.post(`cscenter/announcement`, { category: '', title: '' }).then((ret) => {
+      if (!ret.err) {
+        const { data } = ret.data;
+        logger.info(data);
+
+        if (data) {
+          const len = data.length > 5 ? 5 : data.length;
+          const announcement_data = _.slice(data, 0, len);
+          setAnnouncement(announcement_data);
+        }
+      }
+    });
+  }, []);
 
   useEffect(() => {
     // GO Step1
@@ -349,12 +396,12 @@ const MarginCalc = () => {
         [
           {
             strong: '',
-            normal: '손익계산을 하시려면 기초정보, 상품정보를 등록해 주세요.',
+            normal: '손익계산을 하시려면 [기초 정보], [기준 상품 정보]를 등록해 주세요.',
           },
         ],
         [
           {
-            name: '기초정보 관리로 이동',
+            name: '기초 정보 관리로 이동',
             callback: () => {
               navigate('step1');
             },
@@ -374,12 +421,12 @@ const MarginCalc = () => {
         [
           {
             strong: '',
-            normal: '손익계산을 하시려면 상품정보를 등록해 주세요.',
+            normal: '손익계산을 하시려면 [기준 상품 정보]를 등록해 주세요.',
           },
         ],
         [
           {
-            name: '상품 관리로 이동',
+            name: '기준 상품 관리로 이동',
             callback: () => {
               navigate('step2');
             },
@@ -410,6 +457,7 @@ const MarginCalc = () => {
     temp = _.sortBy(temp, ['_order']);
 
     setPlatforms(temp);
+    setSliderState(true);
   }, []);
 
   useEffect(() => {
@@ -730,6 +778,36 @@ const MarginCalc = () => {
       <Body title={`손익 계산`} myClass={'margin_calc'}>
         <SettlementNavTab active="/settlement/margin_calc" />
 
+        <>
+          <div>
+            <Slider
+              modalState={sliderState}
+              setModalState={setSliderState}
+              slider_settings={{
+                autoplay: true,
+                dots: false,
+                infinite: true,
+                speed: 100,
+                slidesToShow: 1,
+                slidesToScroll: 1,
+                arrow: false,
+              }}
+            >
+              {announcement &&
+                announcement.map((data, key) => (
+                  <div
+                    onClick={() => {
+                      com.storage.setItem('nav_announcement', data.idx);
+                      navigate('/cscenter/announcement');
+                    }}
+                  >
+                    <h3>{data.title}</h3>
+                  </div>
+                ))}
+            </Slider>
+          </div>
+        </>
+
         {mode == 0 && (
           <>
             <div className="page before">
@@ -821,14 +899,14 @@ const MarginCalc = () => {
                     다운로드
                   </Button>
 
-                  <Button
+                  {/* <Button
                     className="btn_set"
                     onClick={() => {
                       setColumnControlModalState(true);
                     }}
                   >
                     <img src={`${img_src}${icon_set}`} />
-                  </Button>
+                  </Button> */}
                 </div>
               </div>
 

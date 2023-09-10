@@ -66,7 +66,7 @@ const Step2 = () => {
           [{ strong: '', normal: '상품정보를 등록하시려면 \n기초정보를 등록해 주세요.' }],
           [
             {
-              name: '기초정보 관리로 이동',
+              name: '기초 정보 관리로 이동',
               className: 'red',
               callback: () => {
                 navigate('project/Step1');
@@ -92,7 +92,7 @@ const Step2 = () => {
           [{ strong: '', normal: '상품정보를 등록하시려면 기초정보를 등록해 주세요.' }],
           [
             {
-              name: '기초정보 관리로 이동',
+              name: '기초 정보 관리로 이동',
               callback: () => {
                 navigate('step1');
               },
@@ -608,9 +608,9 @@ const Step2 = () => {
               <img src={`${img_src}${icon_circle_arrow_down}`} />
               상품 엑셀 다운로드
             </Button>
-            <Button className="btn_set">
+            {/* <Button className="btn_set">
               <img src={`${img_src}${icon_set}`} />
-            </Button>
+            </Button> */}
           </div>
           <div style={containerStyle} className="tablebox">
             <div style={gridStyle} className="ag-theme-alpine test">

@@ -48,7 +48,7 @@ const Head = () => {
             </li>
             <li className={location.pathname == '/step2' ? 'on' : ''}>
               <Nav.Link onClick={onLink} name="/step2">
-                <span>2단계</span>상품 관리
+                <span>2단계</span>기준 상품 관리
               </Nav.Link>
             </li>
             <li className={location.pathname == '/settlement/form_management' ? 'on' : ''}>

@@ -64,6 +64,11 @@ const FormManagement = () => {
 
   const ButtonRenderer = (props) => {
     const buttonClicked = () => {
+      if (props.data.idx == -1) {
+        modal.alert('양식 저장 이후부터 사용여부 선택이 가능합니다.');
+        return;
+      }
+
       request.post(`user/forms/save_view`, { idx: props.data.idx, view: !props.value }).then((ret) => {
         if (!ret.err) {
           const { data } = ret.data;
@@ -136,6 +141,15 @@ const FormManagement = () => {
 
       datas.push({ ...rowNode.data });
     });
+
+    const unRegistObj = _.find(datas, (data) => {
+      return data.idx == -1;
+    });
+
+    if (unRegistObj) {
+      modal.alert('추가중인 양식 저장 이후부터 순서 저장이 가능합니다.');
+      return;
+    }
 
     request.post(`user/forms/save_order`, { datas }).then((ret) => {
       if (!ret.err) {

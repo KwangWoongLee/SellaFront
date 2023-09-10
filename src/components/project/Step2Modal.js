@@ -55,7 +55,7 @@ const InputModal = React.memo(({ modalState, setModalState, callback }) => {
           [{ strong: '', normal: '상품정보를 등록하시려면 \n기초정보를 등록해 주세요.' }],
           [
             {
-              name: '기초정보 관리로 이동',
+              name: '기초 정보 관리로 이동',
               className: 'red',
               callback: () => {
                 navigate('project/Step1');

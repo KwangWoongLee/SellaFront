@@ -6,8 +6,9 @@ import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 import MyPageNavTab from 'components/base/MyPageNavTab';
-import { logger } from 'util/com';
+import { logger, page_reload, modal, navigate } from 'util/com';
 import request from 'util/request';
+import Recoils from 'recoils';
 
 import 'styles/Mypage.scss';
 
@@ -39,6 +40,17 @@ const Membership = () => {
     });
   }, []);
 
+  const onPaymentReq = () => {
+    request.post('user/payment', {}).then((ret) => {
+      if (!ret.err) {
+        modal.alert('결제가 완료되었습니다. 다시 로그인 해주세요.');
+
+        Recoils.resetState('CONFIG:ACCOUNT');
+        navigate('/');
+      }
+    });
+  };
+
   return (
     <>
       <Head />
@@ -55,7 +67,7 @@ const Membership = () => {
               <h4>유료서비스 사용기간이 [30]일 남았습니다.</h4>
             )}
 
-            {gradeData && <GradeItem d={gradeData}></GradeItem>}
+            {gradeData && <GradeItem d={gradeData} onClick={onPaymentReq}></GradeItem>}
           </div>
 
           <div className="formbox">
@@ -118,7 +130,7 @@ const Membership = () => {
   );
 };
 
-const GradeItem = React.memo(({ index, d }) => {
+const GradeItem = React.memo(({ index, d, onClick }) => {
   logger.render('SelectItem : ', index);
   return (
     <div className="innerbox">
@@ -130,8 +142,13 @@ const GradeItem = React.memo(({ index, d }) => {
 
       <ul>{d.functions && d.functions.map((data, index) => <li>{data.name}</li>)}</ul>
 
-      {/* <button className="btn-primary">사용중</button> */}
-      <button className="btn-primary btn_flblue">결제하기</button>
+      {d.remain_warranty_day && d.remain_warranty_day > 0 ? (
+        <Button className="btn-primary">사용중</Button>
+      ) : (
+        <Button onClick={onClick} className="btn-primary btn_flblue">
+          결제하기
+        </Button>
+      )}
     </div>
   );
 });

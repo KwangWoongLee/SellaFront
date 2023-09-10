@@ -110,7 +110,6 @@ const PopupCellRenderer = (props) => {
       >
         <DropdownButton
           ref={dropdownRef}
-          style={{ display: 'inline-block' }}
           variant=""
           title={pf_str && pf_str[selectType]}
           onClick={visible ? hide : show}
@@ -119,7 +118,6 @@ const PopupCellRenderer = (props) => {
       <input
         ref={inputRef}
         onChange={onChangeInput}
-        style={{ display: 'inline-block' }}
         disabled={pf_str.length && selectType == pf_str.length - 1 ? false : true}
       ></input>
       <span>원</span>

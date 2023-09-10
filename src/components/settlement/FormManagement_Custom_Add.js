@@ -245,6 +245,7 @@ const FormManagement_Custom_Add = (param) => {
     }
 
     nowSelectRef.current = rowIndex;
+    onReset(e);
 
     setTransition(false);
     setTransition(true);
@@ -311,8 +312,10 @@ const FormManagement_Custom_Add = (param) => {
   };
 
   const onReset = (e) => {
-    searchRef.current.value = '';
-    onSearch(e);
+    if (searchRef.current) {
+      searchRef.current.value = '';
+      onSearch(e);
+    }
   };
 
   return (
@@ -326,9 +329,9 @@ const FormManagement_Custom_Add = (param) => {
           </button>
         </div>
 
-        <Button variant="primary" className="btn_add" onClick={onAddSellaBasic}>
+        {/* <Button variant="primary" className="btn_add" onClick={onAddSellaBasic}>
           항목 추가
-        </Button>
+        </Button> */}
         <table className="thead">
           <thead>
             <th>셀라 표준 항목</th>

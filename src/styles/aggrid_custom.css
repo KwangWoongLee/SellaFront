@@ -79,7 +79,7 @@
   min-height: 100%;
   border-right: 1px dotted #ccc;
   font-size: 14px;
-  font-weight: 300;
+  font-weight: 400;
   padding: 5px 10px;
   overflow: hidden;
   line-height: normal;
@@ -101,7 +101,7 @@
 
 .ag-cell-value,
 .ag-group-value {
-  font-weight: 300;
+  font-weight: 400;
 }
 
 .ag-cell,
@@ -150,14 +150,14 @@
 .ag-cell.txt_red * {
   color: #d20000 !important;
   font-size: 14px;
-  font-weight: 300;
+  font-weight: 400;
   text-align: right;
 }
 
 .ag-cell.txt_black * {
   color: #000 !important;
   font-size: 14px;
-  font-weight: 300;
+  font-weight: 400;
   text-align: right;
 }
 

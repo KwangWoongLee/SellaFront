@@ -113,7 +113,7 @@
 
       th:nth-child(2),
       td:nth-child(2) {
-        width: 300px;
+        width: 350px;
       }
 
       th:nth-child(3),
@@ -148,14 +148,14 @@
         width: 120px;
       }
 
-      th:last-child,
-      td:last-child {
-        width: 42px;
+      th:nth-child(10),
+      td:nth-child(10) {
+        width: 180px;
       }
     }
 
     table.tbody {
-      height: auto;
+      height: 432px;
 
       tbody {
         width: 100%;
@@ -178,8 +178,10 @@
           width: 50%;
         }
         input {
-          float: right;
-          width: calc(50% - 5px);
+          margin: 0 5px;
+          width: calc(50% - 25px);
+          text-align: right;
+          font-weight: 400;
         }
       }
 

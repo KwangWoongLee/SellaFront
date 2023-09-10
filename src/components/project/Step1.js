@@ -108,6 +108,14 @@ const Step1 = () => {
         return;
       }
 
+      const restricted_name_item = _.find(deliItems, (item) => {
+        return _.trim(item.delivery_category) == '기타';
+      });
+      if (restricted_name_item) {
+        modal.alert(`'구분' 값에 '기타'는 셀라 기본 구분값으로, 사용 할 수 없습니다.`);
+        return;
+      }
+
       request.post(`user/delivery/save`, { delivery_list: deliItems }).then((ret) => {
         if (!ret.err) {
           const { data } = ret.data;
@@ -125,6 +133,14 @@ const Step1 = () => {
       });
       if (fault_item) {
         modal.alert(`'구분' 값을 확인해주세요.`);
+        return;
+      }
+
+      const restricted_name_item = _.find(packItems, (item) => {
+        return _.trim(item.packing_category) == '기타';
+      });
+      if (restricted_name_item) {
+        modal.alert(`'구분' 값에 '기타'는 셀라 기본 구분값으로, 사용 할 수 없습니다.`);
         return;
       }
 
