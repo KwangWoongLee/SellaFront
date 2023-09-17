@@ -37,14 +37,14 @@ h3 span:after {
   font-weight: 400;
 }
 
-h3>button {
+h3 > button {
   float: right;
 }
 
 table thead {
   height: 36px;
   min-height: 36px;
-  background-color: #182B65;
+  background-color: #182b65;
   overflow: hidden;
 }
 
@@ -56,7 +56,7 @@ table tbody:empty {
 
 table tbody:empty:before,
 .ag-overlay-no-rows-wrapper {
-  content: "데이터가 없습니다.";
+  content: '데이터가 없습니다.';
   position: absolute;
   top: 49%;
   left: 50%;
@@ -85,9 +85,9 @@ table th:last-child {
 }
 
 table th.required:before {
-  content: "* ";
+  content: '* ';
   font-size: 15px;
-  color: #D20000;
+  color: #d20000;
   vertical-align: middle;
 }
 
@@ -109,7 +109,7 @@ table tr:hover td input {
 }
 
 table thead tr:hover {
-  background-color: #182B65 !important;
+  background-color: #182b65 !important;
 }
 
 table tr:hover td input:focus {
@@ -133,6 +133,10 @@ table tr.select {
   background-color: #e8f4fe;
 }
 
+table tr.save_red {
+  background-color: #ffeaea;
+}
+
 table td {
   padding: 5px 10px;
   font-size: 14px;
@@ -151,7 +155,8 @@ table .btn_del {
   margin: 0 auto;
 }
 
-table .btn_add {}
+table .btn_add {
+}
 
 table .td_btn_add {
   text-align: right;

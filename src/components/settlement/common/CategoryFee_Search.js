@@ -11,7 +11,7 @@ import { img_src, logger } from 'util/com';
 import icon_search from 'images/icon_search.svg';
 import icon_reset from 'images/icon_reset.svg';
 
-const CategoryFee_Search = React.memo(({ abledCategoryFee, selectCallback }) => {
+const CategoryFee_Search = React.memo(({ selectCallback, parentFormsMatchSelectData }) => {
   logger.render('CategoryFee_Search');
   const sella_categories = Recoils.useValue('SELLA:CATEGORIES');
 
@@ -19,6 +19,19 @@ const CategoryFee_Search = React.memo(({ abledCategoryFee, selectCallback }) => 
   const [items, setItems] = useState([]);
   const [platformType, setPlatformType] = useState(0);
   const platform_str = _.uniq(_.map(sella_categories, 'name'));
+  const [mode, setMode] = useState(0);
+
+  useEffect(() => {
+    if (!parentFormsMatchSelectData) {
+      return;
+    } else {
+      const forms_match = parentFormsMatchSelectData;
+      if (forms_match) {
+        if (forms_match.settlement_flag) setMode(1);
+        else setMode(2);
+      }
+    }
+  }, [parentFormsMatchSelectData]);
 
   useEffect(() => {
     let search_results = [...sella_categories];
@@ -110,10 +123,10 @@ const CategoryFee_Search = React.memo(({ abledCategoryFee, selectCallback }) => 
       <div className="categoryfeesearch">
         <table>
           <tbody>
-            {abledCategoryFee ? (
+            {mode == 0 && <>step2. 카테고리명으로 검색하세요.</>}
+            {mode == 1 && <>이 매체는 수수료 매칭이 필요하지 않습니다.</>}
+            {mode == 2 && (
               <>{items && items.map((d, key) => <SelectItem key={key} index={key} d={d} onSelect={onSelect} />)}</>
-            ) : (
-              <>이 매체는 수수료 매칭이 필요하지 않습니다.</>
             )}
           </tbody>
         </table>

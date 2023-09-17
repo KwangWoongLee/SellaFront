@@ -27,10 +27,11 @@ import Step2_PFCellRenderer from 'components/common/AgGrid/Step2_PFCellRenderer'
 
 let rawData;
 const excel_str = [
-  '신규 등록용',
-  '상품정보 수정용(전체)',
-  '상품정보 수정용(카테고리,상품명)',
-  '상품정보 수정용(입고단가,택배비,포장비)',
+  '엑셀 일괄 작업',
+  '엑셀 내려받기 (신규 등록용)',
+  '엑셀 내려받기 (상품 수정용)',
+  '엑셀 올리기 (신규 등록용)',
+  '엑셀 올리기 (상품 수정용)',
 ];
 let df_category = [];
 let pf_category = [];
@@ -208,18 +209,6 @@ const Step2 = () => {
       cellClass: 'codecell uneditable',
     },
     {
-      field: 'goods_category',
-      headerName: '* 카테고리',
-      sortable: true,
-      unSortIcon: true,
-      filter: false,
-      cellClass: 'lock-pinned',
-      pinned: 'left',
-      lockPinned: true,
-      width: 120,
-      cellStyle: { 'line-height': '30px', 'text-align': 'right' },
-    },
-    {
       field: 'name',
       headerName: '* 상품명',
       sortable: true,
@@ -244,7 +233,6 @@ const Step2 = () => {
         return replace_1000(params.value);
       },
       filter: false,
-      cellDataType: 'number', // 인풋 타입을 넘버로 바꾸고싶어요ㅠㅠ
       cellClass: 'ag-cell-editable',
       maxWidth: 90,
       cellStyle: { 'line-height': '30px', 'text-align': 'right' },
@@ -255,7 +243,6 @@ const Step2 = () => {
       sortable: true,
       unSortIcon: true,
       filter: false,
-      // cellDataType: 'number', // 인풋 타입을 넘버로 바꾸고싶어요ㅠㅠ , project 폴더에 Step2_PopupCellRenderer 쪽에서 input있는데 컨트롤 하시면됩니다^^
       editable: false,
       cellClass: 'td_input',
       cellRenderer: Step2_DFCellRenderer,
@@ -283,13 +270,13 @@ const Step2 = () => {
       minWidth: 215,
     },
     {
-      field: 'box_amount',
-      headerName: '박스입수량',
+      field: 'goods_category',
+      headerName: '카테고리',
       sortable: true,
       unSortIcon: true,
-      valueParser: (params) => Number(params.newValue),
       filter: false,
-      cellClass: 'ag-cell-editable',
+      cellClass: 'lock-pinned',
+      width: 120,
       cellStyle: { 'line-height': '30px', 'text-align': 'right' },
     },
     {
@@ -304,31 +291,6 @@ const Step2 = () => {
         values: ['Y', 'N'],
       },
       cellStyle: { 'line-height': '30px', 'text-align': 'right' },
-    },
-    {
-      field: 'barcode',
-      headerName: '바코드',
-      sortable: true,
-      unSortIcon: true,
-      filter: false,
-      cellClass: 'ag-cell-editable',
-      cellStyle: { 'line-height': '30px', 'text-align': 'right' },
-    },
-    {
-      field: 'rrp',
-      headerName: '권장소비자가',
-      sortable: true,
-      unSortIcon: true,
-      filter: false,
-      cellClass: 'ag-cell-editable',
-      cellStyle: { 'line-height': '30px', 'text-align': 'right' },
-      valueParser: (params) => {
-        return Number.isNaN(Number(params.newValue)) ? params.oldValue : Number(params.newValue);
-      },
-      valueFormatter: (params) => {
-        if (params.value == '') return 0;
-        return replace_1000(params.value);
-      },
     },
     {
       field: 'memo',
@@ -427,7 +389,7 @@ const Step2 = () => {
     setModalState(true);
   };
 
-  const onUpload = function () {
+  const onUpload = function (type) {
     modal.file_upload(null, '.xlsx', '상품정보 엑셀 파일을 선택해주세요.', {}, (ret) => {
       if (!ret.err) {
         const { files } = ret;
@@ -443,6 +405,7 @@ const Step2 = () => {
           const frm = new FormData();
           frm.append('files', file);
           frm.append('Authorization', access_token);
+          frm.append('type', type);
 
           request
             .post_form('user/goods/save', frm, () => {})
@@ -472,24 +435,18 @@ const Step2 = () => {
     const worksheet = workbook.addWorksheet('상품입고용');
 
     worksheet.columns = [
-      { header: '상품번호', key: 'idx', width: 18 },
-      { header: '카테고리', key: 'goods_category', width: 18 },
       { header: '상품명', key: 'name', width: 25 },
       { header: '입고단가', key: 'stock_price', width: 10 },
       { header: '택배비', key: 'delivery_fee', width: 10 },
       { header: '포장비', key: 'packing_fee', width: 10 },
-      { header: '박스입수량', key: 'box_amount', width: 10 },
+      { header: '카테고리', key: 'goods_category', width: 18 },
       { header: '단독배송', key: 'single_delivery', width: 10 },
-      { header: '바코드', key: 'barcode', width: 10 },
-      { header: '권장소비자가', key: 'rrp', width: 10 },
       { header: '메모', key: 'memo', width: 30 },
     ];
 
     switch (type) {
-      case 0:
-      case 1:
-        break;
       case 2:
+        worksheet.columns = [{ header: '상품번호', key: 'idx', width: 18 }, ...worksheet.columns];
         worksheet.columns = _.transform(
           worksheet.columns,
           function (result, item) {
@@ -501,37 +458,6 @@ const Step2 = () => {
               };
             }
 
-            if (item.key != 'idx' && item.key != 'goods_category' && item.key != 'name') {
-              item.fill = {
-                type: 'pattern',
-                pattern: 'solid',
-                fgColor: { argb: 'cccccc' },
-              };
-            }
-
-            result.push(item);
-          },
-          []
-        );
-        break;
-      case 3:
-        worksheet.columns = _.transform(
-          worksheet.columns,
-          function (result, item) {
-            if (
-              item.key != 'stock_price' &&
-              item.key != 'delivery_descript' &&
-              item.key != 'delivery_fee' &&
-              item.key != 'packing_descript' &&
-              item.key != 'packing_fee'
-            ) {
-              item.fill = {
-                type: 'pattern',
-                pattern: 'solid',
-                fgColor: { argb: 'cccccc' },
-              };
-            }
-
             result.push(item);
           },
           []
@@ -541,21 +467,25 @@ const Step2 = () => {
         break;
     }
 
-    switch (type) {
-      case 0:
-        break;
-      default:
-        let columnData = _.cloneDeep(rowData);
-        _.map(columnData, (obj) => {
-          _.unset(obj, 'reg_date');
-          _.unset(obj, 'modify_date');
-        });
+    let columnData = _.cloneDeep(rowData);
+    _.map(columnData, (obj) => {
+      switch (type) {
+        case 1:
+          _.unset(obj, 'idx');
+          break;
+        default:
+          break;
+      }
 
-        worksheet.addRows(columnData);
-        break;
+      _.unset(obj, 'reg_date');
+      _.unset(obj, 'modify_date');
+    });
+
+    if (type !== 1) {
+      worksheet.getColumn('idx').numFmt = '0';
     }
 
-    worksheet.getColumn('idx').numFmt = '0';
+    if (type == 2) worksheet.addRows(columnData);
 
     const mimeType = { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' };
     const buffer = await workbook.xlsx.writeBuffer();
@@ -563,7 +493,18 @@ const Step2 = () => {
     saveAs(blob, '상품저장기본양식.xlsx');
   };
 
-  const onChange = (key, e) => {
+  const onChangeExcelType = (key, e) => {
+    switch (key) {
+      case 1:
+      case 2:
+        onDownload(key);
+        break;
+      case 3:
+      case 4:
+        onUpload(key, e);
+        break;
+    }
+
     setExcelType(key);
   };
 
@@ -587,30 +528,18 @@ const Step2 = () => {
             </p>
           </div>
           <div className="btnbox_right">
-            <Button variant="primary" onClick={onUpload} className="btn_green">
-              <img src={`${img_src}${icon_circle_arrow_down}`} />
-              상품 엑셀 업로드
-            </Button>{' '}
             <DropdownButton variant="" title={excel_str[excelType]}>
-              {excel_str.map((name, key) => (
-                <Dropdown.Item key={key} eventKey={key} onClick={(e) => onChange(key, e)} active={excelType === key}>
+              {excel_str.map((_, key) => (
+                <Dropdown.Item
+                  key={key}
+                  eventKey={key}
+                  onClick={(e) => onChangeExcelType(key, e)}
+                  active={excelType === key}
+                >
                   {excel_str[key]}
                 </Dropdown.Item>
               ))}
             </DropdownButton>
-            <Button
-              variant="primary"
-              onClick={(e) => {
-                onDownload(excelType, e);
-              }}
-              className="btn_green"
-            >
-              <img src={`${img_src}${icon_circle_arrow_down}`} />
-              상품 엑셀 다운로드
-            </Button>
-            {/* <Button className="btn_set">
-              <img src={`${img_src}${icon_set}`} />
-            </Button> */}
           </div>
           <div style={containerStyle} className="tablebox">
             <div style={gridStyle} className="ag-theme-alpine test">
@@ -625,6 +554,7 @@ const Step2 = () => {
                 onCellEditingStopped={onCellValueChanged}
                 singleClickEdit={true}
                 rowHeight={rowHeight}
+                stopEditingWhenCellsLoseFocus={true}
               ></AgGridReact>
             </div>
           </div>

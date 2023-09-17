@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-import { Button, DropdownButton, Dropdown, Modal, Form, FloatingLabel } from 'react-bootstrap';
+import { Table, Button, DropdownButton, Dropdown, Modal, Form, FloatingLabel } from 'react-bootstrap';
 import request from 'util/request';
 import { modal } from 'util/com';
 import Recoils from 'recoils';
@@ -11,11 +11,12 @@ import { img_src, logger } from 'util/com';
 import icon_del from 'images/icon_del.svg';
 
 const FormsMatchTable = React.memo(
-  ({ rows, unconnect_flag, setItems, selectCallback, deleteCallback, onParentSelect }) => {
+  ({ rows, unconnect_flag, setItems, selectCallback, deleteCallback, onParentSelect, ref }) => {
     logger.render('FormsMatchTable');
 
     const [rowData, setRowData] = useState([]);
     const [tableRow, setTableRow] = useState(null);
+    const formsMatchTableRef = useRef();
 
     useEffect(() => {
       if (rows) {
@@ -42,6 +43,14 @@ const FormsMatchTable = React.memo(
       }
     };
 
+    useEffect(() => {
+      if (formsMatchTableRef.current) {
+        if (onParentSelect != -1 && rows && rows.length > 0) {
+          formsMatchTableRef.current.scrollTop = 10 * onParentSelect;
+        }
+      }
+    });
+
     return (
       <>
         <table className="formsmatchtable thead">
@@ -54,7 +63,7 @@ const FormsMatchTable = React.memo(
             </tr>
           </thead>
         </table>
-        <table className="formsmatchtable tbody">
+        <table className="formsmatchtable tbody" ref={formsMatchTableRef}>
           <tbody>
             <>
               {rowData &&
@@ -84,8 +93,18 @@ const FormsMatchTable = React.memo(
 
 const FormsMatchItem = React.memo(({ index, d, onClick, onDelete, tableRow }) => {
   logger.render('FormsMatchItem : ', index);
+
+  let classNames = [];
+  if (index == tableRow) {
+    classNames.push('select');
+  }
+
+  if (d.save) {
+    classNames.push('save_red');
+  }
+
   return (
-    <tr className={index == tableRow ? 'select' : ''}>
+    <tr className={_.join(classNames, ' ')}>
       <td onClick={onClick}>{d.forms_name}</td>
       <td onClick={onClick}>{d.forms_product_name}</td>
       <td onClick={onClick}>{d.forms_option_name}</td>

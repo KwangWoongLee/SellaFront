@@ -16,8 +16,6 @@ import Step2_DFCellRenderer from 'components//common/AgGrid//Step2_DFCellRendere
 import Step2_PFCellRenderer from 'components/common/AgGrid/Step2_PFCellRenderer';
 
 const newRow = {
-  barcode: '',
-  box_amount: '',
   delivery_descript: '',
   delivery_fee: '',
   goods_category: '',
@@ -28,8 +26,7 @@ const newRow = {
   packing_descript: '',
   packing_fee: '',
   reg_date: '',
-  rrp: '',
-  single_delivery: 'Y',
+  single_delivery: 'N',
   stock_price: '',
 };
 
@@ -105,7 +102,7 @@ const InputModal = React.memo(({ modalState, setModalState, callback }) => {
       if (!goods_category && !name) {
         continue;
       } else {
-        if (!goods_category) return modal.alert('카테고리 항목이 비었습니다.');
+        // if (!goods_category) return modal.alert('카테고리 항목이 비었습니다.');
         if (!name) return modal.alert('상품명 항목이 비었습니다.');
         if (!stock_price) return modal.alert('입고단가 항목이 비었습니다.');
         if (delivery_fee != 0 && !delivery_fee) return modal.alert('택배비 항목이 비었습니다.');
@@ -115,8 +112,6 @@ const InputModal = React.memo(({ modalState, setModalState, callback }) => {
       row.stock_price = revert_1000(row.stock_price);
       row.delivery_fee = revert_1000(row.delivery_fee);
       row.packing_fee = revert_1000(row.packing_fee);
-      row.box_amount = revert_1000(row.box_amount);
-      row.rrp = revert_1000(row.rrp);
       _.unset(row, 'idx');
 
       insertRowData.push(row);
@@ -221,15 +216,12 @@ const InputModal = React.memo(({ modalState, setModalState, callback }) => {
           <div className="tablebox">
             <table className="thead">
               <thead>
-                <th>* 카테고리</th>
                 <th>* 상품명</th>
                 <th>* 입고단가</th>
                 <th>* 택배비</th>
                 <th>* 포장비</th>
-                <th>박스입수량</th>
+                <th>카테고리</th>
                 <th>단독배송</th>
-                <th>바코드</th>
-                <th>권장소비자가</th>
                 <th>메모</th>
                 <th></th>
               </thead>
@@ -277,15 +269,6 @@ const InsertGoodsItems = React.memo(
     return (
       <tr>
         <td>
-          <input
-            type="text"
-            placeholder="카테고리"
-            onChange={onChange}
-            name="goods_category"
-            value={d.goods_category}
-          />
-        </td>
-        <td>
           <input type="text" placeholder="상품명" onChange={onChange} name="name" value={d.name} />
         </td>
         <td>
@@ -317,13 +300,12 @@ const InsertGoodsItems = React.memo(
           ></Step2_PFCellRenderer>
         </td>
         <td>
-          <NumericFormat
-            allowLeadingZeros
-            thousandSeparator=","
-            placeholder="박스입수량"
+          <input
+            type="text"
+            placeholder="카테고리"
             onChange={onChange}
-            name="box_amount"
-            value={d.box_amount}
+            name="goods_category"
+            value={d.goods_category}
           />
         </td>
         <td>
@@ -345,19 +327,6 @@ const InsertGoodsItems = React.memo(
                 </Dropdown.Item>
               ))}
           </DropdownButton>
-        </td>
-        <td>
-          <input type="text" placeholder="바코드" onChange={onChange} name="barcode" value={d.barcode} />
-        </td>
-        <td>
-          <NumericFormat
-            placeholder="권장소비자가"
-            allowLeadingZeros
-            thousandSeparator=","
-            onChange={onChange}
-            name="rrp"
-            value={d.rrp}
-          />
         </td>
         <td>
           <input type="text" placeholder="메모" onChange={onChange} name="memo" value={d.memo} />

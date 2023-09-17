@@ -87,23 +87,14 @@ const FormManagement_Custom_Add = (param) => {
       return;
     }
 
-    _.remove(save_data, (row) => {
-      return row.check_flag && !row.checked;
-    });
-
     for (const row of save_data) {
-      if (!row.title || !row.column || !row.sella_title || !row.sella_code) {
-        modal.confirm(
-          '양식을 저장하시려면 필수값을 입력해주세요.',
-          [{ strong: '', normal: '정산 예정금액 항목이 없다면 체크를 해제해주세요.' }],
-          [
-            {
-              name: '확인',
-              callback: () => {},
-            },
-          ]
-        );
-        return;
+      if (row.sella_code == 30001 && !row.checked) {
+        if (!row.basic_fee_rate) {
+          modal.alert('정산예정금액이 없는 경우 기본 수수료를 입력하세요.');
+          return;
+        }
+
+        row.additional = row.basic_fee_rate;
       }
 
       if (row.sella_code == 30032) {
@@ -133,6 +124,28 @@ const FormManagement_Custom_Add = (param) => {
         row.additional = row.df_fee_rate;
       }
     }
+
+    _.remove(save_data, (row) => {
+      return row.check_flag && !row.checked && !row.additional;
+    });
+
+    if (
+      _.includes(save_data, (row) => {
+        return !row.title || !row.column || !row.sella_title || !row.sella_code;
+      })
+    ) {
+      modal.confirm(
+        '양식을 저장하시려면 필수값을 입력해주세요.',
+        [{ strong: '', normal: '' }],
+        [
+          {
+            name: '확인',
+            callback: () => {},
+          },
+        ]
+      );
+    }
+
     request.post(`user/forms/save`, { forms_name: formNameRef.current.value, save_data }).then((ret) => {
       if (!ret.err) {
         const { data } = ret.data;
@@ -204,6 +217,8 @@ const FormManagement_Custom_Add = (param) => {
 
           setExcelData(excelDatas);
           setMode(1);
+
+          modal.alert('주문양식 업로드 완료 / 셀라 표준 항목을 선택해 매칭해주세요.');
         };
 
         if (rABS) {
@@ -437,6 +452,7 @@ const FormManagement_Custom_Add = (param) => {
 
 const SellaForm = React.memo(({ index, d, selectRow, onClick, onDelete, checkedItemHandler }) => {
   logger.render('SellaForm TableItem : ', index);
+  const basicFeeRateRef = useRef(null);
   const dfFeeRateRef = useRef(null);
   const mfFeeRateRef = useRef(null);
   const ifFeeRateRef = useRef(null);
@@ -450,6 +466,9 @@ const SellaForm = React.memo(({ index, d, selectRow, onClick, onDelete, checkedI
   const onChangeInput = (type, ref) => {
     if (ref.current) {
       switch (type) {
+        case 'basic':
+          d.basic_fee_rate = ref.current.value;
+          break;
         case 'df':
           d.df_fee_rate = ref.current.value;
           break;
@@ -527,7 +546,24 @@ const SellaForm = React.memo(({ index, d, selectRow, onClick, onDelete, checkedI
           </Button>
         </td>
       )}
-      {d.sella_code != 30047 && d.sella_code != 30032 && d.sella_code != 30033 && <td></td>}
+      {d.sella_code != 30001 && d.sella_code != 30047 && d.sella_code != 30032 && d.sella_code != 30033 && <td></td>}
+      {d.sella_code == 30001 &&
+        (d.checked ? (
+          <td></td>
+        ) : (
+          <td>
+            기본 수수료{' '}
+            {
+              <input
+                ref={basicFeeRateRef}
+                onChange={() => {
+                  onChangeInput('basic', basicFeeRateRef);
+                }}
+              ></input>
+            }
+            %{' '}
+          </td>
+        ))}
 
       {d.sella_code == 30047 && (
         <td>
@@ -583,7 +619,12 @@ const SellaForm = React.memo(({ index, d, selectRow, onClick, onDelete, checkedI
 const UploadExcelItems = React.memo(({ index, d, callback, setTransition }) => {
   logger.render('SellaForm TableItem : ', index);
   return (
-    <tr>
+    <tr
+      onDoubleClick={() => {
+        setTransition(false);
+        callback({ title: d.header, column: d.column, value: d.value });
+      }}
+    >
       <td>{d.column}</td>
       <td>
         {d.header}

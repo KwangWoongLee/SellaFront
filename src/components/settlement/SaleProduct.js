@@ -14,7 +14,7 @@ import StandardProduct_Search from 'components/settlement/common/StandardProduct
 
 import { logger } from 'util/com';
 import Recoils from 'recoils';
-import _, { cloneDeep } from 'lodash';
+import _ from 'lodash';
 
 import 'styles/SaleProduct.scss';
 
@@ -23,14 +23,14 @@ const SaleProduct = () => {
 
   const [items, setItems] = useState([]);
   const [formsMatchSelect, setFormsMatchSelect] = useState(-1);
-  const [abledCategoryFee, setAbledCategoryFee] = useState(true);
-  const [goodsMatch, setGoodsMatchs] = useState([]);
-  const [standardItems, setStandardItems] = useState([]);
+  const forms = _.cloneDeep(Recoils.getState('DATA:PLATFORMS'));
   const forms_match = _.cloneDeep(Recoils.getState('DATA:FORMSMATCH'));
   const goods_match = _.cloneDeep(Recoils.getState('DATA:GOODSMATCH'));
   const goods_data = [...Recoils.getState('DATA:GOODS')];
+  const [rawData, setRawData] = useState([]);
 
   const selectFormsMatchRef = useRef(null);
+  const [selectFormsMatchData, setSelectFormsMatchData] = useState();
 
   useEffect(() => {
     for (const match_data of forms_match) {
@@ -55,37 +55,31 @@ const SaleProduct = () => {
     }
 
     setItems([...forms_match]);
+
+    setRawData(_.cloneDeep(forms_match));
   }, []);
 
   useEffect(() => {
-    const standards = _.cloneDeep(standardItems);
-
-    const goods_match_selects = _.map(goodsMatch, 'name');
-    for (const standard of standards) {
-      if (_.includes(goods_match_selects, standard.name)) {
-        standard.select = true;
-      } else {
-        standard.select = false;
+    if (rawData) {
+      for (const data of rawData) {
+        const findObj = _.find(items, { idx: data.idx });
+        const findObjJson = JSON.stringify(findObj.goods_match);
+        const rawObjJson = JSON.stringify(data.goods_match);
+        if (findObj && findObjJson != rawObjJson) {
+          findObj.save = true;
+        }
       }
     }
-
-    if (!standards || standards.length == 0) {
-      let recommends = [...Recoils.getState('DATA:GOODS')];
-      setStandardItems([...recommends]);
-    } else {
-      setStandardItems(standards);
-    }
-  }, [goodsMatch]);
+  }, [selectFormsMatchData]);
 
   const onSelectFormsMatchTable = (d) => {
-    // if (rowData && rowData.length && rowData[0].settlement_price) setAbledCategoryFee(false);
-    // else setAbledCategoryFee(true);
-
-    let recommends = _.filter(goods_data, { name: d.forms_product_name });
-    if (recommends.length == 0) {
-      recommends = [...Recoils.getState('DATA:GOODS')];
-    }
     selectFormsMatchRef.current = d;
+
+    const findForm = _.find(forms, { idx: d.forms_idx });
+    if (!findForm) {
+      return;
+    }
+    selectFormsMatchRef.current.settlement_flag = findForm.settlement_flag;
 
     if (!d.goods_match || d.goods_match.length == 0) {
       d.goods_match = [];
@@ -104,9 +98,7 @@ const SaleProduct = () => {
       }
     }
 
-    setStandardItems([...recommends]);
-    setGoodsMatchs([...d.goods_match]);
-    setFormsMatchSelect(-1);
+    setSelectFormsMatchData({ ...selectFormsMatchRef.current });
   };
   const onDeleteFormsMatchTable = (d) => {
     request.post(`user/forms/match/delete`, { forms_match_idx: d.idx }).then((ret) => {
@@ -122,9 +114,8 @@ const SaleProduct = () => {
             return item.idx != d.idx;
           })
         );
-
-        setGoodsMatchs([]);
-        setStandardItems([]);
+        selectFormsMatchRef.current = null;
+        setSelectFormsMatchData(selectFormsMatchRef.current);
       }
     });
   };
@@ -141,13 +132,15 @@ const SaleProduct = () => {
       },
       []
     );
-    setGoodsMatchs([...selectFormsMatchRef.current.goods_match]);
+
+    setSelectFormsMatchData({ ...selectFormsMatchRef.current });
   };
 
   const onChangeGoodsMatchTable = (goods_match) => {
     if (!selectFormsMatchRef.current) return; // TODO error
 
     selectFormsMatchRef.current.goods_match = [...goods_match];
+    setSelectFormsMatchData({ ...selectFormsMatchRef.current });
   };
 
   const onSelectStandardProduct_Search = (d) => {
@@ -162,7 +155,8 @@ const SaleProduct = () => {
     new_goods_match.match_count = 1;
 
     selectFormsMatchRef.current.goods_match = [...selectFormsMatchRef.current.goods_match, new_goods_match];
-    setGoodsMatchs([...selectFormsMatchRef.current.goods_match]);
+
+    setSelectFormsMatchData({ ...selectFormsMatchRef.current });
   };
 
   const onUnSelectStandardProduct_Search = (d) => {
@@ -172,7 +166,6 @@ const SaleProduct = () => {
     });
 
     onDeleteGoodsMatchTable(selectFormsMatchRef.current.goods_match);
-    setGoodsMatchs([...selectFormsMatchRef.current.goods_match]);
   };
 
   const onSelectCategoryFee_Search = (d) => {
@@ -181,22 +174,24 @@ const SaleProduct = () => {
       good_match.category_fee_rate = d.category_fee_rate;
     }
 
-    setGoodsMatchs([...selectFormsMatchRef.current.goods_match]);
-  };
-
-  const onResetStandardProduct_Search = () => {
-    selectFormsMatchRef.current = null;
-
-    setGoodsMatchs([]);
-
-    let recommends = [...Recoils.getState('DATA:GOODS')];
-    setStandardItems([...recommends]);
-
-    setFormsMatchSelect(null);
-    //카테고리도 해야한다. 수수료 데이터 넘겨받으면 그때!
+    setSelectFormsMatchData({ ...selectFormsMatchRef.current });
   };
 
   const onSave = (e) => {
+    if (!items) {
+      modal.alert('저장할 데이터가 없습니다.');
+      return; // TODO error
+    }
+
+    const save_datas = _.filter(items, (item) => {
+      return item.save;
+    });
+
+    if (!save_datas || !save_datas.length) {
+      modal.alert('저장할 데이터가 없습니다.');
+      return; // TODO error
+    }
+
     if (!selectFormsMatchRef.current) {
       modal.alert('왼쪽에서 판매 상품을 선택하세요.');
       return; // TODO error
@@ -211,6 +206,7 @@ const SaleProduct = () => {
         Recoils.setState('DATA:GOODSMATCH', data.goods_match);
 
         setItems(_.cloneDeep(Recoils.getState('DATA:FORMSMATCH')));
+        setRawData(_.cloneDeep(Recoils.getState('DATA:FORMSMATCH')));
       }
     });
   };
@@ -234,24 +230,22 @@ const SaleProduct = () => {
               저장
             </button>
             <GoodsMatchTable
-              rows={goodsMatch}
               selectCallback={onSelectGoodsMatchTable}
               deleteCallback={onDeleteGoodsMatchTable}
               changeCallback={onChangeGoodsMatchTable}
-              abledCategoryFee={abledCategoryFee}
+              parentFormsMatchSelectData={selectFormsMatchData}
             ></GoodsMatchTable>
           </div>
           <div className="section2">
             <h3>연결할 기준 상품 검색</h3>
             <StandardProduct_Search
-              rows={standardItems}
-              resetCallback={onResetStandardProduct_Search}
               selectCallback={onSelectStandardProduct_Search}
               unSelectCallback={onUnSelectStandardProduct_Search}
+              parentFormsMatchSelectData={selectFormsMatchData}
             ></StandardProduct_Search>
             <h3>수수료 검색</h3>
             <CategoryFee_Search
-              abledCategoryFee={abledCategoryFee}
+              parentFormsMatchSelectData={selectFormsMatchData}
               selectCallback={onSelectCategoryFee_Search}
             ></CategoryFee_Search>
           </div>

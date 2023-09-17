@@ -38,7 +38,7 @@ const PLRenderer = (params) => {
 
   return (
     <>
-      {params.value == '-' || isNaN(params.value) ? (
+      {params.value == '-' || isNaN(params.value) || (params.value != 0 && !params.value) || params.value === '' ? (
         <>
           <span>
             계산 전
@@ -277,33 +277,6 @@ const ROUTE_COLUMN_BASE = [
     editable: true,
     cellClass: 'ag-cell-editable',
   },
-  {
-    field: '30048',
-    sortable: true,
-    unSortIcon: true,
-    headerName: '수취인명',
-    width: 130,
-    editable: true,
-    cellClass: 'ag-cell-editable',
-  },
-  {
-    field: '30050',
-    sortable: true,
-    unSortIcon: true,
-    headerName: '수취인주소',
-    width: 130,
-    editable: true,
-    cellClass: 'ag-cell-editable',
-  },
-  {
-    field: '30049',
-    sortable: true,
-    unSortIcon: true,
-    headerName: '수취인연락처',
-    width: 130,
-    editable: true,
-    cellClass: 'ag-cell-editable',
-  },
 ];
 
 // const getRowHeight = useCallback((params) => {
@@ -500,7 +473,7 @@ const MarginCalc = () => {
             className: 'btn_blue',
             callback: () => {
               setModalState(true);
-              setUnConnectModalSelectData({});
+              setUnConnectModalSelectData(unconnect_rows[0]);
             },
           },
           {
@@ -595,7 +568,7 @@ const MarginCalc = () => {
       return;
     }
 
-    setUnConnectModalSelectData(param);
+    setUnConnectModalSelectData(param.data);
     setModalState(true);
   };
 
@@ -739,12 +712,13 @@ const MarginCalc = () => {
     );
   };
 
-  const saveCallback = (d) => {
-    if (!d) return;
+  const saveCallback = (save_datas) => {
+    if (!save_datas) return;
 
-    setRowData(
-      _.transform(
-        rowData,
+    let saveResultData = _.cloneDeep(rowData);
+    for (const d of save_datas) {
+      saveResultData = _.transform(
+        saveResultData,
         function (result, item) {
           if (item.forms_product_name == d.forms_product_name && item.forms_option_name == d.forms_option_name) {
             item.connect_flag = true;
@@ -758,8 +732,10 @@ const MarginCalc = () => {
           result.push(item);
         },
         []
-      )
-    );
+      );
+    }
+
+    setRowData([...saveResultData]);
   };
 
   const saveViewColumnsCallback = (nowPlatform) => {
@@ -778,38 +754,39 @@ const MarginCalc = () => {
       <Body title={`손익 계산`} myClass={'margin_calc'}>
         <SettlementNavTab active="/settlement/margin_calc" />
 
-        <>
-          <div>
-            <Slider
-              modalState={sliderState}
-              setModalState={setSliderState}
-              slider_settings={{
-                autoplay: true,
-                dots: false,
-                infinite: true,
-                speed: 100,
-                slidesToShow: 1,
-                slidesToScroll: 1,
-                arrow: false,
-              }}
-            >
-              {announcement &&
-                announcement.map((data, key) => (
-                  <div
-                    onClick={() => {
-                      com.storage.setItem('nav_announcement', data.idx);
-                      navigate('/cscenter/announcement');
-                    }}
-                  >
-                    <h3>{data.title}</h3>
-                  </div>
-                ))}
-            </Slider>
-          </div>
-        </>
-
         {mode == 0 && (
           <>
+            <div>
+              <Slider
+                modalState={sliderState}
+                setModalState={setSliderState}
+                slider_settings={{
+                  autoplay: true,
+                  dots: false,
+                  infinite: true,
+                  speed: 100,
+                  slidesToShow: 1,
+                  slidesToScroll: 1,
+                  arrow: false,
+                  draggable: false,
+                }}
+              >
+                {announcement &&
+                  announcement.map((data, key) => (
+                    <div>
+                      <h3
+                        onClick={() => {
+                          com.storage.setItem('nav_announcement', data.idx);
+                          navigate('/cscenter/announcement');
+                        }}
+                      >
+                        {data.title}
+                      </h3>
+                    </div>
+                  ))}
+              </Slider>
+            </div>
+
             <div className="page before">
               <div className="section1">
                 <h3>
@@ -972,6 +949,7 @@ const MarginCalc = () => {
                     suppressRowTransform={true}
                     rowHeight={rowHeight}
                     singleClickEdit={true}
+                    stopEditingWhenCellsLoseFocus={true}
                     // getRowHeight={getRowHeight}
                   ></AgGridReact>
                 </div>

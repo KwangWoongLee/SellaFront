@@ -170,12 +170,6 @@ const Announcement = () => {
           </div>
 
           <div className="inputbox">
-            {/* default 전체, 
-            다른버튼 클릭하여 조회기간 변경 시 해당 버튼에 btn_blue 클래스 넣어주시면 됩니다~  
-            
-              여기가 조회기간이 아니라 카테고리인데, 아래 className="period" 바꿔도 작동 문제 없이 되나요..?
-              해결되면 지워주세요
-            */}
             <div className="period">
               {category_str.map((name, key) => (
                 <Button onClick={(e) => onChangeCategoryType(key)} className={categoryType == key ? 'btn_blue' : ''}>
