@@ -447,13 +447,13 @@ const Margin = () => {
                   <col />
                 </colgroup>
                 <tbody>
-                  <tr>
+                  {/* <tr>
                     <th>판매가격</th>
                     <td>
                       {resultData.sell_price}
                       <span> 원</span>
                     </td>
-                  </tr>
+                  </tr> */}
 
                   <tr>
                     <th>정산금액</th>
@@ -499,11 +499,11 @@ const Margin = () => {
                       </Button>
                     </td>
                   </tr>
-                  <tr>
+                  {/* <tr>
                     <td className="td_sum green">
                       <span>+ 수익합계</span> {sumPlus} 원
                     </td>
-                  </tr>
+                  </tr> */}
 
                   <tr>
                     <td>
@@ -527,11 +527,11 @@ const Margin = () => {
                     </td>
                   </tr>
 
-                  <tr>
+                  {/* <tr>
                     <td className="td_sum red">
                       <span>- 비용 합계</span> {sumMinus} 원
                     </td>
-                  </tr>
+                  </tr> */}
 
                   <tr>
                     <td>

@@ -15,10 +15,13 @@ import { saveAs } from 'file-saver';
 import _ from 'lodash';
 import moment from 'moment';
 
-import { logger, replace_1000, revert_1000 } from 'util/com';
+import { logger, replace_1000, revert_1000, time_format_none_time } from 'util/com';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
+import { Carousel } from 'react-responsive-carousel';
 
 import 'styles/MarginCalc.scss';
 
@@ -277,6 +280,33 @@ const ROUTE_COLUMN_BASE = [
     editable: true,
     cellClass: 'ag-cell-editable',
   },
+  // {
+  //   field: '30048',
+  //   sortable: true,
+  //   unSortIcon: true,
+  //   headerName: '수취인명',
+  //   width: 130,
+  //   editable: true,
+  //   cellClass: 'ag-cell-editable',
+  // },
+  // {
+  //   field: '30050',
+  //   sortable: true,
+  //   unSortIcon: true,
+  //   headerName: '수취인주소',
+  //   width: 130,
+  //   editable: true,
+  //   cellClass: 'ag-cell-editable',
+  // },
+  // {
+  //   field: '30049',
+  //   sortable: true,
+  //   unSortIcon: true,
+  //   headerName: '수취인연락처',
+  //   width: 130,
+  //   editable: true,
+  //   cellClass: 'ag-cell-editable',
+  // },
 ];
 
 // const getRowHeight = useCallback((params) => {
@@ -756,77 +786,85 @@ const MarginCalc = () => {
 
         {mode == 0 && (
           <>
-            <div>
-              <Slider
-                modalState={sliderState}
-                setModalState={setSliderState}
-                slider_settings={{
-                  autoplay: true,
-                  dots: false,
-                  infinite: true,
-                  speed: 100,
-                  slidesToShow: 1,
-                  slidesToScroll: 1,
-                  arrow: false,
-                  draggable: false,
-                }}
-              >
-                {announcement &&
-                  announcement.map((data, key) => (
-                    <div>
-                      <h3
-                        onClick={() => {
-                          com.storage.setItem('nav_announcement', data.idx);
-                          navigate('/cscenter/announcement');
-                        }}
-                      >
-                        {data.title}
-                      </h3>
-                    </div>
-                  ))}
-              </Slider>
-            </div>
-
             <div className="page before">
-              <div className="section1">
-                <h3>
-                  주문서를 업로드하고 손익을 관리하세요!
-                  <p>
-                    오늘 들어온 주문, <span className="txt_red">순이익</span>은 얼마인가요?
-                  </p>
-                </h3>
-
-                <div className="btnbox">
-                  <DropdownButton variant="" title={platforms.length ? platforms[platformType].name : ''}>
-                    {platforms &&
-                      platforms.map(
-                        (item, key) =>
-                          item.view && (
-                            <Dropdown.Item
-                              key={key}
-                              eventKey={key}
-                              onClick={(e) => onChange(key, e)}
-                              active={platformType === key}
-                            >
-                              {item.name}
-                            </Dropdown.Item>
-                          )
-                      )}
-                  </DropdownButton>
-                  <Button variant="primary" onClick={onUpload} className="btn_green">
-                    <img src={`${img_src}${icon_circle_arrow_up}`} />새 주문서 업로드
-                  </Button>
-                  <span>※ 신규 접수된 '배송준비중' 인 양식을 사용해주세요.</span>
+              <div className="innerbox">
+                <div className="noticebox">
+                  <Slider
+                    modalState={sliderState}
+                    setModalState={setSliderState}
+                    autoplay={true}
+                    autoplaySpeed={2000}
+                    dots={false}
+                    slidesToShow={1}
+                    slidesToScroll={1}
+                    arrow={false}
+                  >
+                    {announcement &&
+                      announcement.map((data, key) => (
+                        <h2>
+                          <span>{data.announcement_category}</span>{' '}
+                          <span
+                            onClick={() => {
+                              com.storage.setItem('nav_announcement', data.idx);
+                              navigate('/cscenter/announcement');
+                            }}
+                          >
+                            {data.title}
+                          </span>{' '}
+                          <span>{time_format_none_time(data.reg_date)}</span>
+                        </h2>
+                      ))}
+                  </Slider>
+                  <button
+                    onClick={() => {
+                      navigate('cscenter/announcement');
+                    }}
+                    className="btn-primary btn_more btn_more2"
+                  ></button>
                 </div>
 
-                <ul>
-                  <li>판매 매체별 주문정보로 손익을 계산할 수 있습니다.</li>
-                  <li>적자 상품을 찾아 판매 가격을 수정하세요.</li>
-                  <li>오늘 업로드한 주문서를 모아서 하루동안 손익을 파악하세요.</li>
-                </ul>
-              </div>
-              <div className="section2">
-                <img src={`${img_src}${img_service}`} />
+                <div className="uploadbox">
+                  <div className="section1">
+                    <h3>
+                      주문서를 업로드하고 손익을 관리하세요!
+                      <p>
+                        오늘 들어온 주문, <span className="txt_red">순이익</span>은 얼마인가요?
+                      </p>
+                    </h3>
+
+                    <div className="btnbox">
+                      <DropdownButton variant="" title={platforms.length ? platforms[platformType].name : ''}>
+                        {platforms &&
+                          platforms.map(
+                            (item, key) =>
+                              item.view && (
+                                <Dropdown.Item
+                                  key={key}
+                                  eventKey={key}
+                                  onClick={(e) => onChange(key, e)}
+                                  active={platformType === key}
+                                >
+                                  {item.name}
+                                </Dropdown.Item>
+                              )
+                          )}
+                      </DropdownButton>
+                      <Button variant="primary" onClick={onUpload} className="btn_green">
+                        <img src={`${img_src}${icon_circle_arrow_up}`} />새 주문서 업로드
+                      </Button>
+                      <span>※ 신규 접수된 '배송준비중' 인 양식을 사용해주세요.</span>
+                    </div>
+
+                    <ul className="inform">
+                      <li>판매 매체별 주문정보로 손익을 계산할 수 있습니다.</li>
+                      <li>적자 상품을 찾아 판매 가격을 수정하세요.</li>
+                      <li>오늘 업로드한 주문서를 모아서 하루동안 손익을 파악하세요.</li>
+                    </ul>
+                  </div>
+                  <div className="section2">
+                    <img src={`${img_src}${img_service}`} />
+                  </div>
+                </div>
               </div>
             </div>
           </>

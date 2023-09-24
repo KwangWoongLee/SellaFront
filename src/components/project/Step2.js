@@ -198,31 +198,41 @@ const Step2 = () => {
     },
     {
       field: 'idx',
-      headerName: '* 상품코드',
+      headerName: '상품코드',
       sortable: true,
       editable: false,
       filter: false,
       pinned: 'left',
       lockPinned: true,
-      width: 120,
+      width: 150,
       cellStyle: { 'line-height': '30px', 'text-align': 'right' },
       cellClass: 'codecell uneditable',
     },
     {
       field: 'name',
-      headerName: '* 상품명',
+      headerName: '상품명',
       sortable: true,
       unSortIcon: true,
       filter: false,
       cellClass: 'lock-pinned prd_name',
       pinned: 'left',
       lockPinned: true,
-      width: 250,
+      width: 300,
+      cellStyle: { 'line-height': '30px', 'text-align': 'right' },
+    },
+    {
+      field: 'goods_category',
+      headerName: '카테고리',
+      sortable: true,
+      unSortIcon: true,
+      filter: false,
+      cellClass: 'lock-pinned',
+      maxWidth: 130,
       cellStyle: { 'line-height': '30px', 'text-align': 'right' },
     },
     {
       field: 'stock_price',
-      headerName: '* 입고가',
+      headerName: '입고가',
       sortable: true,
       unSortIcon: true,
       valueParser: (params) => {
@@ -234,12 +244,12 @@ const Step2 = () => {
       },
       filter: false,
       cellClass: 'ag-cell-editable',
-      maxWidth: 90,
+      maxWidth: 120,
       cellStyle: { 'line-height': '30px', 'text-align': 'right' },
     },
     {
       field: 'delivery_fee',
-      headerName: '* 택배비',
+      headerName: '택배비',
       sortable: true,
       unSortIcon: true,
       filter: false,
@@ -255,7 +265,7 @@ const Step2 = () => {
     },
     {
       field: 'packing_fee',
-      headerName: '* 포장비',
+      headerName: '포장비',
       sortable: true,
       unSortIcon: true,
       filter: false,
@@ -269,16 +279,7 @@ const Step2 = () => {
       },
       minWidth: 215,
     },
-    {
-      field: 'goods_category',
-      headerName: '카테고리',
-      sortable: true,
-      unSortIcon: true,
-      filter: false,
-      cellClass: 'lock-pinned',
-      width: 120,
-      cellStyle: { 'line-height': '30px', 'text-align': 'right' },
-    },
+
     {
       field: 'single_delivery',
       headerName: '단독배송',
@@ -291,6 +292,7 @@ const Step2 = () => {
         values: ['Y', 'N'],
       },
       cellStyle: { 'line-height': '30px', 'text-align': 'right' },
+      maxWidth: 100,
     },
     {
       field: 'memo',
@@ -312,6 +314,7 @@ const Step2 = () => {
         return time_format(params.value);
       },
       cellStyle: { 'line-height': '30px', 'text-align': 'right' },
+      minWidth: 210,
     },
     {
       field: 'modify_date',
@@ -326,6 +329,7 @@ const Step2 = () => {
         return time_format(params.value);
       },
       cellStyle: { 'line-height': '30px', 'text-align': 'right' },
+      minWidth: 210,
     },
   ]);
 
@@ -528,6 +532,7 @@ const Step2 = () => {
             </p>
           </div>
           <div className="btnbox_right">
+            <span className="icon_Excel2">엑셀일괄작업</span>
             <DropdownButton variant="" title={excel_str[excelType]}>
               {excel_str.map((_, key) => (
                 <Dropdown.Item

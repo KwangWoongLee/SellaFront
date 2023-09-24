@@ -307,11 +307,11 @@ const Buying = () => {
 
               <table className="tbodyleft">
                 <tbody>
-                  <tr>
+                  {/* <tr>
                     <td className="td_sum gray">
                       <span>제품 구매비</span> {sumPlus} 원
                     </td>
-                  </tr>
+                  </tr> */}
                   <tr>
                     <td>
                       <span>제품단가</span>
@@ -379,11 +379,11 @@ const Buying = () => {
                     </td>
                   </tr>
 
-                  <tr>
+                  {/* <tr>
                     <td className="td_sum gray">
                       <span>구매 대행비</span> {lowestPrice} 원
                     </td>
-                  </tr>
+                  </tr> */}
 
                   <tr>
                     <td>
@@ -429,11 +429,11 @@ const Buying = () => {
 
               <table className="tbodyright">
                 <tbody>
-                  <tr>
+                  {/* <tr>
                     <td className="td_sum gray">
                       <span>환율</span> {sumPlus} 원
                     </td>
-                  </tr>
+                  </tr> */}
 
                   <tr>
                     <td>
@@ -451,11 +451,11 @@ const Buying = () => {
                     </td>
                   </tr>
 
-                  <tr>
+                  {/* <tr>
                     <td className="td_sum gray">
                       <span>수수료/세금</span> {lowestPrice} 원
                     </td>
-                  </tr>
+                  </tr> */}
 
                   <tr>
                     <td>

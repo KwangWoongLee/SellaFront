@@ -7,6 +7,7 @@ import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import 'styles/aggrid_custom.css';
 import 'styles/table_custom.css';
+import { useBeforeunload } from 'react-beforeunload';
 
 import Home from 'components/base/Home';
 import { RecoilRoot } from 'recoil';
@@ -51,6 +52,13 @@ export function App() {
   useEffect(() => {
     logger.debug('mount App');
   }, []);
+
+  useBeforeunload((event) => {
+    event.preventDefault();
+
+    return;
+  });
+
   return (
     <RecoilRoot>
       <BrowserRouter>

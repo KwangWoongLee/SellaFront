@@ -21,15 +21,24 @@ const SearchPWResult = () => {
   const [changeRefButtonOn, setChangeRefButtonOn] = useState(false);
   const passwordRef = useRef(null);
   const passwordConfirmRef = useRef(null);
+  const tempIdRef = useRef(null);
 
   useEffect(() => {
-    const temp = com.storage.getItem('searchPasswordTemp');
-    if (temp === 'undefined' || temp === '') {
+    const temp = com.storage.getItem('tempSearchPasswordResult');
+    const tempId = com.storage.getItem('tempSearchPasswordEmail');
+    if (temp === 'undefined' || temp === '' || temp === 'false') {
       setMode(0);
     } else {
       setMode(1);
 
-      com.storage.setItem('searchPasswordTemp', '');
+      if (!tempId) {
+        modal.alert('비정상 접근입니다.');
+        return;
+      }
+      tempIdRef.current = tempId;
+
+      com.storage.setItem('tempSearchPasswordEmail', '');
+      com.storage.setItem('tempSearchPasswordResult', '');
     }
   }, []);
 
@@ -74,14 +83,19 @@ const SearchPWResult = () => {
   };
 
   const onPasswordChangeReq = () => {
-    const password = passwordRef.current.value;
-    if (password)
-      request.post('auth/patch/password', { password }).then((ret) => {
-        if (!ret.err) {
-          modal.alert('변경되었습니다.');
-          navigate('login');
-        }
-      });
+    const new_password = passwordRef.current.value;
+
+    if (!new_password) {
+      modal.alert('올바른 정보를 입력해주세요.');
+      return;
+    }
+
+    request.post('auth/patch/password', { email: tempIdRef.current, new_password }).then((ret) => {
+      if (!ret.err) {
+        modal.alert('변경되었습니다.');
+        navigate('login');
+      }
+    });
   };
 
   return (

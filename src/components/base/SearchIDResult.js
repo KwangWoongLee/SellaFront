@@ -18,15 +18,13 @@ const SearchIDResult = () => {
   const [mode, setMode] = useState(0);
 
   useEffect(() => {
-    const temp = com.storage.getItem('searchIdtemp');
+    const temp = com.storage.getItem('tempSearchIdResult');
     if (temp === 'undefined' || temp === '') {
       setMode(0);
       setSearchedEmail('');
     } else {
       setMode(1);
       setSearchedEmail(temp);
-
-      com.storage.setItem('searchIdtemp', '');
     }
   }, []);
 

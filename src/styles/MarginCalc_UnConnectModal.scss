@@ -11,10 +11,15 @@
     background-color: #f8f9ff;
   }
 
+  .modal-header {
+    button {
+      float: right;
+      margin-left: 10px;
+    }
+  }
+
   .modal-body {
     height: 100%;
     overflow: visible;
   }
- 
 }
-

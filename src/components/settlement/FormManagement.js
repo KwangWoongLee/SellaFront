@@ -65,7 +65,7 @@ const FormManagement = () => {
   const ButtonRenderer = (props) => {
     const buttonClicked = () => {
       if (props.data.idx == -1) {
-        modal.alert('양식 저장 이후부터 사용여부 선택이 가능합니다.');
+        modal.alert('추가중인 양식 저장 먼저 해주세요.');
         return;
       }
 
@@ -147,7 +147,7 @@ const FormManagement = () => {
     });
 
     if (unRegistObj) {
-      modal.alert('추가중인 양식 저장 이후부터 순서 저장이 가능합니다.');
+      modal.alert('추가중인 양식 저장 먼저 해주세요.');
       return;
     }
 

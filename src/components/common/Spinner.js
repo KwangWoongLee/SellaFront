@@ -8,7 +8,11 @@ import 'styles/Spinner.scss';
 const MySpinner = () => {
   const show = Recoils.useValue('SPINEER');
   logger.render('MySpinner : ', show);
-  return <Modal show={show} fullscreen className="MySpinner"></Modal>;
+  return (
+    <Modal show={show} fullscreen className="MySpinner">
+      <div class="loader loader-7 box"></div>
+    </Modal>
+  );
 };
 
 export default React.memo(MySpinner);

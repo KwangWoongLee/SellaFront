@@ -189,6 +189,9 @@ const MarginCalc_UnConnectModal = React.memo(
           <Button variant="primary" className="btn_close" onClick={onClose}>
             <img src={`${img_src}${icon_close}`} />
           </Button>
+          <button onClick={onSave} className="btn_blue btn-primary btn_save">
+            전체 저장
+          </button>
         </Modal.Header>
         <Modal.Body>
           <div className="section1">
@@ -202,9 +205,7 @@ const MarginCalc_UnConnectModal = React.memo(
               onParentSelect={formsMatchSelect}
             ></FormsMatchTable>
             <h3>연결 상품</h3>
-            <button onClick={onSave} className="btn_blue btn-primary">
-              저장
-            </button>
+
             <GoodsMatchTable
               selectCallback={onSelectGoodsMatchTable}
               deleteCallback={onDeleteGoodsMatchTable}

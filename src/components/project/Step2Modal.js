@@ -216,11 +216,11 @@ const InputModal = React.memo(({ modalState, setModalState, callback }) => {
           <div className="tablebox">
             <table className="thead">
               <thead>
-                <th>* 상품명</th>
-                <th>* 입고단가</th>
-                <th>* 택배비</th>
-                <th>* 포장비</th>
+                <th className="head_red">상품명</th>
                 <th>카테고리</th>
+                <th className="head_red">입고단가</th>
+                <th className="head_red">택배비</th>
+                <th className="head_red">포장비</th>
                 <th>단독배송</th>
                 <th>메모</th>
                 <th></th>
@@ -272,6 +272,15 @@ const InsertGoodsItems = React.memo(
           <input type="text" placeholder="상품명" onChange={onChange} name="name" value={d.name} />
         </td>
         <td>
+          <input
+            type="text"
+            placeholder="카테고리"
+            onChange={onChange}
+            name="goods_category"
+            value={d.goods_category}
+          />
+        </td>
+        <td>
           <NumericFormat
             allowLeadingZeros
             thousandSeparator=","
@@ -280,6 +289,7 @@ const InsertGoodsItems = React.memo(
             name="stock_price"
             value={d.stock_price}
           />
+          <span>원</span>
         </td>
         <td>
           <Step2_DFCellRenderer
@@ -299,15 +309,7 @@ const InsertGoodsItems = React.memo(
             }}
           ></Step2_PFCellRenderer>
         </td>
-        <td>
-          <input
-            type="text"
-            placeholder="카테고리"
-            onChange={onChange}
-            name="goods_category"
-            value={d.goods_category}
-          />
-        </td>
+
         <td>
           <DropdownButton variant="" title={d.single_delivery ? d.single_delivery : sd_str[0]}>
             {sd_str &&

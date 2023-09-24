@@ -102,6 +102,7 @@ const SearchID = () => {
     }
 
     if (isOk) setSearchButtonOn(true);
+    else setSearchButtonOn(false);
   }, [auth]);
 
   useEffect(() => {
@@ -131,6 +132,13 @@ const SearchID = () => {
   const onSubmit = (e) => {
     e.preventDefault();
 
+    for (const agreement_item of agreement) {
+      if (agreement_item.essential_flag && !agreement_item.checked) {
+        modal.alert('필수 동의 항목에 체크 해주세요.');
+        return;
+      }
+    }
+
     const name = nameRef.current.value;
     const agency = agencyType;
     const gender = genderType;
@@ -144,7 +152,7 @@ const SearchID = () => {
     request.post('auth/search/id', { phone, name, gender, agency, local, agreement }).then((ret) => {
       if (!ret.err) {
         const { data } = ret.data;
-        com.storage.setItem('searchIdtemp', data.email);
+        com.storage.setItem('tempSearchIdResult', data.email);
 
         navigate('/search/id/result');
       }

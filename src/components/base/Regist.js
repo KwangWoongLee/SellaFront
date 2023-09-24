@@ -33,6 +33,7 @@ const Regist = () => {
   const [genderType, setGenderType] = useState(0);
   const [localType, setLocalType] = useState(0);
   const [auth, setAuth] = useState({
+    name: false,
     phone: false,
     send_phone: false,
     auth_phone: false,
@@ -40,6 +41,7 @@ const Regist = () => {
     auth_email: false,
     password: false,
     password_confirm: false,
+    agency: false,
   });
   const nameRef = useRef(null);
   const phoneRef = useRef(null);
@@ -80,7 +82,33 @@ const Regist = () => {
     }
 
     if (isOk) setRegistButtonOn(true);
+    else setRegistButtonOn(false);
   }, [auth]);
+
+  useEffect(() => {
+    if (agencyType) {
+      const auth_temp = auth;
+      auth_temp['agency'] = true;
+      setAuth({ ...auth_temp });
+    } else {
+      const auth_temp = auth;
+      auth_temp['agency'] = false;
+      setAuth({ ...auth_temp });
+    }
+  }, [agencyType]);
+
+  const onNameChange = (e) => {
+    let name = nameRef.current.value;
+    if (name.length > 0) {
+      const auth_temp = auth;
+      auth_temp['name'] = true;
+      setAuth({ ...auth_temp });
+    } else {
+      const auth_temp = auth;
+      auth_temp['name'] = false;
+      setAuth({ ...auth_temp });
+    }
+  };
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -293,7 +321,14 @@ const Regist = () => {
           <div className="rightbox">
             <label>이름</label>
             <InputGroup className="inputname">
-              <Form.Control ref={nameRef} type="text" placeholder="이름 입력" aria-label="name" defaultValue={''} />
+              <Form.Control
+                ref={nameRef}
+                onChange={onNameChange}
+                type="text"
+                placeholder="이름 입력"
+                aria-label="name"
+                defaultValue={''}
+              />
             </InputGroup>
             <label>휴대폰인증</label>
             <DropdownButton variant="" title={agency_str[agencyType]} className="inputagency">
@@ -352,7 +387,12 @@ const Regist = () => {
                 defaultValue={''}
                 onChange={onPhoneChange}
               />
-              <Button disabled={!auth['phone']} variant="primary" className="btn_blue" onClick={onSendPhoneAuthNo}>
+              <Button
+                disabled={!(auth['name'] && auth['agency'] && auth['phone'])}
+                variant="primary"
+                className="btn_blue"
+                onClick={onSendPhoneAuthNo}
+              >
                 인증번호 발송
               </Button>
             </InputGroup>

@@ -45,6 +45,7 @@ const SearchModal = React.memo(({ modalState, setModalState, selectCallback, nam
     selectCallback(d);
     onClose();
   };
+
   const onClose = () => {
     setItems([...Recoils.getState('DATA:GOODS')]);
     setModalState(false);

@@ -7,6 +7,9 @@ import dateFormat from 'dateformat';
 import conf from '../config/auth.json';
 import conf_inapp from '../config/inapp.json';
 import crypto from 'crypto';
+import zlib from 'zlib';
+import sprintf from 'sprintf';
+
 const com = {};
 
 com.storage = window.localStorage;
@@ -286,6 +289,135 @@ export const is_regex_password = (password) => {
 export const is_regex_email = (email) => {
   let regex = /^[a-z0-9]+@[a-z]+\.[a-z]{2,3}$/;
   return regex.test(email);
+};
+
+const keyset =
+  'abcdefghijklmnopqrstuvwxyz@))$!!)@=ABCDEFxyz@))$!!)@=ABCDEFGHIJKLMNOPQRSTUVWXYZ@)GHIJKLMNOPQRSTUVWXYZ@))$!!)@=opqrstuvwxyzJKLMNOPQRSTUVWXYZ@))$!!)@))$!!)@=ABCDEFabcdefghijklmnopqrstuvwxyz@))$!!)@=ABCDEFxyz@))$!!)@=ABGHIJK';
+
+const iv = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+const make_key = function () {
+  const len = keyset.length - 1;
+
+  let key = '';
+  let AesKey = '';
+  for (let i = 0; i < 4; i++) {
+    const rand = _.random(len - 1);
+    AesKey = AesKey.concat(keyset.charAt(rand));
+    key = key.concat(sprintf('%02x', rand));
+  }
+
+  AesKey = _.repeat(AesKey, 8);
+
+  return { key: key, AesKey: AesKey };
+};
+
+const make_account_key = function () {
+  let AesKey = ')@SG';
+  AesKey = _.repeat(AesKey, 8);
+  let key = '';
+  for (let i = 0; i < 4; i++) {
+    key = key.concat(sprintf('%02x', i));
+  }
+
+  return { key: key, AesKey: AesKey };
+};
+
+// 바뀌어야지
+export const gzip_account_key_compress_crypt = (data) => {
+  let ret;
+  try {
+    let key = make_account_key();
+    const buf = zlib.deflateSync(data);
+    const cipher = crypto.createCipheriv('aes-256-cbc', key.AesKey, Buffer.from(iv));
+    let crypted = cipher.update(buf, 'utf8', 'base64');
+    crypted += cipher.final('base64');
+
+    ret = key.key.concat(crypted);
+  } catch (err) {
+    if (err) {
+      console.log('gzip_compress_crypt error(err=' + err + ')');
+    }
+  }
+
+  return ret;
+};
+
+export const gzip_uncompress = (data) => {
+  let ret;
+  try {
+    const buf = Buffer.from(data, 'base64');
+    const dec = zlib.unzipSync(buf);
+    ret = dec.toString();
+  } catch (err) {
+    if (err) {
+      logger.error('gzip_uncompress error(err=' + err + ')');
+    }
+  }
+
+  return ret;
+};
+export const gzip_compress = (data) => {
+  let ret;
+  try {
+    const buf = zlib.deflateSync(data);
+    ret = buf.toString('base64');
+  } catch (err) {
+    if (err) {
+      logger.error('gzip_compress error(err=' + err + ')');
+    }
+  }
+
+  return ret;
+};
+
+export const gzip_compress_crypt = (data) => {
+  let ret;
+  try {
+    let key = make_key();
+    const buf = zlib.deflateSync(data);
+    const cipher = crypto.createCipheriv('aes-256-cbc', key.AesKey, Buffer.from(iv));
+    let crypted = cipher.update(buf, 'utf8', 'base64');
+    crypted += cipher.final('base64');
+
+    ret = key.key.concat(crypted);
+  } catch (err) {
+    if (err) {
+      console.log('gzip_compress_crypt error(err=' + err + ')');
+    }
+  }
+
+  return ret;
+};
+
+export const gzip_uncompress_crypt = (data) => {
+  let ret;
+  try {
+    const key = data.slice(0, 8);
+    let uncrypt_key = '';
+    let tmp_key = '';
+    for (let i = 0; i < 8; i += 2) {
+      const k = keyset.charAt(parseInt(key.slice(i, i + 2), 16));
+      tmp_key = tmp_key.concat(k);
+    }
+
+    uncrypt_key = _.repeat(tmp_key, 8);
+
+    const crypted = data.slice(8, data.length);
+
+    const decipher = crypto.createDecipheriv('aes-256-cbc', uncrypt_key, Buffer.from(iv));
+    const start = decipher.update(crypted, 'base64');
+    const end = decipher.final();
+    const decrypted = Buffer.concat([start, end]);
+    const dec = zlib.unzipSync(decrypted);
+    ret = dec.toString();
+  } catch (err) {
+    if (err) {
+      console.log('gzip_uncompress_crypt error : ' + err + ')');
+    }
+  }
+
+  return ret;
 };
 
 export default com;

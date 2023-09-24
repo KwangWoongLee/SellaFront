@@ -8,17 +8,39 @@ import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 import Checkbox from 'components/common/CheckBoxCell';
+import _ from 'lodash';
 
 import 'styles/Login.scss';
 
 const Login = () => {
   logger.render('Login');
+  const [idSaveChecked, setIdSaveChecked] = useState(false);
+  const [email, setEmail] = useState('');
 
   useEffect(() => {
     const idSave = com.storage.getItem('idSave');
-    if (idSave == 'true') setIdSaveChecked(true);
+    if (idSave == 'true') {
+      setIdSaveChecked(true);
+      setEmail(com.storage.getItem('email') !== 'undefined' ? com.storage.getItem('email') : '');
+    } else {
+      setIdSaveChecked(false);
+      com.storage.setItem('email', 'undefined');
+      setEmail('');
+    }
+
+    const tempRegistResult = _.cloneDeep(com.storage.getItem('tempRegistResult'));
+    const tempSearchIdResult = _.cloneDeep(com.storage.getItem('tempSearchIdResult'));
+
+    if (tempRegistResult) {
+      setEmail(tempRegistResult);
+      com.storage.setItem('tempRegistResult', '');
+      return;
+    } else if (tempSearchIdResult) {
+      setEmail(tempSearchIdResult);
+      com.storage.setItem('tempSearchIdResult', '');
+      return;
+    }
   }, []);
-  const [idSaveChecked, setIdSaveChecked] = useState(false);
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -52,6 +74,7 @@ const Login = () => {
         }
 
         com.storage.setItem('access_token', data.access_token);
+        com.storage.setItem('refresh_token', data.refresh_token);
 
         Recoils.setState('DATA:GOODS', data.goods);
         Recoils.setState('DATA:DELIVERY', data.delivery);
@@ -96,7 +119,7 @@ const Login = () => {
               type="text"
               placeholder="이메일 주소"
               aria-label="id"
-              defaultValue={com.storage.getItem('email') !== 'undefined' ? com.storage.getItem('email') : ''}
+              defaultValue={email}
               aria-describedby="basic-addon1"
             />
           </InputGroup>

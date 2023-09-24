@@ -107,6 +107,7 @@ const SearchPW = () => {
     }
 
     if (isOk) setSearchButtonOn(true);
+    else setSearchButtonOn(false);
   }, [auth]);
 
   useEffect(() => {
@@ -150,7 +151,9 @@ const SearchPW = () => {
     request.post('auth/search/password', { email, phone, name, gender, agency, local, agreement }).then((ret) => {
       if (!ret.err) {
         const { data } = ret.data;
-        com.storage.setItem('searchPasswordTemp', data.msg);
+
+        com.storage.setItem('tempSearchPasswordEmail', email);
+        com.storage.setItem('tempSearchPasswordResult', data.ok);
 
         navigate('/search/password/result');
       }

@@ -218,7 +218,7 @@ const FormManagement_Custom_Add = (param) => {
           setExcelData(excelDatas);
           setMode(1);
 
-          modal.alert('주문양식 업로드 완료 / 셀라 표준 항목을 선택해 매칭해주세요.');
+          modal.alert('주문양식 업로드 완료');
         };
 
         if (rABS) {

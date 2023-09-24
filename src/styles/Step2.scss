@@ -5,6 +5,17 @@
     height: calc(100% - 5px);
   }
 
+  .ag-pinned-left-header .ag-header-cell:nth-child(3) .ag-header-cell-label::before,
+  .ag-header-viewport .ag-header-cell:nth-child(2) .ag-header-cell-label::before,
+  .ag-header-viewport .ag-header-cell:nth-child(3) .ag-header-cell-label::before,
+  .ag-header-viewport .ag-header-cell:nth-child(4) .ag-header-cell-label::before {
+    content: '* ';
+    display: inline-block;
+    margin-right: 3px;
+    font-weight: 800;
+    color: #ff1e1e !important;
+  }
+
   .ag-root-wrapper.ag-layout-normal {
     height: calc(100vh - 207px);
   }
@@ -35,6 +46,17 @@
   .btnbox_right {
     display: block;
     float: right;
+
+    .icon_Excel2 {
+      display: inline-block;
+      width: 32px;
+      height: 32px;
+      font-size: 0;
+      border-top-left-radius: 5px;
+      border-bottom-left-radius: 5px;
+      background: #1d7044 url(../images/icon_Excel2.svg) no-repeat center center;
+      background-size: 16px;
+    }
   }
 
   .btnbox_right > * {
@@ -50,8 +72,9 @@
   }
 
   .btnbox_right .btn.dropdown-toggle {
-    border-top-right-radius: 0 !important;
-    border-bottom-right-radius: 0 !important;
+    min-width: 200px;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
   }
 
   .tablebox {
