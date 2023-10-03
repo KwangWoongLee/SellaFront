@@ -9,7 +9,6 @@ import 'styles/aggrid_custom.css';
 import 'styles/table_custom.css';
 import { useBeforeunload } from 'react-beforeunload';
 
-import Home from 'components/base/Home';
 import { RecoilRoot } from 'recoil';
 import RecoilNexus from 'recoil-nexus';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
@@ -33,7 +32,6 @@ import TodaySummary from 'components/settlement/TodaySummary';
 import FormManagement from 'components/settlement/FormManagement';
 import SaleProduct from 'components/settlement/SaleProduct';
 import StandardProduct from 'components/settlement/StandardProduct';
-import Step1 from 'components/project/Step1';
 import Step2 from 'components/project/Step2';
 
 import NavigateCtr from 'components/common/NavigateCtr';
@@ -73,7 +71,6 @@ export function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/logout" element={<Logout />} />
           <Route path="settlement">
@@ -118,14 +115,6 @@ export function App() {
               }
             />
           </Route>
-          <Route
-            path="step1"
-            element={
-              <ProtectedRoute>
-                <Step1 />
-              </ProtectedRoute>
-            }
-          />
           <Route
             path="step2"
             element={

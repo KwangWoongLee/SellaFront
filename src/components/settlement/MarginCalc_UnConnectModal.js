@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-import { Button, DropdownButton, Dropdown, Modal, Form, FloatingLabel } from 'react-bootstrap';
+import { Button, Modal, FloatingLabel } from 'react-bootstrap';
 import request from 'util/request';
 import { img_src, modal } from 'util/com';
 import Recoils from 'recoils';
@@ -141,7 +141,7 @@ const MarginCalc_UnConnectModal = React.memo(
       if (!selectFormsMatchRef.current) return; // TODO error
 
       for (const good_match of selectFormsMatchRef.current.goods_match) {
-        good_match.category_fee_rate = d.category_fee_rate;
+        good_match.category_fee_rate = Number(d.category_fee_rate).toFixed(2);
       }
 
       setSelectFormsMatchData({ ...selectFormsMatchRef.current });

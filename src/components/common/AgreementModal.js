@@ -1,12 +1,6 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
-
-import { Button, DropdownButton, Dropdown, Modal, Form, InputGroup, FloatingLabel } from 'react-bootstrap';
-import request from 'util/request';
-import { img_src, modal, page_reload } from 'util/com';
-import com from 'util/com';
-import Recoils from 'recoils';
-import _ from 'lodash';
-
+import React from 'react';
+import { Button, Modal } from 'react-bootstrap';
+import { img_src } from 'util/com';
 import { logger } from 'util/com';
 
 import icon_close from 'images/icon_close.svg';
@@ -22,7 +16,7 @@ const AgreementModal = React.memo(({ modalState, setModalState, content }) => {
     <Modal show={modalState} onHide={onClose} centered>
       <Modal.Header>
         <Button variant="primary" className="btn_close" onClick={onClose}>
-          <img src={`${img_src}${icon_close}`} />
+          <img alt={''} src={`${img_src}${icon_close}`} />
         </Button>
       </Modal.Header>
       <Modal.Body>{content}</Modal.Body>

@@ -1,28 +1,24 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 
-import { Button, Modal, Dropdown, DropdownButton } from 'react-bootstrap';
-import {} from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
-import { img_src, modal, navigate, replace_1000, revert_1000, time_format } from 'util/com';
+import { replace_1000, revert_1000, time_format, time_format_day } from 'util/com';
 import request from 'util/request';
-import {} from 'util/com';
+import { modal } from 'util/com';
 import SettlementNavTab from 'components/settlement/common/SettlementNavTab';
 import Recoils from 'recoils';
-import * as xlsx from 'xlsx';
-import * as ExcelJS from 'exceljs';
-import { saveAs } from 'file-saver';
-import _, { sum } from 'lodash';
+import _ from 'lodash';
 
 import { logger } from 'util/com';
 
 import 'styles/MarginCalc.scss';
 
-import icon_circle_arrow_up from 'images/icon_circle_arrow_up.svg';
-
 // AG Grid
 import { AgGridReact } from 'ag-grid-react';
+import CustomCalendar from 'components/common/CustomCalendar';
+import CustomDatePicker from 'components/common/CustomDatePicker';
 
 const columnDefs = [
   { field: 'idx', hide: true },
@@ -137,8 +133,6 @@ const columnDefs = [
   },
 ];
 
-const rowHeight = 34;
-
 const TodaySummary = () => {
   logger.render('TodaySummary');
 
@@ -147,8 +141,11 @@ const TodaySummary = () => {
 
   const [viewResult, setViewResult] = useState(false);
   const [platforms, setPlatforms] = useState([]);
-  const [platformType, setplatformType] = useState(0);
   const [rowData, setRowData] = useState([]);
+  const [selectedDayGroup, setSelectedDayGroup] = useState('');
+  const [searchDateString, setSearchDateString] = useState('');
+  const [selectedEndDateString, setSelectedEndDateString] = useState('');
+  const [dayData, setDayData] = useState({});
   //ag-grid
   const gridRef = useRef();
   const containerStyle = useMemo(() => ({ width: '100%', height: '100%' }), []);
@@ -174,10 +171,46 @@ const TodaySummary = () => {
         const { data } = ret.data;
         logger.info(data);
 
-        setRowData(() => data);
+        if (data && data.length) {
+          const dayGroupDatas = {};
+
+          for (const event of data) {
+            const day = time_format_day(event.reg_date);
+            event.group = day;
+
+            if (!dayGroupDatas[day]) {
+              dayGroupDatas[day] = {
+                group: day,
+                start: new Date(event.reg_date),
+                end: new Date(event.reg_date),
+                title: 0,
+                events: [],
+              };
+            }
+
+            dayGroupDatas[day]['events'].push(event);
+            dayGroupDatas[day]['title'] += revert_1000(event['sum_profit_loss']);
+          }
+
+          for (const key in dayGroupDatas) {
+            if (dayGroupDatas[key].title) {
+              let prefix = '';
+              if (dayGroupDatas[key].title > 0) prefix = '+ 이익';
+              else prefix = '- 손해';
+
+              dayGroupDatas[key].title = `${prefix} ${replace_1000(dayGroupDatas[key].title)}`;
+            }
+          }
+
+          setDayData(_.cloneDeep(dayGroupDatas));
+        }
       }
     });
   }, []);
+
+  useEffect(() => {
+    if (dayData[selectedDayGroup]) setRowData(dayData[selectedDayGroup]['events']);
+  }, [selectedDayGroup]);
 
   useEffect(() => {
     let summary = {
@@ -203,10 +236,6 @@ const TodaySummary = () => {
     setViewResult(summary);
   }, [rowData]);
 
-  const onChange = (key, e) => {
-    setplatformType(key);
-  };
-
   const onDelete = (e) => {
     const selectedRows = gridRef.current.api.getSelectedRows();
     if (!selectedRows.length) return;
@@ -231,36 +260,16 @@ const TodaySummary = () => {
         <SettlementNavTab active="/settlement/today_summary" />
 
         <div className="page">
-          {/* <DropdownButton variant="" title={platforms.length ? platforms[platformType].name : ''}>
-              {platforms &&
-                platforms.map((item, key) => (
-                  <Dropdown.Item
-                    key={key}
-                    eventKey={key}
-                    onClick={(e) => onChange(key, e)}
-                    active={platformType === key}
-                  >
-                    {item.name}
-                  </Dropdown.Item>
-                ))}
-            </DropdownButton>
-            <Button
-              variant="primary"
-              onClick={() => {
-                modal.confirm(
-                  '없애는게 나을듯한데.. 있어야 하는 이유가 있는건가요?ㅠ 화면 데이터가 너무달라서 고민좀 필요합니다.'
-                );
-              }}
-              className="btn_green"
-            >
-              <img src={`${img_src}${icon_circle_arrow_up}`} />새 주문서 업로드
-            </Button> */}
-
           <div className="btnbox">
             <Button variant="primary" onClick={onDelete} className="btn_red">
               선택 삭제
             </Button>
           </div>
+          <CustomDatePicker
+            setSearchDateString={setSearchDateString}
+            setSelectedEndDateString={setSelectedEndDateString}
+          ></CustomDatePicker>
+          {selectedDayGroup}
 
           <ul className={!_.isEmpty(viewResult) ? 'viewbox' : 'viewbox off'}>
             <li>
@@ -322,6 +331,12 @@ const TodaySummary = () => {
             </div>
           </div>
         </div>
+        <CustomCalendar
+          dayGroupDatas={dayData}
+          selectCallback={(e) => {
+            setSelectedDayGroup(e.group);
+          }}
+        ></CustomCalendar>
       </Body>
       <Footer />
     </>

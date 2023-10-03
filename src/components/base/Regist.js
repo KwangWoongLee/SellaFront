@@ -75,7 +75,7 @@ const Regist = () => {
   useEffect(() => {
     let isOk = true;
     for (const key in auth) {
-      if (auth[key] == false) {
+      if (auth[key] === false) {
         isOk = false;
         break;
       }
@@ -133,7 +133,7 @@ const Regist = () => {
       return;
     }
 
-    if (agency == -1) {
+    if (agency === -1) {
       modal.alert('통신사를 선택 해주세요.');
       return;
     }
@@ -160,9 +160,10 @@ const Regist = () => {
   };
 
   const onCheckPhoneAuthNo = (e) => {
+    const phone = phoneRef.current.value;
     const auth_no = authNoRef.current.value;
     if (auth_no)
-      request.post('auth/phone/auth_no', { auth_no }).then((ret) => {
+      request.post('auth/phone/auth_no', { phone, auth_no }).then((ret) => {
         if (!ret.err) {
           const auth_temp = auth;
           auth_temp['auth_phone'] = true;
@@ -176,6 +177,11 @@ const Regist = () => {
 
     request.post('auth/phone', { phone }).then((ret) => {
       if (!ret.err) {
+        const { data } = ret.data;
+        modal.alert(`임시방편입니다.
+          ${data.random_no}
+        `);
+
         const auth_temp = auth;
         auth_temp['send_phone'] = true;
         setAuth({ ...auth_temp });
@@ -203,7 +209,7 @@ const Regist = () => {
   const checkedItemHandler = (d) => {
     const obj = _.find(agreement, { code: d.code });
     obj.checked = !obj.checked;
-    if (obj.checked == false) setAllChecked(false);
+    if (obj.checked === false) setAllChecked(false);
 
     setAgreement([...agreement]);
   };

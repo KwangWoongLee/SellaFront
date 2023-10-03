@@ -20,7 +20,7 @@ const CommonSliderModal = React.memo(({ modalState, setModalState, slider_settin
         <Modal.Header className="d-flex justify-content-center">
           <Modal.Title className="text-primary"></Modal.Title>
           <Button onClick={onClose} variant="primary" className="btn_close">
-            <img src={`${img_src}${icon_close}`} />
+            <img alt={''} src={`${img_src}${icon_close}`} />
           </Button>
         </Modal.Header>
 

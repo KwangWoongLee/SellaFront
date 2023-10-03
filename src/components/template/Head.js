@@ -1,13 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Navbar, Nav, NavDropdown, DropdownButton, Form, OverlayTrigger, Popover } from 'react-bootstrap';
+import React, { useEffect } from 'react';
+import { Nav } from 'react-bootstrap';
 import 'styles/Template.scss';
 import { useLocation } from 'react-router-dom';
 
-import { img_src, navigate, modal, logger } from 'util/com';
-import request from 'util/request';
+import { img_src, navigate, logger } from 'util/com';
 import Recoils from 'recoils';
-import com from 'util/com';
-import _ from 'lodash';
 import logo_white from 'images/logo_white.svg';
 import icon_member from 'images/icon_member.svg';
 import icon_power from 'images/icon_power.svg';
@@ -34,26 +31,21 @@ const Head = () => {
         </Nav.Link>
         <div className="menu">
           <ul className="left">
-            <li className={location.pathname == '/settlement/margin_calc' ? 'on' : ''}>
+            <li className={location.pathname === '/settlement/margin_calc' ? 'on' : ''}>
               <Nav.Link className="nav-link" onClick={onLink} name="/settlement/margin_calc">
                 <span>정산해보기!</span>손익 관리
               </Nav.Link>
             </li>
           </ul>
           <ul className="right">
-            <li className={location.pathname == '/step1' ? 'on' : ''}>
-              <Nav.Link className="nav-link" onClick={onLink} name="/step1">
-                <span>1단계</span>기초 정보 관리
-              </Nav.Link>
-            </li>
-            <li className={location.pathname == '/step2' ? 'on' : ''}>
+            <li className={location.pathname === '/step2' ? 'on' : ''}>
               <Nav.Link onClick={onLink} name="/step2">
-                <span>2단계</span>기준 상품 관리
+                <span>1단계</span>기준 상품 관리
               </Nav.Link>
             </li>
-            <li className={location.pathname == '/settlement/form_management' ? 'on' : ''}>
+            <li className={location.pathname === '/settlement/form_management' ? 'on' : ''}>
               <Nav.Link onClick={onLink} name="/settlement/form_management">
-                <span>3단계</span>매체 관리
+                <span>2단계</span>매체 관리
               </Nav.Link>
             </li>
           </ul>
@@ -63,10 +55,10 @@ const Head = () => {
           <Nav.Link className="nav-link mcalculator" onClick={onLink} name="/calculator/margin">
             <span>마진계산기</span>
           </Nav.Link>
-          <span>·</span>
+          {/* <span>·</span>
           <Nav.Link className="nav-link bcalculator" onClick={onLink} name="/calculator/buying">
             <span>사입계산기</span>
-          </Nav.Link>
+          </Nav.Link> */}
           <Nav.Link className="nav-link" onClick={onLink} name="/cscenter">
             <span className="cscenter">고객센터</span>
           </Nav.Link>
@@ -79,7 +71,7 @@ const Head = () => {
             ></button>
             <span className="cschat">1:1문의</span>
           </Nav.Link>
-          {account && account.grade != -1 ? (
+          {account && account.grade !== -1 ? (
             <>
               <span class="name">{account.name}</span>
               <Nav.Link className="nav-link icon_member" onClick={onLink} name="/mypage/membership">

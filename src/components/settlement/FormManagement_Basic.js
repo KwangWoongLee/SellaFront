@@ -23,6 +23,7 @@ const FormManagement_Basic = (param) => {
   logger.render('FormManagement_Basic');
 
   const { platform } = param;
+  const sella_basic_forms = Recoils.getState('SELLA:BASICFORMS');
 
   const [formData, setFormData] = useState(null);
   const [rowData, setRowData] = useState([]);
@@ -30,15 +31,15 @@ const FormManagement_Basic = (param) => {
   useEffect(() => {
     if (!platform || !platform.basic_form_flag) return;
 
+    const sella_basic_form = _.find(sella_basic_forms, { name: platform.name });
     const basic_form = platform;
     const basic_form_rows = [];
     const column_row = [''];
     const header_row = [`${basic_form.title_row}`];
-    const titles = basic_form.titles;
+    const titles = sella_basic_form.titles;
     for (const title of titles) {
       const header = title.title;
       const column = title.column;
-      const sella_code = title.sella_code;
       column_row.push(column);
       header_row.push(header);
     }
@@ -56,12 +57,14 @@ const FormManagement_Basic = (param) => {
   const onDownload = async () => {
     if (!platform) return;
 
+    const sella_basic_form = _.find(sella_basic_forms, { name: platform.name });
+
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Sheet1');
 
     const columns = [];
 
-    for (const title of platform.titles) {
+    for (const title of sella_basic_form.titles) {
       const obj = {
         header: title.title,
         key: title.sella_code,

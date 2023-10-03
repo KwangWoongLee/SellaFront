@@ -104,21 +104,23 @@ const FAQ = () => {
 
   const onSearch = (e) => {
     if (title && title.length < 2) {
-      alert('제목명은 2글자 이상으로 입력하세요.');
+      modal.alert('제목명은 2글자 이상으로 입력하세요.');
       return;
     }
 
-    request.post(`cscenter/faq`, { category: category_str[categoryType], title }).then((ret) => {
-      if (!ret.err) {
-        const { data } = ret.data;
-        logger.info(data);
+    request
+      .post(`cscenter/faq`, { category: category_str[categoryType] == '전체' ? '' : category_str[categoryType], title })
+      .then((ret) => {
+        if (!ret.err) {
+          const { data } = ret.data;
+          logger.info(data);
 
-        const rowCount = data.length;
-        rowCount ? setDatas(() => data) : setDatas([]);
-        rowCount && Math.floor(rowCount / limit) ? setPageCount(Math.floor(rowCount / limit)) : setPageCount(1);
-        setPage(1);
-      }
-    });
+          const rowCount = data.length;
+          rowCount ? setDatas(() => data) : setDatas([]);
+          rowCount && Math.floor(rowCount / limit) ? setPageCount(Math.floor(rowCount / limit)) : setPageCount(1);
+          setPage(1);
+        }
+      });
   };
 
   const onReset = () => {

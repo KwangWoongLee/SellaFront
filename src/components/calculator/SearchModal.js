@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-import { Button, DropdownButton, Dropdown, Modal, Form, FloatingLabel } from 'react-bootstrap';
-import request from 'util/request';
-import { modal } from 'util/com';
+import { Button, Modal } from 'react-bootstrap';
 import Recoils from 'recoils';
 import _ from 'lodash';
 
@@ -67,7 +65,7 @@ const SearchModal = React.memo(({ modalState, setModalState, selectCallback, nam
       <Modal.Header>
         <Modal.Title>상품선택</Modal.Title>
         <Button variant="primary" className="btn_close" onClick={onClose}>
-          <img src={icon_close} />
+          <img alt={''} src={icon_close} />
         </Button>
       </Modal.Header>
       <Modal.Body>
@@ -80,10 +78,10 @@ const SearchModal = React.memo(({ modalState, setModalState, selectCallback, nam
             className="input_search"
           ></input>
           <Button onClick={onSearch} className="btn_search">
-            <img src={icon_search} />
+            <img alt={''} src={icon_search} />
           </Button>
           <Button className="btn_reset" onClick={onReset}>
-            <img src={icon_reset} />
+            <img alt={''} src={icon_reset} />
           </Button>
         </div>
         <div className="tablebox">

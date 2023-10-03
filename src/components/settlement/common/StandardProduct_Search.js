@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-import { Button, DropdownButton, Dropdown, Modal, Form, FloatingLabel } from 'react-bootstrap';
-import request from 'util/request';
-import { img_src, modal } from 'util/com';
+import { Button } from 'react-bootstrap';
+import { img_src } from 'util/com';
 import Recoils from 'recoils';
 import _ from 'lodash';
 
@@ -24,8 +23,9 @@ const StandardProduct_Search = React.memo(({ selectCallback, unSelectCallback, p
     } else {
       const forms_match = parentFormsMatchSelectData;
       if (forms_match) {
-        if (forms_match.goods_match.length == 0) {
-          setMode(1);
+        if (forms_match.goods_match.length === 0) {
+          onSearch();
+          setMode(2);
         } else {
           onSearch();
           setMode(2);
@@ -131,7 +131,6 @@ const StandardProduct_Search = React.memo(({ selectCallback, unSelectCallback, p
           <tbody>
             <>
               {mode == 0 && '판매상품 연결 조회 상품을 선택해 주세요.'}
-              {mode == 1 && 'step1. 상품명으로 검색하세요.'}
               {mode == 2 &&
                 items &&
                 items.map((d, key) => (

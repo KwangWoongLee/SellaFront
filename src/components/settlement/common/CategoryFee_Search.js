@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-import { Button, DropdownButton, Dropdown, Modal, Form, FloatingLabel } from 'react-bootstrap';
-import request from 'util/request';
-import { modal } from 'util/com';
+import { Button, DropdownButton, Dropdown } from 'react-bootstrap';
 import Recoils from 'recoils';
 import _ from 'lodash';
 
@@ -17,25 +15,35 @@ const CategoryFee_Search = React.memo(({ selectCallback, parentFormsMatchSelectD
 
   const categoryRef = useRef(null);
   const [items, setItems] = useState([]);
-  const [platformType, setPlatformType] = useState(0);
-  const platform_str = _.uniq(_.map(sella_categories, 'name'));
-  const [mode, setMode] = useState(0);
+  const [platformType, setPlatformType] = useState(-1);
+  let platform_str = [];
+  const [mode, setMode] = useState(1);
 
   useEffect(() => {
     if (!parentFormsMatchSelectData) {
+      platform_str = [];
       return;
     } else {
       const forms_match = parentFormsMatchSelectData;
       if (forms_match) {
-        if (forms_match.settlement_flag) setMode(1);
-        else setMode(2);
+        if (forms_match.forms_name) {
+          platform_str = _.uniq(_.map(sella_categories, 'name'));
+          platform_str = _.find(platform_str, 'forms_match.forms_name');
+        }
+
+        if (forms_match.settlement_flag) {
+          setMode(1);
+        } else {
+          if (typeof forms_match.settlement_flag === 'undefined') return;
+          setMode(2);
+        }
       }
     }
   }, [parentFormsMatchSelectData]);
 
   useEffect(() => {
     let search_results = [...sella_categories];
-    if (platform_str[platformType]) {
+    if (platformType != -1 && platform_str[platformType]) {
       search_results = _.filter(search_results, (category) => {
         return _.includes(category.name, platform_str[platformType]);
       });
@@ -46,7 +54,7 @@ const CategoryFee_Search = React.memo(({ selectCallback, parentFormsMatchSelectD
 
   useEffect(() => {
     let search_results = [...sella_categories];
-    if (platform_str[platformType]) {
+    if (platformType != -1 && platform_str[platformType]) {
       search_results = _.filter(search_results, (category) => {
         return _.includes(category.name, platform_str[platformType]);
       });
@@ -59,7 +67,7 @@ const CategoryFee_Search = React.memo(({ selectCallback, parentFormsMatchSelectD
     e.preventDefault();
 
     let search_results = [...sella_categories];
-    if (platform_str[platformType]) {
+    if (platformType != -1 && platform_str[platformType]) {
       search_results = _.filter(search_results, (category) => {
         return _.includes(category.name, platform_str[platformType]);
       });
@@ -123,7 +131,6 @@ const CategoryFee_Search = React.memo(({ selectCallback, parentFormsMatchSelectD
       <div className="categoryfeesearch">
         <table>
           <tbody>
-            {mode == 0 && <>step2. 카테고리명으로 검색하세요.</>}
             {mode == 1 && <>이 매체는 수수료 매칭이 필요하지 않습니다.</>}
             {mode == 2 && (
               <>{items && items.map((d, key) => <SelectItem key={key} index={key} d={d} onSelect={onSelect} />)}</>

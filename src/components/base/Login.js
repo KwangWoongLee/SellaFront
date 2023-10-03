@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, InputGroup, Form, Nav } from 'react-bootstrap';
 import Recoils from 'recoils';
-import com, { logger, navigate, get_login_hash, modal } from 'util/com';
+import com, { logger, navigate, modal } from 'util/com';
 import request from 'util/request';
 
 import Head from 'components/template/Head';
@@ -19,7 +19,7 @@ const Login = () => {
 
   useEffect(() => {
     const idSave = com.storage.getItem('idSave');
-    if (idSave == 'true') {
+    if (idSave === 'true') {
       setIdSaveChecked(true);
       setEmail(com.storage.getItem('email') !== 'undefined' ? com.storage.getItem('email') : '');
     } else {
@@ -77,14 +77,13 @@ const Login = () => {
         com.storage.setItem('refresh_token', data.refresh_token);
 
         Recoils.setState('DATA:GOODS', data.goods);
-        Recoils.setState('DATA:DELIVERY', data.delivery);
-        Recoils.setState('DATA:PACKING', data.packing);
         Recoils.setState('DATA:PLATFORMS', data.forms);
         Recoils.setState('DATA:FORMSMATCH', data.forms_match);
         Recoils.setState('DATA:GOODSMATCH', data.goods_match);
         Recoils.setState('SELLA:PLATFORM', data.platform);
         Recoils.setState('SELLA:SELLAFORMS', data.sella_forms);
         Recoils.setState('SELLA:CATEGORIES', data.sella_categories);
+        Recoils.setState('SELLA:BASICFORMS', data.sella_basic_forms);
 
         navigate('/settlement/margin_calc');
       }

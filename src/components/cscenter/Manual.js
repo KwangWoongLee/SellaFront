@@ -1,13 +1,12 @@
-import React, { useState, useEffect, useRef, useMemo, Fragment } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 
-import { Table, Button, Modal, DropdownButton, Dropdown } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
-import com, { img_src, useInput, modal, navigate } from 'util/com';
+import com, { img_src } from 'util/com';
 import request from 'util/request';
 import CSCenterNavTab from 'components/cscenter/CSCenterNavTab';
-import Recoils from 'recoils';
 import _ from 'lodash';
 import ImageModal from 'components/common/ImageModal';
 
@@ -98,7 +97,7 @@ const Manual = () => {
       setCollapseState(!collapseState);
     } else {
       updatedState.other = {
-        img_url: 'https://images.pexels.com/photos/20787/pexels-photo.jpg?auto=compress&cs=tinysrgb&h=350',
+        img_url: rowData[index].img_url1,
         content: rowData[index].content,
       };
       setCollapseState(!collapseState);

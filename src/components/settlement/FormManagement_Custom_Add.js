@@ -82,6 +82,11 @@ const FormManagement_Custom_Add = (param) => {
       return;
     }
 
+    if (formNameRef.current.value === '새 매체 양식') {
+      modal.alert('양식을 저장하시려면\n매체명을 변경해 주세요.');
+      return;
+    }
+
     if (save_data.length == 0) {
       modal.alert('저장할 항목이 없습니다.');
       return;

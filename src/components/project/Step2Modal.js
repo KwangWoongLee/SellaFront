@@ -12,21 +12,16 @@ import { NumericFormat } from 'react-number-format';
 import icon_del from 'images/icon_del.svg';
 import icon_add from 'images/icon_add.svg';
 import icon_close from 'images/icon_close.svg';
-import Step2_DFCellRenderer from 'components//common/AgGrid//Step2_DFCellRenderer';
-import Step2_PFCellRenderer from 'components/common/AgGrid/Step2_PFCellRenderer';
 
 const newRow = {
-  delivery_descript: '',
   delivery_fee: '',
   goods_category: '',
   idx: '',
   memo: '',
   modify_date: '',
   name: '',
-  packing_descript: '',
   packing_fee: '',
   reg_date: '',
-  single_delivery: 'N',
   stock_price: '',
 };
 
@@ -44,55 +39,6 @@ const InputModal = React.memo(({ modalState, setModalState, callback }) => {
     const insertRowData = [];
 
     for (const row of rowData) {
-      const deliveryData = _.cloneDeep(Recoils.getState('DATA:DELIVERY'));
-      if (!deliveryData || deliveryData.length == 1) {
-        // GO Step1
-        modal.confirm(
-          '초기 값을 설정해 주세요.',
-          [{ strong: '', normal: '상품정보를 등록하시려면 \n기초정보를 등록해 주세요.' }],
-          [
-            {
-              name: '기초 정보 관리로 이동',
-              className: 'red',
-              callback: () => {
-                navigate('project/Step1');
-              },
-            },
-          ]
-        );
-
-        return;
-      }
-
-      const packingData = _.cloneDeep(Recoils.getState('DATA:PACKING'));
-      if (!packingData || packingData.length == 1) {
-        // GO Step1
-        modal.confirm(
-          '초기 값을 설정해 주세요.',
-          [{ strong: '', normal: '상품정보를 등록하시려면 기초정보를 등록해 주세요.' }],
-          [
-            {
-              name: '기초정보 관리로 이동',
-              callback: () => {
-                navigate('step1');
-              },
-            },
-          ]
-        );
-
-        return;
-      }
-
-      if (!row.delivery_descript) {
-        row.delivery_descript = deliveryData[0].delivery_category;
-        row.delivery_fee = deliveryData[0].delivery_fee;
-      }
-
-      if (!row.packing_descript) {
-        row.packing_descript = packingData[0].packing_category;
-        row.packing_fee = Number(packingData[0].packing_fee1) + Number(packingData[0].packing_fee2);
-      }
-
       const goods_category = row.goods_category;
       const name = row.name;
       const stock_price = row.stock_price;
@@ -102,7 +48,6 @@ const InputModal = React.memo(({ modalState, setModalState, callback }) => {
       if (!goods_category && !name) {
         continue;
       } else {
-        // if (!goods_category) return modal.alert('카테고리 항목이 비었습니다.');
         if (!name) return modal.alert('상품명 항목이 비었습니다.');
         if (!stock_price) return modal.alert('입고단가 항목이 비었습니다.');
         if (delivery_fee != 0 && !delivery_fee) return modal.alert('택배비 항목이 비었습니다.');
@@ -170,28 +115,6 @@ const InputModal = React.memo(({ modalState, setModalState, callback }) => {
     setRowData(changeRowData);
   };
 
-  const onChangeDFRenderer = (e, idx) => {
-    const { delivery_descript, delivery_fee } = e.data;
-
-    const changeRowData = rowData.slice();
-
-    changeRowData[idx]['delivery_descript'] = delivery_descript;
-    changeRowData[idx]['delivery_fee'] = delivery_fee;
-
-    setRowData(changeRowData);
-  };
-
-  const onChangePFRenderer = (e, idx) => {
-    const { packing_descript, packing_fee } = e.data;
-
-    const changeRowData = rowData.slice();
-
-    changeRowData[idx]['packing_descript'] = packing_descript;
-    changeRowData[idx]['packing_fee'] = packing_fee;
-
-    setRowData(changeRowData);
-  };
-
   const onDelete = (e) => {
     const index = e.currentTarget.parentNode.parentNode.rowIndex;
 
@@ -230,15 +153,7 @@ const InputModal = React.memo(({ modalState, setModalState, callback }) => {
               <tbody>
                 {rowData &&
                   rowData.map((d, key) => (
-                    <InsertGoodsItems
-                      index={key}
-                      d={d}
-                      rowData={rowData}
-                      onChange={onChange}
-                      onChangeDFRenderer={onChangeDFRenderer}
-                      onChangePFRenderer={onChangePFRenderer}
-                      onDelete={onDelete}
-                    />
+                    <InsertGoodsItems index={key} d={d} rowData={rowData} onChange={onChange} onDelete={onDelete} />
                   ))}
               </tbody>
             </table>
@@ -259,88 +174,61 @@ const InputModal = React.memo(({ modalState, setModalState, callback }) => {
   );
 });
 
-const InsertGoodsItems = React.memo(
-  ({ index, d, rowData, onChange, onChangeDFRenderer, onChangePFRenderer, onDelete }) => {
-    logger.render('InsertGoodsItems TableItem : ', index);
+const InsertGoodsItems = React.memo(({ index, d, rowData, onChange, onDelete }) => {
+  logger.render('InsertGoodsItems TableItem : ', index);
 
-    const sd_str = ['Y', 'N'];
-    const [sdType, setSDType] = useState(0);
+  return (
+    <tr>
+      <td>
+        <input type="text" placeholder="상품명" onChange={onChange} name="name" value={d.name} />
+      </td>
+      <td>
+        <input type="text" placeholder="카테고리" onChange={onChange} name="goods_category" value={d.goods_category} />
+      </td>
+      <td>
+        <NumericFormat
+          allowLeadingZeros
+          thousandSeparator=","
+          placeholder="입고단가"
+          onChange={onChange}
+          name="stock_price"
+          value={d.stock_price}
+        />
+        <span>원</span>
+      </td>
 
-    return (
-      <tr>
-        <td>
-          <input type="text" placeholder="상품명" onChange={onChange} name="name" value={d.name} />
-        </td>
-        <td>
-          <input
-            type="text"
-            placeholder="카테고리"
-            onChange={onChange}
-            name="goods_category"
-            value={d.goods_category}
-          />
-        </td>
-        <td>
-          <NumericFormat
-            allowLeadingZeros
-            thousandSeparator=","
-            placeholder="입고단가"
-            onChange={onChange}
-            name="stock_price"
-            value={d.stock_price}
-          />
-          <span>원</span>
-        </td>
-        <td>
-          <Step2_DFCellRenderer
-            onCellValueChanged={(props) => {
-              onChangeDFRenderer(props, index);
-            }}
-            rowData={rowData}
-            data={d}
-          ></Step2_DFCellRenderer>
-        </td>
-        <td>
-          <Step2_PFCellRenderer
-            data={d}
-            rowData={rowData}
-            onCellValueChanged={(props) => {
-              onChangePFRenderer(props, index);
-            }}
-          ></Step2_PFCellRenderer>
-        </td>
-
-        <td>
-          <DropdownButton variant="" title={d.single_delivery ? d.single_delivery : sd_str[0]}>
-            {sd_str &&
-              sd_str.map((item, key) => (
-                <Dropdown.Item
-                  key={key}
-                  eventKey={key}
-                  onClick={(e) => {
-                    setSDType(key);
-                    onChange(e, index);
-                  }}
-                  active={sdType === key}
-                  value={sd_str[key]}
-                  name="single_delivery"
-                >
-                  {sd_str[key]}
-                </Dropdown.Item>
-              ))}
-          </DropdownButton>
-        </td>
-        <td>
-          <input type="text" placeholder="메모" onChange={onChange} name="memo" value={d.memo} />
-        </td>
-        <td>
-          <Button className="btn_del" onClick={onDelete}>
-            <img src={`${img_src}${icon_del}`} alt="삭제" />
-          </Button>
-        </td>
-      </tr>
-    );
-  }
-);
+      <td>
+        <NumericFormat
+          allowLeadingZeros
+          thousandSeparator=","
+          placeholder="배송비"
+          onChange={onChange}
+          name="delivery_fee"
+          value={d.delivery_fee}
+        />
+        <span>원</span>
+      </td>
+      <td>
+        <NumericFormat
+          allowLeadingZeros
+          thousandSeparator=","
+          placeholder="포장비"
+          onChange={onChange}
+          name="packing_fee"
+          value={d.packing_fee}
+        />
+        <span>원</span>
+      </td>
+      <td>
+        <input type="text" placeholder="메모" onChange={onChange} name="memo" value={d.memo} />
+      </td>
+      <td>
+        <Button className="btn_del" onClick={onDelete}>
+          <img src={`${img_src}${icon_del}`} alt="삭제" />
+        </Button>
+      </td>
+    </tr>
+  );
+});
 
 export default React.memo(InputModal);

@@ -7,7 +7,7 @@ import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 import MyPageNavTab from 'components/base/MyPageNavTab';
 import Checkbox from 'components/common/CheckBoxCell';
-import com, { logger, page_reload, modal, navigate } from 'util/com';
+import { logger, modal, navigate } from 'util/com';
 import request from 'util/request';
 import Recoils from 'recoils';
 
@@ -24,7 +24,6 @@ const Membership = () => {
   const passwordRef = useRef(null);
   const newPasswordRef = useRef(null);
   const newPasswordConfirmRef = useRef(null);
-  const authNoRef = useRef(null);
   const corpRef = useRef(null);
   const corpNoRef = useRef(null);
   const [gradeData, setGradeData] = useState(null);
@@ -98,17 +97,15 @@ const Membership = () => {
     <>
       <Head />
       <Body title={`ver ${process.env.REACT_APP_VERSION}`} myClass={'mypage'}>
-        <MyPageNavTab active="/mypage/membership" />
+        <MyPageNavTab active="/mypage/membership" gradeData={gradeData} />
 
         <div className="page">
           <div className="paymentbox">
             <h3>멤버십 혜택 안내</h3>
-
-            {gradeData && gradeData.grade == 0 ? (
-              <h4>무료서비스 사용기간이 [{gradeData.remain_warranty_day}]일 남았습니다.</h4>
-            ) : (
-              <h4>유료서비스 사용기간이 [30]일 남았습니다.</h4>
-            )}
+            <h4>
+              {gradeData && gradeData.grade == 0 ? '무료' : '유료'}서비스 사용기간이 [
+              {gradeData ? gradeData.remain_warranty_day : 0}]일 남았습니다.
+            </h4>
 
             {gradeData && <GradeItem d={gradeData} onClick={onPaymentReq}></GradeItem>}
           </div>

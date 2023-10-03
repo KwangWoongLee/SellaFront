@@ -118,14 +118,6 @@ const Margin = () => {
       headerName: '순수익',
       cellClass: 'uneditable',
     },
-    {
-      field: 'lowest_standard_price',
-      sortable: true,
-      unSortIcon: true,
-      valueParser: (params) => Number(params.newValue),
-      headerName: '최저기준가',
-      cellClass: 'uneditable',
-    },
   ]);
 
   const rowHeight = 36;
@@ -164,12 +156,12 @@ const Margin = () => {
       return;
     }
 
-    if (sumPlus != 0 && !sumPlus) {
+    if (sumPlus !== 0 && !sumPlus) {
       modal.alert('계산하기를 먼저 실행해주세요.');
       return;
     }
 
-    if (sumMinus != 0 && !sumMinus) {
+    if (sumMinus !== 0 && !sumMinus) {
       modal.alert('계산하기를 먼저 실행해주세요.');
       return;
     }
@@ -186,19 +178,15 @@ const Margin = () => {
 
     saveDataRef.current = { ...saveDataRef.current, goods_name: name };
 
-    if (saveDataRef.current.idx !== null || saveDataRef.current.idx !== undefined) {
+    if (saveDataRef.current.idx) {
       request.post(`user/calculator/margin/modify`, { save_data: saveDataRef.current }).then((ret) => {
         if (!ret.err) {
-          const { data } = ret.data;
-
           page_reload();
         }
       });
     } else {
       request.post(`user/calculator/margin/save`, { save_data: saveDataRef.current }).then((ret) => {
         if (!ret.err) {
-          const { data } = ret.data;
-
           page_reload();
         }
       });
@@ -245,34 +233,34 @@ const Margin = () => {
     let sellDeliveryFee = sellDeliveryFeeRef.current.value;
     let stockPrice = stockPriceRef.current.value;
     let savedDPFee = savedDPFeeRef.current.value;
-    let lowestMarginRate = lowestMarginRateRef.current.value;
+    // let lowestMarginRate = lowestMarginRateRef.current.value;
 
     let platformFeeRate = platformFeeRateRef.current.value;
     let platformDeliverFeeRate = platformDeliverFeeRateRef.current.value;
 
-    if (isNaN(sellPrice) || sellPrice == '') {
+    if (isNaN(sellPrice) || sellPrice === '') {
       modal.alert('판매가격을 입력해주세요.');
       return;
     }
-    if (isNaN(sellDeliveryFee) || sellDeliveryFee == '') {
+    if (isNaN(sellDeliveryFee) || sellDeliveryFee === '') {
       modal.alert('받은 배송비를 입력해주세요.');
       return;
     }
-    if (isNaN(stockPrice) || stockPrice == '') {
+    if (isNaN(stockPrice) || stockPrice === '') {
       modal.alert('매입가를 입력해주세요.');
       return;
     }
-    if (isNaN(savedDPFee) || savedDPFee == '') {
+    if (isNaN(savedDPFee) || savedDPFee === '') {
       modal.alert('택배비·포장비 를 입력해주세요.');
       return;
     }
-    if (isNaN(lowestMarginRate) || lowestMarginRate == '') {
-      lowestMarginRate = 0;
-      lowestMarginRateRef.current.value = 0;
-    }
+    // if (isNaN(lowestMarginRate) || lowestMarginRate === '') {
+    //   lowestMarginRate = 0;
+    //   lowestMarginRateRef.current.value = 0;
+    // }
 
     sellPrice = Number(sellPrice);
-    if (sellPrice == 0) {
+    if (sellPrice === 0) {
       modal.alert('판매가격은 0원 일 수 없습니다.');
       return;
     }
@@ -281,12 +269,12 @@ const Margin = () => {
     stockPrice = Number(stockPrice);
     savedDPFee = Number(savedDPFee);
 
-    lowestMarginRate = Number(lowestMarginRate);
-    if (lowestMarginRate < 0 || lowestMarginRate >= 100) {
-      modal.alert('최저마진율을 0~100% 사이로 입력해주세요.');
-      return;
-    }
-    lowestMarginRate = lowestMarginRate / 100;
+    // lowestMarginRate = Number(lowestMarginRate);
+    // if (lowestMarginRate < 0 || lowestMarginRate >= 100) {
+    //   modal.alert('최저마진율을 0~100% 사이로 입력해주세요.');
+    //   return;
+    // }
+    // lowestMarginRate = lowestMarginRate / 100;
 
     platformFeeRate = Number(platformFeeRate);
     if (platformFeeRate < 0 || platformFeeRate >= 100) {
@@ -314,24 +302,23 @@ const Margin = () => {
     const sum_plus = sellPrice + sellDeliveryFee; // 수익합계
     setSumPlus(sum_plus);
 
-    const settlement_price = sellPrice - platformFee + sellDeliveryFee - platformDeliveryFee;
-
+    const settlement_price = (sellPrice - platformFee + sellDeliveryFee - platformDeliveryFee).toFixed(0);
     let margin = settlement_price - sum_minus;
     margin = Number(Math.round(margin));
     let marginRate = (margin / sellPrice) * 100;
     marginRate = Number(marginRate.toFixed(1));
 
-    const test = lowestMarginRate + platformFeeRate - 1;
-    if (test == 0) {
-      modal.alert('최저마진율 + 매체 수수료는 1이 될 수 없습니다.');
-      return;
-    }
+    // const test = lowestMarginRate + platformFeeRate - 1;
+    // if (test == 0) {
+    //   modal.alert('최저마진율 + 매체 수수료는 1이 될 수 없습니다.');
+    //   return;
+    // }
 
-    let low =
-      (sellDeliveryFee - stockPrice - savedDPFee - platformDeliveryFee) / (lowestMarginRate + platformFeeRate - 1);
-    low = Number(low.toFixed(1));
+    // let low =
+    //   (sellDeliveryFee - stockPrice - savedDPFee - platformDeliveryFee) / (lowestMarginRate + platformFeeRate - 1);
+    // low = Number(low.toFixed(1));
 
-    setLowestPrice(low);
+    // setLowestPrice(low);
 
     const result = {
       sell_price: sellPrice,
@@ -348,7 +335,7 @@ const Margin = () => {
       expense_sum_price: sum_minus,
       margin_price: margin,
       margin_rate: marginRate,
-      lowest_standard_price: low,
+      // lowest_standard_price: low,
       settlement_price: settlement_price,
       received_delivery_fee: sellDeliveryFee,
       stock_price: stockPrice,
@@ -356,7 +343,7 @@ const Margin = () => {
       platform: platformData[platformType].name,
       platform_fee_rate: Number((platformFeeRate * 100).toFixed(2)),
       platform_delivery_fee_rate: Number((platformDeliverFeeRate * 100).toFixed(2)),
-      lowest_margin_rate: lowestMarginRate,
+      // lowest_margin_rate: lowestMarginRate,
     };
 
     if (saveDataRef.current.idx !== null) {
@@ -372,8 +359,8 @@ const Margin = () => {
     sellDeliveryFeeRef.current.value = '';
     stockPriceRef.current.value = '';
     savedDPFeeRef.current.value = '';
-    lowestMarginRateRef.current.value = '';
-    setLowestPrice(0);
+    // lowestMarginRateRef.current.value = '';
+    // setLowestPrice(0);
     setSumMinus(0);
     setSumPlus(0);
     setResultData({
@@ -402,7 +389,7 @@ const Margin = () => {
     sellDeliveryFeeRef.current.value = `${row.received_delivery_fee}`;
     stockPriceRef.current.value = `${row.stock_price}`;
     savedDPFeeRef.current.value = `${row.saved_dp_fee}`;
-    lowestMarginRateRef.current.value = `${row.lowest_margin_rate}`;
+    // lowestMarginRateRef.current.value = `${row.lowest_margin_rate}`;
     setLowestPrice(row.lowest_standard_price);
     setSumMinus(row.expense_sum_price);
     setSumPlus(row.revenue_sum_price);
@@ -447,14 +434,6 @@ const Margin = () => {
                   <col />
                 </colgroup>
                 <tbody>
-                  {/* <tr>
-                    <th>판매가격</th>
-                    <td>
-                      {resultData.sell_price}
-                      <span> 원</span>
-                    </td>
-                  </tr> */}
-
                   <tr>
                     <th>정산금액</th>
                     <td>
@@ -465,8 +444,8 @@ const Margin = () => {
 
                   <tr>
                     <th>순이익</th>
-                    <td className="txt_green">
-                      <span>이익 </span>
+                    <td className={resultData.margin >= 0 ? 'txt_green' : 'txt_red'}>
+                      <span>{resultData.margin >= 0 ? '이익' : '손해'} </span>
                       {resultData.margin > 0 && '+'}
                       {resultData.margin}
                       <span> 원</span>
@@ -475,7 +454,7 @@ const Margin = () => {
 
                   <tr>
                     <th>마진율</th>
-                    <td className="txt_green">
+                    <td className={resultData.margin_rate >= 0 ? 'txt_green' : 'txt_red'}>
                       {resultData.margin_rate}
                       <span> %</span>
                     </td>
@@ -499,11 +478,6 @@ const Margin = () => {
                       </Button>
                     </td>
                   </tr>
-                  {/* <tr>
-                    <td className="td_sum green">
-                      <span>+ 수익합계</span> {sumPlus} 원
-                    </td>
-                  </tr> */}
 
                   <tr>
                     <td>
@@ -526,12 +500,6 @@ const Margin = () => {
                       <span>원</span>
                     </td>
                   </tr>
-
-                  {/* <tr>
-                    <td className="td_sum red">
-                      <span>- 비용 합계</span> {sumMinus} 원
-                    </td>
-                  </tr> */}
 
                   <tr>
                     <td>
@@ -585,7 +553,7 @@ const Margin = () => {
                       <span>%</span>
                     </td>
                   </tr>
-                  <tr>
+                  {/* <tr>
                     <td className="td_sum gray">
                       <span>최저 판매가</span> {lowestPrice} 원
                     </td>
@@ -596,7 +564,7 @@ const Margin = () => {
                       <input type="number" ref={lowestMarginRateRef}></input>
                       <span>%</span>
                     </td>
-                  </tr>
+                  </tr> */}
                 </tbody>
               </table>
             </div>

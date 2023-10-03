@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import { Button, DropdownButton, Dropdown } from 'react-bootstrap';
 import Head from 'components/template/Head';
@@ -17,10 +17,6 @@ import 'styles/StandardProduct.scss';
 import icon_search from 'images/icon_search.svg';
 import icon_reset from 'images/icon_reset.svg';
 import icon_del from 'images/icon_del.svg';
-
-// AG Grid
-import { AgGridReact } from 'ag-grid-react';
-//
 
 const StandardProduct = () => {
   logger.render('StandardProduct');
@@ -53,7 +49,7 @@ const StandardProduct = () => {
 
     const search_category = category[categoryType];
     let searchData = goods_data;
-    if (categoryType != 0)
+    if (categoryType !== 0)
       searchData = _.filter(goods_data, (goods) => {
         return _.includes(goods.goods_category, search_category);
       });
@@ -303,7 +299,7 @@ const StandardProductItem = React.memo(({ index, d, onChange, onSave, onDelete }
         ></input>
       </td>
 
-      <td>{d.category_fee_rate && Number(d.category_fee_rate).toFixed(1)}</td>
+      <td>{d.category_fee_rate && Number(d.category_fee_rate).toFixed(2)}</td>
       <td>
         <button
           className="btn-primary btn_blue btn_small"

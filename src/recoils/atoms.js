@@ -43,6 +43,10 @@ insert_recoil('SELLA:SELLAFORMS', {
   sella_forms: [],
 });
 
+insert_recoil('SELLA:BASICFORMS', {
+  sella_basic_forms: [],
+});
+
 insert_recoil('SELLA:PLATFORM', {
   platform: [],
 });
@@ -63,14 +67,6 @@ insert_recoil('DATA:PLATFORMS', {
 
 insert_recoil('DATA:GOODS', {
   goods: [],
-});
-
-insert_recoil('DATA:DELIVERY', {
-  delivery: [],
-});
-
-insert_recoil('DATA:PACKING', {
-  packing: [],
 });
 
 insert_recoil('DATA:FORMSMATCH', {

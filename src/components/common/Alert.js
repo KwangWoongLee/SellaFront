@@ -3,7 +3,6 @@ import { Modal, Button } from 'react-bootstrap';
 import Recoils from 'recoils';
 import { img_src, logger } from 'util/com';
 import 'styles/Modal.scss';
-import _ from 'lodash';
 
 import icon_close from 'images/icon_close.svg';
 
@@ -22,7 +21,7 @@ const AlertModal = () => {
       <Modal.Header className="d-flex justify-content-center">
         <Modal.Title className="text-primary"></Modal.Title>
         <Button variant="primary" className="btn_close" onClick={onClose}>
-          <img src={`${img_src}${icon_close}`} />
+          <img alt={''} src={`${img_src}${icon_close}`} />
         </Button>
       </Modal.Header>
       <Modal.Body className="css-fix-line">{state.error && state.error}</Modal.Body>

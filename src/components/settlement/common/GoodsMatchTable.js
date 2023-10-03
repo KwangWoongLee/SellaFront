@@ -1,9 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-
-import { Button, DropdownButton, Dropdown, Modal, Form, FloatingLabel } from 'react-bootstrap';
-import request from 'util/request';
-import { img_src, modal } from 'util/com';
-import Recoils from 'recoils';
+import { img_src } from 'util/com';
 import _ from 'lodash';
 
 import { logger, time_format } from 'util/com';
@@ -25,7 +21,7 @@ const GoodsMatchTable = React.memo(({ selectCallback, deleteCallback, changeCall
   const onDelete = (e, d) => {
     e.preventDefault();
     const newRowData = _.filter(rowData, (item) => {
-      return item.idx != d.idx;
+      return item.idx !== d.idx;
     });
 
     setRowData(newRowData);
@@ -127,7 +123,7 @@ const GoodsMatchItem = React.memo(
           </>
         </td>
 
-        {index == 0 ? (
+        {index === 0 ? (
           !settlement_flag && (
             <td class="td_fee" rowSpan={rowSpan}>
               {d.category_fee_rate ? d.category_fee_rate : parentFormsMatchSelectData.category_fee_rate}

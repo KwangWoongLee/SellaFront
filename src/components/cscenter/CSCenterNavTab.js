@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
-import { Nav } from 'react-bootstrap';
-import { navigate, logger } from 'util/com';
+import { logger } from 'util/com';
 import CommonNavTab from 'components/common/CommonNavTab';
 
 const data = [

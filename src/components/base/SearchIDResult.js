@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Button, InputGroup, Form } from 'react-bootstrap';
-import Recoils from 'recoils';
+import { Button } from 'react-bootstrap';
 import com, { logger, navigate } from 'util/com';
-import { AiFillMail, AiFillLock } from 'react-icons/ai';
-import request from 'util/request';
-// import _ from 'lodash';
 
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';

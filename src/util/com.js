@@ -115,10 +115,10 @@ export const useInput = (init) => {
 export const navigate = (path, flag) => {
   const pathname = navigate_ref.current.location.pathname;
 
-  if (pathname == '/settlement/margin_calc' && !flag) {
+  if (pathname === '/settlement/margin_calc' && !flag) {
     const exist_margin_calc_data = com.storage.getItem('exist_margin_calc_data');
 
-    if (exist_margin_calc_data == '1') {
+    if (exist_margin_calc_data === '1') {
       modal.confirm(
         '다른 페이지로 이동하시면 손익데이터가 삭제됩니다.',
         [{ strong: '', normal: ' 이동하시겠습니까?' }],
@@ -144,7 +144,7 @@ export const navigate = (path, flag) => {
   }
 
   //console.log('pathname : ', pathname, ', arg : ', path);
-  if (pathname != '/settlement/margin_calc')
+  if (pathname !== '/settlement/margin_calc')
     if (pathname === path) {
       page_reload();
     } else {
@@ -179,7 +179,7 @@ export const is_authed = () => {
 };
 
 export const is_margin_calc = () => {
-  if (margin_calc == true) return false;
+  if (margin_calc === true) return false;
 
   return true;
 };
@@ -201,6 +201,11 @@ function formatAMPM(date) {
   let strTime = ampm + ' ' + hours + ':' + minutes + ':' + seconds;
   return strTime;
 }
+
+export const time_format_day = (time) => {
+  const now = new Date(time);
+  return dateFormat(now, `yyyy년 mm월 dd일`);
+};
 
 export const time_format = (time) => {
   const now = new Date(time);
@@ -268,7 +273,7 @@ export const replace_phone = (phone) => {
   phone = phone
     .replace(/[^0-9]/g, '')
     .replace(/^(\d{0,3})(\d{0,4})(\d{0,4})$/g, '$1-$2-$3')
-    .replace(/(\-{1,2})$/g, '');
+    .replace(/(-{1,2})$/g, '');
 
   return phone;
 };

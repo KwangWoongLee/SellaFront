@@ -1,13 +1,12 @@
-import React, { useState, useEffect, useRef, useMemo, Fragment } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 
-import { Table, Button, Modal, DropdownButton, Dropdown } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
-import { img_src, useInput, modal, navigate } from 'util/com';
+import { img_src, modal } from 'util/com';
 import request from 'util/request';
 import CSCenterNavTab from 'components/cscenter/CSCenterNavTab';
-import Recoils from 'recoils';
 import _ from 'lodash';
 import ImageModal from 'components/common/ImageModal';
 
@@ -107,35 +106,26 @@ const Announcement = () => {
 
   const onSearch = (e) => {
     if (title && title.length < 2) {
-      modal.confirm(
-        '제목명은 2글자 이상으로 입력하세요.',
-        [
-          {
-            strong: '',
-            normal: '상품정보를 등록하시려면 기초정보를 등록해 주세요.',
-          },
-        ],
-        [
-          {
-            name: '확인',
-            callback: () => {},
-          },
-        ]
-      );
+      modal.alert('제목명은 2글자 이상 입력해 주세요.');
       return;
     }
 
-    request.post(`cscenter/announcement`, { category: category_str[categoryType], title }).then((ret) => {
-      if (!ret.err) {
-        const { data } = ret.data;
-        logger.info(data);
+    request
+      .post(`cscenter/announcement`, {
+        category: category_str[categoryType] == '전체' ? '' : category_str[categoryType],
+        title,
+      })
+      .then((ret) => {
+        if (!ret.err) {
+          const { data } = ret.data;
+          logger.info(data);
 
-        const rowCount = data.length;
-        rowCount ? setDatas(() => data) : setDatas([]);
-        rowCount && Math.floor(rowCount / limit) ? setPageCount(Math.floor(rowCount / limit)) : setPageCount(1);
-        setPage(1);
-      }
-    });
+          const rowCount = data.length;
+          rowCount ? setDatas(() => data) : setDatas([]);
+          rowCount && Math.floor(rowCount / limit) ? setPageCount(Math.floor(rowCount / limit)) : setPageCount(1);
+          setPage(1);
+        }
+      });
   };
 
   const onReset = () => {
@@ -188,10 +178,10 @@ const Announcement = () => {
               }}
             />
             <Button onClick={onSearch} className="btn btn_search">
-              <img src={`${img_src}${icon_search}`} />
+              <img alt={''} src={`${img_src}${icon_search}`} />
             </Button>
             <Button className="btn_reset" onClick={onReset}>
-              <img src={`${img_src}${icon_reset}`} />
+              <img alt={''} src={`${img_src}${icon_reset}`} />
             </Button>
           </div>
 
@@ -221,7 +211,7 @@ const Announcement = () => {
                             onModalImage(e, row.other.img_url);
                           }}
                         >
-                          <img src={row.other.img_url} alt="" />
+                          <img alt={''} src={row.other.img_url} />
                         </td>
                         <td colSpan={2}>
                           <pre>{row.other.content}</pre>

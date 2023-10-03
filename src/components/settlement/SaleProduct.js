@@ -65,7 +65,7 @@ const SaleProduct = () => {
         const findObj = _.find(items, { idx: data.idx });
         const findObjJson = JSON.stringify(findObj.goods_match);
         const rawObjJson = JSON.stringify(data.goods_match);
-        if (findObj && findObjJson != rawObjJson) {
+        if (findObj && findObjJson !== rawObjJson) {
           findObj.save = true;
         }
       }
@@ -81,7 +81,7 @@ const SaleProduct = () => {
     }
     selectFormsMatchRef.current.settlement_flag = findForm.settlement_flag;
 
-    if (!d.goods_match || d.goods_match.length == 0) {
+    if (!d.goods_match || d.goods_match.length === 0) {
       d.goods_match = [];
       for (const goods_match_idx of d.goods_match_idxs) {
         const findGoodsMatchObj = _.find(goods_match, { idx: Number(goods_match_idx) });
@@ -111,7 +111,7 @@ const SaleProduct = () => {
 
         setItems(
           _.filter(items, (item) => {
-            return item.idx != d.idx;
+            return item.idx !== d.idx;
           })
         );
         selectFormsMatchRef.current = null;
@@ -162,7 +162,7 @@ const SaleProduct = () => {
   const onUnSelectStandardProduct_Search = (d) => {
     if (!selectFormsMatchRef.current) return; // TODO error
     _.remove(selectFormsMatchRef.current.goods_match, (goods_match) => {
-      return goods_match.idx == d.idx;
+      return goods_match.idx === d.idx;
     });
 
     onDeleteGoodsMatchTable(selectFormsMatchRef.current.goods_match);

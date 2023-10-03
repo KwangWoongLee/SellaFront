@@ -57,7 +57,6 @@ const SearchID = () => {
   const authNoRef = useRef(null);
   const yearRef = useRef(null);
   const dayRef = useRef(null);
-
   useEffect(() => {
     if (!agreement.length) {
       request.post('base/info/agreement', {}).then((ret) => {
@@ -74,9 +73,7 @@ const SearchID = () => {
         }
       });
     }
-  }, []);
 
-  useEffect(() => {
     if (allChecked && _.find(allChecked, { check: true })) setAllChecked(false);
   }, [agreement]);
 
@@ -144,10 +141,6 @@ const SearchID = () => {
     const gender = genderType;
     const local = localType;
     const phone = phoneRef.current.value;
-
-    const year = yearRef.current.value;
-    const month = month_str[monthType];
-    const day = dayRef.current.value;
 
     request.post('auth/search/id', { phone, name, gender, agency, local, agreement }).then((ret) => {
       if (!ret.err) {
@@ -263,9 +256,10 @@ const SearchID = () => {
   };
 
   const onCheckPhoneAuthNo = (e) => {
+    const phone = phoneRef.current.value;
     const auth_no = authNoRef.current.value;
     if (auth_no)
-      request.post('auth/phone/auth_no', { auth_no }).then((ret) => {
+      request.post('auth/phone/auth_no', { phone, auth_no }).then((ret) => {
         if (!ret.err) {
           const auth_temp = auth;
           auth_temp['auth_phone'] = true;
@@ -279,6 +273,11 @@ const SearchID = () => {
 
     request.post('auth/phone', { phone }).then((ret) => {
       if (!ret.err) {
+        const { data } = ret.data;
+        modal.alert(`임시방편입니다.
+          ${data.random_no}
+        `);
+
         const auth_temp = auth;
         auth_temp['send_phone'] = true;
         setAuth({ ...auth_temp });

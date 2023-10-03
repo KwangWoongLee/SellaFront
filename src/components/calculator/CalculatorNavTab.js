@@ -5,7 +5,7 @@ import CommonNavTab from 'components/common/CommonNavTab';
 
 const data = [
   { name: '/calculator/margin', desc: '마진 계산기' },
-  { name: '/calculator/buying', desc: '사입 계산기' },
+  // { name: '/calculator/buying', desc: '사입 계산기' },
 ];
 const CalculatorNavTab = ({ active }) => {
   logger.render('CalculatorNavTab');

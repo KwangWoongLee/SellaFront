@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
-import { Button, DropdownButton, Dropdown, Modal, Form, FloatingLabel } from 'react-bootstrap';
+import { Button, Modal } from 'react-bootstrap';
 import request from 'util/request';
-import { modal } from 'util/com';
-import Recoils from 'recoils';
 import _ from 'lodash';
 import Checkbox from 'components/common/CheckBoxCell';
 
@@ -59,7 +57,7 @@ const ColumnControlModal = React.memo(({ modalState, setModalState, callback, pl
           <span className="sub">테이블에 표시될 항목을 체크해주세요.</span>
         </Modal.Title>
         <Button variant="primary" className="btn_close" onClick={onClose}>
-          <img src={`${img_src}${icon_close}`} />
+          <img alt={''} src={`${img_src}${icon_close}`} />
         </Button>
       </Modal.Header>
       <Modal.Body>

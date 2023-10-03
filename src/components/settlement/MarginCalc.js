@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 
-import { Button, Modal, Dropdown, DropdownButton } from 'react-bootstrap';
+import { Button, Dropdown, DropdownButton } from 'react-bootstrap';
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
@@ -20,14 +20,10 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
-import 'react-responsive-carousel/lib/styles/carousel.min.css';
-import { Carousel } from 'react-responsive-carousel';
-
 import 'styles/MarginCalc.scss';
 
 import icon_circle_arrow_down from 'images/icon_circle_arrow_down.svg';
 import icon_circle_arrow_up from 'images/icon_circle_arrow_up.svg';
-import icon_set from 'images/icon_set.svg';
 import img_service from 'images/img_service.png';
 
 // AG Grid
@@ -73,6 +69,7 @@ const PLRenderer = (params) => {
     </>
   );
 };
+
 const _30006Renderer = (params) => {
   return (
     <>
@@ -90,9 +87,9 @@ const _30006Renderer = (params) => {
 const _30047Renderer = (params) => {
   return (
     <>
-      {params.data[30047] && `${replace_1000(revert_1000(params.data[30047]))}`}
+      {params.data[30047] ? `${replace_1000(revert_1000(params.data[30047]))}` : `0`}
 
-      {params.data['30047_additional'] && (
+      {params.data.delivery_fee && params.data['30047_additional'] && (
         <>
           <span class="subtxt">
             (
@@ -116,6 +113,13 @@ const optionCellRenderer = (props) => {
     </>
   );
 };
+
+function rowSpan(params) {
+  if (params.data && params.data.group.first) {
+    return params.data.group.size;
+  }
+  return 0;
+}
 
 const ROUTE_COLUMN_BASE = [
   {
@@ -162,6 +166,7 @@ const ROUTE_COLUMN_BASE = [
     headerName: '배송비묶음번호',
     maxWidth: 150,
     cellClass: 'uneditable',
+    hide: true,
   },
   {
     field: '30004',
@@ -172,8 +177,17 @@ const ROUTE_COLUMN_BASE = [
     cellClass: 'uneditable',
   },
   {
+    field: '30048',
+    sortable: false,
+    unSortIcon: true,
+    headerName: '수취인명',
+    width: 130,
+    editable: true,
+    cellClass: 'ag-cell-editable',
+  },
+  {
     field: 'forms_name',
-    sortable: true,
+    sortable: false,
     unSortIcon: true,
     headerName: '매체',
     width: 150,
@@ -181,7 +195,7 @@ const ROUTE_COLUMN_BASE = [
   },
   {
     field: '30007',
-    sortable: true,
+    sortable: false,
     unSortIcon: true,
     headerName: '판매상품명',
     minWidth: 400,
@@ -192,7 +206,7 @@ const ROUTE_COLUMN_BASE = [
   },
   {
     field: '30008',
-    sortable: true,
+    sortable: false,
     unSortIcon: true,
     headerName: '옵션',
     minWidth: 300,
@@ -204,7 +218,7 @@ const ROUTE_COLUMN_BASE = [
   },
   {
     field: '30005',
-    sortable: true,
+    sortable: false,
     unSortIcon: true,
     valueParser: (params) => Number(params.newValue),
     headerName: '수량',
@@ -214,7 +228,7 @@ const ROUTE_COLUMN_BASE = [
   },
   {
     field: '30006',
-    sortable: true,
+    sortable: false,
     unSortIcon: true,
     headerName: '총 결제금액\n(정산예정금액)',
     width: 130,
@@ -224,7 +238,7 @@ const ROUTE_COLUMN_BASE = [
   },
   {
     field: '30047',
-    sortable: true,
+    sortable: false,
     unSortIcon: true,
     headerName: '받은 배송비\n(배송비 수수료)',
     width: 130,
@@ -234,7 +248,7 @@ const ROUTE_COLUMN_BASE = [
   },
   {
     field: 'stock_price',
-    sortable: true,
+    sortable: false,
     unSortIcon: true,
     valueParser: (params) => {
       return Number.isNaN(Number(params.newValue)) ? params.oldValue : Number(params.newValue);
@@ -250,7 +264,7 @@ const ROUTE_COLUMN_BASE = [
   },
   {
     field: 'delivery_fee',
-    sortable: true,
+    sortable: false,
     unSortIcon: true,
     valueParser: (params) => {
       return Number.isNaN(Number(params.newValue)) ? params.oldValue : Number(params.newValue);
@@ -266,7 +280,7 @@ const ROUTE_COLUMN_BASE = [
   },
   {
     field: 'packing_fee',
-    sortable: true,
+    sortable: false,
     unSortIcon: true,
     valueParser: (params) => {
       return Number.isNaN(Number(params.newValue)) ? params.oldValue : Number(params.newValue);
@@ -280,33 +294,24 @@ const ROUTE_COLUMN_BASE = [
     editable: true,
     cellClass: 'ag-cell-editable',
   },
-  // {
-  //   field: '30048',
-  //   sortable: true,
-  //   unSortIcon: true,
-  //   headerName: '수취인명',
-  //   width: 130,
-  //   editable: true,
-  //   cellClass: 'ag-cell-editable',
-  // },
-  // {
-  //   field: '30050',
-  //   sortable: true,
-  //   unSortIcon: true,
-  //   headerName: '수취인주소',
-  //   width: 130,
-  //   editable: true,
-  //   cellClass: 'ag-cell-editable',
-  // },
-  // {
-  //   field: '30049',
-  //   sortable: true,
-  //   unSortIcon: true,
-  //   headerName: '수취인연락처',
-  //   width: 130,
-  //   editable: true,
-  //   cellClass: 'ag-cell-editable',
-  // },
+  {
+    field: '30050',
+    sortable: false,
+    unSortIcon: true,
+    headerName: '수취인주소',
+    width: 130,
+    editable: true,
+    cellClass: 'ag-cell-editable',
+  },
+  {
+    field: '30049',
+    sortable: false,
+    unSortIcon: true,
+    headerName: '수취인연락처',
+    width: 130,
+    editable: true,
+    cellClass: 'ag-cell-editable',
+  },
 ];
 
 // const getRowHeight = useCallback((params) => {
@@ -389,32 +394,6 @@ const MarginCalc = () => {
   }, []);
 
   useEffect(() => {
-    // GO Step1
-    const deliveryData = Recoils.getState('DATA:DELIVERY');
-    const packingData = Recoils.getState('DATA:PACKING');
-
-    if (!deliveryData || deliveryData.length == 1 || !packingData || packingData.length == 1) {
-      modal.confirm(
-        '초기 값을 설정해 주세요.',
-        [
-          {
-            strong: '',
-            normal: '손익계산을 하시려면 [기초 정보], [기준 상품 정보]를 등록해 주세요.',
-          },
-        ],
-        [
-          {
-            name: '기초 정보 관리로 이동',
-            callback: () => {
-              navigate('step1');
-            },
-          },
-        ]
-      );
-
-      return;
-    }
-
     // GO Step2
     const goodsData = Recoils.getState('DATA:GOODS');
 
@@ -552,18 +531,6 @@ const MarginCalc = () => {
           const wsname = wb.SheetNames[0];
           const ws = wb.Sheets[wsname];
 
-          // for (const key in ws) {
-          //   const prevlast = key[key.length - 2];
-          //   const last = key[key.length - 1];
-
-          //   if (isNaN(prevlast) && !isNaN(last) && Number(last) === title_row) {
-          //     const column = key.slice(0, key.length - 1);
-          //     const header = ws[key]['h'];
-
-          //     if (expected[column] !== header) return; // 에러
-          //   }
-          // }
-
           const frm = new FormData();
           frm.append('files', file);
           frm.append('Authorization', access_token);
@@ -574,6 +541,7 @@ const MarginCalc = () => {
             .then((ret) => {
               if (!ret.err) {
                 const { data } = ret.data;
+
                 setRowData(() => data);
                 setMode(1);
               }
@@ -630,6 +598,7 @@ const MarginCalc = () => {
               const summary = CalcSummary(_.filter(rowData, { connect_flag: true }));
 
               setViewResult(summary);
+              setRowData(_.cloneDeep(rowData));
             },
           },
         ]
@@ -638,6 +607,7 @@ const MarginCalc = () => {
       const summary = CalcSummary(rowData);
 
       setViewResult(summary);
+      setRowData(_.cloneDeep(rowData));
     }
   };
 
@@ -773,8 +743,12 @@ const MarginCalc = () => {
   };
 
   const getRowStyle = (params) => {
+    //색은 바꾸자..
+    const colors = ['#FFCCFF', '#FFFFCC'];
     if (!params.node.data.connect_flag) {
       return { background: '#FFEAEA' };
+    } else {
+      return { background: colors[params.node.data.group.id % 2] };
     }
   };
 
@@ -909,7 +883,12 @@ const MarginCalc = () => {
                     주문서 저장
                   </Button>
 
-                  <Button variant="primary" onClick={onDownload} className="btn_green" disabled={!rowData.length}>
+                  <Button
+                    variant="primary"
+                    onClick={onDownload}
+                    className="btn_green"
+                    disabled={!rowData || !rowData.length}
+                  >
                     <img src={`${img_src}${icon_circle_arrow_down}`} />
                     다운로드
                   </Button>
@@ -1017,91 +996,40 @@ const MarginCalc = () => {
 };
 const calcProfitLoss = (profit_loss_row) => {
   let profit_loss = 0;
-  profit_loss += getAggregation(profit_loss_row);
-  profit_loss += getRealityDeliveryFee(profit_loss_row);
-  profit_loss += getAssemblyFee(profit_loss_row);
-  profit_loss += getInstallationFee(profit_loss_row);
+  profit_loss += profit_loss_row.aggregation;
+  profit_loss += profit_loss_row.reality_delivery_fee;
+  profit_loss += profit_loss_row.assembly_fee;
+  profit_loss += profit_loss_row.installation_fee;
 
-  profit_loss -= getStockPrice(profit_loss_row);
-  profit_loss -= getDeliveryFee(profit_loss_row);
-  profit_loss -= getPackingFee(profit_loss_row);
+  profit_loss -= profit_loss_row.stock_price;
+  profit_loss -= profit_loss_row.delivery_fee;
+  profit_loss -= profit_loss_row.packing_fee;
 
-  return profit_loss;
-};
-
-const getAggregation = (profit_loss_row) => {
-  let aggregation = profit_loss_row[30001] ? Number(profit_loss_row[30001]) : 0;
-  let profit_loss = 0;
-  //  정산예정금액이 있는 경우
-  if (aggregation) {
-    profit_loss += aggregation; // 1. 정산예정금액 추가
-  } else {
-    // 없는 경우
-    {
-      aggregation = 0;
-      aggregation += Number(profit_loss_row[30006]); // 1. 총 결제금액 더하기
-      if (profit_loss_row[30019]) aggregation += Number(profit_loss_row[30019]); // 2. 기타할인1 빼기
-      if (profit_loss_row[30020]) aggregation += Number(profit_loss_row[30020]); // 3. 기타할인2 빼기
-
-      aggregation *= 1 - parseFloat(profit_loss_row.category_fee_rate) / 100;
-    }
-
-    profit_loss += aggregation;
-  }
-
-  return profit_loss;
-};
-
-const getRealityDeliveryFee = (profit_loss_row) => {
-  let pay_advance = profit_loss_row[30022];
-  let delivery_fee = 0;
-  const received_delivery_fee = profit_loss_row[30047] ? Number(profit_loss_row[30047]) : 0;
-  const countryside_added_fee = profit_loss_row[30014] ? Number(profit_loss_row[30014]) : 0;
-  const df_discount = profit_loss_row[30015] ? Number(profit_loss_row[30015]) : 0;
-
-  // 배송비 선불인 경우
-  if (pay_advance) {
-    delivery_fee += received_delivery_fee;
-    delivery_fee += countryside_added_fee;
-    delivery_fee -= df_discount;
-    delivery_fee *= 1 - parseFloat(profit_loss_row['30047_additional']) / 100;
-  }
-
-  return delivery_fee;
-};
-
-const getAssemblyFee = (profit_loss_row) => {
-  let assembly_fee = profit_loss_row[30032] ? Number(profit_loss_row[30032]) : 0;
-
-  // 배송비 선불인 경우
-  if (assembly_fee) {
-    assembly_fee *= 1 - parseFloat(profit_loss_row['30032_additional']) / 100; // TODO 조립비 수수료.. 흠
-  }
-
-  return assembly_fee;
-};
-
-const getInstallationFee = (profit_loss_row) => {
-  let installation_fee = profit_loss_row[30033] ? Number(profit_loss_row[30033]) : 0;
-
-  // 배송비 선불인 경우
-  if (installation_fee) {
-    installation_fee *= 1 - parseFloat(profit_loss_row['30033_additional']) / 100; // TODO 설치비 수수료.. 흠
-  }
-
-  return installation_fee;
+  return Number(profit_loss.toFixed(0));
 };
 
 const getStockPrice = (profit_loss_row) => {
-  return _.sumBy(profit_loss_row.goods_match, 'stock_price');
+  return _.reduce(
+    profit_loss_row.goods_match,
+    function (sum, goods) {
+      return sum + goods.stock_price * goods.match_count;
+    },
+    0
+  );
 };
 
 const getDeliveryFee = (profit_loss_row) => {
-  return _.sumBy(profit_loss_row.goods_match, 'delivery_fee');
+  // return _.sumBy(profit_loss_row.goods_match, 'delivery_fee');
+
+  const maxGoodsMatch = _.maxBy(profit_loss_row.goods_match, 'delivery_fee');
+  return maxGoodsMatch.delivery_fee;
 };
 
 const getPackingFee = (profit_loss_row) => {
-  return _.sumBy(profit_loss_row.goods_match, 'packing_fee');
+  // return _.sumBy(profit_loss_row.goods_match, 'packing_fee');
+
+  const maxGoodsMatch = _.maxBy(profit_loss_row.goods_match, 'packing_fee');
+  return maxGoodsMatch.packing_fee;
 };
 
 const CalcSummary = (rowData) => {
@@ -1165,6 +1093,10 @@ const CalcSummary = (rowData) => {
   console.log(rowData);
 
   for (const row of rowData) {
+    if (row.group.first == false) {
+      row.reality_delivery_fee = 0;
+      row.delivery_fee = 0;
+    }
     row.profit_loss = calcProfitLoss(row);
   }
 

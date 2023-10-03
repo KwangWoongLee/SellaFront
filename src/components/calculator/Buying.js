@@ -18,10 +18,6 @@ import 'styles/Margin.scss';
 
 const Buying = () => {
   logger.render('Buying');
-
-  const account = Recoils.useValue('CONFIG:ACCOUNT');
-  const access_token = account.access_token;
-
   const [rowData, setDatas] = useState([]);
   const platformData = [...Recoils.getState('SELLA:PLATFORM')];
   const [platformType, setplatformType] = useState(0);

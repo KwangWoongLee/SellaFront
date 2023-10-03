@@ -1,8 +1,6 @@
-import React, { useEffect } from 'react';
-import { Button, InputGroup, Form } from 'react-bootstrap';
-import Recoils from 'recoils';
+import React from 'react';
+import { Button } from 'react-bootstrap';
 import com, { logger, navigate } from 'util/com';
-// import _ from 'lodash';
 
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
