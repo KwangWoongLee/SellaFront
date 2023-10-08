@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 
-import { Button, Dropdown, DropdownButton } from 'react-bootstrap';
+import { Button, Dropdown, DropdownButton, Modal } from 'react-bootstrap';
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 import com, { img_src, modal, navigate } from 'util/com';
 import request from 'util/request';
 import SettlementNavTab from 'components/settlement/common/SettlementNavTab';
+import MarginCalc_ConnectModal from 'components/settlement/MarginCalc_ConnectModal';
 import MarginCalc_UnConnectModal from 'components/settlement/MarginCalc_UnConnectModal';
 import Recoils from 'recoils';
 import * as xlsx from 'xlsx';
@@ -15,7 +16,7 @@ import { saveAs } from 'file-saver';
 import _ from 'lodash';
 import moment from 'moment';
 
-import { logger, replace_1000, revert_1000, time_format_none_time } from 'util/com';
+import { logger, replace_1000, revert_1000, time_format, time_format_none_time } from 'util/com';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -29,6 +30,7 @@ import img_service from 'images/img_service.png';
 // AG Grid
 import { AgGridReact } from 'ag-grid-react';
 import ColumnControlModal from 'components/common/AgGrid/ColumnControlModal';
+import CommonDateModal from 'components/common/CommonDateModal';
 
 const PLRenderer = (params) => {
   if (params.data && params.data.connect_flag == false) {
@@ -158,6 +160,9 @@ const ROUTE_COLUMN_BASE = [
     filter: false,
     unSortIcon: true,
     width: 170,
+    valueFormatter: (params) => {
+      return excelSerialDateToJSDate(params.value);
+    },
   },
   {
     field: '30002',
@@ -257,7 +262,7 @@ const ROUTE_COLUMN_BASE = [
       if (params.value == '') return 0;
       return replace_1000(params.value);
     },
-    headerName: '입고단가',
+    headerName: '총 입고단가',
     width: 120,
     editable: true,
     cellClass: 'ag-cell-editable',
@@ -294,15 +299,15 @@ const ROUTE_COLUMN_BASE = [
     editable: true,
     cellClass: 'ag-cell-editable',
   },
-  {
-    field: '30050',
-    sortable: false,
-    unSortIcon: true,
-    headerName: '수취인주소',
-    width: 130,
-    editable: true,
-    cellClass: 'ag-cell-editable',
-  },
+  // {
+  //   field: '30050',
+  //   sortable: false,
+  //   unSortIcon: true,
+  //   headerName: '수취인주소',
+  //   width: 130,
+  //   editable: true,
+  //   cellClass: 'ag-cell-editable',
+  // },
   {
     field: '30049',
     sortable: false,
@@ -331,12 +336,17 @@ const MarginCalc = () => {
   const [platformType, setplatformType] = useState(0);
   const [rowData, setRowData] = useState([]);
   const [announcement, setAnnouncement] = useState([]);
-  const [modalState, setModalState] = useState(false);
+  const [stockPriceModalState, setStockPriceModalState] = useState(false);
+  const [connectModalState, setConnectModalState] = useState(false);
+  const [unConnectModalState, setUnConnectModalState] = useState(false);
   const [columnControlModalState, setColumnControlModalState] = useState(false);
+  const [connectModalSelectData, setConnectModalSelectData] = useState({});
   const [unConnectModalSelectData, setUnConnectModalSelectData] = useState({});
   const [sliderState, setSliderState] = useState(false);
+  const [dateModalState, setDateModalState] = useState(false);
 
-  const [viewColumns, setViewColumns] = useState([]);
+  const dateRef = useRef(null);
+  const stockPriceDataRef = useRef(null);
   //ag-grid
   const gridRef = useRef();
   const containerStyle = useMemo(() => ({ width: '100%', height: '100%' }), []);
@@ -461,7 +471,7 @@ const MarginCalc = () => {
       com.storage.setItem('exist_margin_calc_data', '1');
     }
 
-    if (modalState) return;
+    if (unConnectModalState) return;
 
     const unconnect_rows = _.filter(rowData, (data) => {
       return !data.connect_flag;
@@ -481,8 +491,8 @@ const MarginCalc = () => {
             name: '상품매칭관리',
             className: 'btn_blue',
             callback: () => {
-              setModalState(true);
               setUnConnectModalSelectData(unconnect_rows[0]);
+              setUnConnectModalState(true);
             },
           },
           {
@@ -561,13 +571,21 @@ const MarginCalc = () => {
     setplatformType(key);
   };
 
-  const onClick = (param) => {
-    if (param.data && param.data.connect_flag == true) {
-      return;
+  const onCellDoubleClick = (param) => {
+    if (param.column.colId === 'stock_price') {
+      stockPriceDataRef.current = param.data.goods_match;
+      setStockPriceModalState(true);
+    } else {
+      if (param.data) {
+        if (param.data.connect_flag == true) {
+          setConnectModalSelectData(param.data);
+          setConnectModalState(true);
+        } else {
+          setUnConnectModalSelectData(param.data);
+          setUnConnectModalState(true);
+        }
+      }
     }
-
-    setUnConnectModalSelectData(param.data);
-    setModalState(true);
   };
 
   const onViewResult = () => {
@@ -595,10 +613,13 @@ const MarginCalc = () => {
             name: '미연결 주문건 삭제 후 손익계산',
             callback: () => {
               onDeleteUnconnectRow();
-              const summary = CalcSummary(_.filter(rowData, { connect_flag: true }));
+              const connect_rows = _.filter(rowData, (data) => {
+                return data.connect_flag;
+              });
+              const summary = CalcSummary(connect_rows);
 
               setViewResult(summary);
-              setRowData(_.cloneDeep(rowData));
+              setRowData(_.cloneDeep(connect_rows));
             },
           },
         ]
@@ -673,66 +694,87 @@ const MarginCalc = () => {
           {
             name: '매칭하러 가기',
             callback: () => {
-              setModalState(true);
+              setUnConnectModalState(true);
             },
           },
           {
             name: '미연결 주문건 삭제 후 저장',
             callback: () => {
               onDeleteUnconnectRow();
-              request.post(`user/today_summary/save`, { save_data: viewResult }).then((ret) => {
-                if (!ret.err) {
-                  const { data } = ret.data;
-                  logger.info(data);
+              request
+                .post(`user/today_summary/save`, { save_data: { ...viewResult, date: dateRef.current } })
+                .then((ret) => {
+                  if (!ret.err) {
+                    const { data } = ret.data;
+                    logger.info(data);
 
-                  setRowData(() => data);
-                }
-              });
+                    dateRef.current = null;
+                    setRowData(() => data);
+                  }
+                });
             },
           },
         ]
       );
     } else {
-      request.post(`user/today_summary/save`, { save_data: viewResult }).then((ret) => {
+      request.post(`user/today_summary/save`, { save_data: viewResult, date: dateRef.current }).then((ret) => {
         if (!ret.err) {
           const { data } = ret.data;
           logger.info(data);
 
+          dateRef.current = null;
           navigate('settlement/today_summary');
         }
       });
     }
   };
 
-  const deleteCallback = (d) => {
-    setRowData(
-      _.filter(rowData, (item) => {
-        return !(item.forms_product_name == d.forms_product_name && item.forms_option_name == d.forms_option_name);
-      })
-    );
+  const deleteCallback = (d, connect_flag) => {
+    if (connect_flag) {
+      const changedItems = _.cloneDeep(rowData);
+
+      _.forEach(changedItems, (item) => {
+        if (item.forms_match_idx === d.forms_match_idx) {
+          item.connect_flag = false;
+        }
+      });
+
+      setRowData([...changedItems]);
+    } else {
+      setRowData(
+        _.filter(rowData, (item) => {
+          return !(item.forms_product_name == d.forms_product_name && item.forms_option_name == d.forms_option_name);
+        })
+      );
+    }
   };
 
-  const saveCallback = (save_datas) => {
+  const saveCallback = (save_datas, result_forms_matchs, connect_flag) => {
     if (!save_datas) return;
 
     let saveResultData = _.cloneDeep(rowData);
     for (const d of save_datas) {
-      saveResultData = _.transform(
-        saveResultData,
-        function (result, item) {
-          if (item.forms_product_name == d.forms_product_name && item.forms_option_name == d.forms_option_name) {
-            item.connect_flag = true;
+      const filteredDatas = _.filter(saveResultData, (item) => {
+        return item.forms_product_name === d.forms_product_name && item.forms_option_name === d.forms_option_name;
+      });
 
-            item.stock_price = getStockPrice(d);
-            item.delivery_fee = getDeliveryFee(d);
-            item.packing_fee = getPackingFee(d);
-          }
-          item.goods_match = [];
+      const findFormsMatch = _.find(result_forms_matchs, (item) => {
+        return item.forms_product_name === d.forms_product_name && item.forms_option_name === d.forms_option_name;
+      });
 
-          result.push(item);
-        },
-        []
-      );
+      for (const obj of filteredDatas) {
+        obj.connect_flag = findFormsMatch ? true : false;
+        obj.forms_match_idx = findFormsMatch.idx;
+        obj.goods_match = d.goods_match;
+        obj.stock_price = getStockPrice(d);
+        obj.delivery_fee = getDeliveryFee(d);
+        obj.packing_fee = getPackingFee(d);
+
+        obj.aggregation = getAggregation(obj);
+        obj.reality_delivery_fee = getRealityDeliveryFee(obj);
+        obj.assembly_fee = getAssemblyFee(obj);
+        obj.installation_fee = getInstallationFee(obj);
+      }
     }
 
     setRowData([...saveResultData]);
@@ -750,6 +792,10 @@ const MarginCalc = () => {
     } else {
       return { background: colors[params.node.data.group.id % 2] };
     }
+  };
+
+  const onChangeDate = (date) => {
+    dateRef.current = date;
   };
 
   return (
@@ -879,6 +925,15 @@ const MarginCalc = () => {
                   </Button>
 
                   {/* TODO 색 고민 해봐야.. */}
+
+                  <Button
+                    variant="primary"
+                    onClick={() => {
+                      setDateModalState(true);
+                    }}
+                  >
+                    주문서 날짜 변경
+                  </Button>
                   <Button onClick={onSaveTodaySummary} disabled={_.isEmpty(viewResult)}>
                     주문서 저장
                   </Button>
@@ -960,7 +1015,8 @@ const MarginCalc = () => {
                     alwaysShowVerticalScroll={true}
                     defaultColDef={defaultColDef}
                     rowSelection={'multiple'}
-                    onRowDoubleClicked={onClick}
+                    // onRowDoubleClicked={onClick}
+                    onCellDoubleClicked={onCellDoubleClick}
                     getRowStyle={getRowStyle}
                     overlayNoRowsTemplate={'데이터가 없습니다.'}
                     suppressRowTransform={true}
@@ -976,9 +1032,23 @@ const MarginCalc = () => {
         )}
       </Body>
       <Footer />
+      <StockPriceModal
+        modalState={stockPriceModalState}
+        setModalState={setStockPriceModalState}
+        goodsMatch={stockPriceDataRef.current}
+      ></StockPriceModal>
+      <MarginCalc_ConnectModal
+        modalState={connectModalState}
+        setModalState={setConnectModalState}
+        rowData={rowData}
+        unconnect_flag={true}
+        deleteCallback={deleteCallback}
+        saveCallback={saveCallback}
+        selectData={connectModalSelectData}
+      ></MarginCalc_ConnectModal>
       <MarginCalc_UnConnectModal
-        modalState={modalState}
-        setModalState={setModalState}
+        modalState={unConnectModalState}
+        setModalState={setUnConnectModalState}
         rowData={rowData}
         unconnect_flag={true}
         deleteCallback={deleteCallback}
@@ -991,6 +1061,11 @@ const MarginCalc = () => {
         platform={platforms[platformType]}
         callback={saveViewColumnsCallback}
       ></ColumnControlModal>
+      <CommonDateModal
+        modalState={dateModalState}
+        setModalState={setDateModalState}
+        onChangeDate={onChangeDate}
+      ></CommonDateModal>
     </>
   );
 };
@@ -1001,11 +1076,52 @@ const calcProfitLoss = (profit_loss_row) => {
   profit_loss += profit_loss_row.assembly_fee;
   profit_loss += profit_loss_row.installation_fee;
 
-  profit_loss -= profit_loss_row.stock_price;
+  const count = Number(profit_loss_row['30005']) ? Number(profit_loss_row['30005']) : 1;
+  profit_loss -= profit_loss_row.stock_price * count;
   profit_loss -= profit_loss_row.delivery_fee;
   profit_loss -= profit_loss_row.packing_fee;
 
   return Number(profit_loss.toFixed(0));
+};
+
+const getRealityDeliveryFee = (profit_loss_row) => {
+  let pay_advance = profit_loss_row[30022];
+  let delivery_fee = 0;
+  const received_delivery_fee = profit_loss_row[30047] ? Number(profit_loss_row[30047]) : 0;
+  const countryside_added_fee = profit_loss_row[30014] ? Number(profit_loss_row[30014]) : 0;
+  const df_discount = profit_loss_row[30015] ? Number(profit_loss_row[30015]) : 0;
+
+  // 배송비 선불인 경우
+  if (!pay_advance) {
+    delivery_fee += received_delivery_fee;
+    delivery_fee += countryside_added_fee;
+    delivery_fee -= df_discount;
+    delivery_fee *= 1 - parseFloat(profit_loss_row['30047_additional']) / 100;
+  }
+
+  return delivery_fee;
+};
+
+const getAssemblyFee = (profit_loss_row) => {
+  let assembly_fee = profit_loss_row[30032] ? Number(profit_loss_row[30032]) : 0;
+
+  // 배송비 선불인 경우
+  if (assembly_fee) {
+    assembly_fee *= 1 - parseFloat(profit_loss_row['30032_additional']) / 100; // TODO 조립비 수수료.. 흠
+  }
+
+  return assembly_fee;
+};
+
+const getInstallationFee = (profit_loss_row) => {
+  let installation_fee = profit_loss_row[30033] ? Number(profit_loss_row[30033]) : 0;
+
+  // 배송비 선불인 경우
+  if (installation_fee) {
+    installation_fee *= 1 - parseFloat(profit_loss_row['30033_additional']) / 100; // TODO 설치비 수수료.. 흠
+  }
+
+  return installation_fee;
 };
 
 const getStockPrice = (profit_loss_row) => {
@@ -1018,15 +1134,43 @@ const getStockPrice = (profit_loss_row) => {
   );
 };
 
+const getAggregation = (profit_loss_row) => {
+  let aggregation = profit_loss_row[30001] ? Number(profit_loss_row[30001]) : 0;
+
+  //  정산예정금액이 있는 경우
+  if (aggregation) {
+    return aggregation; // 1. 정산예정금액 추가
+  } else {
+    // 없는 경우, 수수료 처리
+    {
+      aggregation = 0;
+      aggregation += Number(profit_loss_row[30006]); // 1. 총 결제금액 더하기
+      if (profit_loss_row[30019]) {
+        aggregation -= Number(profit_loss_row[30019]); // 2. 기타할인1 빼기
+      }
+      if (profit_loss_row[30020]) {
+        aggregation -= Number(profit_loss_row[30020]); // 3. 기타할인2 빼기
+      }
+
+      aggregation *= 1 - parseFloat(profit_loss_row.category_fee_rate) / 100;
+    }
+
+    return aggregation;
+  }
+};
+
 const getDeliveryFee = (profit_loss_row) => {
   // return _.sumBy(profit_loss_row.goods_match, 'delivery_fee');
 
+  if (!profit_loss_row.goods_match) return 0;
   const maxGoodsMatch = _.maxBy(profit_loss_row.goods_match, 'delivery_fee');
-  return maxGoodsMatch.delivery_fee;
+  return maxGoodsMatch ? maxGoodsMatch.delivery_fee : 0;
 };
 
 const getPackingFee = (profit_loss_row) => {
   // return _.sumBy(profit_loss_row.goods_match, 'packing_fee');
+
+  if (!profit_loss_row.goods_match || !profit_loss_row.goods_match.length) return 0;
 
   const maxGoodsMatch = _.maxBy(profit_loss_row.goods_match, 'packing_fee');
   return maxGoodsMatch.packing_fee;
@@ -1046,58 +1190,25 @@ const CalcSummary = (rowData) => {
 
   if (_.includes(Object.keys(rowData[0]), '30002')) {
     //배송비 묶음 번호가 있는 경우
+    for (const row of rowData) {
+      if (row.group.first) {
+        const eqGroupDatas = _.filter(rowData, (item) => {
+          return item.group.id === row.group.id;
+        });
 
-    delivery_send = _.uniqBy(rowData, '30002');
-
-    let prev_30002 = rowData[0]['30002'];
-    let prev_df = rowData[0]['delivery_fee'];
-    let prev_received_df = rowData[0]['30047'];
-    let prev_received_df_additional = rowData[0]['30047_additional'];
-    for (let r = 1; r < rowData.length; ++r) {
-      if (prev_30002 != rowData[r]['30002']) {
-        changes[prev_30002] = {
-          df: prev_df,
-          received_df: prev_received_df,
-          received_df_additional: prev_received_df_additional,
-        };
-        prev_30002 = rowData[r]['30002'];
+        row.delivery_fee = _.max(eqGroupDatas, 'delivery_fee')['delivery_fee'];
+        row.reality_delivery_fee = _.maxBy(eqGroupDatas, 'reality_delivery_fee')['reality_delivery_fee'];
+        row['30047'] = _.maxBy(eqGroupDatas, '30047')['30047'];
+        row['30047_additional'] = _.maxBy(eqGroupDatas, '30047_additional')['30047_additional'];
       } else {
-        prev_df = _.max([prev_df, rowData[r].delivery_fee]);
-        prev_received_df = _.max([prev_received_df, rowData[r]['30047']]);
-        prev_received_df_additional = rowData[r]['30047_additional'];
-      }
-    }
-
-    changes[prev_30002] = {
-      df: prev_df,
-      received_df: prev_received_df,
-      received_df_additional: prev_received_df_additional,
-    };
-
-    prev_30002 = rowData[0]['30002'];
-    for (let r = 1; r < rowData.length; ++r) {
-      if (rowData[r]['30002'] != prev_30002) {
-        rowData[r]['delivery_fee'] = changes[rowData[r]['30002']].df;
-        rowData[r]['30047'] = changes[rowData[r]['30002']].received_df;
-        rowData[r]['30047_additional'] = changes[rowData[r]['30002']].received_df_additional;
-      } else {
-        rowData[r]['delivery_fee'] = 0;
-        rowData[r]['30047'] = 0;
-        rowData[r]['30047_additional'] = 0;
+        row.reality_delivery_fee = 0;
+        row.delivery_fee = 0;
+        row['30047'] = 0;
+        row['30047_additional'] = 0;
       }
 
-      prev_30002 = rowData[r]['30002'];
+      row.profit_loss = calcProfitLoss(row);
     }
-  }
-
-  console.log(rowData);
-
-  for (const row of rowData) {
-    if (row.group.first == false) {
-      row.reality_delivery_fee = 0;
-      row.delivery_fee = 0;
-    }
-    row.profit_loss = calcProfitLoss(row);
   }
 
   const delivery_send_count = delivery_send ? delivery_send.length : unique_order_no_count;
@@ -1157,5 +1268,60 @@ const GetColonField = (title, code) => {
 
   return ret;
 };
+
+const StockPriceModal = React.memo(({ modalState, setModalState, goodsMatch }) => {
+  logger.render('StockPriceModal');
+
+  const onClose = () => setModalState(false);
+
+  return (
+    <Modal show={modalState} onHide={onClose} centered className="modal stockPriceModal">
+      <Modal.Header>
+        <Modal.Title>입고단가 확인</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <table className="columncontrol tbody">
+          <thead>
+            <th>상품명</th>
+            <th>입고단가</th>
+            <th>수량</th>
+          </thead>
+          <tbody>
+            <>
+              {goodsMatch &&
+                goodsMatch.map((d, key) => (
+                  <tr>
+                    <td>{d.name}</td>
+                    <td>{d.stock_price}</td>
+                    <td>{d.match_count}</td>
+                  </tr>
+                ))}
+            </>
+          </tbody>
+        </table>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={onClose}>
+          확인
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
+});
+
+function excelSerialDateToJSDate(excelSerialDate) {
+  const dataType = typeof excelSerialDate;
+  if (typeof dataType === 'string') {
+    const tryNumber = Number(excelSerialDate);
+
+    if (_.isNaN(tryNumber)) return excelSerialDate;
+  }
+
+  const daysBeforeUnixEpoch = 70 * 365 + 19;
+  const hour = 60 * 60 * 1000;
+  const date = new Date(Math.round((excelSerialDate - daysBeforeUnixEpoch) * 24 * hour) + 12 * hour);
+
+  return time_format(date);
+}
 
 export default React.memo(MarginCalc);

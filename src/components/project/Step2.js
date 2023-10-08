@@ -241,7 +241,9 @@ const Step2 = () => {
                   const { data } = ret.data;
                   logger.info(data);
 
-                  Recoils.setState('DATA:GOODS', data);
+                  Recoils.setState('DATA:GOODS', data.goods);
+                  Recoils.setState('DATA:FORMSMATCH', data.forms_match);
+                  Recoils.setState('DATA:GOODSMATCH', data.goods_match);
 
                   page_reload();
                 }
@@ -470,7 +472,13 @@ const Step2 = () => {
       </Body>
       <Footer />
 
-      <Step2Modal modalState={modalState} setModalState={setModalState}></Step2Modal>
+      <Step2Modal
+        modalState={modalState}
+        setModalState={setModalState}
+        callback={() => {
+          page_reload();
+        }}
+      ></Step2Modal>
     </>
   );
 };

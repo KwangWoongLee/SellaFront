@@ -23,13 +23,8 @@ const StandardProduct_Search = React.memo(({ selectCallback, unSelectCallback, p
     } else {
       const forms_match = parentFormsMatchSelectData;
       if (forms_match) {
-        if (forms_match.goods_match.length === 0) {
-          onSearch();
-          setMode(2);
-        } else {
-          onSearch();
-          setMode(2);
-        }
+        onSearch();
+        setMode(2);
       }
     }
   }, [parentFormsMatchSelectData]);
@@ -63,17 +58,21 @@ const StandardProduct_Search = React.memo(({ selectCallback, unSelectCallback, p
     let search_results = _.cloneDeep(Recoils.getState('DATA:GOODS'));
     const forms_match = parentFormsMatchSelectData;
 
-    const goodsName = goodsNameRef.current.value;
-    if (goodsName) {
-      search_results = _.filter(search_results, (goods) => {
-        return _.includes(goods.name, goodsName);
-      });
+    if (!forms_match) {
+      return;
     }
 
+    const goodsName = _.lowerCase(goodsNameRef.current.value);
+    if (goodsName) {
+      search_results = _.filter(search_results, (goods) => {
+        return _.includes(_.lowerCase(goods.name), _.lowerCase(goodsName));
+      });
+    }
     const goods_match_names = _.map(forms_match.goods_match, 'name');
+    _.forEach(goods_match_names, (name) => _.lowerCase(name));
 
     for (const search_result of search_results) {
-      if (_.includes(goods_match_names, search_result.name)) {
+      if (_.includes(goods_match_names, _.lowerCase(search_result.name))) {
         search_result.select = true;
       } else {
         search_result.select = false;

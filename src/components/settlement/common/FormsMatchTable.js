@@ -5,7 +5,7 @@ import { img_src, logger } from 'util/com';
 
 import icon_del from 'images/icon_del.svg';
 
-const FormsMatchTable = React.memo(({ rows, unconnect_flag, selectCallback, deleteCallback, onParentSelect, ref }) => {
+const FormsMatchTable = React.memo(({ rows, selectCallback, deleteCallback, onParentSelect }) => {
   logger.render('FormsMatchTable');
 
   const [rowData, setRowData] = useState([]);
@@ -14,7 +14,12 @@ const FormsMatchTable = React.memo(({ rows, unconnect_flag, selectCallback, dele
 
   useEffect(() => {
     if (rows) {
-      setRowData([...rows]);
+      const noneSavedRows = _.cloneDeep(rows);
+      _.forEach(noneSavedRows, (row) => {
+        row.save = false;
+      });
+
+      setRowData([...noneSavedRows]);
     }
   }, [rows]);
 
@@ -30,11 +35,7 @@ const FormsMatchTable = React.memo(({ rows, unconnect_flag, selectCallback, dele
 
   const onDelete = (e, d) => {
     e.preventDefault();
-    if (unconnect_flag) {
-      // TODO Server
-    } else {
-      deleteCallback(d);
-    }
+    deleteCallback(d);
   };
 
   useEffect(() => {

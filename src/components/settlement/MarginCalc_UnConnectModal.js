@@ -9,6 +9,7 @@ import GoodsMatchTable from 'components/settlement/common/GoodsMatchTable';
 import CategoryFee_Search from 'components/settlement/common/CategoryFee_Search';
 import StandardProduct_Search from 'components/settlement/common/StandardProduct_Search';
 import _ from 'lodash';
+import Step2Modal from 'components/project/Step2Modal';
 
 import { logger } from 'util/com';
 
@@ -24,26 +25,28 @@ const MarginCalc_UnConnectModal = React.memo(
     const [items, setItems] = useState([]);
     const forms = _.cloneDeep(Recoils.getState('DATA:PLATFORMS'));
     const selectFormsMatchRef = useRef(null);
-    const [selectFormsMatchData, setSelectFormsMatchData] = useState();
+    const [selectFormsMatchData, setSelectFormsMatchData] = useState(null);
+    const [step2ModalState, setStep2ModalState] = useState(false);
+
+    const saveFormsMatchRef = useRef(null);
 
     useEffect(() => {
       const unconnect_arr = _.filter(rowData, { connect_flag: false });
       const unique_arr = _.uniqBy(unconnect_arr, function (elem) {
-        return JSON.stringify(_.pick(elem, ['forms_product_name', 'forms_option_name1']));
+        return JSON.stringify(_.pick(elem, ['forms_product_name', 'forms_option_name']));
       });
 
-      setItems(unique_arr);
+      saveFormsMatchRef.current = new Array(unique_arr.length);
+      setItems([...unique_arr]);
     }, [rowData]);
 
     useEffect(() => {
-      if (!selectData || _.isEmpty(selectData)) return;
+      if (!selectData || _.isEmpty(selectData)) {
+        setSelectFormsMatchData(null);
+        return;
+      }
 
-      const unconnect_arr = _.filter(rowData, { connect_flag: false });
-      const unique_arr = _.uniqBy(unconnect_arr, function (elem) {
-        return JSON.stringify(_.pick(elem, ['forms_product_name', 'forms_option_name1']));
-      });
-
-      const select_row_index = _.findIndex(unique_arr, (row) => {
+      const select_row_index = _.findIndex(items, (row) => {
         return (
           row.forms_product_name == selectData.forms_product_name &&
           row.forms_option_name == selectData.forms_option_name
@@ -51,15 +54,16 @@ const MarginCalc_UnConnectModal = React.memo(
       });
 
       if (select_row_index != -1) {
+        selectFormsMatchRef.current = items[select_row_index];
+
         setFormsMatchSelect(select_row_index);
-
-        selectFormsMatchRef.current = selectData;
+        setSelectFormsMatchData({ ...selectFormsMatchRef.current });
       }
-
-      setSelectFormsMatchData({ ...selectFormsMatchRef.current });
     }, [selectData]);
 
     const onClose = () => {
+      selectFormsMatchRef.current = null;
+      setSelectFormsMatchData(null);
       setModalState(false);
     };
 
@@ -73,7 +77,7 @@ const MarginCalc_UnConnectModal = React.memo(
       selectFormsMatchRef.current.settlement_flag = findForm.settlement_flag;
 
       setSelectFormsMatchData({ ...selectFormsMatchRef.current });
-      setFormsMatchSelect(-1);
+      // setFormsMatchSelect(-1);
     };
 
     const onDeleteFormsMatchTable = (d) => {
@@ -82,12 +86,13 @@ const MarginCalc_UnConnectModal = React.memo(
       });
       setItems(filtered_items);
 
-      deleteCallback(d);
+      deleteCallback(d, false);
 
       setSelectFormsMatchData({ ...selectFormsMatchRef.current });
     };
 
     const onSelectGoodsMatchTable = (d) => {};
+
     const onDeleteGoodsMatchTable = (goods_match) => {
       if (!selectFormsMatchRef.current) return; // TODO error
 
@@ -100,12 +105,19 @@ const MarginCalc_UnConnectModal = React.memo(
         []
       );
 
+      if (!selectFormsMatchRef.current.goods_match.length) {
+        selectFormsMatchRef.current.save = false;
+        saveFormsMatchRef.current[selectFormsMatchRef.current.idx] = null;
+      }
+
       setSelectFormsMatchData({ ...selectFormsMatchRef.current });
     };
+
     const onChangeGoodsMatchTable = (goods_match) => {
       if (!selectFormsMatchRef.current) return; // TODO error
 
       selectFormsMatchRef.current.goods_match = [...goods_match];
+      setSelectFormsMatchData({ ...selectFormsMatchRef.current });
     };
 
     const onSelectStandardProduct_Search = (d) => {
@@ -123,8 +135,8 @@ const MarginCalc_UnConnectModal = React.memo(
 
       if (selectFormsMatchRef.current.goods_match.length) {
         selectFormsMatchRef.current.save = true;
+        saveFormsMatchRef.current[selectFormsMatchRef.current.idx] = _.cloneDeep(selectFormsMatchRef.current);
       }
-
       setSelectFormsMatchData({ ...selectFormsMatchRef.current });
     };
 
@@ -148,18 +160,8 @@ const MarginCalc_UnConnectModal = React.memo(
     };
 
     const onSave = () => {
-      if (!items) {
-        modal.alert('저장할 데이터가 없습니다.');
-        return; // TODO error
-      }
-
-      const save_datas = _.filter(items, (item) => {
-        const goods_match = item.goods_match;
-        if (!goods_match) return false;
-
-        if (goods_match.length > 0) {
-          return true;
-        }
+      const save_datas = _.filter(saveFormsMatchRef.current, (item) => {
+        return item;
       });
 
       if (!save_datas || !save_datas.length) {
@@ -175,59 +177,78 @@ const MarginCalc_UnConnectModal = React.memo(
           Recoils.setState('DATA:FORMSMATCH', data.forms_match);
           Recoils.setState('DATA:GOODSMATCH', data.goods_match);
 
-          saveCallback(save_datas);
+          saveCallback(save_datas, data.forms_match, true);
           setFormsMatchSelect(null);
-          // setSelectFormsMatchData({ ...selectFormsMatchRef.current });
+          setSelectFormsMatchData(null);
         }
       });
     };
 
     return (
-      <Modal show={modalState} onHide={onClose} centered className="modal UnConnect sale_product">
-        <Modal.Header>
-          <Modal.Title>상품 매칭 관리</Modal.Title>
-          <Button variant="primary" className="btn_close" onClick={onClose}>
-            <img src={`${img_src}${icon_close}`} />
-          </Button>
-          <button onClick={onSave} className="btn_blue btn-primary btn_save">
-            전체 저장
-          </button>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="section1">
-            <h3>
-              미연결 주문 <span>{items.length}</span>
-            </h3>
-            <FormsMatchTable
-              rows={items}
-              selectCallback={onSelectFormsMatchTable}
-              deleteCallback={onDeleteFormsMatchTable}
-              onParentSelect={formsMatchSelect}
-            ></FormsMatchTable>
-            <h3>연결 상품</h3>
+      <>
+        <Modal show={modalState} onHide={onClose} centered className="modal UnConnect sale_product">
+          <Modal.Header>
+            <Modal.Title>상품 매칭 관리</Modal.Title>
+            <Button variant="primary" className="btn_close" onClick={onClose}>
+              <img src={`${img_src}${icon_close}`} />
+            </Button>
+            <button
+              onClick={() => {
+                setStep2ModalState(true);
+              }}
+              className=" btn-primary btn_save"
+            >
+              상품 추가
+            </button>
+            <button onClick={onSave} className="btn_blue btn-primary btn_save">
+              전체 저장
+            </button>
+          </Modal.Header>
+          <Modal.Body>
+            <div className="section1">
+              <h3>
+                미연결 주문 <span>{items.length}</span>
+              </h3>
+              <FormsMatchTable
+                rows={items}
+                selectCallback={onSelectFormsMatchTable}
+                deleteCallback={onDeleteFormsMatchTable}
+                onParentSelect={formsMatchSelect}
+              ></FormsMatchTable>
+              <h3>연결 상품</h3>
 
-            <GoodsMatchTable
-              selectCallback={onSelectGoodsMatchTable}
-              deleteCallback={onDeleteGoodsMatchTable}
-              changeCallback={onChangeGoodsMatchTable}
-              parentFormsMatchSelectData={selectFormsMatchData}
-            ></GoodsMatchTable>
-          </div>
-          <div className="section2">
-            <h3>연결할 기준 상품 검색</h3>
-            <StandardProduct_Search
-              selectCallback={onSelectStandardProduct_Search}
-              unSelectCallback={onUnSelectStandardProduct_Search}
-              parentFormsMatchSelectData={selectFormsMatchData}
-            ></StandardProduct_Search>
-            <h3>수수료 검색</h3>
-            <CategoryFee_Search
-              selectCallback={onSelectCategoryFee_Search}
-              parentFormsMatchSelectData={selectFormsMatchData}
-            ></CategoryFee_Search>
-          </div>
-        </Modal.Body>
-      </Modal>
+              <GoodsMatchTable
+                selectCallback={onSelectGoodsMatchTable}
+                deleteCallback={onDeleteGoodsMatchTable}
+                changeCallback={onChangeGoodsMatchTable}
+                parentFormsMatchSelectData={selectFormsMatchData}
+              ></GoodsMatchTable>
+            </div>
+            <div className="section2">
+              <h3>연결할 기준 상품 검색</h3>
+              <StandardProduct_Search
+                selectCallback={onSelectStandardProduct_Search}
+                unSelectCallback={onUnSelectStandardProduct_Search}
+                parentFormsMatchSelectData={selectFormsMatchData}
+              ></StandardProduct_Search>
+              <h3>수수료 검색</h3>
+              <CategoryFee_Search
+                selectCallback={onSelectCategoryFee_Search}
+                parentFormsMatchSelectData={selectFormsMatchData}
+              ></CategoryFee_Search>
+            </div>
+          </Modal.Body>
+        </Modal>
+
+        <Step2Modal
+          modalState={step2ModalState}
+          setModalState={setStep2ModalState}
+          callback={() => {
+            setSelectFormsMatchData({ ...selectFormsMatchRef.current });
+            setFormsMatchSelect(-1);
+          }}
+        ></Step2Modal>
+      </>
     );
   }
 );

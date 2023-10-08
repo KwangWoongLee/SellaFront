@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 
-import { Button } from 'react-bootstrap';
+import { Button, Modal } from 'react-bootstrap';
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
-import { replace_1000, revert_1000, time_format, time_format_day } from 'util/com';
+import { page_reload, replace_1000, revert_1000, time_format, time_format_day } from 'util/com';
 import request from 'util/request';
 import { modal } from 'util/com';
 import SettlementNavTab from 'components/settlement/common/SettlementNavTab';
@@ -18,7 +18,7 @@ import 'styles/MarginCalc.scss';
 // AG Grid
 import { AgGridReact } from 'ag-grid-react';
 import CustomCalendar from 'components/common/CustomCalendar';
-import CustomDatePicker from 'components/common/CustomDatePicker';
+import CommonDateModal from 'components/common/CommonDateModal';
 
 const columnDefs = [
   { field: 'idx', hide: true },
@@ -143,9 +143,8 @@ const TodaySummary = () => {
   const [platforms, setPlatforms] = useState([]);
   const [rowData, setRowData] = useState([]);
   const [selectedDayGroup, setSelectedDayGroup] = useState('');
-  const [searchDateString, setSearchDateString] = useState('');
-  const [selectedEndDateString, setSelectedEndDateString] = useState('');
   const [dayData, setDayData] = useState({});
+  const [dateModalState, setDateModalState] = useState(false);
   //ag-grid
   const gridRef = useRef();
   const containerStyle = useMemo(() => ({ width: '100%', height: '100%' }), []);
@@ -253,6 +252,26 @@ const TodaySummary = () => {
     });
   };
 
+  const onSelectionChanged = () => {
+    const selectedRows = gridRef.current.api.getSelectedRows();
+    const node = selectedRows[0];
+    // if (node) setViewResult(node);
+  };
+
+  const onChangeDate = (date) => {
+    const selectedRows = gridRef.current.api.getSelectedRows();
+    const node = selectedRows[0];
+    if (node) {
+      request.post('user/today_summary/modify', { idx: node.idx, date: new Date(date) }).then((ret) => {
+        if (!ret.err) {
+          const { data } = ret.data;
+
+          page_reload();
+        }
+      });
+    }
+  };
+
   return (
     <>
       <Head />
@@ -264,12 +283,15 @@ const TodaySummary = () => {
             <Button variant="primary" onClick={onDelete} className="btn_red">
               선택 삭제
             </Button>
+            <Button
+              variant="primary"
+              onClick={() => {
+                setDateModalState(true);
+              }}
+            >
+              선택한 주문서 날짜 변경
+            </Button>
           </div>
-          <CustomDatePicker
-            setSearchDateString={setSearchDateString}
-            setSelectedEndDateString={setSelectedEndDateString}
-          ></CustomDatePicker>
-          {selectedDayGroup}
 
           <ul className={!_.isEmpty(viewResult) ? 'viewbox' : 'viewbox off'}>
             <li>
@@ -327,6 +349,7 @@ const TodaySummary = () => {
                 defaultColDef={defaultColDef}
                 rowSelection={'single'}
                 overlayNoRowsTemplate={'데이터가 없습니다.'}
+                onSelectionChanged={onSelectionChanged}
               ></AgGridReact>
             </div>
           </div>
@@ -339,6 +362,12 @@ const TodaySummary = () => {
         ></CustomCalendar>
       </Body>
       <Footer />
+
+      <CommonDateModal
+        modalState={dateModalState}
+        setModalState={setDateModalState}
+        onChangeDate={onChangeDate}
+      ></CommonDateModal>
     </>
   );
 };

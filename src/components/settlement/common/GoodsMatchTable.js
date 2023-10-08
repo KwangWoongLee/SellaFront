@@ -12,7 +12,7 @@ const GoodsMatchTable = React.memo(({ selectCallback, deleteCallback, changeCall
 
   useEffect(() => {
     if (!parentFormsMatchSelectData || _.isEmpty(parentFormsMatchSelectData)) {
-      return;
+      setRowData([]);
     } else {
       setRowData([...parentFormsMatchSelectData.goods_match]);
     }
@@ -55,7 +55,8 @@ const GoodsMatchTable = React.memo(({ selectCallback, deleteCallback, changeCall
       <table className="goodsmatchtable tbody">
         <tbody>
           <>
-            {rowData &&
+            {parentFormsMatchSelectData &&
+              rowData &&
               rowData.map((d, key) => (
                 <GoodsMatchItem
                   key={key}
@@ -95,7 +96,7 @@ const GoodsMatchItem = React.memo(
             <button
               className="btn_number_minus"
               onClick={(e) => {
-                if (Number(inputRef.current.value) - 1 < 0) return;
+                if (Number(inputRef.current.value) - 1 <= 0) return;
                 inputRef.current.value = Number(inputRef.current.value) - 1;
                 onChange(e, d, inputRef.current.value);
               }}

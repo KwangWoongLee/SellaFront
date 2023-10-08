@@ -25,7 +25,7 @@ const newRow = {
   stock_price: '',
 };
 
-const InputModal = React.memo(({ modalState, setModalState, callback }) => {
+const Step2Modal = React.memo(({ modalState, setModalState, callback }) => {
   logger.render('Step2Modal');
   const [rowData, setRowData] = useState([]);
 
@@ -69,7 +69,9 @@ const InputModal = React.memo(({ modalState, setModalState, callback }) => {
           Recoils.setState('DATA:GOODS', data);
 
           onClose();
-          page_reload();
+          if (callback) {
+            callback();
+          }
         }
       });
     else {
@@ -231,4 +233,4 @@ const InsertGoodsItems = React.memo(({ index, d, rowData, onChange, onDelete }) 
   );
 });
 
-export default React.memo(InputModal);
+export default React.memo(Step2Modal);
