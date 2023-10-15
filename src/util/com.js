@@ -245,9 +245,10 @@ export const replace_day = (day) => {
 
 export const replace_1000 = (num) => {
   let numStr;
-  if (typeof num == 'number') {
+  if (typeof num === 'number') {
     numStr = num.toString();
   } else numStr = num;
+
   numStr = numStr.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',');
 
   return numStr;

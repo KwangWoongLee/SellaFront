@@ -4,7 +4,7 @@ import { Button, Modal } from 'react-bootstrap';
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
-import { modal } from 'util/com';
+import { modal, page_reload } from 'util/com';
 import request from 'util/request';
 import Recoils from 'recoils';
 import FormManagementNavTab from 'components/settlement/common/FormManagementNavTab';
@@ -164,6 +164,8 @@ const FormManagement = () => {
         }
 
         Recoils.setState('DATA:PLATFORMS', platforms);
+
+        page_reload();
       }
     });
   };
@@ -174,6 +176,11 @@ const FormManagement = () => {
 
     const platforms = platformRef.current;
     if (platforms) {
+      if (_.find(platforms, { idx: -1 })) {
+        modal.alert('기존 추가중인 새 양식을 삭제하거나 저장 해주세요.');
+        return;
+      }
+
       platforms.unshift(new_form);
     }
 
@@ -192,11 +199,11 @@ const FormManagement = () => {
           name: '삭제',
           callback: () => {
             if (node.idx == -1) {
-              setFormsDatas(_.drop(formsData, 1));
-
               if (platformRef.current) {
                 platformRef.current = _.drop(platformRef.current, 1);
               }
+
+              setFormsDatas([...platformRef.current]);
 
               return;
             }
@@ -206,14 +213,13 @@ const FormManagement = () => {
                 const { data } = ret.data;
                 logger.info(data);
 
-                let platforms = _.cloneDeep(Recoils.getState('DATA:PLATFORMS'));
-                platforms = _.filter(platforms, (i) => i.idx != node.idx);
+                platformRef.current = _.filter(platformRef.current, (i) => i.idx != node.idx);
 
-                Recoils.setState('DATA:PLATFORMS', platforms);
+                Recoils.setState('DATA:PLATFORMS', platformRef.current);
                 Recoils.setState('DATA:FORMSMATCH', data.forms_match_result);
                 Recoils.setState('DATA:GOODSMATCH', data.goods_match_result);
 
-                setFormsDatas(platforms);
+                page_reload();
               }
             });
           },

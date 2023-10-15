@@ -348,7 +348,7 @@ const Step2 = () => {
       worksheet.getCell(key).fill = {
         type: 'pattern',
         pattern: 'solid',
-        fgColor: { argb: 'FF3399' },
+        fgColor: { argb: 'ffdcdc' },
       };
     });
 
@@ -366,6 +366,14 @@ const Step2 = () => {
                 fgColor: { argb: 'cccccc' },
               };
             }
+
+            ['B1', 'C1', 'D1', 'E1'].map((key) => {
+              worksheet.getCell(key).fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'ffdcdc' },
+              };
+            });
 
             result.push(item);
           },

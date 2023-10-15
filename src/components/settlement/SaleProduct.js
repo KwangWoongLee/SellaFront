@@ -22,7 +22,7 @@ const SaleProduct = () => {
   logger.render('SaleProduct');
 
   const [items, setItems] = useState([]);
-  const [formsMatchSelect, setFormsMatchSelect] = useState(-1);
+  const [formsMatchSelect, setFormsMatchSelect] = useState(null);
   const forms = _.cloneDeep(Recoils.getState('DATA:PLATFORMS'));
   const forms_match = _.cloneDeep(Recoils.getState('DATA:FORMSMATCH'));
   const goods_match = _.cloneDeep(Recoils.getState('DATA:GOODSMATCH'));

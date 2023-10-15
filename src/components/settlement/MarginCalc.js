@@ -1,14 +1,22 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 
-import { Button, Dropdown, DropdownButton, Modal } from 'react-bootstrap';
+import { Table, Button, Dropdown, DropdownButton, Modal } from 'react-bootstrap';
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
+import Checkbox from 'components/common/CheckBoxCell';
 import com, { img_src, modal, navigate } from 'util/com';
 import request from 'util/request';
 import SettlementNavTab from 'components/settlement/common/SettlementNavTab';
 import MarginCalc_ConnectModal from 'components/settlement/MarginCalc_ConnectModal';
 import MarginCalc_UnConnectModal from 'components/settlement/MarginCalc_UnConnectModal';
+import {
+  SumPLRenderer,
+  PLRenderer,
+  _30006Renderer,
+  _30047Renderer,
+  OptionCellRenderer,
+} from 'components/settlement/MarginCalc_Renderer';
 import Recoils from 'recoils';
 import * as xlsx from 'xlsx';
 import * as ExcelJS from 'exceljs';
@@ -27,304 +35,6 @@ import icon_circle_arrow_down from 'images/icon_circle_arrow_down.svg';
 import icon_circle_arrow_up from 'images/icon_circle_arrow_up.svg';
 import img_service from 'images/img_service.png';
 
-// AG Grid
-import { AgGridReact } from 'ag-grid-react';
-import ColumnControlModal from 'components/common/AgGrid/ColumnControlModal';
-import CommonDateModal from 'components/common/CommonDateModal';
-
-const PLRenderer = (params) => {
-  if (params.data && params.data.connect_flag == false) {
-    return <>미연결</>;
-  }
-
-  return (
-    <>
-      {params.value == '-' || isNaN(params.value) || (params.value != 0 && !params.value) || params.value === '' ? (
-        <>
-          <span>
-            계산 전
-            <br />
-            {'-'}
-          </span>
-        </>
-      ) : (
-        <>
-          {params.value > 0 ? (
-            <>
-              <span className="profit">
-                이익
-                <br />
-                {params.value}
-              </span>
-            </>
-          ) : (
-            <>
-              <span className="loss">
-                손해
-                <br />
-                {params.value}
-              </span>
-            </>
-          )}
-        </>
-      )}
-    </>
-  );
-};
-
-const _30006Renderer = (params) => {
-  return (
-    <>
-      {params.data[30006] && `${replace_1000(revert_1000(params.data[30006]))}`}
-
-      {params.data[30001] && (
-        <>
-          <span class="subtxt">({replace_1000(revert_1000(params.data[30001]))})</span>
-        </>
-      )}
-    </>
-  );
-};
-
-const _30047Renderer = (params) => {
-  return (
-    <>
-      {params.data[30047] ? `${replace_1000(revert_1000(params.data[30047]))}` : `0`}
-
-      {params.data.delivery_fee && params.data['30047_additional'] && (
-        <>
-          <span class="subtxt">
-            (
-            {replace_1000(
-              revert_1000(((params.data[30047] * Number(params.data['30047_additional'])) / 100).toFixed(0))
-            )}
-            )
-          </span>
-        </>
-      )}
-    </>
-  );
-};
-
-const optionCellRenderer = (props) => {
-  return (
-    <>
-      {props.data[30008]}
-      {props.data[30011] && props.data[30011]}
-      {props.data[30012] && props.data[30012]}
-    </>
-  );
-};
-
-function rowSpan(params) {
-  if (params.data && params.data.group.first) {
-    return params.data.group.size;
-  }
-  return 0;
-}
-
-const ROUTE_COLUMN_BASE = [
-  {
-    field: '',
-    pinned: 'left',
-    lockPinned: true,
-    cellClass: 'lock-pinned checkcell',
-    checkboxSelection: true,
-    maxWidth: 36,
-    horizontal: 'Center',
-  },
-  { field: 'idx', hide: true },
-  {
-    field: 'profit_loss',
-    sortable: true,
-    pinned: 'left',
-    lockPinned: true,
-    cellClass: 'lock-pinned uneditable',
-    editable: false,
-    headerName: '손익',
-    wrapText: true,
-    autoHeight: true,
-    filter: false,
-    unSortIcon: true,
-    width: 140,
-    cellRenderer: PLRenderer,
-  },
-  {
-    field: '30003',
-    sortable: true,
-    pinned: 'left',
-    lockPinned: true,
-    cellClass: 'lock-pinned uneditable',
-    editable: false,
-    headerName: '결제일',
-    filter: false,
-    unSortIcon: true,
-    width: 170,
-    valueFormatter: (params) => {
-      return excelSerialDateToJSDate(params.value);
-    },
-  },
-  {
-    field: '30002',
-    sortable: true,
-    unSortIcon: true,
-    headerName: '배송비묶음번호',
-    maxWidth: 150,
-    cellClass: 'uneditable',
-    hide: true,
-  },
-  {
-    field: '30004',
-    sortable: true,
-    unSortIcon: true,
-    headerName: '주문번호',
-    maxWidth: 150,
-    cellClass: 'uneditable',
-  },
-  {
-    field: '30048',
-    sortable: false,
-    unSortIcon: true,
-    headerName: '수취인명',
-    width: 130,
-    editable: true,
-    cellClass: 'ag-cell-editable',
-  },
-  {
-    field: 'forms_name',
-    sortable: false,
-    unSortIcon: true,
-    headerName: '매체',
-    width: 150,
-    cellClass: 'uneditable',
-  },
-  {
-    field: '30007',
-    sortable: false,
-    unSortIcon: true,
-    headerName: '판매상품명',
-    minWidth: 400,
-    wrapText: true,
-    autoHeight: true,
-    vertical: 'Center',
-    cellClass: 'uneditable',
-  },
-  {
-    field: '30008',
-    sortable: false,
-    unSortIcon: true,
-    headerName: '옵션',
-    minWidth: 300,
-    wrapText: true,
-    autoHeight: true,
-    vertical: 'Center',
-    cellRenderer: optionCellRenderer,
-    cellClass: 'uneditable',
-  },
-  {
-    field: '30005',
-    sortable: false,
-    unSortIcon: true,
-    valueParser: (params) => Number(params.newValue),
-    headerName: '수량',
-    maxWidth: 80,
-    autoHeight: true,
-    cellClass: 'uneditable',
-  },
-  {
-    field: '30006',
-    sortable: false,
-    unSortIcon: true,
-    headerName: '총 결제금액\n(정산예정금액)',
-    width: 130,
-    autoHeight: true,
-    cellClass: 'uneditable',
-    cellRenderer: _30006Renderer,
-  },
-  {
-    field: '30047',
-    sortable: false,
-    unSortIcon: true,
-    headerName: '받은 배송비\n(배송비 수수료)',
-    width: 130,
-    editable: true,
-    cellClass: 'ag-cell-editable',
-    cellRenderer: _30047Renderer,
-  },
-  {
-    field: 'stock_price',
-    sortable: false,
-    unSortIcon: true,
-    valueParser: (params) => {
-      return Number.isNaN(Number(params.newValue)) ? params.oldValue : Number(params.newValue);
-    },
-    valueFormatter: (params) => {
-      if (params.value == '') return 0;
-      return replace_1000(params.value);
-    },
-    headerName: '총 입고단가',
-    width: 120,
-    editable: true,
-    cellClass: 'ag-cell-editable',
-  },
-  {
-    field: 'delivery_fee',
-    sortable: false,
-    unSortIcon: true,
-    valueParser: (params) => {
-      return Number.isNaN(Number(params.newValue)) ? params.oldValue : Number(params.newValue);
-    },
-    valueFormatter: (params) => {
-      if (params.value == '') return 0;
-      return replace_1000(params.value);
-    },
-    headerName: '배송비',
-    width: 120,
-    editable: true,
-    cellClass: 'ag-cell-editable',
-  },
-  {
-    field: 'packing_fee',
-    sortable: false,
-    unSortIcon: true,
-    valueParser: (params) => {
-      return Number.isNaN(Number(params.newValue)) ? params.oldValue : Number(params.newValue);
-    },
-    valueFormatter: (params) => {
-      if (params.value == '') return 0;
-      return replace_1000(params.value);
-    },
-    headerName: '포장비',
-    width: 120,
-    editable: true,
-    cellClass: 'ag-cell-editable',
-  },
-  // {
-  //   field: '30050',
-  //   sortable: false,
-  //   unSortIcon: true,
-  //   headerName: '수취인주소',
-  //   width: 130,
-  //   editable: true,
-  //   cellClass: 'ag-cell-editable',
-  // },
-  {
-    field: '30049',
-    sortable: false,
-    unSortIcon: true,
-    headerName: '수취인연락처',
-    width: 130,
-    editable: true,
-    cellClass: 'ag-cell-editable',
-  },
-];
-
-// const getRowHeight = useCallback((params) => {
-//   return params.data.rowHeight;
-// }, []);
-
-const rowHeight = 44;
-
 const MarginCalc = () => {
   logger.render('MarginCalc');
 
@@ -339,54 +49,14 @@ const MarginCalc = () => {
   const [stockPriceModalState, setStockPriceModalState] = useState(false);
   const [connectModalState, setConnectModalState] = useState(false);
   const [unConnectModalState, setUnConnectModalState] = useState(false);
-  const [columnControlModalState, setColumnControlModalState] = useState(false);
   const [connectModalSelectData, setConnectModalSelectData] = useState({});
   const [unConnectModalSelectData, setUnConnectModalSelectData] = useState({});
   const [sliderState, setSliderState] = useState(false);
-  const [dateModalState, setDateModalState] = useState(false);
 
-  const dateRef = useRef(null);
   const stockPriceDataRef = useRef(null);
   //ag-grid
-  const gridRef = useRef();
   const containerStyle = useMemo(() => ({ width: '100%', height: '100%' }), []);
   const gridStyle = useMemo(() => ({ height: '1000px', width: '100%' }), []);
-  const defaultColDef = useMemo(() => {
-    return {
-      editable: false,
-      sortable: true,
-      minWidth: 80,
-      // wrapHeaderText: true,
-      autoHeaderHeight: true,
-    };
-  }, []);
-  const [columnDefs, setColumnDefs] = useState([]);
-
-  const SetColumnDefsFunc = (now_platform) => {
-    if (!now_platform) return; // TODO Error
-    if (!now_platform.titles) return; // TODO Error
-
-    const view_titles = _.filter(now_platform.titles, { view: 1 });
-    const not_yet_added_fields = _.filter(view_titles, (view_title) => {
-      return !_.find(ROUTE_COLUMN_BASE, (route_title) => {
-        return view_title.sella_code == Number(route_title.field);
-      });
-    });
-
-    const sella_forms = Recoils.getState('SELLA:SELLAFORMS');
-
-    const toAddFields = [];
-    // for (const field_data of not_yet_added_fields) {
-    //   const findObj = _.find(sella_forms, { code: field_data.sella_code });
-    //   if (findObj.type == 1) {
-    //     toAddFields.push(GetColonField(field_data.title, field_data.sella_code));
-    //   } else {
-    //     toAddFields.push(GetField(field_data.title, field_data.sella_code));
-    //   }
-    // }
-
-    setColumnDefs([...ROUTE_COLUMN_BASE, ...toAddFields]);
-  };
 
   useEffect(() => {
     request.post(`cscenter/announcement`, { category: '', title: '' }).then((ret) => {
@@ -453,56 +123,9 @@ const MarginCalc = () => {
   }, []);
 
   useEffect(() => {
-    if (gridRef.current) {
-      gridRef.current.api.setColumnDefs(columnDefs);
-    }
-  }, [columnDefs]);
-
-  useEffect(() => {
     setRowData([]);
     setViewResult({});
-    SetColumnDefsFunc(platforms[platformType]);
   }, [platforms, platformType]);
-
-  useEffect(() => {
-    if (!rowData || !rowData.length) return;
-
-    if (rowData && rowData.length > 0) {
-      com.storage.setItem('exist_margin_calc_data', '1');
-    }
-
-    if (unConnectModalState) return;
-
-    const unconnect_rows = _.filter(rowData, (data) => {
-      return !data.connect_flag;
-    });
-
-    if (unconnect_rows.length != 0) {
-      modal.confirm(
-        '',
-        [
-          {
-            strong: '미연결 주문건이 있습니다. 연결하시겠습니까?',
-            normal: '',
-          },
-        ],
-        [
-          {
-            name: '상품매칭관리',
-            className: 'btn_blue',
-            callback: () => {
-              setUnConnectModalSelectData(unconnect_rows[0]);
-              setUnConnectModalState(true);
-            },
-          },
-          {
-            name: '취소',
-            callback: () => {},
-          },
-        ]
-      );
-    }
-  }, [rowData]);
 
   const onUpload = function () {
     setRowData([]);
@@ -552,6 +175,54 @@ const MarginCalc = () => {
               if (!ret.err) {
                 const { data } = ret.data;
 
+                if (!data || !data.length) return;
+
+                if (data && data.length > 0) {
+                  com.storage.setItem('exist_margin_calc_data', '1');
+                }
+
+                if (unConnectModalState) return;
+
+                const unconnect_rows = _.filter(data, (data) => {
+                  return !data.connect_flag;
+                });
+
+                if (unconnect_rows.length != 0 && !connectModalState && !unConnectModalState) {
+                  modal.confirm(
+                    '',
+                    [
+                      {
+                        strong: '미연결 주문건이 있습니다. 연결하시겠습니까?',
+                        normal: '',
+                      },
+                    ],
+                    [
+                      {
+                        name: '상품매칭관리',
+                        className: 'btn_blue',
+                        callback: () => {
+                          setUnConnectModalSelectData({});
+                          setUnConnectModalState(true);
+                        },
+                      },
+                      {
+                        name: '취소',
+                        callback: () => {},
+                      },
+                    ]
+                  );
+                }
+
+                if (data.length) {
+                  let firstSize;
+                  for (const row of data) {
+                    if (row.group.first) {
+                      firstSize = row.group.size;
+                    } else {
+                      row.group.size = firstSize;
+                    }
+                  }
+                }
                 setRowData(() => data);
                 setMode(1);
               }
@@ -571,19 +242,22 @@ const MarginCalc = () => {
     setplatformType(key);
   };
 
-  const onCellDoubleClick = (param) => {
-    if (param.column.colId === 'stock_price') {
-      stockPriceDataRef.current = param.data.goods_match;
-      setStockPriceModalState(true);
-    } else {
-      if (param.data) {
-        if (param.data.connect_flag == true) {
-          setConnectModalSelectData(param.data);
-          setConnectModalState(true);
-        } else {
-          setUnConnectModalSelectData(param.data);
-          setUnConnectModalState(true);
+  const onRowDoubleClick = (e, data) => {
+    if (data) {
+      if (data.connect_flag == true) {
+        if (data.goods_match) {
+          for (const goods_match of data.goods_match) {
+            if (!goods_match.category_fee_rate) {
+              goods_match.category_fee_rate = Number(data.category_fee_rate);
+            }
+          }
         }
+
+        setConnectModalSelectData(data);
+        setConnectModalState(true);
+      } else {
+        setUnConnectModalSelectData(data);
+        setUnConnectModalState(true);
       }
     }
   };
@@ -612,32 +286,49 @@ const MarginCalc = () => {
           {
             name: '미연결 주문건 삭제 후 손익계산',
             callback: () => {
-              onDeleteUnconnectRow();
-              const connect_rows = _.filter(rowData, (data) => {
+              const changedRowDatas = _.cloneDeep(rowData);
+
+              const connect_rows = _.filter(changedRowDatas, (data) => {
                 return data.connect_flag;
               });
+
+              for (const row of connect_rows) {
+                if (!row.group.first) {
+                  const firstObj = _.find(connect_rows, (cr) => {
+                    return cr.group.first === true && cr.group.id === row.group.id;
+                  });
+
+                  if (!firstObj) {
+                    const nextFirstObj = _.find(connect_rows, (cr) => {
+                      return cr.group.first === false && cr.group.id === row.group.id;
+                    });
+
+                    nextFirstObj.group.first = true;
+                  }
+                }
+
+                const eqGroupDatas = _.filter(connect_rows, (cr) => {
+                  return cr.group.id === row.group.id;
+                });
+
+                row.group.size = eqGroupDatas.length;
+              }
               const summary = CalcSummary(connect_rows);
+              if (!summary) return;
 
               setViewResult(summary);
-              setRowData(_.cloneDeep(connect_rows));
+              setRowData([...connect_rows]);
             },
           },
         ]
       );
     } else {
       const summary = CalcSummary(rowData);
+      if (!summary) return;
 
       setViewResult(summary);
       setRowData(_.cloneDeep(rowData));
     }
-  };
-
-  const onDeleteUnconnectRow = () => {
-    const connect_rows = _.filter(rowData, (data) => {
-      return data.connect_flag;
-    });
-
-    setRowData(connect_rows);
   };
 
   const onDownload = async () => {
@@ -648,16 +339,16 @@ const MarginCalc = () => {
     const worksheet = workbook.addWorksheet('Sheet1');
 
     const columns = [];
-    for (const column of columnDefs) {
-      if (column.field == '') continue;
+    // for (const column of columnDefs) {
+    //   if (column.field == '') continue;
 
-      const toAddedColumn = {};
-      toAddedColumn.header = column.headerName;
-      toAddedColumn.key = column.field;
-      toAddedColumn.width = 20;
+    //   const toAddedColumn = {};
+    //   toAddedColumn.header = column.headerName;
+    //   toAddedColumn.key = column.field;
+    //   toAddedColumn.width = 20;
 
-      columns.push(toAddedColumn);
-    }
+    //   columns.push(toAddedColumn);
+    // }
     worksheet.columns = columns;
 
     worksheet.addRows([...rowData]);
@@ -670,63 +361,41 @@ const MarginCalc = () => {
   };
 
   const onDelete = (e) => {
-    const selectedRows = gridRef.current.api.getSelectedRows();
-    const delete_arr = _.map(selectedRows, 'idx');
-    setRowData(
-      _.filter(rowData, (row) => {
-        return !_.includes(delete_arr, row.idx);
-      })
-    );
+    const changedRowDatas = _.cloneDeep(rowData);
+    const deleteRowDatas = _.filter(changedRowDatas, (row) => row.checked);
+    const delete_arr = _.map(deleteRowDatas, 'idx');
+
+    for (const deleteRowData of deleteRowDatas) {
+      const size = deleteRowData.group.size - 1;
+      const eqGroupDatas = _.filter(changedRowDatas, (row) => {
+        return row.group.id === deleteRowData.group.id;
+      });
+
+      for (const eqGroupData of eqGroupDatas) {
+        eqGroupData.group.size = size;
+      }
+
+      if (deleteRowData.group.first && eqGroupDatas.length > 1) {
+        eqGroupDatas[1].group.first = true;
+      }
+    }
+
+    const results = _.filter(changedRowDatas, (row) => {
+      return !_.includes(delete_arr, row.idx);
+    });
+
+    setRowData([...results]);
   };
 
   const onSaveTodaySummary = () => {
-    if (!rowData || !rowData.length) return;
+    request.post(`user/today_summary/save`, { save_data: viewResult, date: null }).then((ret) => {
+      if (!ret.err) {
+        const { data } = ret.data;
+        logger.info(data);
 
-    const unconnect_rows = _.filter(rowData, (data) => {
-      return !data.connect_flag;
+        navigate('settlement/today_summary');
+      }
     });
-
-    if (unconnect_rows.length != 0) {
-      modal.confirm(
-        '저장할 수 없습니다.',
-        [{ strong: '미연결 주문건이 있어서 저장할 수 없습니다.', normal: '' }],
-        [
-          {
-            name: '매칭하러 가기',
-            callback: () => {
-              setUnConnectModalState(true);
-            },
-          },
-          {
-            name: '미연결 주문건 삭제 후 저장',
-            callback: () => {
-              onDeleteUnconnectRow();
-              request
-                .post(`user/today_summary/save`, { save_data: { ...viewResult, date: dateRef.current } })
-                .then((ret) => {
-                  if (!ret.err) {
-                    const { data } = ret.data;
-                    logger.info(data);
-
-                    dateRef.current = null;
-                    setRowData(() => data);
-                  }
-                });
-            },
-          },
-        ]
-      );
-    } else {
-      request.post(`user/today_summary/save`, { save_data: viewResult, date: dateRef.current }).then((ret) => {
-        if (!ret.err) {
-          const { data } = ret.data;
-          logger.info(data);
-
-          dateRef.current = null;
-          navigate('settlement/today_summary');
-        }
-      });
-    }
   };
 
   const deleteCallback = (d, connect_flag) => {
@@ -741,15 +410,14 @@ const MarginCalc = () => {
 
       setRowData([...changedItems]);
     } else {
-      setRowData(
-        _.filter(rowData, (item) => {
-          return !(item.forms_product_name == d.forms_product_name && item.forms_option_name == d.forms_option_name);
-        })
-      );
+      const changedItems = _.filter(rowData, (item) => {
+        return !(item.forms_product_name == d.forms_product_name && item.forms_option_name == d.forms_option_name);
+      });
+      setRowData([...changedItems]);
     }
   };
 
-  const saveCallback = (save_datas, result_forms_matchs, connect_flag) => {
+  const saveCallback = (save_datas, result_forms_matchs) => {
     if (!save_datas) return;
 
     let saveResultData = _.cloneDeep(rowData);
@@ -780,22 +448,21 @@ const MarginCalc = () => {
     setRowData([...saveResultData]);
   };
 
-  const saveViewColumnsCallback = (nowPlatform) => {
-    SetColumnDefsFunc(nowPlatform);
+  // 체크박스 선택
+  const handleSingleCheck = (idx, checked) => {
+    const findObj = _.find(rowData, { idx: idx });
+    findObj.checked = checked;
+
+    setRowData([...rowData]);
   };
 
-  const getRowStyle = (params) => {
-    //색은 바꾸자..
-    const colors = ['#FFCCFF', '#FFFFCC'];
-    if (!params.node.data.connect_flag) {
-      return { background: '#FFEAEA' };
-    } else {
-      return { background: colors[params.node.data.group.id % 2] };
+  // 체크박스 전체 선택
+  const handleAllCheck = (checked) => {
+    for (const row of rowData) {
+      row.checked = checked;
     }
-  };
 
-  const onChangeDate = (date) => {
-    dateRef.current = date;
+    setRowData([...rowData]);
   };
 
   return (
@@ -926,15 +593,7 @@ const MarginCalc = () => {
 
                   {/* TODO 색 고민 해봐야.. */}
 
-                  <Button
-                    variant="primary"
-                    onClick={() => {
-                      setDateModalState(true);
-                    }}
-                  >
-                    주문서 날짜 변경
-                  </Button>
-                  <Button onClick={onSaveTodaySummary} disabled={_.isEmpty(viewResult)}>
+                  <Button onClick={onSaveTodaySummary} disabled={!rowData || !rowData.length || _.isEmpty(viewResult)}>
                     주문서 저장
                   </Button>
 
@@ -947,15 +606,6 @@ const MarginCalc = () => {
                     <img src={`${img_src}${icon_circle_arrow_down}`} />
                     다운로드
                   </Button>
-
-                  {/* <Button
-                    className="btn_set"
-                    onClick={() => {
-                      setColumnControlModalState(true);
-                    }}
-                  >
-                    <img src={`${img_src}${icon_set}`} />
-                  </Button> */}
                 </div>
               </div>
 
@@ -996,6 +646,13 @@ const MarginCalc = () => {
                     <span>원</span>
                   </p>
                 </li>
+                <li>
+                  <p className="dt">보낸 배송비</p>
+                  <p className="dd">
+                    {viewResult.sum_delivery_fee && replace_1000(revert_1000(viewResult.sum_delivery_fee))}
+                    <span>원</span>
+                  </p>
+                </li>
                 <li className={viewResult.sum_profit_loss > 0 ? 'profit' : 'loss'}>
                   <p className="dt">손익 합계</p>
                   <p className="dd">
@@ -1007,24 +664,57 @@ const MarginCalc = () => {
 
               <div style={containerStyle} className="tablebox">
                 <div style={gridStyle} className="ag-theme-alpine test">
-                  <AgGridReact
-                    ref={gridRef}
-                    rowData={rowData}
-                    columnDefs={columnDefs}
-                    alwaysShowHorizontalScroll={true}
-                    alwaysShowVerticalScroll={true}
-                    defaultColDef={defaultColDef}
-                    rowSelection={'multiple'}
-                    // onRowDoubleClicked={onClick}
-                    onCellDoubleClicked={onCellDoubleClick}
-                    getRowStyle={getRowStyle}
-                    overlayNoRowsTemplate={'데이터가 없습니다.'}
-                    suppressRowTransform={true}
-                    rowHeight={rowHeight}
-                    singleClickEdit={true}
-                    stopEditingWhenCellsLoseFocus={true}
-                    // getRowHeight={getRowHeight}
-                  ></AgGridReact>
+                  <Table>
+                    <thead>
+                      <th>
+                        <Checkbox
+                          checked={
+                            rowData &&
+                            _.filter(rowData, (row) => {
+                              return row.checked;
+                            }).length === rowData.length
+                              ? true
+                              : false
+                          }
+                          checkedItemHandler={handleAllCheck}
+                        ></Checkbox>
+                      </th>
+                      <th>총 손익</th>
+                      <th>손익</th>
+                      <th>결제일</th>
+                      <th>배송비묶음번호</th>
+                      <th>주문번호</th>
+                      <th>수취인명</th>
+                      <th>수취인주소</th>
+                      <th>수취인연락처</th>
+                      <th>매체</th>
+                      <th>판매상품명</th>
+                      <th>옵션</th>
+                      <th>수량</th>
+                      <th>총 결제금액\n(정산예정금액)</th>
+                      <th>받은 배송비\n(배송비 수수료)</th>
+                      <th>총 입고단가</th>
+                      <th>배송비</th>
+                      <th>포장비</th>
+                    </thead>
+                  </Table>
+                  <Table>
+                    <tbody>
+                      {rowData &&
+                        rowData.map((d, key) => (
+                          <ProfitLossRow
+                            onRowDoubleClick={onRowDoubleClick}
+                            rowChecked={d.checked}
+                            handleSingleCheck={handleSingleCheck}
+                            key={key}
+                            index={key}
+                            d={d}
+                            stockPriceDataRef={stockPriceDataRef}
+                            setStockPriceModalState={setStockPriceModalState}
+                          />
+                        ))}
+                    </tbody>
+                  </Table>
                 </div>
               </div>
             </div>
@@ -1055,28 +745,19 @@ const MarginCalc = () => {
         saveCallback={saveCallback}
         selectData={unConnectModalSelectData}
       ></MarginCalc_UnConnectModal>
-      <ColumnControlModal
-        modalState={columnControlModalState}
-        setModalState={setColumnControlModalState}
-        platform={platforms[platformType]}
-        callback={saveViewColumnsCallback}
-      ></ColumnControlModal>
-      <CommonDateModal
-        modalState={dateModalState}
-        setModalState={setDateModalState}
-        onChangeDate={onChangeDate}
-      ></CommonDateModal>
     </>
   );
 };
 const calcProfitLoss = (profit_loss_row) => {
   let profit_loss = 0;
   profit_loss += profit_loss_row.aggregation;
-  profit_loss += profit_loss_row.reality_delivery_fee;
+  profit_loss += getRealityDeliveryFee(profit_loss_row);
   profit_loss += profit_loss_row.assembly_fee;
   profit_loss += profit_loss_row.installation_fee;
 
   const count = Number(profit_loss_row['30005']) ? Number(profit_loss_row['30005']) : 1;
+  if (!Number(profit_loss_row['30005'])) return 0;
+
   profit_loss -= profit_loss_row.stock_price * count;
   profit_loss -= profit_loss_row.delivery_fee;
   profit_loss -= profit_loss_row.packing_fee;
@@ -1092,12 +773,12 @@ const getRealityDeliveryFee = (profit_loss_row) => {
   const df_discount = profit_loss_row[30015] ? Number(profit_loss_row[30015]) : 0;
 
   // 배송비 선불인 경우
-  if (!pay_advance) {
-    delivery_fee += received_delivery_fee;
-    delivery_fee += countryside_added_fee;
-    delivery_fee -= df_discount;
-    delivery_fee *= 1 - parseFloat(profit_loss_row['30047_additional']) / 100;
-  }
+  // if (!pay_advance) {
+  delivery_fee += received_delivery_fee;
+  delivery_fee += countryside_added_fee;
+  delivery_fee -= df_discount;
+  delivery_fee *= 1 - parseFloat(profit_loss_row['30047_additional']) / 100;
+  // }
 
   return delivery_fee;
 };
@@ -1160,16 +841,12 @@ const getAggregation = (profit_loss_row) => {
 };
 
 const getDeliveryFee = (profit_loss_row) => {
-  // return _.sumBy(profit_loss_row.goods_match, 'delivery_fee');
-
   if (!profit_loss_row.goods_match) return 0;
   const maxGoodsMatch = _.maxBy(profit_loss_row.goods_match, 'delivery_fee');
   return maxGoodsMatch ? maxGoodsMatch.delivery_fee : 0;
 };
 
 const getPackingFee = (profit_loss_row) => {
-  // return _.sumBy(profit_loss_row.goods_match, 'packing_fee');
-
   if (!profit_loss_row.goods_match || !profit_loss_row.goods_match.length) return 0;
 
   const maxGoodsMatch = _.maxBy(profit_loss_row.goods_match, 'packing_fee');
@@ -1196,18 +873,25 @@ const CalcSummary = (rowData) => {
           return item.group.id === row.group.id;
         });
 
-        row.delivery_fee = _.max(eqGroupDatas, 'delivery_fee')['delivery_fee'];
+        // row.delivery_fee = _.max(eqGroupDatas, 'delivery_fee')['delivery_fee'];
         row.reality_delivery_fee = _.maxBy(eqGroupDatas, 'reality_delivery_fee')['reality_delivery_fee'];
-        row['30047'] = _.maxBy(eqGroupDatas, '30047')['30047'];
-        row['30047_additional'] = _.maxBy(eqGroupDatas, '30047_additional')['30047_additional'];
       } else {
         row.reality_delivery_fee = 0;
-        row.delivery_fee = 0;
-        row['30047'] = 0;
-        row['30047_additional'] = 0;
+        // row.delivery_fee = 0;
+        // row['30047'] = 0;
+        // row['30047_additional'] = 0;
       }
 
       row.profit_loss = calcProfitLoss(row);
+    }
+
+    for (const row of rowData) {
+      if (row.group.first) {
+        const eqGroupDatas = _.filter(rowData, (item) => {
+          return item.group.id === row.group.id;
+        });
+        row.sum_profit_loss = _.sumBy(eqGroupDatas, 'profit_loss');
+      }
     }
   }
 
@@ -1218,8 +902,14 @@ const CalcSummary = (rowData) => {
   const loss_order_no_count = loss_order.length;
   const sum_payment_price = _.sumBy(rowData, '30006');
   const sum_received_delivery_fee = _.sumBy(rowData, '30047');
-  let sum_profit_loss = _.sumBy(rowData, 'profit_loss');
+  let sum_profit_loss = _.sumBy(rowData, 'sum_profit_loss');
+  const sum_delivery_fee = _.sumBy(rowData, 'delivery_fee');
   sum_profit_loss = _.floor(sum_profit_loss, 0);
+
+  if (_.isNaN(sum_profit_loss)) {
+    modal.alert('올바르지 않은 엑셀 데이터입니다. 확인 해주세요.');
+    return null;
+  }
 
   const summary = {
     forms_name: rowData[0].forms_name,
@@ -1228,45 +918,11 @@ const CalcSummary = (rowData) => {
     loss_order_no_count: loss_order_no_count,
     sum_payment_price: sum_payment_price,
     sum_received_delivery_fee: sum_received_delivery_fee,
+    sum_delivery_fee: sum_delivery_fee,
     sum_profit_loss: sum_profit_loss,
   };
 
   return summary;
-};
-
-const GetField = (title, code) => {
-  const ret = {
-    field: `${code}`,
-    sortable: true,
-    unSortIcon: true,
-    headerName: `${title}`,
-    width: 120,
-    editable: true,
-    cellClass: 'ag-cell-editable',
-  };
-
-  return ret;
-};
-
-const GetColonField = (title, code) => {
-  const ret = {
-    field: `${code}`,
-    sortable: true,
-    unSortIcon: true,
-    valueParser: (params) => {
-      return Number.isNaN(Number(params.newValue)) ? params.oldValue : Number(params.newValue);
-    },
-    valueFormatter: (params) => {
-      if (params.value == '' || !params.value) return 0;
-      return replace_1000(params.value);
-    },
-    headerName: `${title}`,
-    width: 120,
-    editable: true,
-    cellClass: 'ag-cell-editable',
-  };
-
-  return ret;
 };
 
 const StockPriceModal = React.memo(({ modalState, setModalState, goodsMatch }) => {
@@ -1284,7 +940,7 @@ const StockPriceModal = React.memo(({ modalState, setModalState, goodsMatch }) =
           <thead>
             <th>상품명</th>
             <th>입고단가</th>
-            <th>수량</th>
+            {/* <th>수량</th> */}
           </thead>
           <tbody>
             <>
@@ -1293,7 +949,7 @@ const StockPriceModal = React.memo(({ modalState, setModalState, goodsMatch }) =
                   <tr>
                     <td>{d.name}</td>
                     <td>{d.stock_price}</td>
-                    <td>{d.match_count}</td>
+                    {/* <td>{d.match_count}</td> */}
                   </tr>
                 ))}
             </>
@@ -1323,5 +979,159 @@ function excelSerialDateToJSDate(excelSerialDate) {
 
   return time_format(date);
 }
+
+const ProfitLossRow = React.memo(
+  ({ handleSingleCheck, rowChecked, d, stockPriceDataRef, setStockPriceModalState, onRowDoubleClick }) => {
+    const [inputs, setInputs] = useState({
+      stock_price: d.stock_price == '' || !d['30005'] ? '0' : replace_1000(d.stock_price),
+      delivery_fee: d.delivery_fee == '' ? '0' : replace_1000(d.delivery_fee),
+      packing_fee: d.packing_fee == '' ? '0' : replace_1000(d.packing_fee),
+    });
+    const [checked, setChecked] = useState(false);
+
+    useEffect(() => {
+      setChecked(rowChecked);
+    }, [rowChecked]);
+
+    const checkedItemHandler = (e) => {
+      handleSingleCheck(d.idx, !checked);
+      setChecked(!checked);
+    };
+
+    const onChange = (e) => {
+      const { value, name } = e.target; // 우선 e.target 에서 name 과 value 를 추출
+
+      setInputs({
+        ...inputs, // 기존의 input 객체를 복사한 뒤
+        [name]: replace_1000(revert_1000(value)), // name 키를 가진 값을 value 로 설정
+      });
+
+      d[name] = revert_1000(value);
+    };
+
+    return (
+      <tr>
+        <td>
+          <Checkbox checked={checked} checkedItemHandler={checkedItemHandler}></Checkbox>
+        </td>
+        <td
+          onDoubleClick={(e) => {
+            onRowDoubleClick(e, d);
+          }}
+          hidden={!d.group.first}
+          rowSpan={d.group.first ? d.group.size : 1}
+        >
+          <SumPLRenderer data={d}></SumPLRenderer>
+        </td>
+        <td
+          onDoubleClick={(e) => {
+            onRowDoubleClick(e, d);
+          }}
+        >
+          <PLRenderer data={d}></PLRenderer>
+        </td>
+        <td
+          onDoubleClick={(e) => {
+            onRowDoubleClick(e, d);
+          }}
+        >
+          {excelSerialDateToJSDate(d['30003'])}
+        </td>
+        <td
+          onDoubleClick={(e) => {
+            onRowDoubleClick(e, d);
+          }}
+        >
+          {d['30004']}
+        </td>
+        <td
+          onDoubleClick={(e) => {
+            onRowDoubleClick(e, d);
+          }}
+        >
+          {d['30048']}
+        </td>
+        <td
+          onDoubleClick={(e) => {
+            onRowDoubleClick(e, d);
+          }}
+        >
+          {d['30005']}
+        </td>
+        <td
+          onDoubleClick={(e) => {
+            onRowDoubleClick(e, d);
+          }}
+        >
+          {d['30050']}
+        </td>
+        <td
+          onDoubleClick={(e) => {
+            onRowDoubleClick(e, d);
+          }}
+        >
+          {d['30049']}
+        </td>
+        <td
+          onDoubleClick={(e) => {
+            onRowDoubleClick(e, d);
+          }}
+        >
+          {d['forms_name']}
+        </td>
+        <td
+          onDoubleClick={(e) => {
+            onRowDoubleClick(e, d);
+          }}
+        >
+          <OptionCellRenderer data={d}></OptionCellRenderer>
+        </td>
+        <td
+          onDoubleClick={(e) => {
+            onRowDoubleClick(e, d);
+          }}
+        >
+          {Number(d['30005'])}
+        </td>
+        <td
+          onDoubleClick={(e) => {
+            onRowDoubleClick(e, d);
+          }}
+        >
+          <_30006Renderer data={d}></_30006Renderer>
+        </td>
+        <td
+          onDoubleClick={(e) => {
+            onRowDoubleClick(e, d);
+          }}
+        >
+          <_30047Renderer data={d}></_30047Renderer>
+        </td>
+        <td
+          onDoubleClick={() => {
+            stockPriceDataRef.current = d.goods_match;
+            setStockPriceModalState(true);
+          }}
+        >
+          <input name="stock_price" value={inputs.stock_price} onChange={onChange}></input> 원
+        </td>
+        <td
+          onDoubleClick={(e) => {
+            onRowDoubleClick(e, d);
+          }}
+        >
+          <input name="delivery_fee" value={inputs.delivery_fee} onChange={onChange}></input>원
+        </td>
+        <td
+          onDoubleClick={(e) => {
+            onRowDoubleClick(e, d);
+          }}
+        >
+          <input name="packing_fee" value={inputs.packing_fee} onChange={onChange}></input>원
+        </td>
+      </tr>
+    );
+  }
+);
 
 export default React.memo(MarginCalc);

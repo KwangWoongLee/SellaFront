@@ -72,7 +72,7 @@ const StandardProduct_Search = React.memo(({ selectCallback, unSelectCallback, p
     _.forEach(goods_match_names, (name) => _.lowerCase(name));
 
     for (const search_result of search_results) {
-      if (_.includes(goods_match_names, _.lowerCase(search_result.name))) {
+      if (_.includes(_.map(forms_match.goods_match, 'name'), search_result.name)) {
         search_result.select = true;
       } else {
         search_result.select = false;

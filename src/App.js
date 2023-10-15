@@ -14,6 +14,7 @@ import RecoilNexus from 'recoil-nexus';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Modals from 'components/modal';
 
+import Payment from 'components/base/Payment';
 import Login from 'components/base/Login';
 import Logout from 'components/base/Logout';
 import Membership from 'components/base/Membership';
@@ -42,6 +43,7 @@ import Announcement from 'components/cscenter/Announcement';
 import Manual from 'components/cscenter/Manual';
 import FAQ from 'components/cscenter/FAQ';
 import Inquiry from 'components/cscenter/Inquiry';
+import Margin_NoLogin from 'components/calculator/Margin_NoLogin';
 
 //const Router = process.env.REACT_APP_SSR === '1' ? BrowserRouter : HashRouter;
 
@@ -73,6 +75,14 @@ export function App() {
           />
           <Route path="/login" element={<Login />} />
           <Route path="/logout" element={<Logout />} />
+          <Route
+            path="payment"
+            element={
+              <ProtectedRoute>
+                <Payment />
+              </ProtectedRoute>
+            }
+          />
           <Route path="settlement">
             <Route
               path="margin_calc"
@@ -132,6 +142,7 @@ export function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="margin_free" element={<Margin_NoLogin />} />
             <Route
               path="buying"
               element={

@@ -9,11 +9,15 @@ import icon_del from 'images/icon_del.svg';
 const GoodsMatchTable = React.memo(({ selectCallback, deleteCallback, changeCallback, parentFormsMatchSelectData }) => {
   logger.render('GoodsMatchTable');
   const [rowData, setRowData] = useState([]);
+  const [settlementFlag, setSettlementFlag] = useState(false);
 
   useEffect(() => {
     if (!parentFormsMatchSelectData || _.isEmpty(parentFormsMatchSelectData)) {
       setRowData([]);
     } else {
+      if (parentFormsMatchSelectData.settlement_flag) setSettlementFlag(true);
+      else setSettlementFlag(false);
+
       setRowData([...parentFormsMatchSelectData.goods_match]);
     }
   }, [parentFormsMatchSelectData]);
@@ -29,9 +33,11 @@ const GoodsMatchTable = React.memo(({ selectCallback, deleteCallback, changeCall
     deleteCallback(newRowData);
   };
 
-  const onChange = (e, d, value) => {
+  const onChange = (e, d, value, type) => {
     const findObj = _.find(rowData, { idx: d.idx });
-    findObj.match_count = Number(value);
+    if (type === 1) {
+      findObj.match_count = Number(value);
+    } else if (type === 2) findObj.category_fee_rate = Number(value);
 
     changeCallback(rowData);
   };
@@ -45,9 +51,7 @@ const GoodsMatchTable = React.memo(({ selectCallback, deleteCallback, changeCall
             <th>상품코드</th>
             <th>연결된 상품명</th>
             <th>수량</th>
-            {parentFormsMatchSelectData && !parentFormsMatchSelectData.settlement_flag && (
-              <th class="td_fee">수수료</th>
-            )}
+            {!settlementFlag && <th class="td_fee">수수료</th>}
             <th></th>
           </tr>
         </thead>
@@ -55,19 +59,17 @@ const GoodsMatchTable = React.memo(({ selectCallback, deleteCallback, changeCall
       <table className="goodsmatchtable tbody">
         <tbody>
           <>
-            {parentFormsMatchSelectData &&
-              rowData &&
+            {rowData &&
               rowData.map((d, key) => (
                 <GoodsMatchItem
                   key={key}
                   index={key}
                   d={d}
+                  settlementFlag={settlementFlag}
                   rowSpan={rowData.length}
                   onClick={selectCallback}
                   onChange={onChange}
                   onDelete={onDelete}
-                  settlement_flag={parentFormsMatchSelectData.settlement_flag}
-                  parentFormsMatchSelectData={parentFormsMatchSelectData}
                 />
               ))}
           </>
@@ -77,75 +79,75 @@ const GoodsMatchTable = React.memo(({ selectCallback, deleteCallback, changeCall
   );
 });
 
-const GoodsMatchItem = React.memo(
-  ({ index, d, rowSpan, onClick, onDelete, onChange, settlement_flag, parentFormsMatchSelectData }) => {
-    logger.render('GoodsMatchItem : ', index);
-    const inputRef = useRef(null);
+const GoodsMatchItem = React.memo(({ index, d, rowSpan, onClick, onDelete, onChange, settlementFlag }) => {
+  logger.render('GoodsMatchItem : ', index);
+  const inputRef = useRef(null);
+  const feeRateRef = useRef(null);
 
-    useEffect(() => {
-      inputRef.current.value = d.match_count;
-    }, [d]);
+  useEffect(() => {
+    inputRef.current.value = d.match_count;
+    if (feeRateRef.current) feeRateRef.current.value = d.category_fee_rate;
+  });
 
-    return (
-      <tr>
-        <td>{time_format(d.reg_date)}</td>
-        <td>{d.idx}</td>
-        <td>{d.name}</td>
-        <td>
-          <>
-            <button
-              className="btn_number_minus"
-              onClick={(e) => {
-                if (Number(inputRef.current.value) - 1 <= 0) return;
-                inputRef.current.value = Number(inputRef.current.value) - 1;
-                onChange(e, d, inputRef.current.value);
-              }}
-            >
-              빼기
-            </button>
-            <input
-              type={'number'}
-              ref={inputRef}
-              defaultValue={d.match_count}
-              onChange={(e) => {
-                onChange(e, d, inputRef.current.value);
-              }}
-              className="btn_number"
-            ></input>
-            <button
-              className="btn_number_plus"
-              onClick={(e) => {
-                inputRef.current.value = Number(inputRef.current.value) + 1;
-                onChange(e, d, inputRef.current.value);
-              }}
-            >
-              더하기
-            </button>
-          </>
-        </td>
-
-        {index === 0 ? (
-          !settlement_flag && (
-            <td class="td_fee" rowSpan={rowSpan}>
-              {d.category_fee_rate ? d.category_fee_rate : parentFormsMatchSelectData.category_fee_rate}
-            </td>
-          )
-        ) : (
-          <></>
-        )}
-        <td>
+  return (
+    <tr>
+      <td>{time_format(d.reg_date)}</td>
+      <td>{d.idx}</td>
+      <td>{d.name}</td>
+      <td>
+        <>
           <button
-            className="btn_del"
+            className="btn_number_minus"
             onClick={(e) => {
-              onDelete(e, d);
+              if (Number(inputRef.current.value) - 1 <= 0) return;
+              inputRef.current.value = Number(inputRef.current.value) - 1;
+              onChange(e, d, inputRef.current.value, 1);
             }}
-          >
-            <img src={`${img_src}${icon_del}`} alt="" />
-          </button>
+          ></button>
+          <input
+            type={'number'}
+            ref={inputRef}
+            defaultValue={d.match_count}
+            onChange={(e) => {
+              onChange(e, d, inputRef.current.value, 1);
+            }}
+            className="btn_number"
+          ></input>
+          <button
+            className="btn_number_plus"
+            onClick={(e) => {
+              inputRef.current.value = Number(inputRef.current.value) + 1;
+              onChange(e, d, inputRef.current.value, 1);
+            }}
+          ></button>
+        </>
+      </td>
+
+      {index === 0 && !settlementFlag && (
+        <td class="td_fee" rowSpan={rowSpan}>
+          <input
+            type={'number'}
+            ref={feeRateRef}
+            defaultValue={d.category_fee_rate}
+            onChange={(e) => {
+              onChange(e, d, feeRateRef.current.value, 2);
+            }}
+            className="btn_number"
+          ></input>
         </td>
-      </tr>
-    );
-  }
-);
+      )}
+      <td>
+        <button
+          className="btn_del"
+          onClick={(e) => {
+            onDelete(e, d);
+          }}
+        >
+          <img src={`${img_src}${icon_del}`} alt="" />
+        </button>
+      </td>
+    </tr>
+  );
+});
 
 export default React.memo(GoodsMatchTable);

@@ -182,7 +182,7 @@ const StandardProduct = () => {
               <table className="thead">
                 <thead>
                   <th>상품코드</th>
-                  <th>카테고리</th>
+                  {/* <th>카테고리</th> */}
                   <th>상품명</th>
                 </thead>
               </table>
@@ -262,7 +262,7 @@ const GoodsItem = React.memo(({ index, d, onClick, tableRow }) => {
       }}
     >
       <td>{d.idx}</td>
-      <td>{d.goods_category}</td>
+      {/* <td>{d.goods_category}</td> */}
       <td>{d.name}</td>
     </tr>
   );
@@ -299,7 +299,9 @@ const StandardProductItem = React.memo(({ index, d, onChange, onSave, onDelete }
         ></input>
       </td>
 
-      <td>{d.category_fee_rate && Number(d.category_fee_rate).toFixed(2)}</td>
+      <td>
+        {d.category_fee_rate && Number(d.category_fee_rate).toFixed(2) ? '-' : Number(d.category_fee_rate).toFixed(2)}
+      </td>
       <td>
         <button
           className="btn-primary btn_blue btn_small"

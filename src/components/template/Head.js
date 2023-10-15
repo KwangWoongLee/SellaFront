@@ -16,10 +16,14 @@ const Head = () => {
   const location = useLocation();
 
   useEffect(() => {}, []);
-  const onLink = (e) => {
+  const onLink = (e, no_login_path) => {
     e.preventDefault();
     logger.debug('href : ', e.currentTarget.name);
-    navigate(e.currentTarget.name);
+    if (no_login_path) {
+      navigate(no_login_path);
+    } else {
+      navigate(e.currentTarget.name);
+    }
 
     logger.render('NavigateCtr :');
   };
@@ -52,7 +56,14 @@ const Head = () => {
         </div>
         <div className="member">
           <img src={`${img_src}${icon_calculator}`} alt="계산기" className="icon_calculator" />
-          <Nav.Link className="nav-link mcalculator" onClick={onLink} name="/calculator/margin">
+          <Nav.Link
+            className="nav-link mcalculator"
+            onClick={(e) => {
+              let no_login_path = account && account.grade !== -1 ? '' : '/calculator/margin_free';
+              onLink(e, no_login_path);
+            }}
+            name="/calculator/margin"
+          >
             <span>마진계산기</span>
           </Nav.Link>
           {/* <span>·</span>

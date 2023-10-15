@@ -126,26 +126,6 @@ const Margin = () => {
     },
   ]);
 
-  const rowHeight = 36;
-
-  useEffect(() => {
-    request.post(`user/calculator/margin`, {}).then((ret) => {
-      if (!ret.err) {
-        const { data } = ret.data;
-        logger.info(data);
-        maxSaveCountRef.current = data.max_save_count;
-
-        if (data.margin_results && data.margin_results.length > maxSaveCountRef.current - 1) {
-          setAbledSaveButton(false);
-        } else {
-          setAbledSaveButton(true);
-        }
-
-        setDatas(() => data.margin_results);
-      }
-    });
-  }, []);
-
   useEffect(() => {
     let platformFeeRate = Number(platformData[platformType].fee_rate);
     platformFeeRate = platformFeeRate.toFixed(2);
@@ -156,73 +136,12 @@ const Margin = () => {
     platformDeliverFeeRateRef.current.value = platformDeliverFeeRate;
   }, [platformType]);
 
-  const onSave = () => {
-    const name = nameRef.current.value;
-    if (!name) {
-      modal.alert('상품명을 입력해주세요.');
-      return;
-    }
-
-    if (sumPlus !== 0 && !sumPlus) {
-      modal.alert('계산하기를 먼저 실행해주세요.');
-      return;
-    }
-
-    if (sumMinus !== 0 && !sumMinus) {
-      modal.alert('계산하기를 먼저 실행해주세요.');
-      return;
-    }
-
-    if (_.isEmpty(saveDataRef.current)) {
-      modal.alert('계산하기를 먼저 실행해주세요.');
-      return;
-    }
-
-    if (!platformData[platformType]) {
-      modal.alert('고객센터에 문의해주세요.');
-      return;
-    }
-
-    saveDataRef.current = { ...saveDataRef.current, goods_name: name };
-
-    if (saveDataRef.current.idx) {
-      request.post(`user/calculator/margin/modify`, { save_data: saveDataRef.current }).then((ret) => {
-        if (!ret.err) {
-          page_reload();
-        }
-      });
-    } else {
-      request.post(`user/calculator/margin/save`, { save_data: saveDataRef.current }).then((ret) => {
-        if (!ret.err) {
-          page_reload();
-        }
-      });
-    }
-  };
-  const onSearch = () => {
-    setModalState(true);
-  };
-
   const PageCallback = (goods) => {
     nameRef.current.value = goods.name;
     stockPriceRef.current.value = goods.stock_price;
     savedDPFeeRef.current.value = goods.delivery_fee + goods.packing_fee;
     // sellPriceRef.current.value;
     // sellDeliveryFeeRef.current.value;
-  };
-
-  const onDelete = () => {
-    const selectedRows = gridRef.current.api.getSelectedRows();
-    if (selectedRows && selectedRows.length > 0) {
-      const selectedIdxs = _.map(selectedRows, 'idx');
-      request.post(`user/calculator/margin/delete`, { idxs: selectedIdxs }).then((ret) => {
-        if (!ret.err) {
-          const { data } = ret.data;
-          logger.info(data);
-          page_reload();
-        }
-      });
-    }
   };
 
   const onChange = (key, e) => {
@@ -361,7 +280,6 @@ const Margin = () => {
   };
 
   const onReset = () => {
-    nameRef.current.value = '';
     sellPriceRef.current.value = '';
     sellDeliveryFeeRef.current.value = '';
     stockPriceRef.current.value = '';
@@ -380,44 +298,6 @@ const Margin = () => {
     saveDataRef.current = {};
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      onSearch(e);
-    }
-  };
-
-  const onSelectionChanged = (params) => {
-    setAbledSaveButton(false);
-    const selectedRows = gridRef.current.api.getSelectedRows();
-    const row = selectedRows[0];
-
-    nameRef.current.value = `${row.goods_name}`;
-    sellPriceRef.current.value = `${row.sell_price}`;
-    sellDeliveryFeeRef.current.value = `${row.received_delivery_fee}`;
-    stockPriceRef.current.value = `${row.stock_price}`;
-    savedDPFeeRef.current.value = `${row.saved_dp_fee}`;
-    // lowestMarginRateRef.current.value = `${row.lowest_margin_rate}`;
-    setLowestPrice(row.lowest_standard_price);
-    setSumMinus(row.expense_sum_price);
-    setSumPlus(row.revenue_sum_price);
-    setResultData({
-      sell_price: row.sell_price,
-      settlement_price: row.settlement_price,
-      margin: row.margin_price,
-      margin_rate: row.margin_rate,
-    });
-
-    const findIndex = _.findIndex(platformData, (p) => p.name == row.forms_name);
-    if (findIndex != -1) {
-      setplatformType(findIndex);
-
-      platformFeeRateRef.current.value = row.platform_fee_rate;
-      platformDeliverFeeRateRef.current.value = row.platform_delivery_fee_rate;
-    }
-
-    saveDataRef.current = row;
-  };
-
   return (
     <>
       <Head></Head>
@@ -428,10 +308,6 @@ const Margin = () => {
             <div className="btnbox">
               <Button variant="primary" onClick={onReset}>
                 초기화
-              </Button>
-
-              <Button disabled={!abledSaveButton} variant="primary" onClick={onSave} className="btn_blue">
-                저장
               </Button>
             </div>
             <div className="tablebox1">
@@ -472,20 +348,6 @@ const Margin = () => {
             <div className="tablebox2">
               <table>
                 <tbody>
-                  <tr>
-                    <td>
-                      <input
-                        ref={nameRef}
-                        onKeyDown={handleKeyDown}
-                        placeholder="상품명 입력"
-                        className="input_prdname"
-                      ></input>
-                      <Button variant="primary" onClick={onSearch} className="btn btn_blue">
-                        내 상품 찾기
-                      </Button>
-                    </td>
-                  </tr>
-
                   <tr>
                     <td>
                       <span className="txt_green">판매가격</span>
@@ -578,32 +440,6 @@ const Margin = () => {
             <Button variant="primary" className="btn_blue btn_calc" onClick={onClickCalc}>
               계산하기
             </Button>
-          </div>
-          <div className="section section2">
-            <div className="btnbox">
-              <Button variant="primary" onClick={onDelete}>
-                선택 삭제
-              </Button>
-              <span className="count">
-                <b>{rowData.length}</b> / {maxSaveCountRef.current}개
-              </span>
-            </div>
-            <div style={containerStyle} className="tablebox">
-              <div style={gridStyle} className="ag-theme-alpine">
-                <AgGridReact
-                  ref={gridRef}
-                  rowData={rowData}
-                  columnDefs={columnDefs}
-                  alwaysShowHorizontalScroll={true}
-                  alwaysShowVerticalScroll={true}
-                  defaultColDef={defaultColDef}
-                  rowSelection={'single'}
-                  overlayNoRowsTemplate={'데이터가 없습니다.'}
-                  onSelectionChanged={onSelectionChanged}
-                  rowHeight={rowHeight}
-                ></AgGridReact>
-              </div>
-            </div>
           </div>
         </div>
       </Body>

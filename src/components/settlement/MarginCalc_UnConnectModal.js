@@ -21,7 +21,7 @@ const MarginCalc_UnConnectModal = React.memo(
   ({ modalState, setModalState, rowData, deleteCallback, saveCallback, selectData }) => {
     logger.render('MarginCalc_UnConnectModal');
 
-    const [formsMatchSelect, setFormsMatchSelect] = useState(-1);
+    const [formsMatchSelect, setFormsMatchSelect] = useState(null);
     const [items, setItems] = useState([]);
     const forms = _.cloneDeep(Recoils.getState('DATA:PLATFORMS'));
     const selectFormsMatchRef = useRef(null);
@@ -31,17 +31,18 @@ const MarginCalc_UnConnectModal = React.memo(
     const saveFormsMatchRef = useRef(null);
 
     useEffect(() => {
-      const unconnect_arr = _.filter(rowData, { connect_flag: false });
+      const unconnect_arr = _.filter(_.cloneDeep(rowData), { connect_flag: false });
       const unique_arr = _.uniqBy(unconnect_arr, function (elem) {
         return JSON.stringify(_.pick(elem, ['forms_product_name', 'forms_option_name']));
       });
 
       saveFormsMatchRef.current = new Array(unique_arr.length);
       setItems([...unique_arr]);
-    }, [rowData]);
+    }, [modalState]);
 
     useEffect(() => {
       if (!selectData || _.isEmpty(selectData)) {
+        setFormsMatchSelect(null);
         setSelectFormsMatchData(null);
         return;
       }
@@ -58,8 +59,10 @@ const MarginCalc_UnConnectModal = React.memo(
 
         setFormsMatchSelect(select_row_index);
         setSelectFormsMatchData({ ...selectFormsMatchRef.current });
+      } else {
+        setFormsMatchSelect(null);
       }
-    }, [selectData]);
+    }, [selectData, modalState]);
 
     const onClose = () => {
       selectFormsMatchRef.current = null;
@@ -68,27 +71,36 @@ const MarginCalc_UnConnectModal = React.memo(
     };
 
     const onSelectFormsMatchTable = (d) => {
-      selectFormsMatchRef.current = d;
+      // const findForm = _.find(forms, { idx: d.forms_idx });
+      // if (!findForm) {
+      //   return;
+      // }
 
-      const findForm = _.find(forms, { idx: d.forms_idx });
-      if (!findForm) {
-        return;
+      const select_row_index = _.findIndex(items, (row) => {
+        return row.forms_product_name == d.forms_product_name && row.forms_option_name == d.forms_option_name;
+      });
+
+      if (select_row_index != -1) {
+        selectFormsMatchRef.current = items[select_row_index];
+        // selectFormsMatchRef.current.settlement_flag = findForm.settlement_flag;
+
+        // setFormsMatchSelect(select_row_index);
+        setSelectFormsMatchData({ ...selectFormsMatchRef.current });
+      } else {
+        setFormsMatchSelect(null);
       }
-      selectFormsMatchRef.current.settlement_flag = findForm.settlement_flag;
-
-      setSelectFormsMatchData({ ...selectFormsMatchRef.current });
-      // setFormsMatchSelect(-1);
     };
 
     const onDeleteFormsMatchTable = (d) => {
       const filtered_items = _.filter(items, (item) => {
         return item.idx != d.idx;
       });
-      setItems(filtered_items);
+      setItems([...filtered_items]);
 
       deleteCallback(d, false);
 
-      setSelectFormsMatchData({ ...selectFormsMatchRef.current });
+      // setSelectFormsMatchData({ ...selectFormsMatchRef.current });
+      setFormsMatchSelect(null);
     };
 
     const onSelectGoodsMatchTable = (d) => {};
@@ -117,6 +129,7 @@ const MarginCalc_UnConnectModal = React.memo(
       if (!selectFormsMatchRef.current) return; // TODO error
 
       selectFormsMatchRef.current.goods_match = [...goods_match];
+      saveFormsMatchRef.current[selectFormsMatchRef.current.idx] = _.cloneDeep(selectFormsMatchRef.current);
       setSelectFormsMatchData({ ...selectFormsMatchRef.current });
     };
 
@@ -130,6 +143,9 @@ const MarginCalc_UnConnectModal = React.memo(
 
       const new_goods_match = { ...d };
       new_goods_match.match_count = 1;
+      new_goods_match.category_fee_rate = selectFormsMatchRef.current.category_fee_rate
+        ? Number(selectFormsMatchRef.current.category_fee_rate)
+        : 0;
 
       selectFormsMatchRef.current.goods_match = [...selectFormsMatchRef.current.goods_match, new_goods_match];
 
@@ -172,12 +188,21 @@ const MarginCalc_UnConnectModal = React.memo(
       request.post(`user/forms/match/unconnect/save`, { save_datas }).then((ret) => {
         if (!ret.err) {
           const { data } = ret.data;
-          logger.info(data);
 
           Recoils.setState('DATA:FORMSMATCH', data.forms_match);
           Recoils.setState('DATA:GOODSMATCH', data.goods_match);
 
           saveCallback(save_datas, data.forms_match, true);
+
+          const saved_idxs = _.map(save_datas, 'idx');
+
+          const unsaved_items = _.filter(items, (item) => {
+            return !_.includes(saved_idxs, item.idx);
+          });
+
+          saveFormsMatchRef.current = new Array(unsaved_items.length);
+          setItems([...unsaved_items]);
+
           setFormsMatchSelect(null);
           setSelectFormsMatchData(null);
         }
@@ -211,6 +236,7 @@ const MarginCalc_UnConnectModal = React.memo(
               </h3>
               <FormsMatchTable
                 rows={items}
+                modalState={modalState}
                 selectCallback={onSelectFormsMatchTable}
                 deleteCallback={onDeleteFormsMatchTable}
                 onParentSelect={formsMatchSelect}

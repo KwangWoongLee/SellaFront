@@ -135,20 +135,12 @@ const FormManagement_Custom_Add = (param) => {
     });
 
     if (
-      _.includes(save_data, (row) => {
-        return !row.title || !row.column || !row.sella_title || !row.sella_code;
+      _.some(save_data, (row) => {
+        if (row.checked === undefined) return !row.title || !row.column || !row.sella_title || !row.sella_code;
       })
     ) {
-      modal.confirm(
-        '양식을 저장하시려면 필수값을 입력해주세요.',
-        [{ strong: '', normal: '' }],
-        [
-          {
-            name: '확인',
-            callback: () => {},
-          },
-        ]
-      );
+      modal.alert('양식을 저장하시려면 필수값을 입력해주세요.');
+      return;
     }
 
     request.post(`user/forms/save`, { forms_name: formNameRef.current.value, save_data }).then((ret) => {

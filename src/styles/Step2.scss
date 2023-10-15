@@ -6,9 +6,9 @@
   }
 
   .ag-pinned-left-header .ag-header-cell:nth-child(3) .ag-header-cell-label::before,
+  .ag-header-viewport .ag-header-cell:nth-child(1) .ag-header-cell-label::before,
   .ag-header-viewport .ag-header-cell:nth-child(2) .ag-header-cell-label::before,
-  .ag-header-viewport .ag-header-cell:nth-child(3) .ag-header-cell-label::before,
-  .ag-header-viewport .ag-header-cell:nth-child(4) .ag-header-cell-label::before {
+  .ag-header-viewport .ag-header-cell:nth-child(3) .ag-header-cell-label::before {
     content: '* ';
     display: inline-block;
     margin-right: 3px;

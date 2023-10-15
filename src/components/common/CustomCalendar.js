@@ -10,7 +10,16 @@ const localizer = momentLocalizer(moment);
 
 const CustomEvent = ({ event }) => {
   return (
-    <div>{event.title > 0 ? '이익' : '손해'}</div>
+    <div className={event.className}>
+      {_.split(event.title, '\n').map((d, key) => {
+        return (
+          <>
+            {d}
+            <br></br>
+          </>
+        );
+      })}
+    </div>
     // <div>
     //   <div style={{ marginTop: 4, marginBottom: 4, overflow: 'hidden' }}>
     //     <div style={{ fontWeight: 500, float: 'left' }}>
@@ -39,7 +48,9 @@ const CustomCalendar = ({ dayGroupDatas, selectCallback }) => {
         localizer={localizer}
         defaultDate={new Date()}
         views={['month']}
-        event={CustomEvent}
+        components={{
+          event: CustomEvent,
+        }}
         events={events}
         style={{ height: '100vh' }}
         onSelectEvent={(e) => {

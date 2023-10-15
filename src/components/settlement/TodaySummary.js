@@ -5,6 +5,7 @@ import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 import { page_reload, replace_1000, revert_1000, time_format, time_format_day } from 'util/com';
+import Checkbox from 'components/common/CheckBoxCell';
 import request from 'util/request';
 import { modal } from 'util/com';
 import SettlementNavTab from 'components/settlement/common/SettlementNavTab';
@@ -14,124 +15,10 @@ import _ from 'lodash';
 import { logger } from 'util/com';
 
 import 'styles/MarginCalc.scss';
+import 'styles/TodaySummary.scss';
 
-// AG Grid
-import { AgGridReact } from 'ag-grid-react';
 import CustomCalendar from 'components/common/CustomCalendar';
 import CommonDateModal from 'components/common/CommonDateModal';
-
-const columnDefs = [
-  { field: 'idx', hide: true },
-  {
-    field: '',
-    pinned: 'left',
-    lockPinned: true,
-    cellClass: 'lock-pinned checkcell',
-    checkboxSelection: true,
-    maxWidth: 36,
-    horizontal: 'Center',
-  },
-  {
-    field: 'reg_date',
-    sortable: true,
-    pinned: 'left',
-    lockPinned: true,
-    cellClass: 'lock-pinned uneditable',
-    editable: false,
-    headerName: '업로드 시간',
-    filter: false,
-    unSortIcon: true,
-    width: 120,
-    valueFormatter: (params) => {
-      return time_format(params.value);
-    },
-  },
-
-  {
-    field: 'forms_name',
-    sortable: true,
-    unSortIcon: true,
-    headerName: '매체',
-    cellClass: 'uneditable',
-    minWidth: 120,
-  },
-  {
-    field: 'unique_order_no_count',
-    sortable: true,
-    unSortIcon: true,
-    valueParser: (params) => {
-      return Number.isNaN(Number(params.newValue)) ? params.oldValue : Number(params.newValue);
-    },
-    valueFormatter: (params) => {
-      if (params.value == '') return 0;
-      return replace_1000(params.value);
-    },
-    headerName: '주문 수',
-    cellClass: 'uneditable',
-    minWidth: 100,
-  },
-  {
-    field: 'delivery_send_count',
-    sortable: true,
-    unSortIcon: true,
-    valueParser: (params) => {
-      return Number.isNaN(Number(params.newValue)) ? params.oldValue : Number(params.newValue);
-    },
-    valueFormatter: (params) => {
-      if (params.value == '') return 0;
-      return replace_1000(params.value);
-    },
-    headerName: '택배발송',
-    cellClass: 'uneditable',
-    minWidth: 140,
-  },
-
-  {
-    field: 'sum_payment_price',
-    sortable: true,
-    unSortIcon: true,
-    valueParser: (params) => {
-      return Number.isNaN(Number(params.newValue)) ? params.oldValue : Number(params.newValue);
-    },
-    valueFormatter: (params) => {
-      if (params.value == '') return 0;
-      return replace_1000(params.value);
-    },
-    headerName: '총 결제금액',
-    cellClass: 'uneditable',
-    minWidth: 140,
-  },
-  {
-    field: 'sum_received_delivery_fee',
-    sortable: true,
-    unSortIcon: true,
-    valueParser: (params) => {
-      return Number.isNaN(Number(params.newValue)) ? params.oldValue : Number(params.newValue);
-    },
-    valueFormatter: (params) => {
-      if (params.value == '') return 0;
-      return replace_1000(params.value);
-    },
-    headerName: '받은 배송비',
-    cellClass: 'uneditable',
-    minWidth: 120,
-  },
-  {
-    field: 'sum_profit_loss',
-    sortable: true,
-    unSortIcon: true,
-    valueParser: (params) => {
-      return Number.isNaN(Number(params.newValue)) ? params.oldValue : Number(params.newValue);
-    },
-    valueFormatter: (params) => {
-      if (params.value == '') return 0;
-      return replace_1000(params.value);
-    },
-    headerName: '손익합계',
-    cellClass: 'uneditable',
-    minWidth: 100,
-  },
-];
 
 const TodaySummary = () => {
   logger.render('TodaySummary');
@@ -148,17 +35,6 @@ const TodaySummary = () => {
   //ag-grid
   const gridRef = useRef();
   const containerStyle = useMemo(() => ({ width: '100%', height: '100%' }), []);
-  const gridStyle = useMemo(() => ({ height: '1000px', width: '100%' }), []);
-  const defaultColDef = useMemo(() => {
-    return {
-      editable: false,
-      sortable: true,
-      resizable: true,
-      flex: 1,
-      minWidth: 80,
-      autoHeight: true,
-    };
-  }, []);
 
   useEffect(() => {
     let temp = _.filter(Recoils.getState('DATA:PLATFORMS'), { view: 1 });
@@ -194,8 +70,13 @@ const TodaySummary = () => {
           for (const key in dayGroupDatas) {
             if (dayGroupDatas[key].title) {
               let prefix = '';
-              if (dayGroupDatas[key].title > 0) prefix = '+ 이익';
-              else prefix = '- 손해';
+              if (dayGroupDatas[key].title > 0) {
+                prefix = '이익\n금액';
+                dayGroupDatas[key].className = 'profit';
+              } else {
+                prefix = '손해\n금액';
+                dayGroupDatas[key].className = 'loss';
+              }
 
               dayGroupDatas[key].title = `${prefix} ${replace_1000(dayGroupDatas[key].title)}`;
             }
@@ -236,130 +117,244 @@ const TodaySummary = () => {
   }, [rowData]);
 
   const onDelete = (e) => {
-    const selectedRows = gridRef.current.api.getSelectedRows();
-    if (!selectedRows.length) return;
-    const node = selectedRows[0];
+    const idxs = _.map(
+      _.filter(rowData, (row) => {
+        return row.checked;
+      }),
+      'idx'
+    );
 
-    request.post('user/today_summary/delete', { idx: node.idx }).then((ret) => {
+    if (!idxs.length) {
+      modal.alert('선택된 데이터가 없습니다.');
+      return;
+    }
+
+    request.post('user/today_summary/delete', { idxs }).then((ret) => {
       if (!ret.err) {
-        const { data } = ret.data;
         setRowData(
           _.filter(rowData, (item) => {
-            return item.idx != node.idx;
+            return !_.includes(idxs, item.idx);
           })
         );
       }
     });
   };
 
-  const onSelectionChanged = () => {
-    const selectedRows = gridRef.current.api.getSelectedRows();
-    const node = selectedRows[0];
-    // if (node) setViewResult(node);
+  const onChangeDate = (date) => {
+    const idxs = _.map(
+      _.filter(rowData, (row) => {
+        return row.checked;
+      }),
+      'idx'
+    );
+
+    if (!idxs.length) {
+      modal.alert('선택된 데이터가 없습니다.');
+      return;
+    }
+
+    request.post('user/today_summary/modify', { idxs, date: new Date(date) }).then((ret) => {
+      if (!ret.err) {
+        page_reload();
+      }
+    });
   };
 
-  const onChangeDate = (date) => {
-    const selectedRows = gridRef.current.api.getSelectedRows();
-    const node = selectedRows[0];
-    if (node) {
-      request.post('user/today_summary/modify', { idx: node.idx, date: new Date(date) }).then((ret) => {
-        if (!ret.err) {
-          const { data } = ret.data;
+  // 체크박스 선택
+  const handleSingleCheck = (idx, checked) => {
+    const findObj = _.find(rowData, { idx: idx });
+    findObj.checked = checked;
 
-          page_reload();
-        }
-      });
+    setRowData([...rowData]);
+  };
+
+  // 체크박스 전체 선택
+  const handleAllCheck = (checked) => {
+    for (const row of rowData) {
+      row.checked = checked;
     }
+
+    setRowData([...rowData]);
   };
 
   return (
     <>
       <Head />
-      <Body title={`오늘 주문 합계`} myClass={'today_summary'}>
+      <Body title={`손익 캘린더`} myClass={'today_summary'}>
         <SettlementNavTab active="/settlement/today_summary" />
 
         <div className="page">
-          <div className="btnbox">
-            <Button variant="primary" onClick={onDelete} className="btn_red">
-              선택 삭제
-            </Button>
-            <Button
-              variant="primary"
-              onClick={() => {
-                setDateModalState(true);
+          <div className="section1">
+            <div className="viewboxWrap">
+              <h4>9월 손익 합계</h4>
+              <ul className={!_.isEmpty(viewResult) ? 'viewbox' : 'viewbox off'}>
+                <li>
+                  <p className="dt">총 주문</p>
+                  <p className="dd">
+                    {viewResult.unique_order_no_count}
+                    <span>건</span>
+                  </p>
+                </li>
+                <li>
+                  <p className="dt">택배 발송</p>
+                  <p className="dd">
+                    {viewResult.delivery_send_count}
+                    <span>건</span>
+                  </p>
+                </li>
+                <li>
+                  <p className="dt">적자 주문</p>
+                  <span className="dd txt_red">
+                    {viewResult.loss_order_no_count}
+                    <span className="unit txt_red">건</span>
+                  </span>
+                </li>
+                <li>
+                  <p className="dt">상품 결제 금액</p>
+                  <p className="dd">
+                    {viewResult.sum_payment_price}
+                    <span>원</span>
+                  </p>
+                </li>
+                <li>
+                  <p className="dt">받은 배송비</p>
+                  <p className="dd">
+                    {viewResult.sum_received_delivery_fee}
+                    <span>원</span>
+                  </p>
+                </li>
+                <li className={viewResult && revert_1000(viewResult.sum_profit_loss) > 0 ? 'profit' : 'loss'}>
+                  <p className="dt">손익 합계</p>
+                  <p className="dd">
+                    {viewResult.sum_profit_loss}
+                    <span>원</span>
+                  </p>
+                </li>
+              </ul>
+            </div>
+            <CustomCalendar
+              dayGroupDatas={dayData}
+              selectCallback={(e) => {
+                setSelectedDayGroup(e.group);
               }}
-            >
-              선택한 주문서 날짜 변경
-            </Button>
+            ></CustomCalendar>
           </div>
 
-          <ul className={!_.isEmpty(viewResult) ? 'viewbox' : 'viewbox off'}>
-            <li>
-              <p className="dt">총 주문</p>
-              <p className="dd">
-                {viewResult.unique_order_no_count}
-                <span>건</span>
-              </p>
-            </li>
-            <li>
-              <p className="dt">택배 발송</p>
-              <p className="dd">
-                {viewResult.delivery_send_count}
-                <span>건</span>
-              </p>
-            </li>
-            <li>
-              <p className="dt">적자 주문</p>
-              <span className="dd txt_red">
-                {viewResult.loss_order_no_count}
-                <span className="unit txt_red">건</span>
-              </span>
-            </li>
-            <li>
-              <p className="dt">상품 결제 금액</p>
-              <p className="dd">
-                {viewResult.sum_payment_price}
-                <span>원</span>
-              </p>
-            </li>
-            <li>
-              <p className="dt">받은 배송비</p>
-              <p className="dd">
-                {viewResult.sum_received_delivery_fee}
-                <span>원</span>
-              </p>
-            </li>
-            <li className={viewResult && revert_1000(viewResult.sum_profit_loss) > 0 ? 'profit' : 'loss'}>
-              <p className="dt">손익 합계</p>
-              <p className="dd">
-                {viewResult.sum_profit_loss}
-                <span>원</span>
-              </p>
-            </li>
-          </ul>
+          <div className="section2">
+            <div className="btnbox">
+              <Button variant="primary" onClick={onDelete} className="btn_red">
+                선택 삭제
+              </Button>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  setDateModalState(true);
+                }}
+              >
+                선택한 주문서 날짜 변경
+              </Button>
+            </div>
 
-          <div style={containerStyle} className="tablebox">
-            <div style={gridStyle} className="ag-theme-alpine test">
-              <AgGridReact
-                ref={gridRef}
-                rowData={rowData}
-                columnDefs={columnDefs}
-                alwaysShowHorizontalScroll={true}
-                alwaysShowVerticalScroll={true}
-                defaultColDef={defaultColDef}
-                rowSelection={'single'}
-                overlayNoRowsTemplate={'데이터가 없습니다.'}
-                onSelectionChanged={onSelectionChanged}
-              ></AgGridReact>
+            <div className="viewboxWrap">
+              <h4>2023년 9월 06일 손익 합계</h4>
+              <ul className={!_.isEmpty(viewResult) ? 'viewbox' : 'viewbox off'}>
+                <li>
+                  <p className="dt">총 주문</p>
+                  <p className="dd">
+                    {viewResult.unique_order_no_count}
+                    <span>건</span>
+                  </p>
+                </li>
+                <li>
+                  <p className="dt">택배 발송</p>
+                  <p className="dd">
+                    {viewResult.delivery_send_count}
+                    <span>건</span>
+                  </p>
+                </li>
+                <li>
+                  <p className="dt">적자 주문</p>
+                  <span className="dd txt_red">
+                    {viewResult.loss_order_no_count}
+                    <span className="unit txt_red">건</span>
+                  </span>
+                </li>
+                <li>
+                  <p className="dt">상품 결제 금액</p>
+                  <p className="dd">
+                    {viewResult.sum_payment_price}
+                    <span>원</span>
+                  </p>
+                </li>
+                <li>
+                  <p className="dt">받은 배송비</p>
+                  <p className="dd">
+                    {viewResult.sum_received_delivery_fee}
+                    <span>원</span>
+                  </p>
+                </li>
+                <li className={viewResult && revert_1000(viewResult.sum_profit_loss) > 0 ? 'profit' : 'loss'}>
+                  <p className="dt">손익 합계</p>
+                  <p className="dd">
+                    {viewResult.sum_profit_loss}
+                    <span>원</span>
+                  </p>
+                </li>
+              </ul>
+            </div>
+
+            <div style={containerStyle} className="tablebox">
+              <table className="thead">
+                <thead>
+                  <tr>
+                    <th>
+                      <Checkbox
+                        checked={
+                          rowData &&
+                          _.filter(rowData, (row) => {
+                            return row.checked;
+                          }).length === rowData.length
+                            ? true
+                            : false
+                        }
+                        checkedItemHandler={handleAllCheck}
+                      ></Checkbox>
+                    </th>
+                    <th>업로드 시간</th>
+                    <th>매체</th>
+                    <th>
+                      주문 수
+                      <br />
+                      택배발송 수
+                    </th>
+                    <th>
+                      총 결제금액
+                      <br />
+                      받은 배송비
+                    </th>
+                    <th>손익합계</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+              <table className="tbody">
+                <thead></thead>
+                <tbody>
+                  {rowData &&
+                    rowData.map((d, key) => (
+                      <SummaryRow
+                        rowChecked={d.checked}
+                        handleSingleCheck={handleSingleCheck}
+                        key={key}
+                        index={key}
+                        d={d}
+                      />
+                    ))}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
-        <CustomCalendar
-          dayGroupDatas={dayData}
-          selectCallback={(e) => {
-            setSelectedDayGroup(e.group);
-          }}
-        ></CustomCalendar>
       </Body>
       <Footer />
 
@@ -371,5 +366,39 @@ const TodaySummary = () => {
     </>
   );
 };
+
+const SummaryRow = React.memo(({ handleSingleCheck, rowChecked, d }) => {
+  const [checked, setChecked] = useState(false);
+
+  useEffect(() => {
+    setChecked(rowChecked);
+  }, [rowChecked]);
+
+  const checkedItemHandler = (e) => {
+    handleSingleCheck(d.idx, !checked);
+    setChecked(!checked);
+  };
+
+  return (
+    <tr>
+      <td>
+        <Checkbox checked={checked} checkedItemHandler={checkedItemHandler}></Checkbox>
+      </td>
+      <td>{time_format(d.reg_date)}</td>
+      <td>{d.forms_name}</td>
+      <td>
+        {replace_1000(d.unique_order_no_count)}
+        <br />
+        {replace_1000(d.delivery_send_count)}
+      </td>
+      <td>
+        {replace_1000(d.sum_payment_price)}
+        <br />
+        {replace_1000(d.sum_received_delivery_fee)}
+      </td>
+      <td>{replace_1000(d.sum_profit_loss)}</td>
+    </tr>
+  );
+});
 
 export default React.memo(TodaySummary);

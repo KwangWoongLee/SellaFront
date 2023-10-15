@@ -1,0 +1,261 @@
+// TodaySummary
+
+.body.today_summary {
+  .page {
+    overflow-y: auto;
+  }
+
+  .viewboxWrap {
+    position: absolute;
+    top: 50px;
+    left: 0;
+    display: block;
+    width: 100%;
+    border: 1px solid #8e9fd5;
+    border-top-left-radius: 7px;
+    border-top-right-radius: 7px;
+    background-color: #fff;
+    overflow: hidden;
+
+    h4 {
+      display: block;
+      margin-bottom: 0;
+      width: 100%;
+      height: 40px;
+      line-height: 38px;
+      text-align: center;
+      font-size: 15px;
+      font-weight: 700;
+      color: #081a51;
+      border-bottom: 1px solid #8e9fd5;
+    }
+
+    .viewbox {
+      display: table;
+      margin-bottom: 0;
+      width: 100%;
+      border: 0;
+
+      li {
+        display: table-cell;
+        padding: 13px 25px;
+        border-right: 1px dotted #8e9fd5;
+      }
+
+      li:last-child {
+        border-right: 0;
+      }
+
+      li p {
+        display: block;
+        margin-bottom: 0;
+        width: auto;
+        height: auto;
+      }
+
+      li .dt {
+        margin-bottom: 10px;
+        font-size: 13px;
+        line-height: 13px;
+        color: #848da8;
+      }
+
+      li .dd {
+        font-size: 18px;
+        line-height: 18px;
+        font-weight: 800;
+        color: #081a51;
+      }
+
+      li .dd span {
+        font-size: 14px;
+        font-weight: 400;
+        margin-left: 5px;
+      }
+
+      li.profit .dd {
+        color: #006d00;
+      }
+
+      li.profit .dd:before {
+        content: '이익 + ';
+        font-size: 14px;
+        font-weight: 400;
+      }
+
+      li.loss .dd {
+        color: #d20000;
+      }
+
+      li.loss .dd:before {
+        content: '손해 - ';
+        font-size: 16px;
+        font-weight: 400;
+      }
+    }
+  }
+
+  .section1 {
+    position: relative;
+    float: left;
+    width: calc(50% - 30px);
+    height: 100%;
+    margin-right: 30px;
+
+    .rbc-calendar {
+      max-height: 100%;
+    }
+
+    .rbc-toolbar {
+      position: relative;
+      margin-bottom: 127px;
+
+      .rbc-btn-group {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+
+        button {
+          display: inline-block;
+          margin-right: 5px;
+          width: auto;
+          height: auto;
+          padding: 7px 10px 7px;
+          vertical-align: middle;
+          background-color: #fff;
+          border: 1px solid #ccc;
+          color: #444;
+          line-height: normal;
+          font-size: 13px;
+          font-weight: 600;
+          text-align: center;
+          line-height: 18px;
+          border-radius: 5px;
+        }
+
+        button:nth-child(1) {
+          float: right;
+        }
+
+        button:nth-child(2) {
+          float: left;
+          min-width: 36px;
+          font-size: 0;
+          background: #fff url(../images/icon_arrow_left.svg) no-repeat center center;
+          background-size: 14px;
+        }
+
+        button:nth-child(3) {
+          float: left;
+          min-width: 36px;
+          font-size: 0;
+          background: #fff url(../images/icon_arrow_right.svg) no-repeat center center;
+          background-size: 14px;
+        }
+      }
+
+      .rbc-toolbar-label {
+        display: block;
+        width: auto;
+        margin: 0 auto;
+        font-size: 22px;
+        font-weight: 600;
+        color: #081a51;
+      }
+    }
+
+    .rbc-month-view {
+      border: 1px solid #8e9fd5;
+      border-bottom-left-radius: 7px;
+      border-bottom-right-radius: 7px;
+      background-color: #fff;
+      overflow: hidden;
+
+      .rbc-month-header {
+        background-color: #182b65;
+
+        span {
+          line-height: 47px;
+          font-weight: 300;
+          color: #fff;
+        }
+      }
+
+      .rbc-row-content {
+        padding: 10px 0;
+
+        .rbc-row-segment {
+          margin-top: 5px;
+        }
+      }
+
+      .rbc-date-cell {
+        color: #333;
+
+        button {
+          width: 100%;
+          text-align: center;
+          font-weight: 600;
+        }
+      }
+
+      .rbc-off-range {
+        color: #999;
+      }
+
+      .rbc-event {
+        text-align: center;
+        background-color: transparent;
+
+        div {
+          color: #1d7044;
+          font-size: 15px;
+          font-weight: 600;
+        }
+      }
+
+      .rbc-event:focus,
+      .rbc-day-slot .rbc-background-event:focus {
+        outline: 0;
+      }
+      .rbc-event:hover div {
+        text-decoration: underline;
+      }
+
+      .rbc-now {
+        color: #0d48ff;
+      }
+    }
+  }
+
+  .section2 {
+    position: relative;
+    float: right;
+    width: 50%;
+    height: 100%;
+
+    .btnbox {
+      display: block;
+      float: right;
+      margin-bottom: 127px;
+      width: auto;
+      height: auto;
+
+      button {
+        margin-left: 5px;
+      }
+    }
+
+    .tablebox {
+      height: calc(100% - 159px) !important;
+      border: 1px solid #8e9fd5;
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+
+    table.thead {
+      height: 47px !important;
+    }
+  }
+}

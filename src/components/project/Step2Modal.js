@@ -14,15 +14,15 @@ import icon_add from 'images/icon_add.svg';
 import icon_close from 'images/icon_close.svg';
 
 const newRow = {
-  delivery_fee: '',
+  delivery_fee: 0,
   goods_category: '',
   idx: '',
   memo: '',
   modify_date: '',
   name: '',
-  packing_fee: '',
+  packing_fee: 0,
   reg_date: '',
-  stock_price: '',
+  stock_price: 0,
 };
 
 const Step2Modal = React.memo(({ modalState, setModalState, callback }) => {
@@ -39,17 +39,16 @@ const Step2Modal = React.memo(({ modalState, setModalState, callback }) => {
     const insertRowData = [];
 
     for (const row of rowData) {
-      const goods_category = row.goods_category;
       const name = row.name;
-      const stock_price = row.stock_price;
-      const delivery_fee = row.delivery_fee;
-      const packing_fee = row.packing_fee;
+      const stock_price = revert_1000(row.stock_price);
+      const delivery_fee = revert_1000(row.delivery_fee);
+      const packing_fee = revert_1000(row.packing_fee);
 
-      if (!goods_category && !name) {
+      if (!name) {
         continue;
       } else {
         if (!name) return modal.alert('상품명 항목이 비었습니다.');
-        if (!stock_price) return modal.alert('입고단가 항목이 비었습니다.');
+        if (stock_price != 0 && !stock_price) return modal.alert('입고단가 항목이 비었습니다.');
         if (delivery_fee != 0 && !delivery_fee) return modal.alert('택배비 항목이 비었습니다.');
         if (packing_fee != 0 && !packing_fee) return modal.alert('포장비 항목이 비었습니다.');
       }
@@ -62,7 +61,7 @@ const Step2Modal = React.memo(({ modalState, setModalState, callback }) => {
       insertRowData.push(row);
     }
 
-    if (insertRowData.length)
+    if (insertRowData.length) {
       request.post('user/goods/insert', { insert_row_data: insertRowData }).then((ret) => {
         if (!ret.err) {
           const { data } = ret.data;
@@ -74,7 +73,7 @@ const Step2Modal = React.memo(({ modalState, setModalState, callback }) => {
           }
         }
       });
-    else {
+    } else {
       modal.alert('추가할 데이터가 없습니다.');
     }
   };
@@ -142,11 +141,10 @@ const Step2Modal = React.memo(({ modalState, setModalState, callback }) => {
             <table className="thead">
               <thead>
                 <th className="head_red">상품명</th>
-                <th>카테고리</th>
                 <th className="head_red">입고단가</th>
                 <th className="head_red">택배비</th>
                 <th className="head_red">포장비</th>
-                <th>단독배송</th>
+                <th>카테고리</th>
                 <th>메모</th>
                 <th></th>
               </thead>
@@ -184,9 +182,7 @@ const InsertGoodsItems = React.memo(({ index, d, rowData, onChange, onDelete }) 
       <td>
         <input type="text" placeholder="상품명" onChange={onChange} name="name" value={d.name} />
       </td>
-      <td>
-        <input type="text" placeholder="카테고리" onChange={onChange} name="goods_category" value={d.goods_category} />
-      </td>
+
       <td>
         <NumericFormat
           allowLeadingZeros
@@ -194,7 +190,7 @@ const InsertGoodsItems = React.memo(({ index, d, rowData, onChange, onDelete }) 
           placeholder="입고단가"
           onChange={onChange}
           name="stock_price"
-          value={d.stock_price}
+          value={d.stock_price ? d.stock_price : 0}
         />
         <span>원</span>
       </td>
@@ -206,7 +202,7 @@ const InsertGoodsItems = React.memo(({ index, d, rowData, onChange, onDelete }) 
           placeholder="배송비"
           onChange={onChange}
           name="delivery_fee"
-          value={d.delivery_fee}
+          value={d.delivery_fee ? d.delivery_fee : 0}
         />
         <span>원</span>
       </td>
@@ -217,9 +213,12 @@ const InsertGoodsItems = React.memo(({ index, d, rowData, onChange, onDelete }) 
           placeholder="포장비"
           onChange={onChange}
           name="packing_fee"
-          value={d.packing_fee}
+          value={d.packing_fee ? d.packing_fee : 0}
         />
         <span>원</span>
+      </td>
+      <td>
+        <input type="text" placeholder="카테고리" onChange={onChange} name="goods_category" value={d.goods_category} />
       </td>
       <td>
         <input type="text" placeholder="메모" onChange={onChange} name="memo" value={d.memo} />

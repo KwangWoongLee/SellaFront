@@ -107,7 +107,7 @@ const Membership = () => {
               {gradeData ? gradeData.remain_warranty_day : 0}]일 남았습니다.
             </h4>
 
-            {gradeData && <GradeItem d={gradeData} onClick={onPaymentReq}></GradeItem>}
+            {gradeData && <GradeItem d={gradeData} onClick={onPaymentReq} onTestClick={onTestClick}></GradeItem>}
           </div>
 
           <div className="formbox">
@@ -188,8 +188,11 @@ const Membership = () => {
   );
 };
 
-const GradeItem = React.memo(({ index, d, onClick }) => {
-  logger.render('SelectItem : ', index);
+const onTestClick = () => {
+  navigate('payment');
+};
+
+const GradeItem = React.memo(({ index, d, onClick, onTestClick }) => {
   return (
     <div className="innerbox">
       <dl>
@@ -199,6 +202,10 @@ const GradeItem = React.memo(({ index, d, onClick }) => {
       </dl>
 
       <ul>{d.functions && d.functions.map((data, index) => <li>{data.name}</li>)}</ul>
+
+      <Button onClick={onTestClick} className="btn-primary btn_flblue">
+        테스트 결제하기
+      </Button>
 
       {d.remain_warranty_day && d.remain_warranty_day > 0 ? (
         <Button className="btn-primary">사용중</Button>

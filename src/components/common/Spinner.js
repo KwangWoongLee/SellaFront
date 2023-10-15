@@ -10,7 +10,7 @@ const MySpinner = () => {
   logger.render('MySpinner : ', show);
   return (
     <Modal show={show} fullscreen className="MySpinner">
-      <div class="loader loader-7 box"></div>
+      <div class="loader loader-7"></div>
     </Modal>
   );
 };

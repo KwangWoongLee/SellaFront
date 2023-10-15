@@ -5,43 +5,62 @@ import { img_src, logger } from 'util/com';
 
 import icon_del from 'images/icon_del.svg';
 
-const FormsMatchTable = React.memo(({ rows, selectCallback, deleteCallback, onParentSelect }) => {
+const FormsMatchTable = React.memo(({ rows, modalState, selectCallback, deleteCallback, onParentSelect }) => {
   logger.render('FormsMatchTable');
 
   const [rowData, setRowData] = useState([]);
   const [tableRow, setTableRow] = useState(null);
-  const formsMatchTableRef = useRef();
+  const formsMatchTableRef = useRef(null);
+  const modalStateParentSelectRef = useRef(null);
 
   useEffect(() => {
     if (rows) {
-      const noneSavedRows = _.cloneDeep(rows);
-      _.forEach(noneSavedRows, (row) => {
+      // const noneSavedRows = _.cloneDeep(rows);
+      _.forEach(rows, (row) => {
         row.save = false;
       });
 
-      setRowData([...noneSavedRows]);
+      setRowData([...rows]);
+    }
+
+    modalStateParentSelectRef.current = onParentSelect;
+  }, [modalState]);
+
+  useEffect(() => {
+    if (rows) {
+      setRowData([...rows]);
     }
   }, [rows]);
 
   useEffect(() => {
-    if (onParentSelect != -1 && rows && rows.length > 0) {
+    if (onParentSelect !== null && rows && rows.length > 0) {
       setTableRow(onParentSelect);
+
+      return;
     }
 
-    if (onParentSelect == null) {
-      setTableRow(null);
-    }
+    setTableRow(-1);
   }, [onParentSelect]);
+
+  useEffect(() => {
+    if (rowData && rowData[tableRow]) selectCallback(rowData[tableRow]);
+  }, [tableRow]);
 
   const onDelete = (e, d) => {
     e.preventDefault();
+
+    // const filteredRows = _.filter(rowData, (row) => {
+    //   return !(row.forms_product_name === d.forms_product_name && row.forms_option_name === d.forms_option_name);
+    // });
+
     deleteCallback(d);
+    // setRowData([...filteredRows]);
   };
 
   useEffect(() => {
     if (formsMatchTableRef.current) {
-      if (onParentSelect != -1 && rows && rows.length > 0) {
-        formsMatchTableRef.current.scrollTop = 10 * onParentSelect;
+      if (onParentSelect !== null && rows && rows.length > 0 && modalStateParentSelectRef.current === onParentSelect) {
+        formsMatchTableRef.current.scrollTop = 30 * onParentSelect;
       }
     }
   });
@@ -72,7 +91,6 @@ const FormsMatchTable = React.memo(({ rows, selectCallback, deleteCallback, onPa
                     const node = e.target.parentNode;
 
                     setTableRow(node.rowIndex);
-                    selectCallback(d);
                   }}
                   onDelete={onDelete}
                   tableRow={tableRow}
@@ -89,7 +107,7 @@ const FormsMatchItem = React.memo(({ index, d, onClick, onDelete, tableRow }) =>
   logger.render('FormsMatchItem : ', index);
 
   let classNames = [];
-  if (index == tableRow) {
+  if (index == tableRow && !d.save) {
     classNames.push('select');
   }
 

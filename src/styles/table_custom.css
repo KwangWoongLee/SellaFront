@@ -37,7 +37,7 @@ h3 span:after {
   font-weight: 400;
 }
 
-h3 > button {
+h3>button {
   float: right;
 }
 
@@ -155,8 +155,7 @@ table .btn_del {
   margin: 0 auto;
 }
 
-table .btn_add {
-}
+table .btn_add {}
 
 table .td_btn_add {
   text-align: right;
@@ -206,6 +205,10 @@ table.thead thead {
   height: auto !important;
 }
 
+table.thead tbody {
+  display: none !important;
+}
+
 table.tbody {
   display: block;
   width: 100%;
@@ -214,6 +217,10 @@ table.tbody {
   border-bottom-left-radius: 7px !important;
   border-bottom-right-radius: 7px !important;
   overflow-y: auto;
+}
+
+table.tbody thead {
+  display: none !important;
 }
 
 table.tbody tbody {
