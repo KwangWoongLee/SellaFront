@@ -71,10 +71,10 @@ const TodaySummary = () => {
             if (dayGroupDatas[key].title) {
               let prefix = '';
               if (dayGroupDatas[key].title > 0) {
-                prefix = '이익\n금액';
+                prefix = '이익\n+ ';
                 dayGroupDatas[key].className = 'profit';
               } else {
-                prefix = '손해\n금액';
+                prefix = '손해\n- ';
                 dayGroupDatas[key].className = 'loss';
               }
 
@@ -186,7 +186,7 @@ const TodaySummary = () => {
         <div className="page">
           <div className="section1">
             <div className="viewboxWrap">
-              <h4>9월 손익 합계</h4>
+              <h4>월별 손익 합계</h4>
               <ul className={!_.isEmpty(viewResult) ? 'viewbox' : 'viewbox off'}>
                 <li>
                   <p className="dt">총 주문</p>
@@ -256,7 +256,7 @@ const TodaySummary = () => {
             </div>
 
             <div className="viewboxWrap">
-              <h4>2023년 9월 06일 손익 합계</h4>
+              <h4>일별 손익 합계</h4>
               <ul className={!_.isEmpty(viewResult) ? 'viewbox' : 'viewbox off'}>
                 <li>
                   <p className="dt">총 주문</p>
@@ -320,19 +320,19 @@ const TodaySummary = () => {
                         checkedItemHandler={handleAllCheck}
                       ></Checkbox>
                     </th>
-                    <th>업로드 시간</th>
-                    <th>매체</th>
                     <th>
                       주문 수
                       <br />
-                      택배발송 수
+                      (택배발송 수)
                     </th>
                     <th>
                       총 결제금액
                       <br />
-                      받은 배송비
+                      (받은 배송비)
                     </th>
                     <th>손익합계</th>
+                    <th>업로드 시간</th>
+                    <th>매체</th>
                   </tr>
                 </thead>
                 <tbody></tbody>
@@ -384,19 +384,19 @@ const SummaryRow = React.memo(({ handleSingleCheck, rowChecked, d }) => {
       <td>
         <Checkbox checked={checked} checkedItemHandler={checkedItemHandler}></Checkbox>
       </td>
-      <td>{time_format(d.reg_date)}</td>
-      <td>{d.forms_name}</td>
       <td>
         {replace_1000(d.unique_order_no_count)}
         <br />
-        {replace_1000(d.delivery_send_count)}
+        <span className="subtxt">({replace_1000(d.delivery_send_count)})</span>
       </td>
       <td>
         {replace_1000(d.sum_payment_price)}
         <br />
-        {replace_1000(d.sum_received_delivery_fee)}
+        <span className="subtxt">({replace_1000(d.sum_received_delivery_fee)})</span>
       </td>
       <td>{replace_1000(d.sum_profit_loss)}</td>
+      <td>{time_format(d.reg_date)}</td>
+      <td>{d.forms_name}</td>
     </tr>
   );
 });

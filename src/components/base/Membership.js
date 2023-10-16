@@ -10,6 +10,7 @@ import Checkbox from 'components/common/CheckBoxCell';
 import { logger, modal, navigate } from 'util/com';
 import request from 'util/request';
 import Recoils from 'recoils';
+import useScript from 'react-script-hook';
 
 import 'styles/Mypage.scss';
 
@@ -29,6 +30,14 @@ const Membership = () => {
   const [gradeData, setGradeData] = useState(null);
 
   const [modalState, setModalState] = useState(false);
+
+  const [loading, error] = useScript({
+    src: 'https://cdn.iamport.kr/js/iamport.payment-1.2.0.js',
+    onload: () => {
+      window.IMP.init('imp85285548');
+    },
+    checkForExisting: true,
+  });
 
   useEffect(() => {
     request.post('base/membership', { access_token: account.access_token }).then((ret) => {
@@ -189,7 +198,30 @@ const Membership = () => {
 };
 
 const onTestClick = () => {
-  navigate('payment');
+  window.IMP.request_pay(
+    {
+      // param
+      pg: 'inicis.INIBillTst',
+      pay_method: 'card',
+      merchant_uid: `mid_${new Date().getTime()}`,
+      name: '1개월 결제',
+      amount: 1000,
+      currency: 'KRW',
+      buyer_name: '이광웅',
+      buyer_email: 'Iamport@chai.finance',
+      buyer_tel: '010-5852-9537', // 필수
+      buyer_addr: '서울특별시 강남구 삼성동',
+      buyer_postcode: '123-456',
+    },
+    (rsp) => {
+      // callback
+      if (rsp.success) {
+        console.log(123);
+      } else {
+        console.log(456);
+      }
+    }
+  );
 };
 
 const GradeItem = React.memo(({ index, d, onClick, onTestClick }) => {

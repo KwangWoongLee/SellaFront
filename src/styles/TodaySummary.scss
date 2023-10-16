@@ -57,7 +57,7 @@
         margin-bottom: 10px;
         font-size: 13px;
         line-height: 13px;
-        color: #848da8;
+        color: #1b3279;
       }
 
       li .dd {
@@ -92,6 +92,14 @@
         font-size: 16px;
         font-weight: 400;
       }
+    }
+
+    .viewbox:has(li.profit) {
+      background-color: #defbeb;
+    }
+
+    .viewbox:has(li.loss) {
+      background-color: #ffeaea;
     }
   }
 
@@ -226,6 +234,27 @@
       .rbc-now {
         color: #0d48ff;
       }
+
+      .rbc-now button {
+        display: table;
+        margin: 0 auto;
+        padding: 2px 10px;
+        width: auto;
+        color: #0d48ff;
+        line-height: 16px;
+      }
+
+      .rbc-now button:before {
+        content: 'Today';
+        display: block;
+        margin-top: 0;
+        margin-bottom: 3px;
+        width: auto;
+        height: auto;
+        line-height: 10px;
+        font-size: 10px;
+        color: #7089d4;
+      }
     }
   }
 
@@ -255,7 +284,43 @@
     }
 
     table.thead {
-      height: 47px !important;
+      height: auto !important;
+
+      th {
+        height: auto;
+        line-height: normal;
+      }
+    }
+
+    thead th:nth-child(1),
+    tbody td:nth-child(1) {
+      width: 36px;
+      text-align: center;
+    }
+
+    thead th:nth-child(2),
+    tbody td:nth-child(2) {
+      width: 150px;
+      text-align: center;
+    }
+
+    thead th:nth-child(3),
+    tbody td:nth-child(3),
+    thead th:nth-child(4),
+    tbody td:nth-child(4) {
+      width: 220px;
+      text-align: center;
+    }
+
+    thead th:nth-child(5),
+    tbody td:nth-child(5) {
+      width: 105px;
+      text-align: center;
+    }
+
+    thead th:nth-child(6),
+    tbody td:nth-child(6) {
+      text-align: center;
     }
   }
 }

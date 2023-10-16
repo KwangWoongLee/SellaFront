@@ -12,6 +12,15 @@ table {
   overflow: hidden;
 }
 
+.table {
+  margin: 0 !important;
+  border: 0;
+}
+
+.table>:not(:first-child) {
+  border: 0;
+}
+
 h3 {
   display: block;
   margin-bottom: 15px;
@@ -102,7 +111,7 @@ table th.required span.sub {
   text-indent: 10px;
 }
 
-table tr:hover,
+table tr:hover td,
 table tr:hover td input {
   background-color: #e8f4fe !important;
   cursor: default;
@@ -129,6 +138,15 @@ table tr:focus-within input:not(:focus) {
   background-color: #e8f4fe !important;
 }
 
+table td input+span {
+  display: inline-block;
+  float: right;
+  width: 20px;
+  line-height: 32px;
+  color: #888;
+  text-align: right;
+}
+
 table tr.select {
   background-color: #e8f4fe;
 }
@@ -148,6 +166,14 @@ table td {
 
 table td:last-child {
   border-right: 0;
+}
+
+table td .subtxt {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-size: 13px;
+  color: #d20000;
 }
 
 table .btn_del {
@@ -193,7 +219,7 @@ table input[type='checkbox'] {
 }
 
 table.thead {
-  display: block;
+  /* display: block; */
   height: 36px !important;
   border-bottom-left-radius: 0 !important;
   border-bottom-right-radius: 0 !important;
@@ -229,8 +255,13 @@ table.tbody tbody {
   height: auto;
 }
 
+
 table.thead td:first-child {
   border-left-color: #081a51;
+}
+
+table.tbody td {
+  padding: 10px;
 }
 
 .td_small {

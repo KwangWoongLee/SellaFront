@@ -2,7 +2,11 @@ import { logger, replace_1000, revert_1000, time_format, time_format_none_time }
 
 export const SumPLRenderer = ({ data }) => {
   if (data && data.connect_flag == false) {
-    return <>미연결</>;
+    return (
+      <>
+        <span className="center unconnected">미연결</span>
+      </>
+    );
   }
 
   return (
@@ -12,10 +16,10 @@ export const SumPLRenderer = ({ data }) => {
       (data.sum_profit_loss != 0 && !data.sum_profit_loss) ||
       data.sum_profit_loss === '' ? (
         <>
-          <span>
+          <span className="center txt_999">
             계산 전
-            <br />
-            {'-'}
+            {/* <br />
+            {'-'} */}
           </span>
         </>
       ) : (
@@ -23,7 +27,7 @@ export const SumPLRenderer = ({ data }) => {
           {data.sum_profit_loss > 0 ? (
             <>
               <span className="profit">
-                이익
+                <i>이익</i>
                 <br />
                 {replace_1000(data.sum_profit_loss)}
               </span>
@@ -31,7 +35,7 @@ export const SumPLRenderer = ({ data }) => {
           ) : (
             <>
               <span className="loss">
-                손해
+                <i>손해</i>
                 <br />
                 {replace_1000(data.sum_profit_loss)}
               </span>
@@ -45,7 +49,11 @@ export const SumPLRenderer = ({ data }) => {
 
 export const PLRenderer = ({ data }) => {
   if (data && data.connect_flag == false) {
-    return <>미연결</>;
+    return (
+      <>
+        <span className="center unconnected">미연결</span>
+      </>
+    );
   }
 
   return (
@@ -55,26 +63,26 @@ export const PLRenderer = ({ data }) => {
       (data.profit_loss != 0 && !data.profit_loss) ||
       data.profit_loss === '' ? (
         <>
-          <span>
+          <span className="center txt_999">
             계산 전
-            <br />
-            {'-'}
+            {/* <br />
+            {'-'} */}
           </span>
         </>
       ) : (
         <>
           {data.profit_loss > 0 ? (
             <>
-              <span className="profit">
-                이익
+              <span className="profit center">
+                <i>이익</i>
                 <br />
                 {replace_1000(data.profit_loss)}
               </span>
             </>
           ) : (
             <>
-              <span className="loss">
-                손해
+              <span className="loss center">
+                <i>손해</i>
                 <br />
                 {replace_1000(data.profit_loss)}
               </span>

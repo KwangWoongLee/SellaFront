@@ -53,6 +53,7 @@ const MarginCalc = () => {
   const [unConnectModalSelectData, setUnConnectModalSelectData] = useState({});
   const [sliderState, setSliderState] = useState(false);
 
+  const lastRowDatasRef = useRef(null);
   const stockPriceDataRef = useRef(null);
   //ag-grid
   const containerStyle = useMemo(() => ({ width: '100%', height: '100%' }), []);
@@ -285,6 +286,7 @@ const MarginCalc = () => {
           },
           {
             name: '미연결 주문건 삭제 후 손익계산',
+            className: 'btn_blue',
             callback: () => {
               const changedRowDatas = _.cloneDeep(rowData);
 
@@ -318,6 +320,7 @@ const MarginCalc = () => {
 
               setViewResult(summary);
               setRowData([...connect_rows]);
+              lastRowDatasRef.current = [...connect_rows];
             },
           },
         ]
@@ -327,7 +330,9 @@ const MarginCalc = () => {
       if (!summary) return;
 
       setViewResult(summary);
-      setRowData(_.cloneDeep(rowData));
+      const lastRows = _.cloneDeep(rowData);
+      setRowData(lastRows);
+      lastRowDatasRef.current = [...lastRows];
     }
   };
 
@@ -480,7 +485,7 @@ const MarginCalc = () => {
                     modalState={sliderState}
                     setModalState={setSliderState}
                     autoplay={true}
-                    autoplaySpeed={2000}
+                    autoplaySpeed={6000}
                     dots={false}
                     slidesToShow={1}
                     slidesToScroll={1}
@@ -488,18 +493,18 @@ const MarginCalc = () => {
                   >
                     {announcement &&
                       announcement.map((data, key) => (
-                        <h2>
-                          <span>{data.announcement_category}</span>{' '}
-                          <span
+                        <dl>
+                          {/* <span>{data.announcement_category}</span>{' '} */}
+                          <dt
                             onClick={() => {
                               com.storage.setItem('nav_announcement', data.idx);
                               navigate('/cscenter/announcement');
                             }}
                           >
                             {data.title}
-                          </span>{' '}
-                          <span>{time_format_none_time(data.reg_date)}</span>
-                        </h2>
+                          </dt>{' '}
+                          <dd>{time_format_none_time(data.reg_date)}</dd>
+                        </dl>
                       ))}
                   </Slider>
                   <button
@@ -606,11 +611,20 @@ const MarginCalc = () => {
                     <img src={`${img_src}${icon_circle_arrow_down}`} />
                     다운로드
                   </Button>
+                  {rowData && rowData.length > 0 && (
+                    <span className="formName">
+                      업로드한 매체 : <b>{rowData[0].forms_name}</b>
+                    </span>
+                  )}
                 </div>
               </div>
 
               <ul className={!_.isEmpty(viewResult) ? 'viewbox' : 'viewbox off'}>
-                <li>
+                <li
+                  onClick={() => {
+                    setRowData([...lastRowDatasRef.current]);
+                  }}
+                >
                   <p className="dt">총 주문</p>
                   <p className="dd">
                     {viewResult.unique_order_no_count && replace_1000(revert_1000(viewResult.unique_order_no_count))}
@@ -624,7 +638,22 @@ const MarginCalc = () => {
                     <span>건</span>
                   </p>
                 </li>
-                <li>
+                <li
+                  onClick={() => {
+                    const lossRowGroups = _.map(
+                      _.filter(rowData, (row) => {
+                        return row.profit_loss < 0;
+                      }),
+                      'group.id'
+                    );
+
+                    setRowData(
+                      _.filter(rowData, (row) => {
+                        return _.includes(lossRowGroups, row.group.id);
+                      })
+                    );
+                  }}
+                >
                   <p className="dt">적자 주문</p>
                   <span className="dd txt_red">
                     {viewResult.loss_order_no_count && replace_1000(revert_1000(viewResult.loss_order_no_count))}
@@ -663,59 +692,67 @@ const MarginCalc = () => {
               </ul>
 
               <div style={containerStyle} className="tablebox">
-                <div style={gridStyle} className="ag-theme-alpine test">
-                  <Table>
-                    <thead>
-                      <th>
-                        <Checkbox
-                          checked={
-                            rowData &&
-                            _.filter(rowData, (row) => {
-                              return row.checked;
-                            }).length === rowData.length
-                              ? true
-                              : false
-                          }
-                          checkedItemHandler={handleAllCheck}
-                        ></Checkbox>
-                      </th>
-                      <th>총 손익</th>
-                      <th>손익</th>
-                      <th>결제일</th>
-                      <th>배송비묶음번호</th>
-                      <th>주문번호</th>
-                      <th>수취인명</th>
-                      <th>수취인주소</th>
-                      <th>수취인연락처</th>
-                      <th>매체</th>
-                      <th>판매상품명</th>
-                      <th>옵션</th>
-                      <th>수량</th>
-                      <th>총 결제금액\n(정산예정금액)</th>
-                      <th>받은 배송비\n(배송비 수수료)</th>
-                      <th>총 입고단가</th>
-                      <th>배송비</th>
-                      <th>포장비</th>
-                    </thead>
-                  </Table>
-                  <Table>
-                    <tbody>
-                      {rowData &&
-                        rowData.map((d, key) => (
-                          <ProfitLossRow
-                            onRowDoubleClick={onRowDoubleClick}
-                            rowChecked={d.checked}
-                            handleSingleCheck={handleSingleCheck}
-                            key={key}
-                            index={key}
-                            d={d}
-                            stockPriceDataRef={stockPriceDataRef}
-                            setStockPriceModalState={setStockPriceModalState}
-                          />
-                        ))}
-                    </tbody>
-                  </Table>
-                </div>
+                <Table className="thead">
+                  <thead>
+                    <th>
+                      <Checkbox
+                        checked={
+                          rowData &&
+                          _.filter(rowData, (row) => {
+                            return row.checked;
+                          }).length === rowData.length
+                            ? true
+                            : false
+                        }
+                        checkedItemHandler={handleAllCheck}
+                      ></Checkbox>
+                    </th>
+                    <th>총 손익</th>
+                    <th>손익</th>
+                    <th>결제일</th>
+                    {/* <th>배송비묶음번호</th> */}
+                    <th>주문번호</th>
+                    <th>수취인명</th>
+                    {/* <th>매체</th> */}
+                    <th>판매상품명</th>
+                    <th>옵션</th>
+                    <th>수량</th>
+                    <th>
+                      총 결제금액
+                      <br />
+                      (정산예정금액)
+                    </th>
+                    <th>
+                      받은 배송비
+                      <br />
+                      (배송비수수료)
+                    </th>
+                    <th>총 입고단가</th>
+                    <th>배송비</th>
+                    <th>포장비</th>
+                    <th>수취인 연락처</th>
+                    <th>수취인 주소</th>
+                  </thead>
+                  <tbody></tbody>
+                </Table>
+                <Table className="tbody">
+                  <thead></thead>
+                  <tbody>
+                    {rowData &&
+                      rowData.map((d, key) => (
+                        <ProfitLossRow
+                          onRowDoubleClick={onRowDoubleClick}
+                          rowChecked={d.checked}
+                          handleSingleCheck={handleSingleCheck}
+                          key={key}
+                          index={key}
+                          d={d}
+                          stockPriceDataRef={stockPriceDataRef}
+                          setStockPriceModalState={setStockPriceModalState}
+                        />
+                      ))}
+                  </tbody>
+                </Table>
               </div>
             </div>
           </>
@@ -1056,27 +1093,6 @@ const ProfitLossRow = React.memo(
             onRowDoubleClick(e, d);
           }}
         >
-          {d['30005']}
-        </td>
-        <td
-          onDoubleClick={(e) => {
-            onRowDoubleClick(e, d);
-          }}
-        >
-          {d['30050']}
-        </td>
-        <td
-          onDoubleClick={(e) => {
-            onRowDoubleClick(e, d);
-          }}
-        >
-          {d['30049']}
-        </td>
-        <td
-          onDoubleClick={(e) => {
-            onRowDoubleClick(e, d);
-          }}
-        >
           {d['forms_name']}
         </td>
         <td
@@ -1113,21 +1129,38 @@ const ProfitLossRow = React.memo(
             setStockPriceModalState(true);
           }}
         >
-          <input name="stock_price" value={inputs.stock_price} onChange={onChange}></input> 원
+          <input name="stock_price" value={inputs.stock_price} onChange={onChange}></input>
+          <span>원</span>
         </td>
         <td
           onDoubleClick={(e) => {
             onRowDoubleClick(e, d);
           }}
         >
-          <input name="delivery_fee" value={inputs.delivery_fee} onChange={onChange}></input>원
+          <input name="delivery_fee" value={inputs.delivery_fee} onChange={onChange}></input>
+          <span>원</span>
         </td>
         <td
           onDoubleClick={(e) => {
             onRowDoubleClick(e, d);
           }}
         >
-          <input name="packing_fee" value={inputs.packing_fee} onChange={onChange}></input>원
+          <input name="packing_fee" value={inputs.packing_fee} onChange={onChange}></input>
+          <span>원</span>
+        </td>
+        <td
+          onDoubleClick={(e) => {
+            onRowDoubleClick(e, d);
+          }}
+        >
+          {d['30049']}
+        </td>
+        <td
+          onDoubleClick={(e) => {
+            onRowDoubleClick(e, d);
+          }}
+        >
+          {d['30050']}
         </td>
       </tr>
     );

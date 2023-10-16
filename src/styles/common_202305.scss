@@ -119,6 +119,10 @@ body {
   color: #d20000 !important;
 }
 
+.txt_999 {
+  color: #999 !important;
+}
+
 .center {
   text-align: center !important;
 }
@@ -570,6 +574,7 @@ input[type='checkbox'] {
         width: 90%;
         height: 40px;
         line-height: 40px;
+        font-weight: 500;
         color: #000;
       }
 

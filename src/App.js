@@ -14,7 +14,6 @@ import RecoilNexus from 'recoil-nexus';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Modals from 'components/modal';
 
-import Payment from 'components/base/Payment';
 import Login from 'components/base/Login';
 import Logout from 'components/base/Logout';
 import Membership from 'components/base/Membership';
@@ -75,14 +74,6 @@ export function App() {
           />
           <Route path="/login" element={<Login />} />
           <Route path="/logout" element={<Logout />} />
-          <Route
-            path="payment"
-            element={
-              <ProtectedRoute>
-                <Payment />
-              </ProtectedRoute>
-            }
-          />
           <Route path="settlement">
             <Route
               path="margin_calc"
