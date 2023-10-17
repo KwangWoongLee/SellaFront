@@ -158,3 +158,79 @@
 .header > .member:hover + ul {
   display: inline-block;
 }
+
+.footer > .menubox {
+  display: inline-block;
+  width: 100%;
+  height: auto;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+}
+
+.footer > .menubox > ul,
+.footer > .informbox {
+  display: table;
+  margin: 0 auto;
+  width: 1200px;
+  height: auto;
+}
+
+.footer > .menubox > ul > li {
+  display: inline-block;
+  float: left;
+  margin: 5px 0 7px 30px;
+  padding-right: 30px;
+  width: auto;
+  height: auto;
+  border-right: 1px solid #ddd;
+}
+
+.footer > .menubox > ul > li > a {
+  color: #000;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.footer > .menubox > ul > li > a:hover {
+  text-decoration: underline;
+  color: #081a51;
+}
+
+.footer > .informbox {
+  display: flex;
+}
+
+.footer > .informbox > img {
+  display: block;
+  float: left;
+  padding: 20px 30px;
+  width: 20%;
+  height: auto;
+  opacity: 20%;
+}
+
+.footer > .informbox > dl {
+  display: block;
+  float: right;
+  padding: 20px 0 20px 50px;
+  width: 80%;
+  height: auto;
+}
+
+.footer > .informbox > dl > dd {
+  font-size: 14px;
+  line-height: normal;
+}
+
+.footer > .informbox > dl > dd:first-child {
+  margin-bottom: 10px;
+  color: #081a51;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.footer > .informbox > dl > dd.left {
+  margin-right: 10px;
+  padding-right: 10px;
+  border-right: 1px solid #bbb;
+}

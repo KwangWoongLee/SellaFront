@@ -712,7 +712,6 @@ const MarginCalc = () => {
                     <th>결제일</th>
                     {/* <th>배송비묶음번호</th> */}
                     <th>주문번호</th>
-                    <th>수취인명</th>
                     {/* <th>매체</th> */}
                     <th>판매상품명</th>
                     <th>옵션</th>
@@ -730,6 +729,7 @@ const MarginCalc = () => {
                     <th>총 입고단가</th>
                     <th>배송비</th>
                     <th>포장비</th>
+                    <th>수취인명</th>
                     <th>수취인 연락처</th>
                     <th>수취인 주소</th>
                   </thead>
@@ -1081,19 +1081,13 @@ const ProfitLossRow = React.memo(
         >
           {d['30004']}
         </td>
+
         <td
           onDoubleClick={(e) => {
             onRowDoubleClick(e, d);
           }}
         >
-          {d['30048']}
-        </td>
-        <td
-          onDoubleClick={(e) => {
-            onRowDoubleClick(e, d);
-          }}
-        >
-          {d['forms_name']}
+          {d['forms_product_name']}
         </td>
         <td
           onDoubleClick={(e) => {
@@ -1147,6 +1141,13 @@ const ProfitLossRow = React.memo(
         >
           <input name="packing_fee" value={inputs.packing_fee} onChange={onChange}></input>
           <span>원</span>
+        </td>
+        <td
+          onDoubleClick={(e) => {
+            onRowDoubleClick(e, d);
+          }}
+        >
+          {d['30048']}
         </td>
         <td
           onDoubleClick={(e) => {

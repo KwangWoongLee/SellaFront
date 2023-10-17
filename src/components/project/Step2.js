@@ -230,8 +230,8 @@ const Step2 = () => {
     if (selectedRows && selectedRows.length > 0) {
       const selectedIdxs = _.map(selectedRows, 'idx');
       modal.confirm(
-        '데이터를 삭제하시겠습니까?',
-        [{ strong: '', normal: '' }],
+        '',
+        [{ strong: '', normal: '데이터를 삭제하시겠습니까?' }],
         [
           {
             name: '예',
