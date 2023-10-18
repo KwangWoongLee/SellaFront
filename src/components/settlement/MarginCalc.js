@@ -928,6 +928,25 @@ const CalcSummary = (rowData) => {
           return item.group.id === row.group.id;
         });
         row.sum_profit_loss = _.sumBy(eqGroupDatas, 'profit_loss');
+
+        for (const eqGroupData of eqGroupDatas) {
+          row.sum_profit_loss -= getRealityDeliveryFee(eqGroupData);
+          row.sum_profit_loss += eqGroupData['delivery_fee'];
+          row.sum_profit_loss += eqGroupData['packing_fee'];
+        }
+
+        row.sum_profit_loss = Number(row.sum_profit_loss.toFixed(0));
+
+        //받은 배송비
+        const max30047 = revert_1000(_.max(_.map(eqGroupDatas, 'reality_delivery_fee')).toFixed(0));
+        //배송비
+        const max_delivery_fee = _.max(_.map(eqGroupDatas, 'delivery_fee'));
+        //포장비
+        const max_packing_fee = _.max(_.map(eqGroupDatas, 'packing_fee'));
+
+        row.sum_profit_loss += max30047;
+        row.sum_profit_loss -= max_delivery_fee;
+        row.sum_profit_loss -= max_packing_fee;
       }
     }
   }
@@ -1020,7 +1039,7 @@ function excelSerialDateToJSDate(excelSerialDate) {
 const ProfitLossRow = React.memo(
   ({ handleSingleCheck, rowChecked, d, stockPriceDataRef, setStockPriceModalState, onRowDoubleClick }) => {
     const [inputs, setInputs] = useState({
-      stock_price: d.stock_price == '' || !d['30005'] ? '0' : replace_1000(d.stock_price),
+      stock_price: d.stock_price == '' || !d['30005'] ? '0' : replace_1000(d.stock_price * Number(d['30005'])),
       delivery_fee: d.delivery_fee == '' ? '0' : replace_1000(d.delivery_fee),
       packing_fee: d.packing_fee == '' ? '0' : replace_1000(d.packing_fee),
     });

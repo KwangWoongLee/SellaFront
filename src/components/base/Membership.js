@@ -16,7 +16,6 @@ import 'styles/Mypage.scss';
 
 const Membership = () => {
   logger.render('Membership');
-
   const account = Recoils.useValue('CONFIG:ACCOUNT');
 
   const nameRef = useRef(null);
@@ -54,13 +53,36 @@ const Membership = () => {
     });
   }, []);
 
-  const onPaymentReq = () => {
-    request.post('base/payment', { access_token: account.access_token }).then((ret) => {
+  const onPaymentReq = (d) => {
+    request.post('base/payment', { access_token: account.access_token, grade: d }).then((ret) => {
       if (!ret.err) {
-        modal.alert('결제가 완료되었습니다. 다시 로그인 해주세요.');
+        window.IMP.request_pay(
+          {
+            // param
+            pg: 'nice.iamport00m',
+            pay_method: 'card',
+            merchant_uid: `mid_${new Date().getTime()}`,
+            name: d.name,
+            amount: d.price,
+            currency: 'KRW',
+            buyer_name: account.name,
+            buyer_email: account.email,
+            buyer_tel: account.phone, // 필수
+          },
+          (rsp) => {
+            // callback
+            if (rsp.success) {
+              console.log(123);
+            } else {
+              console.log(456);
+            }
+          }
+        );
 
-        Recoils.resetState('CONFIG:ACCOUNT');
-        navigate('/');
+        // modal.alert('결제가 완료되었습니다. 다시 로그인 해주세요.');
+
+        // Recoils.resetState('CONFIG:ACCOUNT');
+        // navigate('/');
       }
     });
   };
@@ -116,7 +138,18 @@ const Membership = () => {
               {gradeData ? gradeData.remain_warranty_day : 0}]일 남았습니다.
             </h4>
 
-            {gradeData && <GradeItem d={gradeData} onClick={onPaymentReq} onTestClick={onTestClick}></GradeItem>}
+            {gradeData && (
+              <GradeItem
+                account={{
+                  email: emailRef.current.value,
+                  name: nameRef.current.value,
+                  phone: phoneRef.current.value,
+                  access_token: account.access_token,
+                }}
+                d={gradeData}
+                onClick={onPaymentReq}
+              ></GradeItem>
+            )}
           </div>
 
           <div className="formbox">
@@ -197,34 +230,7 @@ const Membership = () => {
   );
 };
 
-const onTestClick = () => {
-  window.IMP.request_pay(
-    {
-      // param
-      pg: 'inicis.INIBillTst',
-      pay_method: 'card',
-      merchant_uid: `mid_${new Date().getTime()}`,
-      name: '1개월 결제',
-      amount: 1000,
-      currency: 'KRW',
-      buyer_name: '이광웅',
-      buyer_email: 'Iamport@chai.finance',
-      buyer_tel: '010-5852-9537', // 필수
-      buyer_addr: '서울특별시 강남구 삼성동',
-      buyer_postcode: '123-456',
-    },
-    (rsp) => {
-      // callback
-      if (rsp.success) {
-        console.log(123);
-      } else {
-        console.log(456);
-      }
-    }
-  );
-};
-
-const GradeItem = React.memo(({ index, d, onClick, onTestClick }) => {
+const GradeItem = React.memo(({ index, d, onClick, account }) => {
   return (
     <div className="innerbox">
       <dl>
@@ -235,14 +241,15 @@ const GradeItem = React.memo(({ index, d, onClick, onTestClick }) => {
 
       <ul>{d.functions && d.functions.map((data, index) => <li>{data.name}</li>)}</ul>
 
-      <Button onClick={onTestClick} className="btn-primary btn_flblue">
-        테스트 결제하기
-      </Button>
-
       {d.remain_warranty_day && d.remain_warranty_day > 0 ? (
         <Button className="btn-primary">사용중</Button>
       ) : (
-        <Button onClick={onClick} className="btn-primary btn_flblue">
+        <Button
+          onClick={() => {
+            onClick(d, account);
+          }}
+          className="btn-primary btn_flblue"
+        >
           결제하기
         </Button>
       )}
