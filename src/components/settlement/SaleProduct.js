@@ -319,11 +319,11 @@ const SaleProduct = () => {
       <Body title={`판매상품 연결조회`} myClass={'sale_product'}>
         <FormManagementNavTab active="/settlement/sale_product" />
         <div className="page">
-          <button onClick={onSave} className="btn_blue btn-primary">
-            전체 저장
-          </button>
           <div className="section1">
             <h3>판매 상품 연결 조회</h3>
+            <button onClick={onSave} className="btn_blue btn-primary">
+              전체 저장
+            </button>
             <FormsMatchTable
               rows={items}
               selectCallback={onSelectFormsMatchTable}

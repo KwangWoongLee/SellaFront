@@ -34,6 +34,7 @@ import 'styles/MarginCalc.scss';
 import icon_circle_arrow_down from 'images/icon_circle_arrow_down.svg';
 import icon_circle_arrow_up from 'images/icon_circle_arrow_up.svg';
 import img_service from 'images/img_service.png';
+import icon_close from 'images/icon_close.svg';
 
 const MarginCalc = () => {
   logger.render('MarginCalc');
@@ -1020,8 +1021,10 @@ const StockPriceModal = React.memo(({ modalState, setModalState, goodsMatch }) =
   return (
     <Modal show={modalState} onHide={onClose} centered className="modal stockPriceModal">
       <Modal.Header>
-        <Modal.Title>입고단가 확인</Modal.Title>
-      </Modal.Header>
+        <Modal.Title>연결 상품 입고단가 확인</Modal.Title>
+        <Button variant="primary" className="btn_close" onClick={onClose}>
+          <img alt={''} src={`${img_src}${icon_close}`} />
+        </Button>      </Modal.Header>
       <Modal.Body>
         <table className="columncontrol tbody">
           <thead>

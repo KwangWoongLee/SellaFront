@@ -55,8 +55,10 @@ const GoodsMatchTable = React.memo(({ selectCallback, deleteCallback, changeCall
             <th></th>
           </tr>
         </thead>
+        <tbody></tbody>
       </table>
       <table className="goodsmatchtable tbody">
+        <thead></thead>
         <tbody>
           <>
             {rowData &&
@@ -132,8 +134,8 @@ const GoodsMatchItem = React.memo(({ index, d, rowSpan, onClick, onDelete, onCha
             onChange={(e) => {
               onChange(e, d, feeRateRef.current.value, 2);
             }}
-            className="btn_number"
           ></input>
+          <span>%</span>
         </td>
       )}
       <td>

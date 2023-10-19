@@ -239,15 +239,15 @@ const MarginCalc_UnConnectModal = React.memo(
             >
               상품 추가
             </button>
-            <button onClick={onSave} className="btn_blue btn-primary btn_save">
-              전체 저장
-            </button>
           </Modal.Header>
           <Modal.Body>
             <div className="section1">
               <h3>
                 미연결 주문 <span>{items.length}</span>
               </h3>
+            <button onClick={onSave} className="btn_blue btn-primary btn_save">
+              전체 저장
+            </button>
               <FormsMatchTable
                 rows={items}
                 modalState={modalState}

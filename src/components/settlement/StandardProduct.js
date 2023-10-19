@@ -150,7 +150,7 @@ const StandardProduct = () => {
           <div className="section1">
             <h3>기준상품 연결 조회 </h3>
             <div className="inputbox">
-              <DropdownButton variant="" title={category[categoryType]}>
+              {/* <DropdownButton variant="" title={category[categoryType]}>
                 {category &&
                   category.map((item, key) => (
                     <Dropdown.Item
@@ -162,7 +162,7 @@ const StandardProduct = () => {
                       {category[key]}
                     </Dropdown.Item>
                   ))}
-              </DropdownButton>
+              </DropdownButton> */}
               <input
                 type="text"
                 placeholder={'상품명'}
@@ -222,7 +222,7 @@ const StandardProduct = () => {
                   <th>상품명</th>
                   <th>옵션</th>
                   <th>수량</th>
-                  <th>수수료</th>
+                  {/* <th>수수료</th> */}
                   <th></th>
                 </thead>
               </table>
@@ -295,13 +295,12 @@ const StandardProductItem = React.memo(({ index, d, onChange, onSave, onDelete }
           onChange={(e) => {
             onChange(e, d, inputRef.current.value);
           }}
-          className="btn_number"
         ></input>
       </td>
-
+      {/* 
       <td>
         {d.category_fee_rate && Number(d.category_fee_rate).toFixed(2) ? '-' : Number(d.category_fee_rate).toFixed(2)}
-      </td>
+      </td> */}
       <td>
         <button
           className="btn-primary btn_blue btn_small"

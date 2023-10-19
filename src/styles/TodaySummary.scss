@@ -292,6 +292,10 @@
       }
     }
 
+    table.tbody {
+      height: calc(100% - 59px);
+    }
+
     thead th:nth-child(1),
     tbody td:nth-child(1) {
       width: 36px;

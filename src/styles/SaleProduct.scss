@@ -40,11 +40,13 @@
     }
 
     .formsmatchtable.tbody {
-      height: 320px !important;
+      height: 323px !important;
       margin-bottom: 30px;
     }
 
     .goodsmatchtable {
+      table-layout: fixed;
+
       th:nth-child(1),
       td:nth-child(1) {
         width: 180px;
@@ -60,20 +62,29 @@
         width: 130px;
       }
 
-      th.td_fee,
-      td.td_fee {
-        width: 100px;
-        text-align: center;
+      th:nth-child(5),
+      td:nth-child(5) {
+        width: 60px;
+      }
+
+      th:nth-child(5).td_fee,
+      td:nth-child(5).td_fee {
+        width: 120px;
+
+        input {
+          width: calc(100% - 20px);
+          text-align: center;
+        }
       }
 
       th:nth-child(6),
       td:nth-child(6) {
-        width: 40px;
+        width: 60px;
       }
     }
 
     .goodsmatchtable.tbody {
-      height: 280px !important;
+      height: 283px !important;
     }
 
     .btn_blue {
@@ -123,8 +134,12 @@
       overflow: auto;
     }
 
-    .standardproductsearch table tbody:empty {
+    .standardproductsearch table tbody .td_empty {
       min-height: 360px;
+    }
+
+    .standardproductsearch table tbody .td_empty:before {
+      content: '주문건을 선택해 주세요.';
     }
 
     .categoryfeesearch {
@@ -136,8 +151,12 @@
       overflow: auto;
     }
 
-    .categoryfeesearch table tbody:empty {
+    .categoryfeesearch table tbody .td_empty {
       min-height: 320px;
+    }
+
+    .categoryfeesearch table tbody .td_empty:before {
+      content: '이 매체는 수수료 매칭이 필요하지 않습니다.';
     }
 
     .standardproductsearch table,
@@ -170,11 +189,11 @@
   }
 
   .formsmatchtable.tbody {
-    height: 300px !important;
+    height: 305px !important;
   }
 
   .goodsmatchtable.tbody {
-    height: 260px !important;
+    height: 267px !important;
   }
 
   .standardproductsearch {

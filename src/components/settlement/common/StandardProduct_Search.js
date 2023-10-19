@@ -129,7 +129,7 @@ const StandardProduct_Search = React.memo(({ selectCallback, unSelectCallback, p
         <table>
           <tbody>
             <>
-              {mode == 0 && '판매상품 연결 조회 상품을 선택해 주세요.'}
+              {mode == 0 && <td className="td_empty"></td>}
               {mode == 2 &&
                 items &&
                 items.map((d, key) => (

@@ -147,7 +147,10 @@ const CategoryFee_Search = React.memo(({ selectCallback, parentFormsMatchSelectD
       <div className="categoryfeesearch">
         <table>
           <tbody>
-            {mode == 1 && <>이 매체는 수수료 매칭이 필요하지 않습니다.</>}
+            {/* txt_01 : 주문건을 선택해 주세요. */}
+            {mode == 0 && <td className="td_empty txt_01"></td>}
+            {/* txt_02 : 이 매체는 수수료 매칭이 필요하지 않습니다. */}
+            {mode == 1 && <td className="td_empty txt_02"></td>}
             {mode == 2 && (
               <>{items && items.map((d, key) => <SelectItem key={key} index={key} d={d} onSelect={onSelect} />)}</>
             )}
