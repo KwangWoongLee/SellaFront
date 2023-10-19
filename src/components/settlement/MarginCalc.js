@@ -404,22 +404,53 @@ const MarginCalc = () => {
   };
 
   const deleteCallback = (d, connect_flag) => {
+    let changedItems;
+
     if (connect_flag) {
-      const changedItems = _.cloneDeep(rowData);
+      changedItems = _.cloneDeep(rowData);
 
       _.forEach(changedItems, (item) => {
         if (item.forms_match_idx === d.forms_match_idx) {
           item.connect_flag = false;
+          item.stock_price = '';
+          item.delivery_fee = '';
+          item.packing_fee = '';
         }
       });
-
-      setRowData([...changedItems]);
     } else {
-      const changedItems = _.filter(rowData, (item) => {
+      changedItems = _.filter(rowData, (item) => {
         return !(item.forms_product_name == d.forms_product_name && item.forms_option_name == d.forms_option_name);
       });
-      setRowData([...changedItems]);
     }
+
+    _.forEach(changedItems, (item) => {
+      const eqGroupDatas = _.filter(changedItems, (row) => {
+        return row.group.id === item.group.id;
+      });
+
+      if (eqGroupDatas && eqGroupDatas.length) {
+        const firstObjs = _.filter(eqGroupDatas, (eqGroupData) => {
+          return eqGroupData.group.first;
+        });
+
+        if (!firstObjs || !firstObjs.length) {
+          eqGroupDatas[0].group.first = true;
+        } else {
+          firstObjs[0].group.first = true;
+          if (firstObjs.length !== 1) {
+            for (let i = 1; i < firstObjs.length; ++i) {
+              firstObjs[i].group.first = false;
+            }
+          }
+        }
+
+        for (const eqGroupData of eqGroupDatas) {
+          eqGroupData.group.size = eqGroupDatas.length;
+        }
+      }
+    });
+
+    setRowData([...changedItems]);
   };
 
   const saveCallback = (save_datas, result_forms_matchs) => {
@@ -606,7 +637,7 @@ const MarginCalc = () => {
                     variant="primary"
                     onClick={onDownload}
                     className="btn_green"
-                    disabled={!rowData || !rowData.length}
+                    disabled={!rowData || !rowData.length || _.isEmpty(viewResult)}
                   >
                     <img src={`${img_src}${icon_circle_arrow_down}`} />
                     다운로드
@@ -806,14 +837,14 @@ const getRealityDeliveryFee = (profit_loss_row) => {
   let pay_advance = profit_loss_row[30022];
   let delivery_fee = 0;
   const received_delivery_fee = profit_loss_row[30047] ? Number(profit_loss_row[30047]) : 0;
-  const countryside_added_fee = profit_loss_row[30014] ? Number(profit_loss_row[30014]) : 0;
-  const df_discount = profit_loss_row[30015] ? Number(profit_loss_row[30015]) : 0;
+  // const countryside_added_fee = profit_loss_row[30014] ? Number(profit_loss_row[30014]) : 0;
+  // const df_discount = profit_loss_row[30015] ? Number(profit_loss_row[30015]) : 0;
 
   // 배송비 선불인 경우
   // if (!pay_advance) {
   delivery_fee += received_delivery_fee;
-  delivery_fee += countryside_added_fee;
-  delivery_fee -= df_discount;
+  // delivery_fee += countryside_added_fee;
+  // delivery_fee -= df_discount;
   delivery_fee *= 1 - parseFloat(profit_loss_row['30047_additional']) / 100;
   // }
 
@@ -935,8 +966,6 @@ const CalcSummary = (rowData) => {
           row.sum_profit_loss += eqGroupData['packing_fee'];
         }
 
-        row.sum_profit_loss = Number(row.sum_profit_loss.toFixed(0));
-
         //받은 배송비
         const max30047 = revert_1000(_.max(_.map(eqGroupDatas, 'reality_delivery_fee')).toFixed(0));
         //배송비
@@ -947,6 +976,8 @@ const CalcSummary = (rowData) => {
         row.sum_profit_loss += max30047;
         row.sum_profit_loss -= max_delivery_fee;
         row.sum_profit_loss -= max_packing_fee;
+
+        row.sum_profit_loss = Number(row.sum_profit_loss.toFixed(0));
       }
     }
   }
@@ -1039,15 +1070,25 @@ function excelSerialDateToJSDate(excelSerialDate) {
 const ProfitLossRow = React.memo(
   ({ handleSingleCheck, rowChecked, d, stockPriceDataRef, setStockPriceModalState, onRowDoubleClick }) => {
     const [inputs, setInputs] = useState({
-      stock_price: d.stock_price == '' || !d['30005'] ? '0' : replace_1000(d.stock_price * Number(d['30005'])),
-      delivery_fee: d.delivery_fee == '' ? '0' : replace_1000(d.delivery_fee),
-      packing_fee: d.packing_fee == '' ? '0' : replace_1000(d.packing_fee),
+      stock_price: '',
+      delivery_fee: '',
+      packing_fee: '',
     });
     const [checked, setChecked] = useState(false);
 
     useEffect(() => {
       setChecked(rowChecked);
     }, [rowChecked]);
+
+    useEffect(() => {
+      setInputs(
+        _.cloneDeep({
+          stock_price: d.stock_price == '' || !d['30005'] ? '0' : replace_1000(d.stock_price * Number(d['30005'])),
+          delivery_fee: d.delivery_fee == '' ? '0' : replace_1000(d.delivery_fee),
+          packing_fee: d.packing_fee == '' ? '0' : replace_1000(d.packing_fee),
+        })
+      );
+    }, [d]);
 
     const checkedItemHandler = (e) => {
       handleSingleCheck(d.idx, !checked);
@@ -1142,7 +1183,7 @@ const ProfitLossRow = React.memo(
             setStockPriceModalState(true);
           }}
         >
-          <input name="stock_price" value={inputs.stock_price} onChange={onChange}></input>
+          <input name="stock_price" defaultValue={inputs.stock_price} onChange={onChange}></input>
           <span>원</span>
         </td>
         <td

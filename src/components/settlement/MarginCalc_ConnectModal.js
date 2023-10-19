@@ -110,6 +110,17 @@ const MarginCalc_ConnectModal = React.memo(
           // selectFormsMatchRef.current = null;
           // setSelectFormsMatchData({ ...selectFormsMatchRef.current });
           setFormsMatchSelect(null);
+
+          rawGoodsMatch = Recoils.getState('DATA:GOODSMATCH');
+
+          const connect_arr = _.filter(_.cloneDeep(data.forms_match), { connect_flag: true });
+          const unique_arr = _.uniqBy(connect_arr, function (elem) {
+            return JSON.stringify(_.pick(elem, ['forms_product_name', 'forms_option_name']));
+          });
+
+          saveFormsMatchRef.current = new Array(unique_arr.length);
+
+          setItems([...unique_arr]);
         }
       });
     };

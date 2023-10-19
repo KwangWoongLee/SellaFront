@@ -47,7 +47,21 @@ const MarginCalc_UnConnectModal = React.memo(
         return;
       }
 
-      const select_row_index = _.findIndex(items, (row) => {
+      let select_row_index = -1;
+
+      let rows = [];
+      if (!items || !items.length) {
+        const unconnect_arr = _.filter(_.cloneDeep(rowData), { connect_flag: false });
+        const unique_arr = _.uniqBy(unconnect_arr, function (elem) {
+          return JSON.stringify(_.pick(elem, ['forms_product_name', 'forms_option_name']));
+        });
+
+        rows = unique_arr;
+      } else {
+        rows = items;
+      }
+
+      select_row_index = _.findIndex(rows, (row) => {
         return (
           row.forms_product_name == selectData.forms_product_name &&
           row.forms_option_name == selectData.forms_option_name
