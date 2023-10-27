@@ -54,6 +54,7 @@ const MarginCalc = () => {
   const [unConnectModalSelectData, setUnConnectModalSelectData] = useState({});
   const [sliderState, setSliderState] = useState(false);
 
+  const isLossRowViewRef = useRef(false);
   const lastRowDatasRef = useRef(null);
   const stockPriceDataRef = useRef(null);
   //ag-grid
@@ -267,6 +268,8 @@ const MarginCalc = () => {
   const onViewResult = () => {
     if (!rowData || !rowData.length) return;
 
+    let targetData = isLossRowViewRef.current ? _.cloneDeep(lastRowDatasRef.current) : _.cloneDeep(rowData);
+
     const unconnect_rows = _.filter(rowData, (data) => {
       return !data.connect_flag;
     });
@@ -289,7 +292,7 @@ const MarginCalc = () => {
             name: '미연결 주문건 삭제 후 손익계산',
             className: 'btn_blue',
             callback: () => {
-              const changedRowDatas = _.cloneDeep(rowData);
+              const changedRowDatas = _.cloneDeep(targetData);
 
               const connect_rows = _.filter(changedRowDatas, (data) => {
                 return data.connect_flag;
@@ -327,11 +330,11 @@ const MarginCalc = () => {
         ]
       );
     } else {
-      const summary = CalcSummary(rowData);
+      const summary = CalcSummary(targetData);
       if (!summary) return;
 
       setViewResult(summary);
-      const lastRows = _.cloneDeep(rowData);
+      const lastRows = _.cloneDeep(targetData);
       setRowData(lastRows);
       lastRowDatasRef.current = [...lastRows];
     }
@@ -367,11 +370,18 @@ const MarginCalc = () => {
   };
 
   const onDelete = (e) => {
-    const changedRowDatas = _.cloneDeep(rowData);
+    let changedRowDatas;
+    if (isLossRowViewRef.current === true) {
+      changedRowDatas = _.cloneDeep(lastRowDatasRef.current);
+    } else {
+      changedRowDatas = _.cloneDeep(rowData);
+    }
+
     const deleteRowDatas = _.filter(changedRowDatas, (row) => row.checked);
     const delete_arr = _.map(deleteRowDatas, 'idx');
 
     for (const deleteRowData of deleteRowDatas) {
+      deleteRowData.profit_loss = '';
       const size = deleteRowData.group.size - 1;
       const eqGroupDatas = _.filter(changedRowDatas, (row) => {
         return row.group.id === deleteRowData.group.id;
@@ -390,6 +400,12 @@ const MarginCalc = () => {
       return !_.includes(delete_arr, row.idx);
     });
 
+    for (const result of results) {
+      result.sum_profit_loss = null;
+      result.profit_loss = null;
+    }
+
+    isLossRowViewRef.current = false;
     setRowData([...results]);
   };
 
@@ -408,18 +424,25 @@ const MarginCalc = () => {
     let changedItems;
 
     if (connect_flag) {
-      changedItems = _.cloneDeep(rowData);
+      if (isLossRowViewRef.current === true) {
+        changedItems = _.cloneDeep(lastRowDatasRef.current);
+      } else {
+        changedItems = _.cloneDeep(rowData);
+      }
 
       _.forEach(changedItems, (item) => {
         if (item.forms_match_idx === d.forms_match_idx) {
+          item.state_change_flag = true;
           item.connect_flag = false;
-          item.stock_price = '';
-          item.delivery_fee = '';
-          item.packing_fee = '';
+          item.stock_price = 0;
+          item.delivery_fee = 0;
+          item.packing_fee = 0;
+          item.profit_loss = null;
+          item.goods_match = [];
         }
       });
     } else {
-      changedItems = _.filter(rowData, (item) => {
+      changedItems = _.filter(lastRowDatasRef.current, (item) => {
         return !(item.forms_product_name == d.forms_product_name && item.forms_option_name == d.forms_option_name);
       });
     }
@@ -436,8 +459,10 @@ const MarginCalc = () => {
 
         if (!firstObjs || !firstObjs.length) {
           eqGroupDatas[0].group.first = true;
+          eqGroupDatas[0].sum_profit_loss = null;
         } else {
           firstObjs[0].group.first = true;
+          firstObjs[0].sum_profit_loss = null;
           if (firstObjs.length !== 1) {
             for (let i = 1; i < firstObjs.length; ++i) {
               firstObjs[i].group.first = false;
@@ -451,13 +476,25 @@ const MarginCalc = () => {
       }
     });
 
+    isLossRowViewRef.current = false;
+    setViewResult({});
     setRowData([...changedItems]);
   };
 
   const saveCallback = (save_datas, result_forms_matchs) => {
     if (!save_datas) return;
 
-    let saveResultData = _.cloneDeep(rowData);
+    let saveResultData;
+    if (isLossRowViewRef.current === true) {
+      saveResultData = _.cloneDeep(lastRowDatasRef.current);
+    } else {
+      saveResultData = _.cloneDeep(rowData);
+    }
+    for (const d of saveResultData) {
+      d.profit_loss = null;
+      d.sum_profit_loss = null;
+    }
+
     for (const d of save_datas) {
       const filteredDatas = _.filter(saveResultData, (item) => {
         return item.forms_product_name === d.forms_product_name && item.forms_option_name === d.forms_option_name;
@@ -469,6 +506,7 @@ const MarginCalc = () => {
 
       for (const obj of filteredDatas) {
         obj.connect_flag = findFormsMatch ? true : false;
+        obj.state_change_flag = true;
         obj.forms_match_idx = findFormsMatch.idx;
         obj.goods_match = d.goods_match;
         obj.stock_price = getStockPrice(d);
@@ -482,6 +520,7 @@ const MarginCalc = () => {
       }
     }
 
+    setViewResult({});
     setRowData([...saveResultData]);
   };
 
@@ -615,7 +654,12 @@ const MarginCalc = () => {
                 </Button>
 
                 <div className="btnbox">
-                  <Button variant="primary" onClick={onDelete} className="btn_red">
+                  <Button
+                    variant="primary"
+                    onClick={onDelete}
+                    className="btn_red"
+                    disabled={!rowData || !rowData.length || !_.find(rowData, { checked: true })}
+                  >
                     선택 삭제
                   </Button>
 
@@ -633,7 +677,7 @@ const MarginCalc = () => {
                   <Button onClick={onSaveTodaySummary} disabled={!rowData || !rowData.length || _.isEmpty(viewResult)}>
                     주문서 저장
                   </Button>
-
+                  {/* 
                   <Button
                     variant="primary"
                     onClick={onDownload}
@@ -642,7 +686,7 @@ const MarginCalc = () => {
                   >
                     <img src={`${img_src}${icon_circle_arrow_down}`} />
                     다운로드
-                  </Button>
+                  </Button> */}
                   {rowData && rowData.length > 0 && (
                     <span className="formName">
                       업로드한 매체 : <b>{rowData[0].forms_name}</b>
@@ -654,6 +698,7 @@ const MarginCalc = () => {
               <ul className={!_.isEmpty(viewResult) ? 'viewbox' : 'viewbox off'}>
                 <li
                   onClick={() => {
+                    isLossRowViewRef.current = false;
                     setRowData([...lastRowDatasRef.current]);
                   }}
                 >
@@ -672,6 +717,8 @@ const MarginCalc = () => {
                 </li>
                 <li
                   onClick={() => {
+                    isLossRowViewRef.current = true;
+
                     const lossRowGroups = _.map(
                       _.filter(rowData, (row) => {
                         return row.profit_loss < 0;
@@ -1019,35 +1066,42 @@ const StockPriceModal = React.memo(({ modalState, setModalState, goodsMatch }) =
   const onClose = () => setModalState(false);
 
   return (
-    <Modal show={modalState} onHide={onClose} centered className="modal stockPriceModal">
+    <Modal show={modalState} onHide={onClose} centered className="modal stockPriceModal tablewrap">
       <Modal.Header>
         <Modal.Title>연결 상품 입고단가 확인</Modal.Title>
         <Button variant="primary" className="btn_close" onClick={onClose}>
           <img alt={''} src={`${img_src}${icon_close}`} />
-        </Button>      </Modal.Header>
+        </Button>{' '}
+      </Modal.Header>
       <Modal.Body>
-        <table className="columncontrol tbody">
-          <thead>
-            <th>상품명</th>
-            <th>입고단가</th>
-            {/* <th>수량</th> */}
-          </thead>
-          <tbody>
-            <>
-              {goodsMatch &&
-                goodsMatch.map((d, key) => (
-                  <tr>
-                    <td>{d.name}</td>
-                    <td>{d.stock_price}</td>
-                    {/* <td>{d.match_count}</td> */}
-                  </tr>
-                ))}
-            </>
-          </tbody>
-        </table>
+        <div className="tablebox">
+          <table className="columncontrol thead">
+            <thead>
+              <th>상품명</th>
+              <th>입고단가</th>
+              {/* <th>수량</th> */}
+            </thead>
+            <tbody></tbody>
+          </table>
+          <table className="columncontrol tbody">
+            <thead></thead>
+            <tbody>
+              <>
+                {goodsMatch &&
+                  goodsMatch.map((d, key) => (
+                    <tr>
+                      <td>{d.name}</td>
+                      <td>{d.stock_price}</td>
+                      {/* <td>{d.match_count}</td> */}
+                    </tr>
+                  ))}
+              </>
+            </tbody>
+          </table>
+        </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={onClose}>
+        <Button variant="secondary" onClick={onClose} className="btn btn-primary btn_blue">
           확인
         </Button>
       </Modal.Footer>

@@ -8,11 +8,14 @@ import Body from 'components/template/Body';
 import MyPageNavTab from 'components/base/MyPageNavTab';
 import Checkbox from 'components/common/CheckBoxCell';
 import { logger, modal, navigate } from 'util/com';
+import { RequestPay } from 'util/payment';
 import request from 'util/request';
 import Recoils from 'recoils';
 import useScript from 'react-script-hook';
 
 import 'styles/Mypage.scss';
+
+import icon_close from 'images/icon_close.svg';
 
 const Membership = () => {
   logger.render('Membership');
@@ -29,9 +32,8 @@ const Membership = () => {
   const [gradeData, setGradeData] = useState(null);
 
   const [modalState, setModalState] = useState(false);
-
   const [loading, error] = useScript({
-    src: 'https://cdn.iamport.kr/js/iamport.payment-1.2.0.js',
+    src: 'https://cdn.iamport.kr/v1/iamport.js',
     onload: () => {
       window.IMP.init('imp85285548');
     },
@@ -56,26 +58,16 @@ const Membership = () => {
   const onPaymentReq = (d) => {
     request.post('base/payment', { access_token: account.access_token, grade: d }).then((ret) => {
       if (!ret.err) {
-        window.IMP.request_pay(
+        RequestPay(
           {
-            // param
-            pg: 'nice.iamport00m',
-            pay_method: 'card',
-            merchant_uid: `mid_${new Date().getTime()}`,
             name: d.name,
             amount: d.price,
-            currency: 'KRW',
             buyer_name: account.name,
             buyer_email: account.email,
-            buyer_tel: account.phone, // 필수
+            buyer_tel: account.phone,
           },
           (rsp) => {
-            // callback
-            if (rsp.success) {
-              console.log(123);
-            } else {
-              console.log(456);
-            }
+            console.log(rsp);
           }
         );
 
@@ -128,7 +120,7 @@ const Membership = () => {
     <>
       <Head />
       <Body title={`ver ${process.env.REACT_APP_VERSION}`} myClass={'mypage'}>
-        <MyPageNavTab active="/mypage/membership" gradeData={gradeData} />
+        {/* <MyPageNavTab active="/mypage/membership" gradeData={gradeData} /> */}
 
         <div className="page">
           <div className="paymentbox">
@@ -240,9 +232,53 @@ const GradeItem = React.memo(({ index, d, onClick, account }) => {
       </dl>
 
       <ul>{d.functions && d.functions.map((data, index) => <li>{data.name}</li>)}</ul>
-
+      {/* <div className="terms">
+        <ul>
+          <li>
+            {' '}
+            <Checkbox></Checkbox> <label>(필수)멤버십 정기 결제 동의</label>{' '}
+          </li>
+          <li>
+            {' '}
+            <Checkbox></Checkbox> <label>(필수)1년 경과 전 해지 시, 정상가 기준으로 환불</label>{' '}
+          </li>
+          <li>
+            {' '}
+            <Checkbox></Checkbox>{' '}
+            <label>
+              (필수)이용약관 및 결제 및 멤버십 유의사항
+              <span>
+                <strong style={{ textDecoration: 'underline' }}>보기</strong>
+              </span>
+            </label>{' '}
+          </li>
+          <li>
+            {' '}
+            <Checkbox></Checkbox>{' '}
+            <label>
+              (필수)멤버십 제 3자 개인정보 제공
+              <span>
+                <strong style={{ textDecoration: 'underline' }}>보기</strong>
+              </span>
+            </label>{' '}
+          </li>
+          <li>
+            {' '}
+            <Checkbox></Checkbox> <label>(선택)멤버십 혜택 및 프로모션 알림 동의</label>{' '}
+          </li>
+        </ul>
+        <Checkbox></Checkbox>
+        <label>모두 동의합니다.</label>
+      </div> */}
       {d.remain_warranty_day && d.remain_warranty_day > 0 ? (
-        <Button className="btn-primary">사용중</Button>
+        <Button
+          className="btn-primary"
+          onClick={() => {
+            onClick(d, account);
+          }}
+        >
+          사용중
+        </Button>
       ) : (
         <Button
           onClick={() => {
@@ -295,23 +331,41 @@ const WithDrawalModal = React.memo(({ modalState, setModalState, account }) => {
   };
 
   return (
-    <Modal show={modalState} onHide={onClose} centered className="modal searchmodal_calculator">
+    <Modal show={modalState} onHide={onClose} centered className="modal deleteAccount">
       <Modal.Header>
         <Modal.Title>회원 탈퇴</Modal.Title>
+        <Button variant="primary" className="btn_close btn btn-primary" onClick={onClose}>
+          <img alt={''} src={icon_close} />
+        </Button>
       </Modal.Header>
       <Modal.Body>
-        <Checkbox checked={checked} checkedItemHandler={checkedItemHandler}></Checkbox>
-        <span>회원탈퇴 시 처리사항 안내를 확인하였음에 동의합니다.</span>
+        <p>회원 탈퇴 전 유의사항을 확인해주세요.</p>
+        <ul>
+          <li>회원탈퇴 시 회원전용 웹 서비스 이용이 불가합니다.</li>
+          <li>
+            결제정보가 있는 경우, 전자상거래 등에서의 소비자 보호에 관한 법률에 따라 계약 또는 청약철회에 관한 기록,
+            대금결제 및 재화 등의 공급에 관한 기록은 5년동안 보존됩니다.
+          </li>
+          <li>이미 결제가 완료된 건은 탈퇴로 취소되지 않으며 사용기간 만료일까지 서비스를 이용하실 수 있습니다.</li>
+          <li>사용기간 만료일 이후 계정정보를 포함하여 등록하신 모든 정보는 폐기됩니다.</li>
+        </ul>
+        <div className="checkwrap">
+          <Checkbox checked={checked} checkedItemHandler={checkedItemHandler}></Checkbox>
+          <label>회원탈퇴 시 처리사항 안내를 확인하였음에 동의합니다.</label>
+        </div>
 
-        <InputGroup className="inputid">
-          <label>아이디</label>
-          <Form.Control ref={withDrawalEmailRef} type="text" placeholder="이메일 주소" defaultValue={''} />
-        </InputGroup>
-        <InputGroup className="inputpassword">
-          <label>비밀번호</label>
-          <Form.Control ref={withDrawalPasswordRef} type="password" placeholder="비밀번호" defaultValue={''} />
-        </InputGroup>
-        <Button disabled={!checked} variant="primary" onClick={onClickWithdrawal}>
+        <div className="inputbox">
+          <InputGroup className="c">
+            <label>아이디</label>
+            <Form.Control ref={withDrawalEmailRef} type="text" placeholder="이메일 주소" defaultValue={''} />
+          </InputGroup>
+          <InputGroup className="inputpassword">
+            <label>비밀번호</label>
+            <Form.Control ref={withDrawalPasswordRef} type="password" placeholder="비밀번호" defaultValue={''} />
+          </InputGroup>
+        </div>
+
+        <Button disabled={!checked} variant="primary" onClick={onClickWithdrawal} className="btn_blue btn btn-primary">
           탈퇴하기
         </Button>
       </Modal.Body>

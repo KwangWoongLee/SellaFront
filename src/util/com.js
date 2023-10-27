@@ -254,12 +254,42 @@ export const replace_1000 = (num) => {
   return numStr;
 };
 
+function chgMinusFormat(str) {
+  var idx = str.indexOf('-');
+  if (idx == 0) {
+    var tmpStr = str.substr(idx + 1);
+    //뒤에 마이너스가 또 있는지 확인
+    if (tmpStr.indexOf('-') >= 0) {
+      tmpStr = tmpStr.replace('-', '');
+      str = str.substr(0, idx + 1) + tmpStr;
+    }
+  } else if (idx > 0) {
+    str = str.replace('-', '');
+  } else if (idx < 0) {
+    return str;
+  }
+  return str;
+}
+
 export const revert_1000 = (num) => {
   let numStr;
+  let isMinus = false;
   if (typeof num == 'number') {
+    if (num < 0) {
+      isMinus = true;
+    }
+
     numStr = num.toString();
   } else numStr = num;
+
+  if (_.includes(numStr, '-')) {
+    isMinus = true;
+  }
+
   numStr = numStr.replace(/[^\d]+/g, '');
+  if (isMinus) {
+    numStr = `-${numStr}`;
+  }
 
   return Number(numStr);
 };

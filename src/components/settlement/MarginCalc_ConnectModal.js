@@ -20,16 +20,18 @@ const MarginCalc_ConnectModal = React.memo(
   ({ modalState, setModalState, rowData, deleteCallback, saveCallback, selectData }) => {
     logger.render('MarginCalc_ConnectModal');
 
-    const [formsMatchSelect, setFormsMatchSelect] = useState(null);
+    const [formsMatchSelect, setFormsMatchSelect] = useState(-1);
     const [items, setItems] = useState([]);
-    const forms = _.cloneDeep(Recoils.getState('DATA:PLATFORMS'));
     let rawGoodsMatch = Recoils.getState('DATA:GOODSMATCH');
     const selectFormsMatchRef = useRef(null);
     const [selectFormsMatchData, setSelectFormsMatchData] = useState(null);
 
     const saveFormsMatchRef = useRef(null);
+    const noUpdateRef = useRef(null);
 
     useEffect(() => {
+      if (!modalState) return;
+
       rawGoodsMatch = Recoils.getState('DATA:GOODSMATCH');
 
       const connect_arr = _.filter(_.cloneDeep(rowData), { connect_flag: true });
@@ -39,34 +41,25 @@ const MarginCalc_ConnectModal = React.memo(
 
       saveFormsMatchRef.current = new Array(unique_arr.length);
 
-      setItems([...unique_arr]);
-    }, [modalState]);
-
-    useEffect(() => {
-      if (!modalState) return;
-
-      if (!selectData || _.isEmpty(selectData)) {
-        setFormsMatchSelect(null);
-        setSelectFormsMatchData(null);
-        return;
-      }
-
-      const select_row_index = _.findIndex(items, (row) => {
+      const select_row_index = _.findIndex(unique_arr, (row) => {
         return (
           row.forms_product_name == selectData.forms_product_name &&
           row.forms_option_name == selectData.forms_option_name
         );
       });
 
-      if (select_row_index != -1) {
-        selectFormsMatchRef.current = items[select_row_index];
-
-        setFormsMatchSelect(select_row_index);
-        setSelectFormsMatchData({ ...selectFormsMatchRef.current });
-      } else {
-        setFormsMatchSelect(null);
+      var pulled = _.pullAt(unique_arr, [select_row_index]);
+      if (pulled) {
+        unique_arr.unshift(pulled[0]);
       }
-    }, [selectData, modalState]);
+
+      noUpdateRef.current = true;
+      selectFormsMatchRef.current = unique_arr[0];
+      setSelectFormsMatchData({ ...selectFormsMatchRef.current });
+      setFormsMatchSelect(0);
+
+      setItems([...unique_arr]);
+    }, [modalState]);
 
     const onClose = () => {
       selectFormsMatchRef.current = null;
@@ -75,25 +68,20 @@ const MarginCalc_ConnectModal = React.memo(
     };
 
     const onSelectFormsMatchTable = (d) => {
-      // selectFormsMatchRef.current = d;
-
-      // const findForm = _.find(forms, { idx: d.forms_idx });
-      // if (!findForm) {
-      //   return;
-      // }
-
+      if (noUpdateRef.current === true) {
+        noUpdateRef.current = false;
+        return;
+      }
       const select_row_index = _.findIndex(items, (row) => {
         return row.forms_product_name == d.forms_product_name && row.forms_option_name == d.forms_option_name;
       });
 
       if (select_row_index != -1) {
         selectFormsMatchRef.current = items[select_row_index];
-        // selectFormsMatchRef.current.settlement_flag = findForm.settlement_flag;
 
-        // setFormsMatchSelect(select_row_index);
         setSelectFormsMatchData({ ...selectFormsMatchRef.current });
       } else {
-        setFormsMatchSelect(null);
+        setFormsMatchSelect(-1);
       }
     };
 
@@ -107,20 +95,19 @@ const MarginCalc_ConnectModal = React.memo(
           Recoils.setState('DATA:GOODSMATCH', data.goods_match);
 
           deleteCallback(d, true);
-          // selectFormsMatchRef.current = null;
-          // setSelectFormsMatchData({ ...selectFormsMatchRef.current });
-          setFormsMatchSelect(null);
 
-          rawGoodsMatch = Recoils.getState('DATA:GOODSMATCH');
+          setFormsMatchSelect(-1);
 
-          const connect_arr = _.filter(_.cloneDeep(data.forms_match), { connect_flag: true });
-          const unique_arr = _.uniqBy(connect_arr, function (elem) {
-            return JSON.stringify(_.pick(elem, ['forms_product_name', 'forms_option_name']));
-          });
+          selectFormsMatchRef.current = null;
+          setSelectFormsMatchData(null);
 
-          saveFormsMatchRef.current = new Array(unique_arr.length);
+          rawGoodsMatch = _.cloneDeep(data.goods_match);
 
-          setItems([...unique_arr]);
+          const filteredArr = _.filter(_.cloneDeep(items), (item) => item.forms_match_idx !== d.forms_match_idx);
+
+          saveFormsMatchRef.current = new Array(filteredArr.length);
+
+          setItems([...filteredArr]);
         }
       });
     };
@@ -316,7 +303,7 @@ const MarginCalc_ConnectModal = React.memo(
           saveFormsMatchRef.current = new Array(saved_idxs.length);
           setItems([...items]);
 
-          setFormsMatchSelect(null);
+          setFormsMatchSelect(-1);
           setSelectFormsMatchData({ ...selectFormsMatchRef.current });
         }
       });

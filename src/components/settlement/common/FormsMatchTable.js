@@ -9,21 +9,23 @@ const FormsMatchTable = React.memo(({ rows, modalState, selectCallback, deleteCa
   logger.render('FormsMatchTable');
 
   const [rowData, setRowData] = useState([]);
-  const [tableRow, setTableRow] = useState(null);
+  const [tableRow, setTableRow] = useState(-1);
   const formsMatchTableRef = useRef(null);
   const modalStateParentSelectRef = useRef(null);
+  const selectCallbackRef = useRef(null);
 
   useEffect(() => {
-    if (rows) {
-      // const noneSavedRows = _.cloneDeep(rows);
-      _.forEach(rows, (row) => {
-        row.save = false;
-      });
+    if (modalState) {
+      if (rows) {
+        _.forEach(rows, (row) => {
+          row.save = false;
+        });
 
-      setRowData([...rows]);
+        setRowData([...rows]);
+      }
+
+      modalStateParentSelectRef.current = onParentSelect;
     }
-
-    modalStateParentSelectRef.current = onParentSelect;
   }, [modalState]);
 
   useEffect(() => {
@@ -33,7 +35,7 @@ const FormsMatchTable = React.memo(({ rows, modalState, selectCallback, deleteCa
   }, [rows]);
 
   useEffect(() => {
-    if (onParentSelect !== null && rows && rows.length > 0) {
+    if (onParentSelect !== -1 && rows && rows.length > 0) {
       setTableRow(onParentSelect);
 
       return;
@@ -43,27 +45,16 @@ const FormsMatchTable = React.memo(({ rows, modalState, selectCallback, deleteCa
   }, [onParentSelect]);
 
   useEffect(() => {
-    if (rowData && rowData[tableRow]) selectCallback(rowData[tableRow]);
+    if (tableRow !== -1 && rowData && rowData[tableRow]) {
+      selectCallback(rowData[tableRow]);
+    }
   }, [tableRow]);
 
   const onDelete = (e, d) => {
     e.preventDefault();
 
-    // const filteredRows = _.filter(rowData, (row) => {
-    //   return !(row.forms_product_name === d.forms_product_name && row.forms_option_name === d.forms_option_name);
-    // });
-
     deleteCallback(d);
-    // setRowData([...filteredRows]);
   };
-
-  useEffect(() => {
-    if (formsMatchTableRef.current) {
-      if (onParentSelect !== null && rows && rows.length > 0 && modalStateParentSelectRef.current === onParentSelect) {
-        formsMatchTableRef.current.scrollTop = 30 * onParentSelect;
-      }
-    }
-  });
 
   return (
     <>
@@ -107,11 +98,11 @@ const FormsMatchItem = React.memo(({ index, d, onClick, onDelete, tableRow }) =>
   logger.render('FormsMatchItem : ', index);
 
   let classNames = [];
-  if (index == tableRow && !d.save) {
+  if (index == tableRow && d && !d.save) {
     classNames.push('select');
   }
 
-  if (d.save) {
+  if (d && d.save) {
     classNames.push('save_red');
   }
 

@@ -18,9 +18,13 @@
     height: 100%;
     margin-right: 30px;
 
+    .ag-root.ag-layout-normal {
+      border: 0;
+    }
+
     .ag-theme-alpine {
       width: 100%;
-      height: calc(100% - 80px) !important;
+      height: calc(100% - 90px) !important;
       overflow: auto;
       box-shadow: 3px 3px 3px 0px rgba(0, 0, 0, 0.1);
     }
@@ -92,6 +96,7 @@
     }
 
     .tablebox {
+      height: calc(100% - 90px);
       padding: 20px;
 
       p {
@@ -181,7 +186,7 @@
     }
 
     table.tbody {
-      height: calc(100% - 114px) !important;
+      height: calc(100% - 124px) !important;
     }
 
     th,
@@ -245,11 +250,11 @@
       }
 
       .tbody td:nth-child(2) {
-        border-right: 1px dotted #babfc7;
+        border-right: 1px dotted #ccc;
       }
 
       .tbody td:nth-child(3) {
-        border-top: 1px dotted #babfc7;
+        border-top: 1px dotted #ccc;
       }
 
       .td_label,
@@ -333,17 +338,24 @@
 
     .rightbox {
       float: right;
+      padding-top: 32px;
       width: calc(40% - 30px);
-      height: 100%;
+      height: calc(100% - 51px);
 
       .btn_green {
         float: left;
-        margin-top: -7px;
+        margin-top: -39px;
       }
 
       .inputbox {
         float: right;
-        margin: -7px 5px 9px 0;
+        margin: -39px 5px 9px 0;
+      }
+
+      table.tbody {
+        border-top-left-radius: 7px !important;
+        border-top-right-radius: 7px !important;
+        border: 1px solid #ccc;
       }
 
       th:nth-child(1),
@@ -450,7 +462,7 @@
 
     .leftbox.add + .rightbox {
       table.tbody {
-        height: calc(100% - 77px) !important;
+        height: calc(100% - 5px) !important;
       }
 
       .btn_excel_click {

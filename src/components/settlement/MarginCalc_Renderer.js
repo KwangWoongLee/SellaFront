@@ -14,7 +14,8 @@ export const SumPLRenderer = ({ data }) => {
       {data.sum_profit_loss == '-' ||
       isNaN(data.sum_profit_loss) ||
       (data.sum_profit_loss != 0 && !data.sum_profit_loss) ||
-      data.sum_profit_loss === '' ? (
+      data.sum_profit_loss === '' ||
+      data.sum_profit_loss === null ? (
         <>
           <span className="center txt_999">
             계산 전
@@ -61,7 +62,8 @@ export const PLRenderer = ({ data }) => {
       {data.profit_loss == '-' ||
       isNaN(data.profit_loss) ||
       (data.profit_loss != 0 && !data.profit_loss) ||
-      data.profit_loss === '' ? (
+      data.profit_loss === '' ||
+      data.profit_loss === null ? (
         <>
           <span className="center txt_999">
             계산 전

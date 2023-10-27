@@ -476,7 +476,7 @@ const SearchPW = () => {
           <Button onClick={onSubmit} disabled={!searchButtonOn} variant="primary" className="btn_blue btn_submit">
             확인
           </Button>
-        </Form>
+        </Form>ㅋ
       </Body>
       <Footer />
 

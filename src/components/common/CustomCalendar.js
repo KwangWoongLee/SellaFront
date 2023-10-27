@@ -31,9 +31,10 @@ const CustomEvent = ({ event }) => {
   );
 };
 
-const CustomCalendar = ({ dayGroupDatas, selectCallback }) => {
+const CustomCalendar = ({ dayGroupDatas, selectCallback, setCalendarCurrentDate }) => {
   logger.render('CustomCalendar');
 
+  const [currentDate, setCurrentDate] = useState(new Date());
   const [events, setEvents] = useState([]);
 
   useEffect(() => {
@@ -41,6 +42,12 @@ const CustomCalendar = ({ dayGroupDatas, selectCallback }) => {
       setEvents(_.values(dayGroupDatas));
     }
   }, [dayGroupDatas]);
+
+  useEffect(() => {
+    if (setCalendarCurrentDate) {
+      setCalendarCurrentDate(currentDate);
+    }
+  }, [currentDate]);
 
   return (
     <>
@@ -55,6 +62,9 @@ const CustomCalendar = ({ dayGroupDatas, selectCallback }) => {
         style={{ height: '100vh' }}
         onSelectEvent={(e) => {
           selectCallback(e);
+        }}
+        onNavigate={(date) => {
+          setCurrentDate(date);
         }}
         selectable={true}
         messages={{

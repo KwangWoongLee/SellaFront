@@ -65,6 +65,7 @@
       margin-left: 10px;
       font-size: 14px;
       line-height: 31px;
+      color: #081a51;
     }
   }
 
@@ -75,11 +76,31 @@
     border: 1px solid #8e9fd5;
     border-radius: 7px;
     background-color: #fff;
+    overflow: hidden;
 
     li {
       display: table-cell;
       padding: 13px 25px;
       border-right: 1px dotted #8e9fd5;
+      cursor: not-allowed;
+
+      .dd {
+        text-align: right;
+      }
+    }
+
+    li:nth-child(1):hover,
+    li:nth-child(3):hover {
+      background-color: #e8f4fe;
+      cursor: pointer;
+
+      .dd {
+        text-decoration: underline;
+      }
+    }
+
+    li:nth-child(3):hover {
+      background-color: #ffeaea;
     }
 
     li:last-child {
@@ -128,7 +149,7 @@
     }
 
     li.loss .dd:before {
-      content: '손해 - ';
+      content: '손해  ';
       font-size: 16px;
       font-weight: 400;
     }
@@ -176,7 +197,7 @@
     }
 
     table.tbody {
-      height: calc(100vh - 340px);
+      height: calc(100vh - 365px);
     }
 
     .thead th:nth-child(1),
@@ -185,10 +206,18 @@
       text-align: center;
     }
 
+    .tbody td:nth-child(1) {
+      background-color: #fff !important;
+    }
+
     .thead th:nth-child(2),
     .tbody td:nth-child(2) {
       width: 100px;
       text-align: center;
+    }
+
+    .tbody td:nth-child(2) {
+      background-color: #fbfbfb;
     }
 
     .thead th:nth-child(3),
@@ -323,7 +352,7 @@
   }
 
   .tbody tr:hover td[rowspan] {
-    background-color: transparent !important;
+    background-color: #fbfbfb !important;
   }
 
   .tbody tr:hover td[rowspan]:has(span.loss) {
@@ -446,5 +475,29 @@
       width: 50%;
       float: right;
     }
+  }
+}
+
+.modal.stockPriceModal {
+  .modal-dialog {
+    width: 600px;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  table.tbody {
+    height: 200px;
+  }
+
+  .thead th:nth-child(1),
+  .tbody td:nth-child(1) {
+    width: 70%;
+  }
+
+  .thead th:nth-child(2),
+  .tbody td:nth-child(2) {
+    width: 30%;
   }
 }

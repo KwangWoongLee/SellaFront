@@ -27,9 +27,11 @@ const TodaySummary = () => {
   const access_token = account.access_token;
 
   const [viewResult, setViewResult] = useState(false);
+  const [monthViewResult, setMonthViewResult] = useState({});
   const [platforms, setPlatforms] = useState([]);
   const [rowData, setRowData] = useState([]);
   const [selectedDayGroup, setSelectedDayGroup] = useState('');
+  const [calendarCurrentDate, setCalendarCurrentDate] = useState(new Date());
   const [dayData, setDayData] = useState({});
   const [dateModalState, setDateModalState] = useState(false);
   //ag-grid
@@ -74,7 +76,7 @@ const TodaySummary = () => {
                 prefix = '이익\n+ ';
                 dayGroupDatas[key].className = 'profit';
               } else {
-                prefix = '손해\n- ';
+                prefix = '손해\n ';
                 dayGroupDatas[key].className = 'loss';
               }
 
@@ -83,6 +85,40 @@ const TodaySummary = () => {
           }
 
           setDayData(_.cloneDeep(dayGroupDatas));
+
+          {
+            let monthSummary = {
+              unique_order_no_count: 0,
+              delivery_send_count: 0,
+              loss_order_no_count: 0,
+              sum_payment_price: 0,
+              sum_received_delivery_fee: 0,
+              sum_profit_loss: 0,
+            };
+
+            const calendarDate = new Date(calendarCurrentDate);
+
+            const equalMonthGroupDatas = _.filter(data, (d) => {
+              const startDate = new Date(d.reg_date);
+              const year = startDate.getYear();
+              const month = startDate.getMonth();
+
+              return year === calendarDate.getYear() && month === calendarDate.getMonth();
+            });
+
+            monthSummary = {
+              unique_order_no_count: replace_1000(revert_1000(_.sumBy(equalMonthGroupDatas, 'unique_order_no_count'))),
+              delivery_send_count: replace_1000(revert_1000(_.sumBy(equalMonthGroupDatas, 'delivery_send_count'))),
+              loss_order_no_count: replace_1000(revert_1000(_.sumBy(equalMonthGroupDatas, 'loss_order_no_count'))),
+              sum_payment_price: replace_1000(revert_1000(_.sumBy(equalMonthGroupDatas, 'sum_payment_price'))),
+              sum_received_delivery_fee: replace_1000(
+                revert_1000(_.sumBy(equalMonthGroupDatas, 'sum_received_delivery_fee'))
+              ),
+              sum_profit_loss: replace_1000(revert_1000(_.sumBy(equalMonthGroupDatas, 'sum_profit_loss'))),
+            };
+
+            setMonthViewResult(monthSummary);
+          }
         }
       }
     });
@@ -91,6 +127,8 @@ const TodaySummary = () => {
   useEffect(() => {
     if (dayData[selectedDayGroup]) setRowData(dayData[selectedDayGroup]['events']);
   }, [selectedDayGroup]);
+
+  useEffect(() => {}, [calendarCurrentDate]);
 
   useEffect(() => {
     let summary = {
@@ -187,46 +225,50 @@ const TodaySummary = () => {
           <div className="section1">
             <div className="viewboxWrap">
               <h4>월별 손익 합계</h4>
-              <ul className={!_.isEmpty(viewResult) ? 'viewbox' : 'viewbox off'}>
+              <ul className={!_.isEmpty(monthViewResult) ? 'viewbox' : 'viewbox off'}>
                 <li>
                   <p className="dt">총 주문</p>
                   <p className="dd">
-                    {viewResult.unique_order_no_count}
+                    {monthViewResult.unique_order_no_count}
                     <span>건</span>
                   </p>
                 </li>
                 <li>
                   <p className="dt">택배 발송</p>
                   <p className="dd">
-                    {viewResult.delivery_send_count}
+                    {monthViewResult.delivery_send_count}
                     <span>건</span>
                   </p>
                 </li>
                 <li>
                   <p className="dt">적자 주문</p>
                   <span className="dd txt_red">
-                    {viewResult.loss_order_no_count}
+                    {monthViewResult.loss_order_no_count}
                     <span className="unit txt_red">건</span>
                   </span>
                 </li>
                 <li>
                   <p className="dt">상품 결제 금액</p>
                   <p className="dd">
-                    {viewResult.sum_payment_price}
+                    {monthViewResult.sum_payment_price}
                     <span>원</span>
                   </p>
                 </li>
                 <li>
                   <p className="dt">받은 배송비</p>
                   <p className="dd">
-                    {viewResult.sum_received_delivery_fee}
+                    {monthViewResult.sum_received_delivery_fee}
                     <span>원</span>
                   </p>
                 </li>
-                <li className={viewResult && revert_1000(viewResult.sum_profit_loss) > 0 ? 'profit' : 'loss'}>
+                <li
+                  className={
+                    !_.isEmpty(monthViewResult) && revert_1000(monthViewResult.sum_profit_loss) > 0 ? 'profit' : 'loss'
+                  }
+                >
                   <p className="dt">손익 합계</p>
                   <p className="dd">
-                    {viewResult.sum_profit_loss}
+                    {monthViewResult.sum_profit_loss}
                     <span>원</span>
                   </p>
                 </li>
@@ -237,6 +279,7 @@ const TodaySummary = () => {
               selectCallback={(e) => {
                 setSelectedDayGroup(e.group);
               }}
+              setCalendarCurrentDate={setCalendarCurrentDate}
             ></CustomCalendar>
           </div>
 
@@ -256,7 +299,9 @@ const TodaySummary = () => {
             </div>
 
             <div className="viewboxWrap">
-              <h4>일별 손익 합계</h4>
+              <h4>
+                일별 손익 합계 <span>({selectedDayGroup})</span>
+              </h4>
               <ul className={!_.isEmpty(viewResult) ? 'viewbox' : 'viewbox off'}>
                 <li>
                   <p className="dt">총 주문</p>

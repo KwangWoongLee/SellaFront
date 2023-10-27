@@ -129,6 +129,7 @@
       height: 360px !important;
       margin-bottom: 30px;
       background-color: #fff;
+      border: 1px solid #ccc;
       border-radius: 7px;
       box-shadow: 3px 3px 3px 0px rgba(0, 0, 0, 0.1);
       overflow: auto;
@@ -146,6 +147,7 @@
       width: 100%;
       height: 320px !important;
       background-color: #fff;
+      border: 1px solid #ccc;
       border-radius: 7px;
       box-shadow: 3px 3px 3px 0px rgba(0, 0, 0, 0.1);
       overflow: auto;
@@ -189,7 +191,7 @@
   }
 
   .formsmatchtable.tbody {
-    height: 305px !important;
+    height: calc(100% - 450px) !important;
   }
 
   .goodsmatchtable.tbody {
@@ -197,7 +199,7 @@
   }
 
   .standardproductsearch {
-    height: 340px !important;
+    height: calc(100% - 415px) !important;
   }
 
   .standardproductsearch table tbody:empty {

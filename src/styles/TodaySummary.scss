@@ -2,6 +2,7 @@
 
 .body.today_summary {
   .page {
+    padding-top: 78px;
     overflow-y: auto;
   }
 
@@ -88,7 +89,7 @@
       }
 
       li.loss .dd:before {
-        content: '손해 - ';
+        content: '손해  ';
         font-size: 16px;
         font-weight: 400;
       }
@@ -194,7 +195,7 @@
         padding: 10px 0;
 
         .rbc-row-segment {
-          margin-top: 5px;
+          margin-top: 8px;
         }
       }
 
@@ -247,13 +248,17 @@
       .rbc-now button:before {
         content: 'Today';
         display: block;
-        margin-top: 0;
-        margin-bottom: 3px;
+        float: left;
+        margin-top: 1px;
+        margin-right: 5px;
+        padding: 4px 5px;
         width: auto;
         height: auto;
-        line-height: 10px;
-        font-size: 10px;
-        color: #7089d4;
+        line-height: 9px;
+        font-size: 9px;
+        color: #fff;
+        background-color: #0d48ff;
+        border-radius: 3px;
       }
     }
   }
@@ -281,6 +286,7 @@
       border: 1px solid #8e9fd5;
       border-top-left-radius: 0;
       border-top-right-radius: 0;
+      box-shadow: unset;
     }
 
     table.thead {
@@ -294,6 +300,7 @@
 
     table.tbody {
       height: calc(100% - 59px);
+      border: 0;
     }
 
     thead th:nth-child(1),

@@ -1,11 +1,14 @@
 // Template.
 
 .header {
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
   padding: 0 50px;
   width: 100%;
   height: 90px;
   background-color: #081a51;
+  z-index: 100;
 }
 .header > .logo {
   display: block;
@@ -157,6 +160,21 @@
 }
 .header > .member:hover + ul {
   display: inline-block;
+}
+
+.body {
+  display: inline-block;
+  margin-top: 90px;
+  width: 100%;
+  height: calc(100% - 90px);
+}
+
+.page {
+  display: inline-block;
+  padding: 30px;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 .footer > .menubox {

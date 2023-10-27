@@ -14,20 +14,6 @@ body {
   height: 100%;
 }
 
-.body {
-  display: inline-block;
-  width: 100%;
-  height: calc(100% - 90px);
-}
-
-.page {
-  display: inline-block;
-  padding: 25px 30px 30px 30px;
-  width: 100%;
-  height: calc(100% - 53px);
-  overflow: hidden;
-}
-
 * {
   letter-spacing: 0;
   color: #000;
@@ -514,12 +500,22 @@ input[type='checkbox'] {
 
 /* nav-tabs */
 .nav-tabs {
+  position: fixed;
+  top: 90px;
+  left: 0;
   display: block;
   padding: 8px 30px;
   width: 100%;
   height: auto;
+  background-color: #f8f9ff;
   border-bottom: 1px solid #081a51;
+  z-index: 90;
 }
+
+.nav-tabs + .page {
+  padding-top: 83px;
+}
+
 .nav-tabs .nav-item {
   flex: unset;
   display: inline-block;

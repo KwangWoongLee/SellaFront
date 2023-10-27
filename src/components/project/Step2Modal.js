@@ -123,7 +123,7 @@ const Step2Modal = React.memo(({ modalState, setModalState, callback }) => {
   };
 
   return (
-    <Modal show={modalState} onHide={onClose} centered className="modal step2">
+    <Modal show={modalState} onHide={onClose} centered className="modal tablewrap">
       <Modal.Header>
         <Modal.Title>상품추가</Modal.Title>
         <div className="btnbox">
