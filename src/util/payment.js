@@ -17,7 +17,7 @@ export const RequestPay = (data, cb) => {
       pay_method: 'card',
       merchant_uid: `mid_${new Date().getTime()}`,
       name: data.name,
-      amount: data.amount, // 필수
+      amount: data.price, // 필수
       buyer_tel: data.buyer_tel, // 필수
       vbank_due: '2024-10-28', // 필수
       escrow: false, // 필수
