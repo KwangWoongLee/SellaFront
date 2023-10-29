@@ -38,8 +38,7 @@ const Head = () => {
         <Nav.Link onClick={onLink} className="logo" name="/settlement/margin_calc">
           <img src={`${img_src}${logo_white}`} alt="로고" />
         </Nav.Link>
-        
-        <nav>
+        <div className="menu">
           <ul className="left">
             <li
               className={
