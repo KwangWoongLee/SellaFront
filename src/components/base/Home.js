@@ -7,19 +7,19 @@ import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 import _ from 'lodash';
 
-// import 'styles/NoLogin_Home.scss';
+// import 'styles/Home.scss';
 
-const NoLogin_Home = () => {
-  logger.render('NoLogin_Home');
+const Home = () => {
+  logger.render('Home');
   return (
     <>
       <Head />
-      <Body title={`메인`} myClass={'nologin_home'}>
-        비로그인 메인화면
+      <Body title={`메인`} myClass={'home'}>
+        메인화면
       </Body>
       <Footer />
     </>
   );
 };
 
-export default React.memo(NoLogin_Home);
+export default React.memo(Home);

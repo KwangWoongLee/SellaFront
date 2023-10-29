@@ -43,7 +43,7 @@ import Manual from 'components/cscenter/Manual';
 import FAQ from 'components/cscenter/FAQ';
 import Inquiry from 'components/cscenter/Inquiry';
 import Margin_NoLogin from 'components/calculator/Margin_NoLogin';
-import NoLogin_Home from 'components/base/NoLogin_Home';
+import Home from 'components/base/Home';
 
 const Router = process.env.REACT_APP_SSR === '1' ? BrowserRouter : HashRouter;
 
@@ -68,7 +68,7 @@ export function App() {
           <Route
             path=""
             element={
-              <NoLogin_Home></NoLogin_Home>
+              <Home></Home>
               //              <ProtectedRoute>
               //                <MarginCalc />
               //              </ProtectedRoute>
