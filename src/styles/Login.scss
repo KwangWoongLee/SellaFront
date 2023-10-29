@@ -176,7 +176,7 @@
     padding: 10px 15px;
     font-size: 13px;
     line-height: 22px;
-    border-radius: 7px;
+    border-radius: 7px !important;
   }
 
   .fombox label {
@@ -190,8 +190,8 @@
   .inputagency,
   .inputagency button {
     width: 100%;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
   }
 
   .inputagency .dropdown-menu {
@@ -301,7 +301,7 @@
       text-align: center;
       background-color: #fff;
       border: 1px solid #ccc;
-      border-radius: 7px;
+      border-radius: 7px !important;
     }
   }
 
@@ -315,7 +315,7 @@
       font-weight: 700;
       color: #081a51;
       border: 1px solid #ccc;
-      border-radius: 10px;
+      border-radius: 10px !important;
       background-color: #fff;
     }
 

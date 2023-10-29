@@ -91,6 +91,23 @@
     width: auto;
     margin-top: -6px;
 
+    input {
+      float: left;
+    }
+
+    input + button {
+      float: left;
+    }
+
+    .input_search {
+      border-top-right-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+    }
+
+    .input_search + button {
+      border-left: 0;
+    }
+
     .dropdown {
       float: left;
       margin-right: 5px;

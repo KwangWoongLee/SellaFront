@@ -1,0 +1,33 @@
+@media (max-width: 1920px) {
+  /* header */
+  .header {
+    .hamburger {
+      display: none;
+    }
+  }
+}
+
+@media (max-width: 1300px) {
+  /* header */
+  .header {
+    .member {
+      display: none;
+    }
+  }
+}
+
+@media (max-width: 1024px) and (orientation: landscape) {
+  /* CSS */
+}
+
+@media (max-width: 768px) {
+  /* CSS */
+}
+
+@media (max-width: 480px) {
+  /* CSS */
+}
+
+@media (max-width: 320px) {
+  /* CSS */
+}

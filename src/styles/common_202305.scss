@@ -4,7 +4,7 @@
 /* 공통 */
 
 body {
-  min-width: 1920px;
+  min-width: 1280px;
   background-color: #f8f9ff !important;
   font-size: 16px;
   overflow: auto;
@@ -235,6 +235,25 @@ button:hover {
   color: #017efa;
 }
 
+.btn_close {
+  padding: 0 !important;
+  width: 18px !important;
+  min-width: unset !important;
+  height: 18px !important;
+  font-size: 0;
+  border: 0;
+  background: url(../images/icon_close.svg) no-repeat center center;
+  background-size: 18px;
+
+  &:hover {
+    background-color: transparent !important;
+  }
+
+  img {
+    display: none;
+  }
+}
+
 .btn_tip {
   padding: 0 !important;
   width: 22px !important;
@@ -344,6 +363,12 @@ label {
   background-color: #fff;
   border: 1px solid #ccc;
   border-radius: 5px;
+  text-align: left;
+}
+
+.dropdown-toggle::after {
+  float: right;
+  margin-top: 7px;
 }
 
 .btn_number {
@@ -382,120 +407,24 @@ label {
   background-size: 12px;
 }
 
-.btn-check:active + .btn-secondary,
-.btn-check:checked + .btn-secondary,
-.btn-secondary.active,
-.btn-secondary:active,
-.show > .btn-secondary.dropdown-toggle {
-  border-color: #ccc !important;
-}
-/* form */
+// input
+
 input {
-  padding: 4px 12px 5px !important;
-  border: 1px solid #ccc !important;
-  border-radius: 5px !important;
-  font-size: 15px !important;
-  font-weight: 400;
-  color: #222 !important;
-}
-
-input:disabled {
-  padding-left: 3px !important;
-  padding-right: 0 !important;
-  border: 0 !important;
-  background-color: transparent;
-  color: #999;
-}
-
-.input_right {
-  margin-left: 5px;
-}
-.input_left {
-  margin-right: 8px;
-}
-
-input[type='checkbox'] {
-  border: 0 !important;
-  padding: 0 !important;
-  cursor: pointer;
-}
-
-.dropdown > button {
-  min-height: 32px;
-  text-align: left;
-}
-
-.dropdown > button:after {
-  float: right;
-  margin-top: 7px;
-}
-
-.dropdown + .btn_green {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-}
-
-.tippy-box {
-  min-width: 100px;
-  width: auto;
-  padding: 7px 0;
-  border: 1px solid #ccc;
-  background-color: #fff;
-  box-shadow: 0px 3px 10px 0px rgba(0, 0, 0, 0.1);
-}
-
-.dropdown-item {
+  height: 32px;
   padding: 0 10px;
-  width: 100%;
-  font-size: 13.5px;
-  line-height: 25px;
-}
-
-.imagemodal .modal-dialog {
-  width: auto;
-  max-width: 100%;
-  overflow: auto;
-}
-
-.imagemodal .modal-content {
-  margin: 0 auto;
-  width: auto;
-}
-
-.imagemodal .modal-dialog img {
-  width: auto;
-  max-width: 100%;
-  height: auto;
-}
-
-.modal-header .btn_close,
-.modal-header .btn-close {
-  border: 0;
-  padding: 5px;
-  float: right !important;
-  margin-right: -5px;
-  width: 27px;
-  height: 27px;
-  min-width: unset;
-  background-color: transparent;
-}
-
-.modal-body .form-label {
+  border-radius: 5px !important;
   font-size: 14px;
 }
 
-.input_search {
-  float: left;
-  border-top-right-radius: 0 !important;
-  border-bottom-right-radius: 0 !important;
-  border-right: 0 !important;
-}
-
-.input_search + .btn_search {
-  float: left;
+.input_search + button,
+.dropdown + button {
+  height: 32px;
   border-top-left-radius: 0 !important;
   border-bottom-left-radius: 0 !important;
-  border-left: 0 !important;
+}
+
+.form-control {
+  font-size: 14px;
 }
 
 /* nav-tabs */

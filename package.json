@@ -82,7 +82,7 @@
     ]
   },
   "homepage": "./",
-  "proxy": "https://sella.co.kr",
+  "proxy": "http://localhost",
   "devDependencies": {
     "react-error-overlay": "^6.0.9"
   }
