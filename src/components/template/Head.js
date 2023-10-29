@@ -35,10 +35,10 @@ const Head = () => {
   return (
     <>
       <div className="header v02">
-        <Nav.Link onClick={onLink} className="logo" name="/settlement/margin_calc">
+        <Nav.Link onClick={onLink} className="logo" name="">
           <img src={`${img_src}${logo_white}`} alt="로고" />
         </Nav.Link>
-        
+
         <nav>
           <ul className="left">
             <li
@@ -51,7 +51,8 @@ const Head = () => {
               <Nav.Link className="nav-link" onClick={onLink} name="/settlement/margin_calc">
                 <p>
                   <span>정산해보기!</span>손익 관리
-                </p>              </Nav.Link>
+                </p>{' '}
+              </Nav.Link>
             </li>
           </ul>
           <ul className="center">
@@ -59,7 +60,8 @@ const Head = () => {
               <Nav.Link onClick={onLink} name="/step2">
                 <p>
                   <span>1단계</span>기준 상품 관리
-                </p>              </Nav.Link>
+                </p>{' '}
+              </Nav.Link>
             </li>
             <li
               className={
@@ -200,7 +202,7 @@ const Head = () => {
               </>
             )}
           </div>
-        </nav>      
+        </nav>
       </div>
     </>
   );
