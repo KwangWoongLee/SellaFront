@@ -35,7 +35,13 @@ const Head = () => {
         </Nav.Link>
         <div className="menu">
           <ul className="left">
-            <li className={location.pathname === '/settlement/margin_calc' ? 'on' : ''}>
+            <li
+              className={
+                location.pathname === '/settlement/margin_calc' || location.pathname === '/settlement/today_summary'
+                  ? 'on'
+                  : ''
+              }
+            >
               <Nav.Link className="nav-link" onClick={onLink} name="/settlement/margin_calc">
                 <span>정산해보기!</span>손익 관리
               </Nav.Link>
@@ -47,8 +53,16 @@ const Head = () => {
                 <span>1단계</span>기준 상품 관리
               </Nav.Link>
             </li>
-            <li className={location.pathname === '/settlement/form_management' ? 'on' : ''}>
-              <Nav.Link onClick={onLink} name="/settlement/form_management">
+            <li
+              className={
+                location.pathname === '/settlement/form_management' ||
+                location.pathname === '/settlement/sale_product' ||
+                location.pathname === '/settlement/standard_product'
+                  ? 'on'
+                  : ''
+              }
+            >
+              <Nav.Link onClick={onLink} name="/settlement/sale_product">
                 <span>2단계</span>매체 관리
               </Nav.Link>
             </li>

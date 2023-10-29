@@ -57,7 +57,7 @@ const Regist = () => {
           const { data } = ret.data;
           Recoils.setState('SELLA:AGREEMENT', data.sella_agreement);
 
-          const agreement_temp = _.filter(_.cloneDeep(Recoils.getState('SELLA:AGREEMENT')), { type: 'regist' });
+          const agreement_temp = _.filter(_.cloneDeep(data.sella_agreement), { type: 'regist' });
           _.forEach(agreement_temp, (item) => {
             item.checked = false;
           });
@@ -207,7 +207,7 @@ const Regist = () => {
   };
 
   const checkedItemHandler = (d) => {
-    const obj = _.find(agreement, { code: d.code });
+    const obj = _.find(agreement, { group_id: d.group_id });
     obj.checked = !obj.checked;
     if (obj.checked === false) setAllChecked(false);
 
@@ -299,7 +299,7 @@ const Regist = () => {
               {agreement.map((name, key) => (
                 <>
                   <span>
-                    [{agreement[key].essential_flag ? '필수' : '선택'}] {agreement[key].title}
+                    [{agreement[key].essential_flag ? '필수' : '선택'}] {agreement[key].group_title}
                   </span>
                   <Checkbox
                     checked={agreement[key].checked}
@@ -308,8 +308,8 @@ const Regist = () => {
                     }}
                   ></Checkbox>
                   <label>동의</label>
-                  <textarea onClick={(e) => onClickAgreement(e, agreement[key].content)} disabled={true}>
-                    {agreement[key].content}
+                  <textarea onClick={(e) => onClickAgreement(e, agreement[key].contents)} disabled={true}>
+                    {agreement[key].contents[0].content}
                   </textarea>
                 </>
               ))}

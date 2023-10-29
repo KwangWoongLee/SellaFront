@@ -57,17 +57,6 @@ const CategoryFee_Search = React.memo(({ selectCallback, parentFormsMatchSelectD
     }
   }, [parentFormsMatchSelectData]);
 
-  // useEffect(() => {
-  //   let search_results = [...sella_categories];
-  //   if (platformType != -1 && platform_str[platformType]) {
-  //     search_results = _.filter(search_results, (category) => {
-  //       return _.includes(category.name, platform_str[platformType]);
-  //     });
-  //   }
-
-  //   setItems(search_results);
-  // }, []);
-
   useEffect(() => {
     let search_results = [...sella_categories];
     if (platformType != -1 && basic_platform_str[platformType]) {

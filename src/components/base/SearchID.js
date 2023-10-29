@@ -32,7 +32,7 @@ const SearchID = () => {
   logger.render('SearchID');
 
   const [agreementModal, setAgreementModal] = useState(false);
-  const [agreementModalContent, setAgreementModalContent] = useState('');
+  const [agreementModalContent, setAgreementModalContent] = useState([]);
   const [searchButtonOn, setSearchButtonOn] = useState(false);
   const [allChecked, setAllChecked] = useState(false);
   const [agreement, setAgreement] = useState([]);
@@ -64,7 +64,7 @@ const SearchID = () => {
           const { data } = ret.data;
           Recoils.setState('SELLA:AGREEMENT', data.sella_agreement);
 
-          const agreement_temp = _.filter(_.cloneDeep(Recoils.getState('SELLA:AGREEMENT')), { type: 'search' });
+          const agreement_temp = _.filter(_.cloneDeep(data.sella_agreement), { type: 'search' });
           _.forEach(agreement_temp, (item) => {
             item.checked = false;
           });
@@ -75,7 +75,7 @@ const SearchID = () => {
     }
 
     if (allChecked && _.find(allChecked, { check: true })) setAllChecked(false);
-  }, [agreement]);
+  }, []);
 
   useEffect(() => {
     if (allChecked) {
@@ -153,7 +153,7 @@ const SearchID = () => {
   };
 
   const checkedItemHandler = (d) => {
-    const obj = _.find(agreement, { code: d.code });
+    const obj = _.find(agreement, { group_id: d.group_id });
     obj.checked = !obj.checked;
     if (obj.checked == false) setAllChecked(false);
 
@@ -250,8 +250,8 @@ const SearchID = () => {
     }
   };
 
-  const onClickAgreement = (e, content) => {
-    setAgreementModalContent(content);
+  const onClickAgreement = (e, contents) => {
+    setAgreementModalContent([...contents]);
     setAgreementModal(true);
   };
 
@@ -313,8 +313,8 @@ const SearchID = () => {
                       }}
                     ></Checkbox>
                     <label>
-                      {agreement[key].title}{' '}
-                      <span onClick={(e) => onClickAgreement(e, agreement[key].content)}>
+                      {agreement[key].group_title}{' '}
+                      <span onClick={(e) => onClickAgreement(e, agreement[key].contents)}>
                         <strong
                           style={{
                             textDecoration: 'underline',
@@ -469,7 +469,7 @@ const SearchID = () => {
       <AgreementModal
         modalState={agreementModal}
         setModalState={setAgreementModal}
-        content={agreementModalContent}
+        contents={agreementModalContent}
       ></AgreementModal>
     </>
   );

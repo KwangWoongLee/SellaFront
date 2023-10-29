@@ -32,7 +32,7 @@ const SearchPW = () => {
   logger.render('SearchPW');
 
   const [agreementModal, setAgreementModal] = useState(false);
-  const [agreementModalContent, setAgreementModalContent] = useState('');
+  const [agreementModalContent, setAgreementModalContent] = useState([]);
   const [searchButtonOn, setSearchButtonOn] = useState(false);
   const [allChecked, setAllChecked] = useState(false);
   const [agreement, setAgreement] = useState([]);
@@ -69,7 +69,7 @@ const SearchPW = () => {
           const { data } = ret.data;
           Recoils.setState('SELLA:AGREEMENT', data.sella_agreement);
 
-          const agreement_temp = _.filter(_.cloneDeep(Recoils.getState('SELLA:AGREEMENT')), { type: 'search' });
+          const agreement_temp = _.filter(_.cloneDeep(data.sella_agreement), { type: 'search' });
           _.forEach(agreement_temp, (item) => {
             item.checked = false;
           });
@@ -156,7 +156,7 @@ const SearchPW = () => {
   };
 
   const checkedItemHandler = (d) => {
-    const obj = _.find(agreement, { code: d.code });
+    const obj = _.find(agreement, { group_id: d.group_id });
     obj.checked = !obj.checked;
     if (obj.checked === false) setAllChecked(false);
 
@@ -266,8 +266,8 @@ const SearchPW = () => {
     }
   };
 
-  const onClickAgreement = (e, content) => {
-    setAgreementModalContent(content);
+  const onClickAgreement = (e, contents) => {
+    setAgreementModalContent([...contents]);
     setAgreementModal(true);
   };
 
@@ -329,8 +329,8 @@ const SearchPW = () => {
                       }}
                     ></Checkbox>
                     <label>
-                      {agreement[key].title}{' '}
-                      <span onClick={(e) => onClickAgreement(e, agreement[key].content)}>
+                      {agreement[key].group_title}{' '}
+                      <span onClick={(e) => onClickAgreement(e, agreement[key].contents)}>
                         <strong style={{ textDecoration: 'underline' }}>보기</strong>
                       </span>
                     </label>
@@ -476,18 +476,14 @@ const SearchPW = () => {
           <Button onClick={onSubmit} disabled={!searchButtonOn} variant="primary" className="btn_blue btn_submit">
             확인
           </Button>
-        </Form>ㅋ
+        </Form>
       </Body>
       <Footer />
-
-      <Modal show={agreementModal} centered>
-        <Modal.Body>{agreementModalContent}</Modal.Body>
-      </Modal>
 
       <AgreementModal
         modalState={agreementModal}
         setModalState={setAgreementModal}
-        content={agreementModalContent}
+        contents={agreementModalContent}
       ></AgreementModal>
     </>
   );

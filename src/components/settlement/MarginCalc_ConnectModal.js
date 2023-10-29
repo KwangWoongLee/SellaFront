@@ -96,16 +96,18 @@ const MarginCalc_ConnectModal = React.memo(
 
           deleteCallback(d, true);
 
-          setFormsMatchSelect(-1);
-
-          selectFormsMatchRef.current = null;
-          setSelectFormsMatchData(null);
-
           rawGoodsMatch = _.cloneDeep(data.goods_match);
 
           const filteredArr = _.filter(_.cloneDeep(items), (item) => item.forms_match_idx !== d.forms_match_idx);
 
           saveFormsMatchRef.current = new Array(filteredArr.length);
+
+          if (filteredArr.length) {
+            setFormsMatchSelect(0);
+
+            selectFormsMatchRef.current = filteredArr[0];
+            setSelectFormsMatchData({ ...selectFormsMatchRef.current });
+          }
 
           setItems([...filteredArr]);
         }

@@ -60,9 +60,11 @@ const MarginCalc_UnConnectModal = React.memo(
         );
       });
 
-      var pulled = _.pullAt(unique_arr, [select_row_index]);
-      if (pulled) {
-        unique_arr.unshift(pulled[0]);
+      if (select_row_index !== -1) {
+        var pulled = _.pullAt(unique_arr, [select_row_index]);
+        if (pulled) {
+          unique_arr.unshift(pulled[0]);
+        }
       }
 
       noUpdateRef.current = true;
@@ -224,7 +226,13 @@ const MarginCalc_UnConnectModal = React.memo(
 
     return (
       <>
-        <Modal show={modalState} onHide={onClose} centered className="modal UnConnect sale_product">
+        <Modal
+          show={modalState}
+          onHide={onClose}
+          style={{ position: 'relative', zIndex: '1050' }}
+          centered
+          className="modal UnConnect sale_product"
+        >
           <Modal.Header>
             <Modal.Title>상품 매칭 관리</Modal.Title>
             <Button variant="primary" className="btn_close" onClick={onClose}>

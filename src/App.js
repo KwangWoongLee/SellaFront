@@ -11,7 +11,7 @@ import { useBeforeunload } from 'react-beforeunload';
 
 import { RecoilRoot } from 'recoil';
 import RecoilNexus from 'recoil-nexus';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, HashRouter } from 'react-router-dom';
 import Modals from 'components/modal';
 
 import Login from 'components/base/Login';
@@ -44,7 +44,7 @@ import FAQ from 'components/cscenter/FAQ';
 import Inquiry from 'components/cscenter/Inquiry';
 import Margin_NoLogin from 'components/calculator/Margin_NoLogin';
 
-//const Router = process.env.REACT_APP_SSR === '1' ? BrowserRouter : HashRouter;
+const Router = process.env.REACT_APP_SSR === '1' ? BrowserRouter : HashRouter;
 
 export function App() {
   logger.render('App');
@@ -60,7 +60,7 @@ export function App() {
 
   return (
     <RecoilRoot>
-      <BrowserRouter>
+      <Router>
         <RecoilNexus />
         <NavigateCtr />
         <Routes>
@@ -197,7 +197,7 @@ export function App() {
           <Route path="empty" element={null} />
         </Routes>
         <Modals />
-      </BrowserRouter>
+      </Router>
     </RecoilRoot>
   );
 }

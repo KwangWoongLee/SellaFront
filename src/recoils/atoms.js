@@ -47,6 +47,10 @@ insert_recoil('SELLA:BASICFORMS', {
   sella_basic_forms: [],
 });
 
+insert_recoil('SELLA:GRADE', {
+  sella_grade: [],
+});
+
 insert_recoil('SELLA:PLATFORM', {
   platform: [],
 });

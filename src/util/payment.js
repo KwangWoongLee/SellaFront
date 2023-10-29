@@ -23,7 +23,15 @@ export const RequestPay = (data, cb) => {
       escrow: false, // 필수
       // period: [20231027, 20231028], // 필수
     },
-    (rsp) => cb(rsp)
+    (rsp) => {
+      // request.post('base/payment', { access_token: data.account.access_token, grade: d }).then((ret) => {
+      //   if (!ret.err) {
+      //     // modal.alert('결제가 완료되었습니다. 다시 로그인 해주세요.');
+      //     // Recoils.resetState('CONFIG:ACCOUNT');
+      //     // navigate('/');
+      //   }
+      // });
+    }
   );
 };
 

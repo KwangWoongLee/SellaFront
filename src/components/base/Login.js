@@ -84,6 +84,7 @@ const Login = () => {
         Recoils.setState('SELLA:SELLAFORMS', data.sella_forms);
         Recoils.setState('SELLA:CATEGORIES', data.sella_categories);
         Recoils.setState('SELLA:BASICFORMS', data.sella_basic_forms);
+        Recoils.setState('SELLA:GRADE', data.sella_grade);
 
         navigate('/settlement/margin_calc');
       }

@@ -20,6 +20,7 @@ import icon_close from 'images/icon_close.svg';
 const Membership = () => {
   logger.render('Membership');
   const account = Recoils.useValue('CONFIG:ACCOUNT');
+  const sella_grade = Recoils.getState('SELLA:GRADE');
 
   const nameRef = useRef(null);
   const phoneRef = useRef(null);
@@ -29,10 +30,11 @@ const Membership = () => {
   const newPasswordConfirmRef = useRef(null);
   const corpRef = useRef(null);
   const corpNoRef = useRef(null);
-  const [gradeData, setGradeData] = useState(null);
+  const [accountData, setAccountData] = useState(null);
 
   const [modalState, setModalState] = useState(false);
-  const [loading, error] = useScript({
+
+  useScript({
     src: 'https://cdn.iamport.kr/v1/iamport.js',
     onload: () => {
       window.IMP.init('imp85285548');
@@ -50,32 +52,17 @@ const Membership = () => {
         corpRef.current.value = data.corperation;
         corpNoRef.current.value = data.corperation_no;
 
-        setGradeData(data.grade_data);
+        setAccountData({
+          grade: data.grade,
+          remain_warranty_day: data.remain_warranty_day,
+        });
       }
     });
   }, []);
 
   const onPaymentReq = (d) => {
-    request.post('base/payment', { access_token: account.access_token, grade: d }).then((ret) => {
-      if (!ret.err) {
-        RequestPay(
-          {
-            name: d.name,
-            amount: d.price,
-            buyer_name: account.name,
-            buyer_email: account.email,
-            buyer_tel: account.phone,
-          },
-          (rsp) => {
-            console.log(rsp);
-          }
-        );
-
-        // modal.alert('결제가 완료되었습니다. 다시 로그인 해주세요.');
-
-        // Recoils.resetState('CONFIG:ACCOUNT');
-        // navigate('/');
-      }
+    RequestPay(d, () => {
+      console.log();
     });
   };
 
@@ -126,22 +113,14 @@ const Membership = () => {
           <div className="paymentbox">
             <h3>멤버십 혜택 안내</h3>
             <h4>
-              {gradeData && gradeData.grade == 0 ? '무료' : '유료'}서비스 사용기간이 [
-              {gradeData ? gradeData.remain_warranty_day : 0}]일 남았습니다.
+              {accountData && accountData.grade !== 0 && accountData.grade !== 1 && '유료'}서비스 사용기간이 [
+              {accountData ? accountData.remain_warranty_day : 0}]일 남았습니다.
             </h4>
 
-            {gradeData && (
-              <GradeItem
-                account={{
-                  email: emailRef.current.value,
-                  name: nameRef.current.value,
-                  phone: phoneRef.current.value,
-                  access_token: account.access_token,
-                }}
-                d={gradeData}
-                onClick={onPaymentReq}
-              ></GradeItem>
-            )}
+            {sella_grade &&
+              sella_grade.map((sella_grade_data, index) => (
+                <GradeItem account_data={accountData} grade_data={sella_grade_data} onClick={onPaymentReq}></GradeItem>
+              ))}
           </div>
 
           <div className="formbox">
@@ -222,16 +201,16 @@ const Membership = () => {
   );
 };
 
-const GradeItem = React.memo(({ index, d, onClick, account }) => {
+const GradeItem = React.memo(({ index, account_data, grade_data, onClick }) => {
   return (
     <div className="innerbox">
       <dl>
-        <dt>{d.name}</dt>
-        {d.price != 0 ? <dd>{d.price}원 / 월</dd> : <dd>무료 사용 중</dd>}
-        <dd>{d.descript}</dd>
+        <dt>{grade_data.name}</dt>
+        {grade_data.price != 0 && <dd>{grade_data.price}원 / 월</dd>}
+        <dd>{grade_data.descript}</dd>
       </dl>
 
-      <ul>{d.functions && d.functions.map((data, index) => <li>{data.name}</li>)}</ul>
+      <ul>{grade_data.functions && grade_data.functions.map((data, index) => <li>{data.name}</li>)}</ul>
       {/* <div className="terms">
         <ul>
           <li>
@@ -270,11 +249,14 @@ const GradeItem = React.memo(({ index, d, onClick, account }) => {
         <Checkbox></Checkbox>
         <label>모두 동의합니다.</label>
       </div> */}
-      {d.remain_warranty_day && d.remain_warranty_day > 0 ? (
+      {account_data &&
+      account_data.remain_warranty_day &&
+      account_data.remain_warranty_day > 0 &&
+      account_data.grade === grade_data.grade ? (
         <Button
           className="btn-primary"
           onClick={() => {
-            onClick(d, account);
+            onClick(grade_data, account_data);
           }}
         >
           사용중
@@ -282,7 +264,7 @@ const GradeItem = React.memo(({ index, d, onClick, account }) => {
       ) : (
         <Button
           onClick={() => {
-            onClick(d, account);
+            onClick(grade_data, account_data);
           }}
           className="btn-primary btn_flblue"
         >
