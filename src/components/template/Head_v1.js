@@ -18,7 +18,7 @@ import 'styles/mediaQuery_1000.scss';
 import icon_hamburger from 'images/icon_hamburger.svg';
 
 const Head = () => {
-  logger.render('Template Head');
+  //logger.debug('Template Head');
   const account = Recoils.useValue('CONFIG:ACCOUNT');
   const location = useLocation();
 
@@ -32,7 +32,7 @@ const Head = () => {
       navigate(e.currentTarget.name);
     }
 
-    logger.render('NavigateCtr :');
+    //logger.debug('NavigateCtr :');
   };
 
   return (

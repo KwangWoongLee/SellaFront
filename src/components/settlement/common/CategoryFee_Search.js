@@ -10,7 +10,7 @@ import icon_search from 'images/icon_search.svg';
 import icon_reset from 'images/icon_reset.svg';
 
 const CategoryFee_Search = React.memo(({ selectCallback, parentFormsMatchSelectData }) => {
-  logger.render('CategoryFee_Search');
+  //logger.debug('CategoryFee_Search');
   const sella_categories = Recoils.useValue('SELLA:CATEGORIES');
 
   const categoryRef = useRef(null);

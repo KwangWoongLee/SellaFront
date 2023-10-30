@@ -9,7 +9,7 @@ import Body from 'components/template/Body';
 import 'styles/Login.scss';
 
 const SearchIDResult = () => {
-  logger.render('SearchIDResult');
+  //logger.debug('SearchIDResult');
   const [searchedEmail, setSearchedEmail] = useState('');
   const [mode, setMode] = useState(0);
 

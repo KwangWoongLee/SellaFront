@@ -24,7 +24,7 @@ const agency_str = ['통신사 선택', 'SKT', 'KT', 'LG'];
 const gender = ['남', '여'];
 const local = ['내국인', '외국인'];
 const Regist = () => {
-  logger.render('Regist');
+  //logger.debug('Regist');
 
   const [registButtonOn, setRegistButtonOn] = useState(false);
   const [allChecked, setAllChecked] = useState(false);

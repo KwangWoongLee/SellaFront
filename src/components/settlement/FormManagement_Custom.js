@@ -22,7 +22,7 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import 'styles/FormManagement.scss';
 
 const FormManagement_Custom = (param) => {
-  logger.render('FormManagement_Custom');
+  //logger.debug('FormManagement_Custom');
 
   let { platform } = param;
 
@@ -70,7 +70,7 @@ const FormManagement_Custom = (param) => {
 };
 
 const SellaForm = React.memo(({ index, d }) => {
-  logger.render('SellaForm TableItem : ', index);
+  //logger.debug('SellaForm TableItem : ', index);
   return (
     <tr>
       <td>

@@ -3,7 +3,7 @@ import { logger } from 'util/com';
 
 import 'styles/Template.scss';
 const Body = ({ myClass, children }) => {
-  logger.render('Template Body');
+  //logger.debug('Template Body');
   useEffect(() => {}, []);
 
   return (

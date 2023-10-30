@@ -13,7 +13,6 @@ import _ from 'lodash';
 import 'styles/Login.scss';
 
 const Login = () => {
-  logger.render('Login');
   const [idSaveChecked, setIdSaveChecked] = useState(false);
   const [email, setEmail] = useState('');
 

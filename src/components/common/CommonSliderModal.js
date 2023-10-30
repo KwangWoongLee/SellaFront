@@ -10,7 +10,7 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
 const CommonSliderModal = React.memo(({ modalState, setModalState, slider_settings, datas }) => {
-  logger.render('CommonSliderModal');
+  //logger.debug('CommonSliderModal');
 
   const onClose = () => setModalState(false);
 

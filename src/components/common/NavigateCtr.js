@@ -7,7 +7,7 @@ const NavigateCtr = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  logger.render('NavigateCtr :', location.pathname);
+  //logger.debug('NavigateCtr :', location.pathname);
 
   navigate_ref.current = { navigate, location };
 

@@ -8,7 +8,7 @@ import icon_close from 'images/icon_close.svg';
 
 const AlertModal = () => {
   const [state, setState] = Recoils.useState('ALERT');
-  logger.render('AlertModal : ', state.show);
+  //logger.debug('AlertModal : ', state.show);
 
   const onClose = () => {
     setState(false);

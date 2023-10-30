@@ -4,7 +4,7 @@ import { Modal, Button } from 'react-bootstrap';
 import { logger } from 'util/com';
 
 const CommonDateModal = React.memo(({ modalState, setModalState, onChangeDate }) => {
-  logger.render('CommonDateModal');
+  //logger.debug('CommonDateModal');
 
   const [form, setForm] = useState({
     year: new Date().getFullYear(),

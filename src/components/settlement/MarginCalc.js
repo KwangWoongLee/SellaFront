@@ -37,8 +37,6 @@ import img_service from 'images/img_service.png';
 import icon_close from 'images/icon_close.svg';
 
 const MarginCalc = () => {
-  logger.render('MarginCalc');
-
   const account = Recoils.useValue('CONFIG:ACCOUNT');
   const access_token = account.access_token;
   const [mode, setMode] = useState(0);
@@ -1061,8 +1059,6 @@ const CalcSummary = (rowData) => {
 };
 
 const StockPriceModal = React.memo(({ modalState, setModalState, goodsMatch }) => {
-  logger.render('StockPriceModal');
-
   const onClose = () => setModalState(false);
 
   return (
@@ -1285,4 +1281,8 @@ const ProfitLossRow = React.memo(
   }
 );
 
-export default React.memo(MarginCalc);
+function areEqual(prevProps, nextProps) {
+  return false;
+}
+
+export default React.memo(MarginCalc, areEqual);

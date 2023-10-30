@@ -13,7 +13,7 @@ const FileUpload = () => {
   const state_reset = Recoils.useResetState('MODAL:FILEUPLOAD');
   const [progress, setProgress] = useState({ percent: 0, loaded: 0, total: 0 });
   const [btn_disable, setBtnDisable] = useState(false);
-  logger.render('FileUploadModal : ', state.show);
+  //logger.debug('FileUploadModal : ', state.show);
   useEffect(() => {
     if (!state.show) {
       setProgress(() => ({ percent: 0, loaded: 0, total: 0 }));

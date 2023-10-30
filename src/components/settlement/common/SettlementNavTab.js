@@ -12,7 +12,7 @@ const data = [
   //{ name: '/settlement/standard_product', desc: '기준상품 연결 조회' },
 ];
 const SettlementNavTab = ({ active }) => {
-  logger.render('SettlementNavTab');
+  //logger.debug('SettlementNavTab');
 
   useEffect(() => {}, []);
 

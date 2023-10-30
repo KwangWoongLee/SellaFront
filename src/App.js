@@ -44,11 +44,11 @@ import FAQ from 'components/cscenter/FAQ';
 import Inquiry from 'components/cscenter/Inquiry';
 import Margin_NoLogin from 'components/calculator/Margin_NoLogin';
 import Home from 'components/base/Home';
+import LowestPrice from 'components/calculator/LowestPrice';
 
 const Router = process.env.REACT_APP_SSR === '1' ? BrowserRouter : HashRouter;
 
 export function App() {
-  logger.render('App');
   useEffect(() => {
     logger.debug('mount App');
   }, []);
@@ -136,6 +136,7 @@ export function App() {
               }
             />
             <Route path="margin_free" element={<Margin_NoLogin />} />
+            <Route path="lowest_price" element={<LowestPrice />} />
             <Route
               path="buying"
               element={

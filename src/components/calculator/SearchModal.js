@@ -12,7 +12,7 @@ import icon_reset from 'images/icon_reset.svg';
 
 import 'styles/SearchModal.scss';
 const SearchModal = React.memo(({ modalState, setModalState, selectCallback, name }) => {
-  logger.render('SearchModal');
+  //logger.debug('SearchModal');
 
   const nameRef = useRef(null);
   const [items, setItems] = useState([]);
@@ -97,7 +97,7 @@ const SearchModal = React.memo(({ modalState, setModalState, selectCallback, nam
 });
 
 const SelectItem = React.memo(({ index, d, onSelect }) => {
-  logger.render('SelectItem : ', index);
+  //logger.debug('SelectItem : ', index);
   return (
     <tr>
       <td>{d.name}</td>

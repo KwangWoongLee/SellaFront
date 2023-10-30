@@ -26,7 +26,7 @@ const newRow = {
 };
 
 const Step2Modal = React.memo(({ modalState, setModalState, callback }) => {
-  logger.render('Step2Modal');
+  //logger.debug('Step2Modal');
   const [rowData, setRowData] = useState([]);
 
   useEffect(() => {
@@ -175,7 +175,7 @@ const Step2Modal = React.memo(({ modalState, setModalState, callback }) => {
 });
 
 const InsertGoodsItems = React.memo(({ index, d, rowData, onChange, onDelete }) => {
-  logger.render('InsertGoodsItems TableItem : ', index);
+  //logger.debug('InsertGoodsItems TableItem : ', index);
 
   return (
     <tr>

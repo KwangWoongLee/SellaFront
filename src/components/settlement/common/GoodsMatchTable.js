@@ -7,7 +7,6 @@ import { logger, time_format } from 'util/com';
 import icon_del from 'images/icon_del.svg';
 
 const GoodsMatchTable = React.memo(({ selectCallback, deleteCallback, changeCallback, parentFormsMatchSelectData }) => {
-  logger.render('GoodsMatchTable');
   const [rowData, setRowData] = useState([]);
   const [settlementFlag, setSettlementFlag] = useState(false);
 
@@ -82,7 +81,7 @@ const GoodsMatchTable = React.memo(({ selectCallback, deleteCallback, changeCall
 });
 
 const GoodsMatchItem = React.memo(({ index, d, rowSpan, onClick, onDelete, onChange, settlementFlag }) => {
-  logger.render('GoodsMatchItem : ', index);
+  //logger.debug('GoodsMatchItem : ', index);
   const inputRef = useRef(null);
   const feeRateRef = useRef(null);
 

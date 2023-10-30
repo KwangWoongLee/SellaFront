@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import icon_close from 'images/icon_close.svg';
 
 const AgreementModal = React.memo(({ modalState, setModalState, contents }) => {
-  logger.render('AgreementModal');
+  //logger.debug('AgreementModal');
   const [contentObj, setContentObj] = useState({ title: '', content: '' });
 
   useEffect(() => {

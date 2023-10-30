@@ -7,7 +7,7 @@ import { logger } from 'util/com';
 import icon_close from 'images/icon_close.svg';
 
 const ImageModal = React.memo(({ modalState, setModalState, imgUrl }) => {
-  logger.render('Step2Modal');
+  //logger.debug('Step2Modal');
 
   useEffect(() => {
     if (modalState) {

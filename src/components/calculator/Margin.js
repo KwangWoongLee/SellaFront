@@ -19,7 +19,7 @@ import { AgGridReact } from 'ag-grid-react';
 import 'styles/Margin.scss';
 
 const Margin = () => {
-  logger.render('Margin');
+  //logger.debug('Margin');
 
   const [rowData, setDatas] = useState([]);
   const platformData = [...Recoils.getState('SELLA:PLATFORM')];

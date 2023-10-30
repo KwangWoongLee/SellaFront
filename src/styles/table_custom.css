@@ -17,7 +17,7 @@ table {
   border: 0;
 }
 
-.table>:not(:first-child) {
+.table > :not(:first-child) {
   border: 0;
 }
 
@@ -46,7 +46,7 @@ h3 span:after {
   font-weight: 400;
 }
 
-h3>button {
+h3 > button {
   float: right;
 }
 
@@ -145,7 +145,7 @@ table tr:focus-within input:not(:focus) {
   background-color: #e8f4fe !important;
 }
 
-table td input+span {
+table td input + span {
   display: inline-block;
   float: right;
   width: 20px;
@@ -188,7 +188,8 @@ table .btn_del {
   margin: 0 auto;
 }
 
-table .btn_add {}
+table .btn_add {
+}
 
 table .td_btn_add {
   text-align: right;
@@ -263,7 +264,6 @@ table.tbody tbody {
   width: 100%;
   height: auto;
 }
-
 
 table.thead td:first-child {
   border-left-color: #081a51;

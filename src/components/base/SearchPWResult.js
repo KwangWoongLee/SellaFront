@@ -8,7 +8,7 @@ import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 
 const SearchPWResult = () => {
-  logger.render('SearchPWResult');
+  //logger.debug('SearchPWResult');
 
   const [mode, setMode] = useState(0);
   const [auth, setAuth] = useState({

@@ -4,8 +4,6 @@ import { logger } from 'util/com';
 import CommonNavTab from 'components/common/CommonNavTab';
 
 const CalculatorNavTab = ({ active, gradeData }) => {
-  logger.render('CalculatorNavTab');
-
   const data = [
     {
       name: '/mypage/membership',

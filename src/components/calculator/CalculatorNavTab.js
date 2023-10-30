@@ -8,7 +8,7 @@ const data = [
   // { name: '/calculator/buying', desc: '사입 계산기' },
 ];
 const CalculatorNavTab = ({ active }) => {
-  logger.render('CalculatorNavTab');
+  //logger.debug('CalculatorNavTab');
 
   useEffect(() => {}, []);
 

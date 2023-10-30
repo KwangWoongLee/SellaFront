@@ -9,7 +9,7 @@ const data = [
   { name: '/settlement/form_management', desc: '매체별 양식 관리' },
 ];
 const SettlementNavTab = ({ active }) => {
-  logger.render('SettlementNavTab');
+  //logger.debug('SettlementNavTab');
 
   useEffect(() => {}, []);
 

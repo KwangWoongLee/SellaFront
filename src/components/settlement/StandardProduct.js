@@ -19,7 +19,7 @@ import icon_reset from 'images/icon_reset.svg';
 import icon_del from 'images/icon_del.svg';
 
 const StandardProduct = () => {
-  logger.render('StandardProduct');
+  //logger.debug('StandardProduct');
 
   const [goodsData, setGoodsData] = useState([]);
   const [matchData, setMatchData] = useState([]);
@@ -253,7 +253,7 @@ const StandardProduct = () => {
 };
 
 const GoodsItem = React.memo(({ index, d, onClick, tableRow }) => {
-  logger.render('GoodsItem : ', index);
+  //logger.debug('GoodsItem : ', index);
   return (
     <tr
       className={index == tableRow ? 'select' : ''}
@@ -269,7 +269,7 @@ const GoodsItem = React.memo(({ index, d, onClick, tableRow }) => {
 });
 
 const StandardProductItem = React.memo(({ index, d, onChange, onSave, onDelete }) => {
-  logger.render('GoodsMatchItem : ', index);
+  //logger.debug('GoodsMatchItem : ', index);
 
   const inputRef = useRef(null);
 

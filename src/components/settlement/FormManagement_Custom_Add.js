@@ -28,7 +28,7 @@ import icon_excel_click from 'images/icon_excel_click.svg';
 import icon_excel_check from 'images/icon_excel_check.svg';
 
 const FormManagement_Custom_Add = (param) => {
-  logger.render('FormManagement_Custom_Add');
+  //logger.debug('FormManagement_Custom_Add');
 
   const [rowData, setRowData] = useState([]);
   let { platform } = param;
@@ -448,7 +448,7 @@ const FormManagement_Custom_Add = (param) => {
 };
 
 const SellaForm = React.memo(({ index, d, selectRow, onClick, onDelete, checkedItemHandler }) => {
-  logger.render('SellaForm TableItem : ', index);
+  //logger.debug('SellaForm TableItem : ', index);
   const basicFeeRateRef = useRef(null);
   const dfFeeRateRef = useRef(null);
   const mfFeeRateRef = useRef(null);
@@ -614,7 +614,7 @@ const SellaForm = React.memo(({ index, d, selectRow, onClick, onDelete, checkedI
 });
 
 const UploadExcelItems = React.memo(({ index, d, callback, setTransition }) => {
-  logger.render('SellaForm TableItem : ', index);
+  //logger.debug('SellaForm TableItem : ', index);
   return (
     <tr
       onDoubleClick={() => {
@@ -644,7 +644,7 @@ const UploadExcelItems = React.memo(({ index, d, callback, setTransition }) => {
 });
 
 const SellaBasicModal = React.memo(({ modalState, setModalState, sella_forms, AddItemCallback, rowData }) => {
-  logger.render('SellaBasicModal');
+  //logger.debug('SellaBasicModal');
   let unessential_forms = _.filter(sella_forms, { essential_flag: 0 });
   unessential_forms = _.filter(unessential_forms, (item) => {
     const findObj = _.find(rowData, { sella_code: item.code });
@@ -681,7 +681,7 @@ const SellaBasicModal = React.memo(({ modalState, setModalState, sella_forms, Ad
 });
 
 const TabContent = React.memo(({ nodeRef, excelData, MatchCallback, setTransition }) => {
-  logger.render('TransitionTab');
+  //logger.debug('TransitionTab');
 
   return (
     <table className="tbody" ref={nodeRef}>

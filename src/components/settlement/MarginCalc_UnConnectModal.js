@@ -19,8 +19,6 @@ import icon_close from 'images/icon_close.svg';
 
 const MarginCalc_UnConnectModal = React.memo(
   ({ modalState, setModalState, rowData, deleteCallback, saveCallback, selectData }) => {
-    logger.render('MarginCalc_UnConnectModal');
-
     const [formsMatchSelect, setFormsMatchSelect] = useState(-1);
     const [items, setItems] = useState([]);
     const selectFormsMatchRef = useRef(null);
@@ -114,8 +112,9 @@ const MarginCalc_UnConnectModal = React.memo(
 
       deleteCallback(d, false);
 
-      // setSelectFormsMatchData({ ...selectFormsMatchRef.current });
       setFormsMatchSelect(-1);
+      selectFormsMatchRef.current = null;
+      setSelectFormsMatchData({ ...selectFormsMatchRef.current });
     };
 
     const onSelectGoodsMatchTable = (d) => {};

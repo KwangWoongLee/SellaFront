@@ -11,7 +11,7 @@ import { logger } from 'util/com';
 import 'styles/Login.scss';
 
 const Profile = () => {
-  logger.render('Profile');
+  //logger.debug('Profile');
 
   useEffect(() => {}, []);
 

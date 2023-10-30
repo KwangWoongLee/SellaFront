@@ -6,8 +6,6 @@ import { img_src, logger } from 'util/com';
 import icon_del from 'images/icon_del.svg';
 
 const FormsMatchTable = React.memo(({ rows, modalState, selectCallback, deleteCallback, onParentSelect }) => {
-  logger.render('FormsMatchTable');
-
   const [rowData, setRowData] = useState([]);
   const [tableRow, setTableRow] = useState(-1);
   const formsMatchTableRef = useRef(null);
@@ -95,23 +93,31 @@ const FormsMatchTable = React.memo(({ rows, modalState, selectCallback, deleteCa
 });
 
 const FormsMatchItem = React.memo(({ index, d, onClick, onDelete, tableRow }) => {
-  logger.render('FormsMatchItem : ', index);
-
   let classNames = [];
-  if (index == tableRow && d && !d.save) {
+  if (index == tableRow) {
     classNames.push('select');
   }
 
-  if (d && d.save) {
+  if (index !== tableRow && d && d.save) {
     classNames.push('save_red');
   }
 
   return (
-    <tr className={_.join(classNames, ' ')}>
+    <tr
+      onMouseEnter={() => {
+        classNames.push('hover');
+      }}
+      onMouseLeave={() => {
+        _.remove(classNames, function (className) {
+          return className === 'hover';
+        });
+      }}
+      className={_.join(classNames, ' ')}
+    >
       <td onClick={onClick}>{d.forms_name}</td>
       <td onClick={onClick}>{d.forms_product_name}</td>
       <td onClick={onClick}>{d.forms_option_name}</td>
-      <td>
+      <td onClick={onClick}>
         <button
           className="btn_del"
           onClick={(e) => {

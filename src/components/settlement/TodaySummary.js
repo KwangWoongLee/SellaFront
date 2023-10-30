@@ -21,7 +21,7 @@ import CustomCalendar from 'components/common/CustomCalendar';
 import CommonDateModal from 'components/common/CommonDateModal';
 
 const TodaySummary = () => {
-  logger.render('TodaySummary');
+  //logger.debug('TodaySummary');
 
   const account = Recoils.useValue('CONFIG:ACCOUNT');
   const access_token = account.access_token;

@@ -19,7 +19,7 @@ import _ from 'lodash';
 import 'styles/SaleProduct.scss';
 
 const SaleProduct = () => {
-  logger.render('SaleProduct');
+  //logger.debug('SaleProduct');
 
   const [items, setItems] = useState([]);
   const [formsMatchSelect, setFormsMatchSelect] = useState(null);

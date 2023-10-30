@@ -5,8 +5,6 @@ import Recoils from 'recoils';
 import request from 'util/request';
 
 const Logout = () => {
-  logger.render('Logout');
-
   useEffect(() => {
     request.post('logout', {}).then((ret) => {
       if (!ret.err) {

@@ -21,7 +21,7 @@ import 'styles/Margin.scss';
 import icon_check from 'images/icon_check.svg';
 
 const Margin_NoLogin = () => {
-  logger.render('Margin_NoLogin');
+  //logger.debug('Margin_NoLogin');
 
   const [platformData, setPlatformData] = useState([]);
   const [platformType, setplatformType] = useState(0);

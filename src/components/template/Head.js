@@ -16,7 +16,7 @@ import 'styles/mediaQuery_1000.scss';
 
 import icon_hamburger from 'images/icon_hamburger.svg';
 const Head = () => {
-  logger.render('Template Head');
+  //logger.debug('Template Head');
   const account = Recoils.useValue('CONFIG:ACCOUNT');
   const location = useLocation();
 
@@ -30,7 +30,7 @@ const Head = () => {
       navigate(e.currentTarget.name);
     }
 
-    logger.render('NavigateCtr :');
+    //logger.debug('NavigateCtr :');
   };
   return (
     <>
@@ -165,6 +165,15 @@ const Head = () => {
             >
               <span>마진계산기</span>
             </Nav.Link>
+            <Nav.Link
+              className="nav-link"
+              onClick={(e) => {
+                onLink(e);
+              }}
+              name="/calculator/lowest_price"
+            >
+              <span>최저가 계산기</span>
+            </Nav.Link>
             {/* <span>·</span>
           <Nav.Link className="nav-link bcalculator" onClick={onLink} name="/calculator/buying">
             <span>사입계산기</span>
@@ -172,15 +181,23 @@ const Head = () => {
             <Nav.Link className="nav-link" onClick={onLink} name="/cscenter">
               <span className="cscenter">고객센터</span>
             </Nav.Link>
-            <Nav.Link className="nav-link cschat" name="/cschat">
-              <img src={`${img_src}${icon_kakao}`} alt="카카오" className="icon_kakao" />
-              <button
-                onClick={() => {
-                  window.open('http://pf.kakao.com/_AxfxfMG/chat');
-                }}
-              ></button>
-              <span className="cschat">1:1문의</span>
-            </Nav.Link>
+            <img
+              onClick={() => {
+                window.open('http://pf.kakao.com/_AxfxfMG/chat');
+              }}
+              src={`${img_src}${icon_kakao}`}
+              alt="카카오"
+              className="icon_kakao"
+            />
+
+            <span
+              onClick={() => {
+                window.open('http://pf.kakao.com/_AxfxfMG/chat');
+              }}
+              className="cschat"
+            >
+              1:1문의
+            </span>
             {account && account.grade !== -1 ? (
               <>
                 <span class="name">{account.name}</span>

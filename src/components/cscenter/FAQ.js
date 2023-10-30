@@ -21,7 +21,7 @@ import icon_search from 'images/icon_search.svg';
 import icon_reset from 'images/icon_reset.svg';
 
 const FAQ = () => {
-  logger.render('FAQ');
+  //logger.debug('FAQ');
 
   const [modalState, setModalState] = useState(false);
   const [imgUrl, setImgUrl] = useState('');

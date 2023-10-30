@@ -20,7 +20,7 @@ import 'styles/FormManagement.scss';
 import icon_circle_arrow_down from 'images/icon_circle_arrow_down.svg';
 
 const FormManagement_Basic = (param) => {
-  logger.render('FormManagement_Basic');
+  //logger.debug('FormManagement_Basic');
 
   const { platform } = param;
   const sella_basic_forms = Recoils.getState('SELLA:BASICFORMS');
@@ -113,7 +113,7 @@ const FormManagement_Basic = (param) => {
 };
 
 const FormItems = React.memo(({ index, d }) => {
-  logger.render('FormManagement_Basic TableItem : ', index);
+  //logger.debug('FormManagement_Basic TableItem : ', index);
   return (
     <tr>
       {d.map((cell) => (

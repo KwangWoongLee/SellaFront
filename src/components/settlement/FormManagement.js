@@ -25,7 +25,7 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import 'styles/FormManagement.scss';
 
 const FormManagement = () => {
-  logger.render('FormManagement');
+  //logger.debug('FormManagement');
 
   const [formsData, setFormsDatas] = useState([]);
   const [formMode, setFormMode] = useState(0);

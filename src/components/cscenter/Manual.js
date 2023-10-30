@@ -20,7 +20,7 @@ import icon_search from 'images/icon_search.svg';
 import icon_reset from 'images/icon_reset.svg';
 
 const Manual = () => {
-  logger.render('Manual');
+  //logger.debug('Manual');
 
   const [modalState, setModalState] = useState(false);
   const [imgUrl, setImgUrl] = useState('');

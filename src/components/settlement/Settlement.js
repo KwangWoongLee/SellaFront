@@ -12,7 +12,7 @@ import 'styles/Settlement.scss';
 import { logger } from 'util/com';
 
 const Settlement = () => {
-  logger.render('Settlement');
+  //logger.debug('Settlement');
   const account = Recoils.useValue('CONFIG:ACCOUNT');
 
   useEffect(() => {}, []);

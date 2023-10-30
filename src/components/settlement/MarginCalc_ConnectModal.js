@@ -18,7 +18,7 @@ import icon_close from 'images/icon_close.svg';
 
 const MarginCalc_ConnectModal = React.memo(
   ({ modalState, setModalState, rowData, deleteCallback, saveCallback, selectData }) => {
-    logger.render('MarginCalc_ConnectModal');
+    //logger.debug('MarginCalc_ConnectModal');
 
     const [formsMatchSelect, setFormsMatchSelect] = useState(-1);
     const [items, setItems] = useState([]);
@@ -103,9 +103,9 @@ const MarginCalc_ConnectModal = React.memo(
           saveFormsMatchRef.current = new Array(filteredArr.length);
 
           if (filteredArr.length) {
-            setFormsMatchSelect(0);
+            setFormsMatchSelect(-1);
 
-            selectFormsMatchRef.current = filteredArr[0];
+            selectFormsMatchRef.current = null;
             setSelectFormsMatchData({ ...selectFormsMatchRef.current });
           }
 

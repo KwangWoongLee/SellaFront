@@ -18,7 +18,7 @@ import 'styles/CSCenter.scss';
 import { logger, time_format, time_format_none_time } from 'util/com';
 
 const CSCenter = () => {
-  logger.render('CSCenter');
+  //logger.debug('CSCenter');
 
   const [announcement, setAnnouncements] = useState([]);
   const [faq, setFAQ] = useState([]);

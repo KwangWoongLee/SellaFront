@@ -12,7 +12,7 @@ import 'styles/ColumnControlModal.scss';
 import icon_close from 'images/icon_close.svg';
 
 const ColumnControlModal = React.memo(({ modalState, setModalState, callback, platform }) => {
-  logger.render('ColumnControlModal');
+  //logger.debug('ColumnControlModal');
   const [nowPlatform, setNowPlatform] = useState(false);
 
   let forms_idx;
@@ -85,7 +85,7 @@ const ColumnControlModal = React.memo(({ modalState, setModalState, callback, pl
 });
 
 const Column = React.memo(({ index, d, checkedItemHandler }) => {
-  logger.render('Column : ', index);
+  //logger.debug('Column : ', index);
   return (
     <tr>
       <td>{d.title}</td>

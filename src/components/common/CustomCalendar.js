@@ -32,7 +32,7 @@ const CustomEvent = ({ event }) => {
 };
 
 const CustomCalendar = ({ dayGroupDatas, selectCallback, setCalendarCurrentDate }) => {
-  logger.render('CustomCalendar');
+  //logger.debug('CustomCalendar');
 
   const [currentDate, setCurrentDate] = useState(new Date());
   const [events, setEvents] = useState([]);

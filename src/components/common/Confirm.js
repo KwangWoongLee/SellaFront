@@ -9,7 +9,7 @@ import icon_close from 'images/icon_close.svg';
 
 const ConfirmModal = () => {
   const [state, setState] = Recoils.useState('CONFIRM');
-  logger.render('ConfirmModal : ', state.show);
+  //logger.debug('ConfirmModal : ', state.show);
 
   const onClose = () => {
     setState({ show: false });

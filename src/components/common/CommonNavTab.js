@@ -3,7 +3,7 @@ import { Nav } from 'react-bootstrap';
 import { navigate, logger } from 'util/com';
 
 const CommonNavTab = ({ data, active }) => {
-  logger.render(`NavTab : ${active}`);
+  //logger.debug(`NavTab : ${active}`);
 
   useEffect(() => {}, []);
 

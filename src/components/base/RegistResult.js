@@ -9,7 +9,7 @@ import Body from 'components/template/Body';
 import 'styles/Login.scss';
 
 const RegistResult = () => {
-  logger.render('RegistResult');
+  //logger.debug('RegistResult');
   const email = com.storage.getItem('tempRegistResult');
 
   const onClick = () => {

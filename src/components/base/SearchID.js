@@ -29,7 +29,7 @@ const gender = ['남', '여'];
 const local = ['내국인', '외국인'];
 
 const SearchID = () => {
-  logger.render('SearchID');
+  //logger.debug('SearchID');
 
   const [agreementModal, setAgreementModal] = useState(false);
   const [agreementModalContent, setAgreementModalContent] = useState([]);

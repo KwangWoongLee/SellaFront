@@ -9,7 +9,7 @@ const data = [
   { name: '/cscenter/manual', desc: '사용방법' },
 ];
 const CSCenterNavTab = ({ active }) => {
-  logger.render('CSCenterNavTab');
+  //logger.debug('CSCenterNavTab');
 
   useEffect(() => {}, []);
 

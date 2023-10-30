@@ -18,7 +18,6 @@ import 'styles/Mypage.scss';
 import icon_close from 'images/icon_close.svg';
 
 const Membership = () => {
-  logger.render('Membership');
   const account = Recoils.useValue('CONFIG:ACCOUNT');
   const sella_grade = Recoils.getState('SELLA:GRADE');
 
@@ -276,8 +275,6 @@ const GradeItem = React.memo(({ index, account_data, grade_data, onClick }) => {
 });
 
 const WithDrawalModal = React.memo(({ modalState, setModalState, account }) => {
-  logger.render('WithDrawalModal');
-
   const [checked, setChecked] = useState(false);
   const withDrawalEmailRef = useRef(null);
   const withDrawalPasswordRef = useRef(null);

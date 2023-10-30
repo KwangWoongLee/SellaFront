@@ -39,7 +39,7 @@ const excel_str = [
 ];
 
 const Step2 = () => {
-  logger.render('Step2');
+  //logger.debug('Step2');
   const account = Recoils.useValue('CONFIG:ACCOUNT');
   const [excelType, setExcelType] = useState(0);
 

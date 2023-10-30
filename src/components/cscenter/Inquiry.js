@@ -12,7 +12,7 @@ import Recoils from 'recoils';
 import { logger } from 'util/com';
 
 const Inquiry = () => {
-  logger.render('Inquiry');
+  //logger.debug('Inquiry');
 
   useEffect(() => {}, []);
 

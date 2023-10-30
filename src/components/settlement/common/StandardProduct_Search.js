@@ -11,7 +11,7 @@ import icon_search from 'images/icon_search.svg';
 import icon_reset from 'images/icon_reset.svg';
 
 const StandardProduct_Search = React.memo(({ selectCallback, unSelectCallback, parentFormsMatchSelectData }) => {
-  logger.render('StandardProduct_Search');
+  //logger.debug('StandardProduct_Search');
 
   const goodsNameRef = useRef(null);
   const [items, setItems] = useState([]);
@@ -151,7 +151,7 @@ const StandardProduct_Search = React.memo(({ selectCallback, unSelectCallback, p
 });
 
 const StandardProductItem = React.memo(({ index, d, onSelect, onUnSelect }) => {
-  logger.render('StandardProductItem : ', index);
+  //logger.debug('StandardProductItem : ', index);
   return (
     <tr
       onDoubleClick={(e) => {

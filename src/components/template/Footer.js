@@ -7,7 +7,7 @@ import logo_blue from 'images/logo_blue.svg';
 // import logo_footer from 'images/logo_footer.svg';
 
 const Footer = () => {
-  logger.render('Template Footer');
+  //logger.debug('Template Footer');
   useEffect(() => {}, []);
 
   return (
