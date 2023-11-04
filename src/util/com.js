@@ -132,7 +132,31 @@ export const navigate = (path, flag) => {
           },
           {
             name: '아니오',
-            callback: () => {},
+            callback: () => {
+              com.storage.setItem('exist_margin_calc_data', '1');
+            },
+          },
+        ]
+      );
+
+      return;
+    } else if (exist_margin_calc_data === '2') {
+      modal.confirm(
+        '오늘 날짜로 주문서 저장이 완료되었습니다.',
+        [{ strong: '', normal: ' 손익 캘린더로 이동하시겠습니까?' }],
+        [
+          {
+            name: '예',
+            callback: () => {
+              com.storage.setItem('exist_margin_calc_data', '');
+              navigate(path, true);
+            },
+          },
+          {
+            name: '아니오',
+            callback: () => {
+              com.storage.setItem('exist_margin_calc_data', '1');
+            },
           },
         ]
       );
@@ -313,6 +337,11 @@ export const is_regex_phone = (phone) => {
   var regPhone = /^\d{3}-?\d{3,4}-?\d{4}$/;
 
   return regPhone.test(phone);
+};
+
+export const is_regex_id = (id) => {
+  let regex = /^[a-z]+[a-z0-9]{5,19}$/;
+  return regex.test(id);
 };
 
 export const is_regex_password = (password) => {

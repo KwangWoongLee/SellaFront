@@ -358,8 +358,22 @@ label {
 
 .btn.dropdown-toggle {
   padding: 7px 12px;
+  min-width: 50px;
+  height: 32px;
   font-size: 13px;
   line-height: 16px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  text-align: left;
+}
+
+select {
+  padding: 2px 12px;
+  min-width: 50px;
+  height: 32px;
+  font-size: 14px;
+  line-height: 14px;
   background-color: #fff;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -418,7 +432,9 @@ input {
 
 .input_search + button,
 .dropdown + button {
+  float: left;
   height: 32px;
+  border-left: 0 !important;
   border-top-left-radius: 0 !important;
   border-bottom-left-radius: 0 !important;
 }
@@ -546,4 +562,9 @@ input {
   .btn_more:hover::before {
     text-decoration: underline;
   }
+}
+
+#imp-iframe {
+  width: 710px !important;
+  height: 515px !important;
 }

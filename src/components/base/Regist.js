@@ -7,6 +7,7 @@ import com, {
   replace_phone,
   is_regex_phone,
   is_regex_password,
+  is_regex_id,
   is_regex_email,
 } from 'util/com';
 import Recoils from 'recoils';
@@ -38,7 +39,8 @@ const Regist = () => {
     send_phone: false,
     auth_phone: false,
     email: false,
-    auth_email: false,
+    id: false,
+    auth_id: false,
     password: false,
     password_confirm: false,
     agency: false,
@@ -46,6 +48,7 @@ const Regist = () => {
   const nameRef = useRef(null);
   const phoneRef = useRef(null);
   const authNoRef = useRef(null);
+  const idRef = useRef(null);
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const passwordConfirmRef = useRef(null);
@@ -120,11 +123,9 @@ const Regist = () => {
     }
 
     const name = nameRef.current.value;
-    const agency = agencyType;
-    const gender = genderType;
-    const local = localType;
     const phone = phoneRef.current.value;
 
+    const id = idRef.current.value;
     const password = passwordRef.current.value;
     const email = emailRef.current.value;
 
@@ -133,14 +134,9 @@ const Regist = () => {
       return;
     }
 
-    if (agency === -1) {
-      modal.alert('통신사를 선택 해주세요.');
-      return;
-    }
-
-    request.post('/regist', { password, phone, name, email, gender, agency, local, agreement }).then((ret) => {
+    request.post('/regist', { id, password, phone, name, email, agreement }).then((ret) => {
       if (!ret.err) {
-        com.storage.setItem('tempRegistResult', email);
+        com.storage.setItem('tempRegistResult', id);
 
         navigate('/regist/result');
       } else {
@@ -148,7 +144,7 @@ const Regist = () => {
       }
     });
 
-    logger.info(`regist : email = ${email}, password = ${password}`);
+    logger.info(`regist : id = ${id}, password = ${password}`);
   };
 
   const onAuthNoChange = (e) => {
@@ -189,18 +185,18 @@ const Regist = () => {
     });
   };
 
-  const onEmailCheck = (e) => {
-    const email = emailRef.current.value;
+  const onIDCheck = (e) => {
+    const id = idRef.current.value;
 
-    if (email)
-      request.post('regist/email', { email }).then((ret) => {
+    if (id)
+      request.post('regist/id', { id }).then((ret) => {
         if (!ret.err) {
           const auth_temp = auth;
-          auth_temp['auth_email'] = email;
+          auth_temp['auth_id'] = id;
           setAuth({ ...auth_temp });
         } else {
           const auth_temp = auth;
-          auth_temp['auth_email'] = false;
+          auth_temp['auth_id'] = false;
           setAuth({ ...auth_temp });
         }
       });
@@ -231,6 +227,10 @@ const Regist = () => {
     }
     phone = replace_phone(phone);
 
+    const auth_temp = auth;
+    auth['auth_phone'] = false;
+    setAuth({ ...auth_temp });
+
     phoneRef.current.value = phone;
     if (is_regex_phone(phone)) {
       const auth_temp = auth;
@@ -248,12 +248,25 @@ const Regist = () => {
     if (is_regex_email(email)) {
       const auth_temp = auth;
       auth_temp['email'] = email;
-      auth_temp['auth_email'] = false;
       setAuth({ ...auth_temp });
     } else {
       const auth_temp = auth;
       auth_temp['email'] = false;
-      auth_temp['auth_email'] = false;
+      setAuth({ ...auth_temp });
+    }
+  };
+
+  const onIDChange = (e) => {
+    const id = idRef.current.value;
+    if (is_regex_id(id)) {
+      const auth_temp = auth;
+      auth_temp['id'] = id;
+      auth_temp['auth_id'] = false;
+      setAuth({ ...auth_temp });
+    } else {
+      const auth_temp = auth;
+      auth_temp['id'] = false;
+      auth_temp['auth_id'] = false;
       setAuth({ ...auth_temp });
     }
   };
@@ -436,6 +449,14 @@ const Regist = () => {
 
             <label>아이디/비밀번호</label>
             <InputGroup className="inputid">
+              <Form.Control ref={idRef} type="text" placeholder="아이디" defaultValue={''} onChange={onIDChange} />
+              <Button disabled={!auth['id']} variant="primary" className="btn_blue" onClick={onIDCheck}>
+                중복체크
+              </Button>
+            </InputGroup>
+            {auth['id'] && auth['auth_id'] ? <span className="inform inform3">사용가능한 아이디입니다.</span> : <br />}
+            {/* 
+            <InputGroup className="inputid">
               <Form.Control
                 ref={emailRef}
                 type="text"
@@ -451,7 +472,7 @@ const Regist = () => {
               <span className="inform inform3">사용가능한 이메일입니다.</span>
             ) : (
               <br />
-            )}
+            )} */}
 
             <InputGroup className="inputpw1">
               <Form.Control
@@ -480,6 +501,23 @@ const Regist = () => {
             ) : (
               <span className="inform inform4 red">8~16자 영문, 숫자, 특수문자를 사용하세요.</span>
             )}
+
+            <label>이메일 입력</label>
+            <InputGroup className="inputemail">
+              <Form.Control
+                ref={emailRef}
+                type="text"
+                placeholder="이메일 입력"
+                defaultValue={''}
+                onChange={onEmailChange}
+              />
+            </InputGroup>
+            {auth['email'] ? (
+              <br />
+            ) : (
+              <span className="inform inform5 red">‘@’ 를 포함한 이메일 주소를 정확히 입력해주세요.</span>
+            )}
+
             <Button
               variant="primary"
               disabled={!registButtonOn}

@@ -22,7 +22,7 @@ const SearchPWResult = () => {
 
   useEffect(() => {
     const temp = com.storage.getItem('tempSearchPasswordResult');
-    const tempId = com.storage.getItem('tempSearchPasswordEmail');
+    const tempId = com.storage.getItem('tempSearchPasswordId');
     if (temp === 'undefined' || temp === '' || temp === 'false') {
       setMode(0);
     } else {
@@ -30,11 +30,12 @@ const SearchPWResult = () => {
 
       if (!tempId) {
         modal.alert('비정상 접근입니다.');
+        navigate('/login');
         return;
       }
       tempIdRef.current = tempId;
 
-      com.storage.setItem('tempSearchPasswordEmail', '');
+      com.storage.setItem('tempSearchPasswordId', '');
       com.storage.setItem('tempSearchPasswordResult', '');
     }
   }, []);
@@ -87,7 +88,7 @@ const SearchPWResult = () => {
       return;
     }
 
-    request.post('auth/patch/password', { email: tempIdRef.current, new_password }).then((ret) => {
+    request.post('auth/patch/password', { id: tempIdRef.current, new_password }).then((ret) => {
       if (!ret.err) {
         modal.alert('변경되었습니다.');
         navigate('login');

@@ -10,7 +10,7 @@ import 'styles/Login.scss';
 
 const RegistResult = () => {
   //logger.debug('RegistResult');
-  const email = com.storage.getItem('tempRegistResult');
+  const id = com.storage.getItem('tempRegistResult');
 
   const onClick = () => {
     navigate('/login');
@@ -25,7 +25,7 @@ const RegistResult = () => {
 
           <span>아래 ID로 고객님 계정이 생성되었습니다.</span>
 
-          <p>{email}</p>
+          <p>{id}</p>
 
           <Button variant="primary" className="btn_blue" onClick={onClick}>
             로그인

@@ -79,7 +79,7 @@ const CSCenter = () => {
             고객센터
             <dl className="informbox">
               <dd>운영시간 : 10:00 ~ 17:00</dd>
-              <dt>070-1111-1111</dt>
+              <dt>070-8028-4426</dt>
             </dl>
           </h3>
 

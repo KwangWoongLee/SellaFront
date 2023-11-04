@@ -14,28 +14,28 @@ import 'styles/Login.scss';
 
 const Login = () => {
   const [idSaveChecked, setIdSaveChecked] = useState(false);
-  const [email, setEmail] = useState('');
+  const [id, setID] = useState('');
 
   useEffect(() => {
     const idSave = com.storage.getItem('idSave');
     if (idSave === 'true') {
       setIdSaveChecked(true);
-      setEmail(com.storage.getItem('email') !== 'undefined' ? com.storage.getItem('email') : '');
+      setID(com.storage.getItem('id') !== 'undefined' ? com.storage.getItem('id') : '');
     } else {
       setIdSaveChecked(false);
-      com.storage.setItem('email', 'undefined');
-      setEmail('');
+      com.storage.setItem('id', 'undefined');
+      setID('');
     }
 
     const tempRegistResult = _.cloneDeep(com.storage.getItem('tempRegistResult'));
     const tempSearchIdResult = _.cloneDeep(com.storage.getItem('tempSearchIdResult'));
 
     if (tempRegistResult) {
-      setEmail(tempRegistResult);
+      setID(tempRegistResult);
       com.storage.setItem('tempRegistResult', '');
       return;
     } else if (tempSearchIdResult) {
-      setEmail(tempSearchIdResult);
+      setID(tempSearchIdResult);
       com.storage.setItem('tempSearchIdResult', '');
       return;
     }
@@ -44,21 +44,21 @@ const Login = () => {
   const onSubmit = (e) => {
     e.preventDefault();
 
-    const email = e.currentTarget[0].value;
+    const id = e.currentTarget[0].value;
     const password = e.currentTarget[1].value;
 
-    if (!email || !password) {
+    if (!id || !password) {
       modal.alert(`아이디 또는 비밀번호를 잘못 입력했습니다.
       입력하신 내용을 다시 확인해주세요.`);
       return;
     }
 
-    request.post('login', { email, password }).then((ret) => {
+    request.post('login', { id, password }).then((ret) => {
       if (!ret.err) {
         const { data } = ret.data;
 
         Recoils.setState('CONFIG:ACCOUNT', {
-          email: email,
+          id: id,
           grade: data.grade,
           name: data.name,
           access_token: data.access_token,
@@ -66,10 +66,10 @@ const Login = () => {
 
         if (idSaveChecked) {
           com.storage.setItem('idSave', true);
-          com.storage.setItem('email', email);
+          com.storage.setItem('id', id);
         } else {
           com.storage.setItem('idSave', false);
-          com.storage.setItem('email', '');
+          com.storage.setItem('id', '');
         }
 
         com.storage.setItem('access_token', data.access_token);
@@ -89,7 +89,7 @@ const Login = () => {
       }
     });
 
-    logger.info(`login : email = ${email}`);
+    logger.info(`login : id = ${id}`);
   };
 
   const checkedItemHandler = (d) => {
@@ -116,9 +116,9 @@ const Login = () => {
             <label>아이디</label>
             <Form.Control
               type="text"
-              placeholder="이메일 주소"
+              placeholder="아이디"
               aria-label="id"
-              defaultValue={email}
+              defaultValue={id}
               aria-describedby="basic-addon1"
             />
           </InputGroup>

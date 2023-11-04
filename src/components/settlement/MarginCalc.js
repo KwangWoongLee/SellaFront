@@ -413,6 +413,7 @@ const MarginCalc = () => {
         const { data } = ret.data;
         logger.info(data);
 
+        com.storage.setItem('exist_margin_calc_data', '2');
         navigate('settlement/today_summary');
       }
     });

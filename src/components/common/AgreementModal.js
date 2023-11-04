@@ -26,7 +26,9 @@ const AgreementModal = React.memo(({ modalState, setModalState, contents }) => {
         {contents &&
           contents.map((d, idx) => (
             <>
-              <Button onClick={() => setContentObj(d)}>{d.button_name}</Button>
+              <Button className="tab" onClick={() => setContentObj(d)}>
+                {d.button_name}
+              </Button>
             </>
           ))}
         <Button variant="primary" className="btn_close" onClick={onClose}>

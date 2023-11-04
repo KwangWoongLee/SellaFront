@@ -50,7 +50,7 @@ const CommonDateModal = React.memo(({ modalState, setModalState, onChangeDate })
   const onClose = () => setModalState(false);
 
   return (
-    <Modal show={modalState} onHide={onClose} centered className="modal stockPriceModal">
+    <Modal show={modalState} onHide={onClose} centered className="modal setDateModal">
       <Modal.Header>
         <Modal.Title>주문서 날짜변경</Modal.Title>
       </Modal.Header>
@@ -58,7 +58,7 @@ const CommonDateModal = React.memo(({ modalState, setModalState, onChangeDate })
         <select value={form.year} onChange={(e) => setForm({ ...form, year: e.target.value })}>
           {years.map((item) => (
             <option value={item} key={item}>
-              {item}
+              {item} 년
             </option>
           ))}
         </select>
@@ -66,7 +66,7 @@ const CommonDateModal = React.memo(({ modalState, setModalState, onChangeDate })
         <select value={form.month} onChange={(e) => setForm({ ...form, month: e.target.value })}>
           {months.map((item) => (
             <option value={item} key={item}>
-              {item}
+              {item} 월
             </option>
           ))}
         </select>
@@ -74,13 +74,14 @@ const CommonDateModal = React.memo(({ modalState, setModalState, onChangeDate })
         <select value={form.day} onChange={(e) => setForm({ ...form, day: e.target.value })}>
           {days.map((item) => (
             <option value={item} key={item}>
-              {item}
+              {item} 일
             </option>
           ))}
         </select>
       </Modal.Body>
       <Modal.Footer>
         <Button
+          className="btn-primary btn"
           variant="secondary"
           onClick={() => {
             onChangeDate(`${form.year}-${form.month}-${form.day}`);

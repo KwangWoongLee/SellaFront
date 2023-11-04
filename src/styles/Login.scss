@@ -109,7 +109,7 @@
     margin-top: 3px;
     margin-bottom: 20px;
     width: 100%;
-    height: 12px !important;
+    height: 16px !important;
     font-size: 12px !important;
     line-height: 16px;
     color: green;
@@ -238,7 +238,28 @@
     }
   }
 
+  .inputemail1 {
+    float: left;
+    width: 60%;
+    input {
+      border-top-right-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+    }
+  }
+
+  .inputemail2 {
+    float: left;
+    width: 40%;
+    button {
+      width: 100%;
+      border-left: 0 !important;
+      border-top-left-radius: 0 !important;
+      border-bottom-left-radius: 0 !important;
+    }
+  }
+
   .btn_submit {
+    margin-top: 20px;
     width: 100%;
   }
 
@@ -560,7 +581,8 @@
   .inputid,
   .inputpw1,
   .inform1,
-  .inform2 {
+  .inform2,
+  .inform3 {
     margin-bottom: 25px;
   }
 

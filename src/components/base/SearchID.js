@@ -137,15 +137,12 @@ const SearchID = () => {
     }
 
     const name = nameRef.current.value;
-    const agency = agencyType;
-    const gender = genderType;
-    const local = localType;
     const phone = phoneRef.current.value;
 
-    request.post('auth/search/id', { phone, name, gender, agency, local, agreement }).then((ret) => {
+    request.post('auth/search/id', { phone, name, agreement }).then((ret) => {
       if (!ret.err) {
         const { data } = ret.data;
-        com.storage.setItem('tempSearchIdResult', data.email);
+        com.storage.setItem('tempSearchIdResult', data.id);
 
         navigate('/search/id/result');
       }
@@ -231,6 +228,11 @@ const SearchID = () => {
     phone = replace_phone(phone);
 
     phoneRef.current.value = phone;
+
+    const auth_temp = auth;
+    auth['auth_phone'] = false;
+    setAuth({ ...auth_temp });
+
     if (is_regex_phone(phone)) {
       const auth_temp = auth;
       auth_temp['phone'] = phone;

@@ -41,7 +41,7 @@ const SearchPW = () => {
   const [genderType, setGenderType] = useState(0);
   const [localType, setLocalType] = useState(0);
   const [auth, setAuth] = useState({
-    email: false,
+    id: false,
     name: false,
     all_checked: false,
     phone: false,
@@ -53,7 +53,7 @@ const SearchPW = () => {
     agency: false,
   });
 
-  const emailRef = useRef(null);
+  const idRef = useRef(null);
   const nameRef = useRef(null);
   const phoneRef = useRef(null);
   const authNoRef = useRef(null);
@@ -136,18 +136,15 @@ const SearchPW = () => {
   const onSubmit = (e) => {
     e.preventDefault();
 
-    const email = emailRef.current.value;
+    const id = idRef.current.value;
     const name = nameRef.current.value;
-    const agency = agencyType;
-    const gender = genderType;
-    const local = localType;
     const phone = phoneRef.current.value;
 
-    request.post('auth/search/password', { email, phone, name, gender, agency, local, agreement }).then((ret) => {
+    request.post('auth/search/password', { id, phone, name, agreement }).then((ret) => {
       if (!ret.err) {
         const { data } = ret.data;
 
-        com.storage.setItem('tempSearchPasswordEmail', email);
+        com.storage.setItem('tempSearchPasswordId', data.id);
         com.storage.setItem('tempSearchPasswordResult', data.ok);
 
         navigate('/search/password/result');
@@ -172,15 +169,15 @@ const SearchPW = () => {
     setAllChecked(!allChecked);
   };
 
-  const onEmailChange = (e) => {
-    let email = emailRef.current.value;
-    if (email.length > 0) {
+  const onIDChange = (e) => {
+    let id = idRef.current.value;
+    if (id.length > 0) {
       const auth_temp = auth;
-      auth_temp['email'] = true;
+      auth_temp['id'] = true;
       setAuth({ ...auth_temp });
     } else {
       const auth_temp = auth;
-      auth_temp['email'] = false;
+      auth_temp['id'] = false;
       setAuth({ ...auth_temp });
     }
   };
@@ -346,13 +343,7 @@ const SearchPW = () => {
           )}
           <InputGroup className="inputid">
             <label>아이디</label>
-            <Form.Control
-              ref={emailRef}
-              type="text"
-              placeholder="이메일 입력"
-              defaultValue={''}
-              onChange={onEmailChange}
-            />
+            <Form.Control ref={idRef} type="text" placeholder="아이디 입력" defaultValue={''} onChange={onIDChange} />
           </InputGroup>
 
           <label>이름</label>

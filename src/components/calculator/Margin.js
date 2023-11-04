@@ -422,7 +422,7 @@ const Margin = () => {
     <>
       <Head></Head>
       <Body title={`마진 계산기`} myClass={'margin'}>
-        <CalculatorNavTab active="/calculator/margin" />
+        {/* <CalculatorNavTab active="/calculator/margin" /> */}
         <div className="page">
           <div className="section section1">
             <div className="btnbox">

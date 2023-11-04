@@ -2,11 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { logger, time_format_day } from 'util/com';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
+import 'moment/locale/ko';
 import _ from 'lodash';
 
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-
-const localizer = momentLocalizer(moment);
 
 const CustomEvent = ({ event }) => {
   return (
@@ -20,22 +19,18 @@ const CustomEvent = ({ event }) => {
         );
       })}
     </div>
-    // <div>
-    //   <div style={{ marginTop: 4, marginBottom: 4, overflow: 'hidden' }}>
-    //     <div style={{ fontWeight: 500, float: 'left' }}>
-    //       <div>{event.title > 0 ? '이익' : '손해'}</div>
-    //       {event.title}
-    //     </div>
-    //   </div>
-    // </div>
   );
 };
 
 const CustomCalendar = ({ dayGroupDatas, selectCallback, setCalendarCurrentDate }) => {
   //logger.debug('CustomCalendar');
+  const b = moment.locale('ko-KR');
+  const localizer = momentLocalizer(moment);
 
   const [currentDate, setCurrentDate] = useState(new Date());
   const [events, setEvents] = useState([]);
+
+  const a = localizer.format(new Date(), 'dddd', 'ko-KR');
 
   useEffect(() => {
     if (!_.isEmpty(dayGroupDatas)) {

@@ -10,17 +10,17 @@ import 'styles/Login.scss';
 
 const SearchIDResult = () => {
   //logger.debug('SearchIDResult');
-  const [searchedEmail, setSearchedEmail] = useState('');
+  const [searchedID, setSearchedID] = useState('');
   const [mode, setMode] = useState(0);
 
   useEffect(() => {
     const temp = com.storage.getItem('tempSearchIdResult');
     if (temp === 'undefined' || temp === '') {
       setMode(0);
-      setSearchedEmail('');
+      setSearchedID('');
     } else {
       setMode(1);
-      setSearchedEmail(temp);
+      setSearchedID(temp);
     }
   }, []);
 
@@ -34,7 +34,7 @@ const SearchIDResult = () => {
 
             <span>고객님 정보와 일치하는 아이디입니다.</span>
 
-            <p>{searchedEmail}</p>
+            <p>{searchedID}</p>
 
             <div className="btnbox">
               <Button
@@ -49,7 +49,7 @@ const SearchIDResult = () => {
                 variant="primary"
                 className="btn_blue"
                 onClick={() => {
-                  com.storage.setItem('email', searchedEmail);
+                  com.storage.setItem('id', searchedID);
                   navigate('/login');
                 }}
               >

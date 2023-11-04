@@ -7,7 +7,7 @@ import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 import MyPageNavTab from 'components/base/MyPageNavTab';
 import Checkbox from 'components/common/CheckBoxCell';
-import { logger, modal, navigate } from 'util/com';
+import { logger, modal, navigate, is_regex_password, is_regex_email } from 'util/com';
 import { RequestPay } from 'util/payment';
 import request from 'util/request';
 import Recoils from 'recoils';
@@ -23,13 +23,20 @@ const Membership = () => {
 
   const nameRef = useRef(null);
   const phoneRef = useRef(null);
+  const idRef = useRef(null);
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const newPasswordRef = useRef(null);
   const newPasswordConfirmRef = useRef(null);
   const corpRef = useRef(null);
   const corpNoRef = useRef(null);
+  const [modifyButtonOn, setModifyButtonOn] = useState(false);
   const [accountData, setAccountData] = useState(null);
+  const [auth, setAuth] = useState({
+    email: '',
+    new_password: '',
+    new_password_confirm: '',
+  });
 
   const [modalState, setModalState] = useState(false);
 
@@ -42,14 +49,35 @@ const Membership = () => {
   });
 
   useEffect(() => {
+    let isOk = true;
+    for (const key in auth) {
+      if (auth[key] === '') {
+        continue;
+      }
+      if (auth[key] === false) {
+        isOk = false;
+        break;
+      }
+    }
+
+    if (isOk) setModifyButtonOn(true);
+    else setModifyButtonOn(false);
+  }, [auth]);
+
+  useEffect(() => {
     request.post('base/membership', { access_token: account.access_token }).then((ret) => {
       if (!ret.err) {
         const { data } = ret.data;
+        idRef.current.value = data.id;
         emailRef.current.value = data.email;
         nameRef.current.value = data.name;
         phoneRef.current.value = data.phone;
         corpRef.current.value = data.corperation;
         corpNoRef.current.value = data.corperation_no;
+
+        const auth_temp = auth;
+        auth_temp['email'] = data.email;
+        setAuth({ ...auth_temp });
 
         setAccountData({
           grade: data.grade,
@@ -65,29 +93,65 @@ const Membership = () => {
     });
   };
 
+  const onEmailChange = (e) => {
+    const email = emailRef.current.value;
+    if (is_regex_email(email)) {
+      const auth_temp = auth;
+      auth_temp['email'] = email;
+      setAuth({ ...auth_temp });
+    } else {
+      const auth_temp = auth;
+      auth_temp['email'] = false;
+      setAuth({ ...auth_temp });
+    }
+  };
+
+  const onPasswordChange = (e) => {
+    const password = newPasswordRef.current.value;
+    if (is_regex_password(password)) {
+      const auth_temp = auth;
+      auth_temp['new_password'] = password;
+      setAuth({ ...auth_temp });
+    } else {
+      const auth_temp = auth;
+      auth_temp['new_password'] = false;
+      setAuth({ ...auth_temp });
+    }
+  };
+
+  const onPasswordConfirmChange = (e) => {
+    const password = newPasswordRef.current.value;
+    const passwordConfirm = newPasswordConfirmRef.current.value;
+    if (password == passwordConfirm) {
+      const auth_temp = auth;
+      auth_temp['new_password_confirm'] = passwordConfirm;
+      setAuth({ ...auth_temp });
+    } else {
+      const auth_temp = auth;
+      auth_temp['new_password_confirm'] = false;
+      setAuth({ ...auth_temp });
+    }
+  };
+
   const onClickModify = (e) => {
     e.preventDefault();
 
     const new_email = emailRef.current.value;
-    const new_name = nameRef.current.value;
     const password = passwordRef.current.value;
-    const new_phone = phoneRef.current.value;
     const new_password = newPasswordRef.current.value ? newPasswordRef.current.value : passwordRef.current.value;
     const new_corperation = corpRef.current.value;
     const new_corperation_no = corpNoRef.current.value;
 
-    if (!new_email || !new_name || !password || !new_phone) {
-      modal.alert('올바른 정보를 입력해주세요.');
+    if (!password) {
+      modal.alert('현재 비밀번호를 입력해주세요.');
       return;
     }
 
     request
       .post('base/membership/modify', {
         access_token: account.access_token,
-        new_email,
-        new_name,
         password,
-        new_phone,
+        new_email,
         new_password,
         new_corperation,
         new_corperation_no,
@@ -97,7 +161,7 @@ const Membership = () => {
           modal.alert('정보 수정이 완료되었습니다. 다시 로그인 해주세요.');
 
           Recoils.resetState('CONFIG:ACCOUNT');
-          navigate('/');
+          navigate('/login');
         }
       });
   };
@@ -129,7 +193,38 @@ const Membership = () => {
             <div className="innerbox">
               <InputGroup className="inputid">
                 <label>ID</label>
-                <Form.Control ref={emailRef} type="text" placeholder="이메일 주소" aria-label="id" defaultValue={''} />
+                <Form.Control
+                  disabled={true}
+                  ref={idRef}
+                  type="text"
+                  placeholder="이메일 주소"
+                  aria-label="id"
+                  defaultValue={''}
+                />
+              </InputGroup>
+
+              <InputGroup className="inputname">
+                <label>이름</label>
+                <Form.Control
+                  disabled={true}
+                  ref={nameRef}
+                  type="text"
+                  placeholder="이름"
+                  aria-label="id"
+                  defaultValue={''}
+                />
+              </InputGroup>
+
+              <InputGroup className="inputphone">
+                <label>휴대폰 번호</label>
+                <Form.Control
+                  disabled={true}
+                  ref={phoneRef}
+                  type="text"
+                  placeholder="휴대폰번호"
+                  aria-label="id"
+                  defaultValue={''}
+                />
               </InputGroup>
 
               <InputGroup className="inputpw1">
@@ -139,28 +234,49 @@ const Membership = () => {
 
               <InputGroup className="inputpw2">
                 <label>새 비밀번호</label>
-                <Form.Control ref={newPasswordRef} type="password" placeholder="새 비밀번호" defaultValue={''} />
+                <Form.Control
+                  ref={newPasswordRef}
+                  type="password"
+                  placeholder="새 비밀번호"
+                  defaultValue={''}
+                  onChange={onPasswordChange}
+                />
                 <Form.Control
                   ref={newPasswordConfirmRef}
                   type="password"
                   placeholder="새 비밀번호 확인"
                   defaultValue={''}
+                  onChange={onPasswordConfirmChange}
                 />
               </InputGroup>
-              <span className="inform inform1">8~16자 대/소문자, 숫자, 특수문자를 사용하세요.</span>
+              {auth['new_password'] ? (
+                auth['new_password_confirm'] ? (
+                  <span className="inform inform1"></span>
+                ) : (
+                  <span className="inform inform1 red">비밀번호 확인 문자가 다릅니다.</span>
+                )
+              ) : auth['new_password'] !== '' ? (
+                <span className="inform inform1 red">8~16자 영문, 숫자, 특수문자를 사용하세요.</span>
+              ) : (
+                <span className="inform inform1"></span>
+              )}
 
-              <InputGroup className="inputname">
-                <label>이름</label>
-                <Form.Control ref={nameRef} type="text" placeholder="이름" aria-label="id" defaultValue={''} />
+              <InputGroup className="inputemail">
+                <label>이메일</label>
+                <Form.Control
+                  ref={emailRef}
+                  type="text"
+                  placeholder="이메일주소"
+                  aria-label="email"
+                  defaultValue={''}
+                  onChange={onEmailChange}
+                />
               </InputGroup>
-
-              <InputGroup className="inputphone">
-                <label>휴대폰 번호</label>
-                <Form.Control ref={phoneRef} type="text" placeholder="휴대폰번호" aria-label="id" defaultValue={''} />
-              </InputGroup>
-
-              <span className="inform inform2">‘-’ 를 제외한 숫자만 입력해주세요.</span>
-
+              {auth['email'] ? (
+                <br />
+              ) : (
+                <span className="inform inform5 red">‘@’ 를 포함한 이메일 주소를 정확히 입력해주세요.</span>
+              )}
               <InputGroup className="inputcompany">
                 <label>회사명</label>
                 <Form.Control ref={corpRef} type="text" placeholder="회사명" aria-label="id" defaultValue={''} />
@@ -177,6 +293,7 @@ const Membership = () => {
                 form="regist-form"
                 className="btn_blue btn_submit"
                 onClick={onClickModify}
+                disabled={!modifyButtonOn}
               >
                 수정완료
               </Button>
@@ -276,7 +393,7 @@ const GradeItem = React.memo(({ index, account_data, grade_data, onClick }) => {
 
 const WithDrawalModal = React.memo(({ modalState, setModalState, account }) => {
   const [checked, setChecked] = useState(false);
-  const withDrawalEmailRef = useRef(null);
+  const withDrawalIDRef = useRef(null);
   const withDrawalPasswordRef = useRef(null);
 
   const onClose = () => {
@@ -285,16 +402,16 @@ const WithDrawalModal = React.memo(({ modalState, setModalState, account }) => {
 
   const onClickWithdrawal = (e) => {
     e.preventDefault();
-    const email = withDrawalEmailRef.current.value;
+    const id = withDrawalIDRef.current.value;
     const password = withDrawalPasswordRef.current.value;
 
-    if (!email || !password || account.email != email) {
+    if (!id || !password || account.id != id) {
       modal.alert('올바른 정보를 입력해주세요.');
       return;
     }
 
     request
-      .post('user/membership/withdrawal', { access_token: account.access_token, agreement: checked, email, password })
+      .post('user/membership/withdrawal', { access_token: account.access_token, agreement: checked, id, password })
       .then((ret) => {
         if (!ret.err) {
           modal.alert('회원탈퇴가 정상적으로 완료되었습니다.');
@@ -336,7 +453,7 @@ const WithDrawalModal = React.memo(({ modalState, setModalState, account }) => {
         <div className="inputbox">
           <InputGroup className="c">
             <label>아이디</label>
-            <Form.Control ref={withDrawalEmailRef} type="text" placeholder="이메일 주소" defaultValue={''} />
+            <Form.Control ref={withDrawalIDRef} type="text" placeholder="아이디" defaultValue={''} />
           </InputGroup>
           <InputGroup className="inputpassword">
             <label>비밀번호</label>
