@@ -24,7 +24,6 @@ const CustomEvent = ({ event }) => {
 
 const CustomCalendar = ({ dayGroupDatas, selectCallback, setCalendarCurrentDate }) => {
   //logger.debug('CustomCalendar');
-  const b = moment.locale('ko-KR');
   const localizer = momentLocalizer(moment);
 
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -50,6 +49,7 @@ const CustomCalendar = ({ dayGroupDatas, selectCallback, setCalendarCurrentDate 
         localizer={localizer}
         defaultDate={new Date()}
         views={['month']}
+        formats={{ monthHeaderFormat: 'YYYY MMMM' }}
         components={{
           event: CustomEvent,
         }}

@@ -4,7 +4,7 @@
 /* 공통 */
 
 body {
-  min-width: 1280px;
+  min-width: 1920px;
   background-color: #f8f9ff !important;
   font-size: 16px;
   overflow: auto;
@@ -178,6 +178,15 @@ button:hover {
   padding: 0;
   width: 22px;
   min-width: 22px;
+  height: auto;
+  vertical-align: middle;
+  border: 0;
+}
+
+.btn_date {
+  padding: 0;
+  width: 22px;
+  min-width: unset;
   height: auto;
   vertical-align: middle;
   border: 0;
@@ -419,6 +428,65 @@ select {
   border-bottom-right-radius: 5px;
   background: url(../images/icon_plus.svg) no-repeat center center;
   background-size: 12px;
+}
+
+.btngroup {
+  display: block;
+  padding: 2px;
+  height: 36px;
+  border: 1px solid #ccc;
+  border-radius: 999px;
+  background-color: #fff;
+
+  button {
+    margin: 0 2px;
+    padding: 0;
+    height: 28px;
+    line-height: 28px;
+    color: #bbb;
+    border: 0;
+    border-radius: 999px;
+    background-color: #fff;
+  }
+
+  button.btn_blue.on {
+    color: #fff;
+    background-color: #081a51;
+  }
+
+  button.btn_green.on {
+    color: #fff;
+    background-color: #1d7044;
+  }
+
+  button.btn_red.on {
+    color: #fff;
+    background-color: #b84a4a;
+  }
+
+  button:hover {
+    padding: 0;
+    height: 28px;
+    color: #aaa;
+    border: 0;
+    background-color: #f3f3f3;
+  }
+
+  button:active,
+  button:focus {
+    color: #bbb !important;
+    border: 0 !important;
+    background-color: #fff !important;
+  }
+}
+
+.btn_arrow_back {
+  padding: 0;
+  width: 22px;
+  min-width: unset;
+  height: auto;
+  vertical-align: middle;
+  border: 0;
 }
 
 // input

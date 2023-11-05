@@ -4,7 +4,7 @@ import {} from 'react-bootstrap';
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
-import { modal } from 'util/com';
+import { modal, page_reload } from 'util/com';
 import request from 'util/request';
 import FormManagementNavTab from 'components/settlement/common/FormManagementNavTab';
 import FormsMatchTable from 'components/settlement/common/FormsMatchTable';
@@ -24,9 +24,8 @@ const SaleProduct = () => {
   const [items, setItems] = useState([]);
   const [formsMatchSelect, setFormsMatchSelect] = useState(null);
   const forms = _.cloneDeep(Recoils.getState('DATA:PLATFORMS'));
-  const forms_match = _.cloneDeep(Recoils.getState('DATA:FORMSMATCH'));
-  const goods_match = _.cloneDeep(Recoils.getState('DATA:GOODSMATCH'));
   const goods_data = [...Recoils.getState('DATA:GOODS')];
+  let rawGoodsMatch = Recoils.getState('DATA:GOODSMATCH');
 
   const selectFormsMatchRef = useRef(null);
   const [selectFormsMatchData, setSelectFormsMatchData] = useState();
@@ -34,8 +33,12 @@ const SaleProduct = () => {
   const saveFormsMatchRef = useRef(null);
 
   useEffect(() => {
+    const forms_match = _.cloneDeep(Recoils.getState('DATA:FORMSMATCH'));
+    const goods_match = _.cloneDeep(Recoils.getState('DATA:GOODSMATCH'));
+
     for (const match_data of forms_match) {
       match_data.goods_match = [];
+      match_data.forms_match_idx = match_data.idx;
       match_data.forms_option_name = `${match_data.forms_option_name1}`;
       match_data.forms_option_name += match_data.forms_option_name2 ? `\n${match_data.forms_option_name2}` : '';
       match_data.forms_option_name += match_data.forms_option_name3 ? `\n${match_data.forms_option_name3}` : '';
@@ -55,43 +58,27 @@ const SaleProduct = () => {
       }
     }
 
+    saveFormsMatchRef.current = new Array(forms_match.length);
+
     setItems([...forms_match]);
   }, []);
 
-  useEffect(() => {
-    saveFormsMatchRef.current = new Array(items.length);
-  }, [items]);
-
   const onSelectFormsMatchTable = (d) => {
-    selectFormsMatchRef.current = d;
+    const select_row_index = _.findIndex(items, (row) => {
+      return row.forms_product_name == d.forms_product_name && row.forms_option_name == d.forms_option_name;
+    });
 
-    const findForm = _.find(forms, { idx: d.forms_idx });
-    if (!findForm) {
-      return;
+    if (select_row_index != -1) {
+      selectFormsMatchRef.current = items[select_row_index];
+
+      setSelectFormsMatchData({ ...selectFormsMatchRef.current });
+    } else {
+      setFormsMatchSelect(-1);
     }
-    selectFormsMatchRef.current.settlement_flag = findForm.settlement_flag;
-
-    if (!d.goods_match || d.goods_match.length === 0) {
-      d.goods_match = [];
-      for (const goods_match_idx of d.goods_match_idxs) {
-        const findGoodsMatchObj = _.find(goods_match, { idx: Number(goods_match_idx) });
-        if (!findGoodsMatchObj) continue;
-        const findObj = _.find(goods_data, { idx: Number(findGoodsMatchObj.goods_idx) });
-        if (!findObj) continue;
-        const goods = {
-          ...findObj,
-          category_fee_rate: findGoodsMatchObj.category_fee_rate,
-          match_count: findGoodsMatchObj.match_count,
-          goods_match_idx: Number(goods_match_idx),
-        };
-        d.goods_match.push(goods);
-      }
-    }
-
-    setSelectFormsMatchData({ ...selectFormsMatchRef.current });
   };
+
   const onDeleteFormsMatchTable = (d) => {
-    request.post(`user/forms/match/delete`, { forms_match_idx: d.idx }).then((ret) => {
+    request.post(`user/forms/match/delete`, { forms_match_idx: d.forms_match_idx }).then((ret) => {
       if (!ret.err) {
         const { data } = ret.data;
         logger.info(data);
@@ -99,13 +86,20 @@ const SaleProduct = () => {
         Recoils.setState('DATA:FORMSMATCH', data.forms_match);
         Recoils.setState('DATA:GOODSMATCH', data.goods_match);
 
-        setItems(
-          _.filter(items, (item) => {
-            return item.idx !== d.idx;
-          })
-        );
-        selectFormsMatchRef.current = null;
-        setSelectFormsMatchData(selectFormsMatchRef.current);
+        rawGoodsMatch = _.cloneDeep(data.goods_match);
+
+        const filteredArr = _.filter(_.cloneDeep(items), (item) => item.forms_match_idx !== d.forms_match_idx);
+
+        saveFormsMatchRef.current = new Array(filteredArr.length);
+
+        if (filteredArr.length) {
+          setFormsMatchSelect(-1);
+
+          selectFormsMatchRef.current = null;
+          setSelectFormsMatchData({ ...selectFormsMatchRef.current });
+        }
+
+        setItems([...filteredArr]);
       }
     });
   };
@@ -113,6 +107,10 @@ const SaleProduct = () => {
   const onSelectGoodsMatchTable = (d) => {};
   const onDeleteGoodsMatchTable = (goods_match) => {
     if (!selectFormsMatchRef.current) return; // TODO error
+
+    if (!selectFormsMatchRef.current.goods_match.length !== goods_match.length) {
+      selectFormsMatchRef.current.save = true;
+    }
 
     selectFormsMatchRef.current.goods_match = [...goods_match];
     selectFormsMatchRef.current.goods_match_idxs = _.transform(
@@ -126,6 +124,9 @@ const SaleProduct = () => {
     if (!selectFormsMatchRef.current.goods_match.length) {
       selectFormsMatchRef.current.delete = true;
       selectFormsMatchRef.current.save = true;
+    }
+
+    if (selectFormsMatchRef.current.delete || selectFormsMatchRef.current.save) {
       saveFormsMatchRef.current[selectFormsMatchRef.current.idx] = _.cloneDeep(selectFormsMatchRef.current);
     }
 
@@ -133,41 +134,90 @@ const SaleProduct = () => {
   };
 
   const onChangeGoodsMatchTable = (goods_match) => {
+    // if (!selectFormsMatchRef.current) return; // TODO error
+
+    // const rawGoodsMatch = Recoils.getState('DATA:GOODSMATCH');
+
+    // if (forms_match) {
+    //   for (const match_data of forms_match) {
+    //     match_data.goods_match = [];
+    //     match_data.forms_option_name = `${match_data.forms_option_name1}`;
+    //     match_data.forms_option_name += match_data.forms_option_name2 ? `\n${match_data.forms_option_name2}` : '';
+    //     match_data.forms_option_name += match_data.forms_option_name3 ? `\n${match_data.forms_option_name3}` : '';
+
+    //     for (const goods_match_idx of match_data.goods_match_idxs) {
+    //       const findGoodsMatchObj = _.find(rawGoodsMatch, {
+    //         idx: Number(goods_match_idx),
+    //       });
+    //       if (!findGoodsMatchObj) continue;
+    //       const findObj = _.find(goods_data, { idx: Number(findGoodsMatchObj.goods_idx) });
+    //       if (!findObj) continue;
+    //       const goods = {
+    //         ...findObj,
+    //         category_fee_rate: findGoodsMatchObj.category_fee_rate,
+    //         match_count: findGoodsMatchObj.match_count,
+    //         goods_match_idx: Number(goods_match_idx),
+    //       };
+    //       match_data.goods_match.push(goods);
+    //     }
+    //   }
+    // }
+
+    // selectFormsMatchRef.current.goods_match = [...goods_match];
+
+    // if (forms_match) {
+    //   if (
+    //     _.find(selectFormsMatchRef.current.goods_match, (goods_match) => {
+    //       return !goods_match.goods_match_idx;
+    //     })
+    //   ) {
+    //     selectFormsMatchRef.current.save = true;
+    //     saveFormsMatchRef.current[selectFormsMatchRef.current.idx] = _.cloneDeep(selectFormsMatchRef.current);
+    //     return;
+    //   }
+
+    //   for (const current_goods_match_data of selectFormsMatchRef.current.goods_match) {
+    //     if (!current_goods_match_data.goods_match_idx) {
+    //       selectFormsMatchRef.current.save = true;
+    //       saveFormsMatchRef.current[selectFormsMatchRef.current.idx] = _.cloneDeep(selectFormsMatchRef.current);
+    //       break;
+    //     }
+
+    //     const raw_current_forms_match_data = _.find(forms_match, (d) => {
+    //       return _.includes(d.goods_match_idxs, current_goods_match_data.goods_match_idx);
+    //     });
+
+    //     const raw_current_goods_match_data = _.find(raw_current_forms_match_data.goods_match, (d) => {
+    //       return d.goods_match_idx === current_goods_match_data.goods_match_idx;
+    //     });
+
+    //     if (raw_current_goods_match_data) {
+    //       if (
+    //         raw_current_goods_match_data.match_count !== current_goods_match_data.match_count ||
+    //         (current_goods_match_data.category_fee_rate &&
+    //           raw_current_goods_match_data.category_fee_rate !== current_goods_match_data.category_fee_rate)
+    //       ) {
+    //         selectFormsMatchRef.current.save = true;
+    //         saveFormsMatchRef.current[selectFormsMatchRef.current.idx] = _.cloneDeep(selectFormsMatchRef.current);
+    //         break;
+    //       } else {
+    //         selectFormsMatchRef.current.save = false;
+    //         saveFormsMatchRef.current[selectFormsMatchRef.current.idx] = null;
+    //       }
+    //     }
+    //   }
+    // }
+
+    // setSelectFormsMatchData({ ...selectFormsMatchRef.current });
+
     if (!selectFormsMatchRef.current) return; // TODO error
-
-    const rawGoodsMatch = Recoils.getState('DATA:GOODSMATCH');
-
-    if (forms_match) {
-      for (const match_data of forms_match) {
-        match_data.goods_match = [];
-        match_data.forms_option_name = `${match_data.forms_option_name1}`;
-        match_data.forms_option_name += match_data.forms_option_name2 ? `\n${match_data.forms_option_name2}` : '';
-        match_data.forms_option_name += match_data.forms_option_name3 ? `\n${match_data.forms_option_name3}` : '';
-
-        for (const goods_match_idx of match_data.goods_match_idxs) {
-          const findGoodsMatchObj = _.find(rawGoodsMatch, {
-            idx: Number(goods_match_idx),
-          });
-          if (!findGoodsMatchObj) continue;
-          const findObj = _.find(goods_data, { idx: Number(findGoodsMatchObj.goods_idx) });
-          if (!findObj) continue;
-          const goods = {
-            ...findObj,
-            category_fee_rate: findGoodsMatchObj.category_fee_rate,
-            match_count: findGoodsMatchObj.match_count,
-            goods_match_idx: Number(goods_match_idx),
-          };
-          match_data.goods_match.push(goods);
-        }
-      }
-    }
 
     selectFormsMatchRef.current.goods_match = [...goods_match];
 
-    if (forms_match) {
+    if (rawGoodsMatch) {
       if (
-        _.find(selectFormsMatchRef.current.goods_match, (goods_match) => {
-          return !goods_match.goods_match_idx;
+        _.find(selectFormsMatchRef.current.goods_match, (d) => {
+          return !d.goods_match_idx;
         })
       ) {
         selectFormsMatchRef.current.save = true;
@@ -182,16 +232,10 @@ const SaleProduct = () => {
           break;
         }
 
-        const raw_current_forms_match_data = _.find(forms_match, (d) => {
-          return _.includes(d.goods_match_idxs, current_goods_match_data.goods_match_idx);
-        });
-
-        const raw_current_goods_match_data = _.find(raw_current_forms_match_data.goods_match, (d) => {
-          return d.goods_match_idx === current_goods_match_data.goods_match_idx;
-        });
-
+        const raw_current_goods_match_data = _.find(rawGoodsMatch, { idx: current_goods_match_data.goods_match_idx });
         if (raw_current_goods_match_data) {
           if (
+            raw_current_goods_match_data.goods_idx !== current_goods_match_data.idx ||
             raw_current_goods_match_data.match_count !== current_goods_match_data.match_count ||
             (current_goods_match_data.category_fee_rate &&
               raw_current_goods_match_data.category_fee_rate !== current_goods_match_data.category_fee_rate)
@@ -220,19 +264,21 @@ const SaleProduct = () => {
 
     const new_goods_match = { ...d };
     new_goods_match.match_count = 1;
+    if (selectFormsMatchRef.current.goods_match.length) {
+      new_goods_match.category_fee_rate = Number(selectFormsMatchRef.current.goods_match[0].category_fee_rate);
+    } else {
+      new_goods_match.category_fee_rate = selectFormsMatchRef.current.category_fee_rate
+        ? Number(selectFormsMatchRef.current.category_fee_rate)
+        : 0;
+    }
 
     selectFormsMatchRef.current.goods_match = [...selectFormsMatchRef.current.goods_match, new_goods_match];
 
-    if (forms_match) {
-      const rawFormsMatchData = _.find(forms_match, (d) => {
-        return d.idx === selectFormsMatchRef.current.idx;
+    if (rawGoodsMatch) {
+      const findRawFormsMatch = _.find(rawGoodsMatch, (raw_goods_match) => {
+        return raw_goods_match.forms_match_idx === selectFormsMatchRef.current.forms_match_idx;
       });
-      if (!rawFormsMatchData) return;
-
-      const rawGoodsMatchIdxs = rawFormsMatchData.goods_match_idxs;
-      const GoodsMatchIdxs = _.map(selectFormsMatchRef.current.goods_match, 'goods_match_idx');
-
-      if (!_.isEqual(rawGoodsMatchIdxs, GoodsMatchIdxs)) {
+      if (findRawFormsMatch) {
         selectFormsMatchRef.current.save = true;
         saveFormsMatchRef.current[selectFormsMatchRef.current.idx] = _.cloneDeep(selectFormsMatchRef.current);
       }
@@ -244,40 +290,40 @@ const SaleProduct = () => {
   const onUnSelectStandardProduct_Search = (d) => {
     if (!selectFormsMatchRef.current) return; // TODO error
 
-    _.remove(selectFormsMatchRef.current.goods_match, (goods_match) => {
-      return goods_match.idx === d.idx;
-    });
+    if (rawGoodsMatch) {
+      if (
+        _.find(selectFormsMatchRef.current.goods_match, (goods_match) => {
+          return !goods_match.goods_match_idx;
+        })
+      ) {
+        selectFormsMatchRef.current.save = false;
+        saveFormsMatchRef.current[selectFormsMatchRef.current.idx] = null;
+      }
 
-    if (forms_match) {
-      const rawFormsMatchData = _.find(forms_match, (d) => {
-        return d.idx === selectFormsMatchRef.current.idx;
-      });
-      if (!rawFormsMatchData) return;
-
-      const rawGoodsMatchIdxs = rawFormsMatchData.goods_match_idxs;
-      const GoodsMatchIdxs = _.map(selectFormsMatchRef.current.goods_match, 'goods_match_idx');
-
-      if (!_.isEqual(rawGoodsMatchIdxs, GoodsMatchIdxs)) {
+      if (selectFormsMatchRef.current.goods_match.length === 1) {
         selectFormsMatchRef.current.save = true;
         saveFormsMatchRef.current[selectFormsMatchRef.current.idx] = _.cloneDeep(selectFormsMatchRef.current);
       }
     }
 
+    _.remove(selectFormsMatchRef.current.goods_match, (goods_match) => {
+      return goods_match.idx == d.idx;
+    });
+
     onDeleteGoodsMatchTable(selectFormsMatchRef.current.goods_match);
   };
 
   const onSelectCategoryFee_Search = (d) => {
-    if (!selectFormsMatchRef.current.goods_match) return;
+    if (!selectFormsMatchRef.current) return; // TODO error
+
     for (const good_match of selectFormsMatchRef.current.goods_match) {
-      good_match.category_fee_rate = d.category_fee_rate;
+      good_match.category_fee_rate = Number(d.category_fee_rate).toFixed(2);
     }
 
     setSelectFormsMatchData({ ...selectFormsMatchRef.current });
   };
 
   const onSave = (e) => {
-    if (!saveFormsMatchRef.current) return;
-
     const delete_datas = _.filter(saveFormsMatchRef.current, (item) => {
       return item && item.delete;
     });
@@ -291,26 +337,44 @@ const SaleProduct = () => {
       return; // TODO error
     }
 
-    for (const delete_data of delete_datas) {
-      request.post(`user/forms/match/delete`, { forms_match_idx: delete_data.idx }).then((ret) => {
-        if (!ret.err) {
-          const { data } = ret.data;
-          logger.info(data);
-        }
-      });
-    }
+    if (delete_datas && delete_datas.length) {
+      request
+        .post(`user/forms/match/delete/multi`, { forms_match_idxs: _.map(delete_datas, 'forms_match_idx') })
+        .then((ret) => {
+          if (!ret.err) {
+            const { data } = ret.data;
+            logger.info(data);
 
-    request.post(`user/forms/match/save`, { save_datas }).then((ret) => {
-      if (!ret.err) {
-        const { data } = ret.data;
-        logger.info(data);
+            if (save_datas && save_datas.length) {
+              request.post(`user/forms/match/save`, { save_datas }).then((ret) => {
+                if (!ret.err) {
+                  const { data } = ret.data;
+                  logger.info(data);
 
-        Recoils.setState('DATA:FORMSMATCH', data.forms_match);
-        Recoils.setState('DATA:GOODSMATCH', data.goods_match);
+                  Recoils.setState('DATA:FORMSMATCH', data.forms_match);
+                  Recoils.setState('DATA:GOODSMATCH', data.goods_match);
 
-        setItems(_.cloneDeep(Recoils.getState('DATA:FORMSMATCH')));
+                  page_reload();
+                }
+              });
+            }
+          }
+        });
+    } else {
+      if (save_datas && save_datas.length) {
+        request.post(`user/forms/match/save`, { save_datas }).then((ret) => {
+          if (!ret.err) {
+            const { data } = ret.data;
+            logger.info(data);
+
+            Recoils.setState('DATA:FORMSMATCH', data.forms_match);
+            Recoils.setState('DATA:GOODSMATCH', data.goods_match);
+
+            page_reload();
+          }
+        });
       }
-    });
+    }
   };
 
   return (

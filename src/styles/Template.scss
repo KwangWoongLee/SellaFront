@@ -4,7 +4,7 @@
   display: inline-block;
   margin-top: 90px;
   width: 100%;
-  min-width: 1280px;
+  min-width: 1920px;
   height: calc(100vh - 90px);
 }
 
@@ -266,10 +266,14 @@
   left: 0;
   padding: 0 50px;
   width: 100%;
-  min-width: 1280px;
+  min-width: 1920px;
   height: 90px;
   background-color: #081a51;
   z-index: 100;
+
+  .btn_arrow_back {
+    display: none;
+  }
 
   .logo {
     display: block;
@@ -382,15 +386,15 @@
           }
         }
 
-        &:hover {
-          .sub-menu {
-            visibility: visible;
-            li {
-              top: 0;
-              visibility: visible;
-            }
-          }
-        }
+        // &:hover {
+        //   .sub-menu {
+        //     visibility: visible;
+        //     li {
+        //       top: 0;
+        //       visibility: visible;
+        //     }
+        //   }
+        // }
       }
 
       li.on {
@@ -457,6 +461,16 @@
     ul.burder {
       display: none;
       float: right;
+    }
+
+    ul.burder.on {
+      .sub-menu {
+        visibility: visible;
+        li {
+          top: 0;
+          visibility: visible;
+        }
+      }
     }
   }
 }
