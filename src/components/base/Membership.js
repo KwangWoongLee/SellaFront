@@ -181,9 +181,16 @@ const Membership = () => {
             </h4>
 
             {sella_grade &&
-              sella_grade.map((sella_grade_data, index) => (
-                <GradeItem account_data={accountData} grade_data={sella_grade_data} onClick={onPaymentReq}></GradeItem>
-              ))}
+              sella_grade.map(
+                (sella_grade_data, index) =>
+                  !sella_grade_data.no_show && (
+                    <GradeItem
+                      account_data={accountData}
+                      grade_data={sella_grade_data}
+                      onClick={onPaymentReq}
+                    ></GradeItem>
+                  )
+              )}
           </div>
 
           <div className="formbox">
