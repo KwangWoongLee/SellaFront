@@ -126,7 +126,7 @@ const StandardProduct_Search = React.memo(({ selectCallback, unSelectCallback, p
         </Button>
       </div>
       <div className="standardproductsearch">
-        <table>
+        <table className="thead">
           <thead>
             <>
               <th>상품명</th>
@@ -134,6 +134,10 @@ const StandardProduct_Search = React.memo(({ selectCallback, unSelectCallback, p
               <th></th>
             </>
           </thead>
+          <tbody></tbody>
+        </table>
+        <table className="tbody">
+          <thead></thead>
           <tbody>
             <>
               {mode == 0 && <td className="td_empty"></td>}

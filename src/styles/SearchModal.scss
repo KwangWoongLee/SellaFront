@@ -3,7 +3,10 @@
 .modal.searchmodal_calculator {
   .inputbox {
     .input_search {
+      float: left;
       width: calc(100% - 63px);
+      border-top-right-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
     }
   }
 

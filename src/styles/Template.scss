@@ -1,11 +1,13 @@
 // Template.
 
 .body {
-  display: inline-block;
-  margin-top: 90px;
+  display: block;
+  margin: 90px auto 0;
   width: 100%;
-  min-width: 1920px;
-  height: calc(100vh - 90px);
+  min-width: 1440px;
+  max-width: 1920px;
+  height: auto;
+  min-height: calc(100vh - 90px);
 }
 
 .page {
@@ -14,6 +16,16 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
+}
+
+.header > div {
+  position: relative;
+  display: block;
+  margin: 0 auto;
+  width: 100%;
+  height: 100%;
+  min-width: 1440px;
+  max-width: 1920px;
 }
 
 .header.v01 {
@@ -266,7 +278,7 @@
   left: 0;
   padding: 0 50px;
   width: 100%;
-  min-width: 1920px;
+  min-width: 1440px;
   height: 90px;
   background-color: #081a51;
   z-index: 100;
@@ -457,20 +469,65 @@
         padding: 0 30px;
       }
     }
+  }
 
-    ul.burder {
-      display: none;
-      float: right;
-    }
+  .btn_hamburger {
+    display: none;
+  }
 
-    ul.burder.on {
-      .sub-menu {
-        visibility: visible;
-        li {
-          top: 0;
-          visibility: visible;
+  ul.burder {
+    position: fixed;
+    top: 50px;
+    left: 0;
+    display: none;
+    float: right;
+    width: 100%;
+    height: calc(100% - 50px);
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+
+  ul.burder > li {
+    float: right;
+    padding: 30px;
+    width: 70%;
+    max-width: 300px;
+    height: 100%;
+    background-color: #fff;
+
+    ul.sub-menu {
+      li {
+        a {
+          font-size: 20px;
+          color: #081a51;
+          font-weight: 600;
         }
+      }
+
+      li.small {
+        a {
+          font-size: 16px;
+          color: #758191;
+          font-weight: 500;
+        }
+      }
+
+      li.line {
+        margin: 30px 0;
+        border-top: 1px dotted #ccc;
       }
     }
   }
+
+  ul.burder.on {
+    .sub-menu {
+      visibility: visible;
+      li {
+        top: 0;
+        visibility: visible;
+      }
+    }
+  }
+}
+
+.header.v02.home {
 }

@@ -36,36 +36,400 @@
 @media (max-width: 1280px) {
 }
 
-@media (max-width: 1024px) and (orientation: landscape) {
-  /* CSS */
-  .header.v02 {
+@media (max-width: 1024px) {
+  .header > div {
     min-width: 100%;
+  }
+
+  .header.v02 {
+    padding: 0 10px;
+    min-width: 100%;
+    width: 100%;
+    height: 50px;
 
     .btn_arrow_back {
+      position: absolute;
+      top: 0;
+      left: 5px;
+      display: block;
+      width: 50px;
+      height: 50px;
+      padding: 12.5px;
+
+      img {
+        width: 25px;
+        height: 25px;
+      }
+    }
+
+    .logo {
+      display: flex;
+      float: unset;
+      margin: 0 auto;
+      height: 50px;
+    }
+
+    .btn_hamburger {
+      position: absolute;
+      top: 0;
+      right: 5px;
+      display: block;
+      width: 50px;
+      height: 50px;
+      padding: 13.5px;
+
+      img {
+        width: 22px;
+        height: 22px;
+      }
+    }
+
+    ul.burder.on {
       display: block;
     }
 
     nav {
-      ul.burder {
-        display: block;
-      }
-
-      ul.center,
-      .member {
-        display: none;
-      }
+      display: none;
     }
+  }
+
+  .body {
+    min-width: 320px;
+    margin-top: 50px;
+    padding: 0 !important;
+    padding: 15px 25px;
+  }
+
+  .body.home .bannerslide .bannerwrap dl {
+    top: 28% !important;
+    left: 8% !important;
+  }
+
+  .body.home .bannerslide .bannerwrap dl.right {
+    left: unset !important;
+    right: 8% !important;
+  }
+
+  .body.home .bannerslide .bannerwrap dl dt {
+    font-size: 2.3rem !important;
+    line-height: 2.6rem !important;
+  }
+
+  .body.home .bannerslide .bannerwrap dl .btn_start button {
+    height: 50px !important;
+  }
+
+  .body.home section {
+    padding: 50px 0 !important;
+  }
+
+  .body.home section h3 {
+    margin-bottom: 20px !important;
+    font-size: 2.1rem !important;
+    line-height: 2.1rem !important;
+  }
+
+  .body.home section h4 {
+    margin-bottom: 30px !important;
+    font-size: 1.2rem !important;
+    line-height: 1.7rem !important;
+  }
+
+  .body.home .main01 ul.slider-nav {
+    margin-top: -25px;
+    padding: 0 30px !important;
+  }
+
+  .body.home .main01 .slider-nav li {
+    padding: 10px 20px !important;
+    font-size: 1.2rem !important;
+  }
+
+  .body.home .main01 .slider-nav li p {
+    margin-top: 5px !important;
+    font-size: 1.1rem !important;
+  }
+
+  .body.home .main01 h4 {
+    margin-bottom: 50px !important;
+  }
+
+  .body.home .main02 ul > li {
+    width: 90% !important;
+  }
+
+  .body.home .main02 dl dt,
+  .body.home .main02 dl dd {
+    font-size: 1.2rem !important;
+  }
+
+  .body.home .main03 ul {
+    width: 80% !important;
+  }
+
+  .body.home .main03 ul > li {
+    margin-bottom: 50px !important;
+    width: calc(50% - 30px) !important;
+  }
+
+  .body.home .main04 {
+    height: 300px !important;
   }
 }
 
 @media (max-width: 768px) {
-  /* CSS */
+  .mobile {
+    display: block !important;
+  }
+
+  .pc {
+    display: none !important;
+  }
+
+  .body.home section {
+    padding: 50px 30px !important;
+  }
+
+  .body.home section h3 {
+    margin-bottom: 10px !important;
+    text-align: left;
+    font-size: 1.8rem !important;
+  }
+
+  .body.home section h4 {
+    text-align: left;
+  }
+
+  .body.home .main01.mobile > ul li p {
+    font-size: 1.2rem !important;
+  }
+
+  .body.home .main02 ul > li {
+    width: 100% !important;
+  }
+
+  .body.home .main02 dl.line {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  .body.home .main02 dl.line {
+    width: 100% !important;
+    border: 0 !important;
+  }
+
+  .body.home .main02 dl.line:last-child {
+    padding-left: 0 !important;
+    padding-bottom: 20px !important;
+  }
+
+  .body.home .main02 dl.line dt {
+    font-weight: 500 !important;
+  }
+
+  .body.home .main02 dl.line dt::before {
+    content: '· ';
+  }
+
+  .body.home .main03 ul {
+    width: 100% !important;
+  }
+
+  .body.home .main03 ul > li {
+    margin: 0 0 30px 0 !important;
+    width: 100% !important;
+  }
+
+  .body.home .main03 ul > li:last-child {
+    margin-bottom: 0 !important;
+  }
+
+  .body.home .main03 ul > li > p {
+    font-size: 1.5rem !important;
+    line-height: 1.5rem !important;
+  }
+
+  .body.home .main03 ul > li > p span {
+    font-size: 1.2rem !important;
+    line-height: 1.2rem !important;
+  }
+
+  .body.home .main03 ul > li > span {
+    font-size: 1.2rem !important;
+    line-height: 1.2rem !important;
+  }
+
+  .body.home .main03 ul > li > span > br {
+    display: none;
+  }
+
+  .body.home .main03 ul > li ol li {
+    font-size: 1.2rem !important;
+    line-height: 1.2rem !important;
+  }
+
+  .body.home .main03 ul > li .salebox dl {
+    width: 100px !important;
+  }
+
+  .body.home .main03 ul > li .salebox dl:last-child {
+    width: calc(100% - 130px) !important;
+    margin-left: 30px !important;
+  }
+
+  .body.home .main03 ul > li .salebox dl dt {
+    margin-bottom: 13px !important;
+  }
+
+  .body.home .main03 ul > li .salebox dl:last-child dt {
+    margin-bottom: 0 !important;
+  }
+
+  .body.home .main03 ul > li .salebox dl dd img {
+    top: 9px !important;
+  }
+
+  .body.home .main03 ul > li .salebox dl:last-child dd::before {
+    display: none !important;
+  }
+
+  .body.home .main03 ul > li > button {
+    font-size: 1.2rem !important;
+    line-height: 1.2rem !important;
+  }
+
+  .body.home .main04 {
+    height: 200px !important;
+  }
+
+  .body.home .main04 div {
+    width: 100%;
+  }
+
+  .body.home section h3 {
+    text-align: center;
+  }
+
+  .body.home section h4 {
+    margin-bottom: 15px !important;
+    text-align: center;
+  }
+
+  .body.home .main04 > div button {
+    height: 36px !important;
+    font-size: 1.2rem !important;
+  }
+
+  .footer > .menubox > ul {
+    width: auto !important;
+  }
+
+  .footer > .menubox > ul li {
+    display: flex !important;
+    align-items: center !important;
+    justify-self: center !important;
+  }
+
+  .footer > .informbox {
+    width: 100% !important;
+    display: block !important;
+  }
+
+  .footer > .informbox > img {
+    display: none;
+  }
+
+  .footer > .informbox > dl {
+    width: 100% !important;
+  }
+
+  .footer > .informbox > dl > dd {
+    float: unset !important;
+    text-align: center;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+  }
+
+  .footer > .informbox > dl > dd:first-child {
+    margin-bottom: 20px !important;
+  }
+
+  .body.margin.nologin {
+    display: inline-block !important;
+    margin: 0 !important;
+    padding: 100px 25px 25px !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    min-height: unset !important;
+  }
+
+  .body.margin.nologin .section1 {
+    position: relative !important;
+    top: unset !important;
+    width: 100% !important;
+  }
+
+  .body.margin.nologin .section2 {
+    display: none !important;
+  }
 }
 
 @media (max-width: 480px) {
-  /* CSS */
+  .footer > .menubox > ul > li {
+    display: inline-block !important;
+    margin: 0 !important;
+    padding: 5px 10px 7px !important;
+    width: unset !important;
+    text-align: center !important;
+    border: 0 !important;
+  }
 }
 
-@media (max-width: 320px) {
-  /* CSS */
+@media (max-width: 360px) {
+  .body.home section {
+    padding: 30px 25px !important;
+  }
+
+  .body.home .main02 ul > li {
+    padding: 0 15px !important;
+  }
+
+  .body.home .main02 ul > li::before {
+    display: none !important;
+  }
+
+  .body.home .main02 ul > li:nth-child(4),
+  .body.home .main02 ul > li:nth-child(5),
+  .body.home .main02 ul > li:nth-child(6) {
+    dl dt,
+    dl dd {
+      width: 100% !important;
+    }
+  }
+
+  .body.home .main02 dl .dd_btn {
+    right: 15px !important;
+    width: 40px !important;
+  }
+
+  .body.home .main02 dl .dd_btn button {
+    background: transparent;
+    min-width: 40px !important;
+    min-height: 40px !important;
+  }
+
+  .body.home .main02 dl .dd_btn.kakaotalk button img {
+    min-width: 40px !important;
+  }
+
+  .body.home .main02 dl.line dt,
+  .body.home .main02 dl.line dd {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .body.home .main02 dl.line dd {
+    margin-left: 12px !important;
+  }
 }

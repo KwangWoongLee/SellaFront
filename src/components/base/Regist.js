@@ -14,7 +14,7 @@ import Recoils from 'recoils';
 import request from 'util/request';
 import _ from 'lodash';
 
-import Head from 'components/template/Head';
+import Head from 'components/template/Head_home';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 import Checkbox from 'components/common/CheckBoxCell';

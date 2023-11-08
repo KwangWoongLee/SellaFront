@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 
 import { Button, DropdownButton, Dropdown } from 'react-bootstrap';
-import Head from 'components/template/Head';
+import Head from 'components/template/Head_home';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 import CalculatorNavTab from 'components/calculator/CalculatorNavTab';

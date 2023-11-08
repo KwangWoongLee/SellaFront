@@ -4,10 +4,10 @@
 /* 공통 */
 
 body {
-  min-width: 1920px;
+  width: 100%;
   background-color: #f8f9ff !important;
   font-size: 16px;
-  overflow: auto;
+  overflow-x: hidden;
 }
 
 #root {
@@ -124,7 +124,7 @@ button:hover {
   width: auto;
   height: auto;
   min-width: 60px;
-  padding: 7px 12px;
+  padding: 7.5px 12px;
   vertical-align: middle;
   background-color: #fff;
   border: 1px solid #ccc;
@@ -492,7 +492,7 @@ select {
 // input
 
 input {
-  height: 32px;
+  height: 33px;
   padding: 0 10px;
   border-radius: 5px !important;
   font-size: 14px;
@@ -501,7 +501,7 @@ input {
 .input_search + button,
 .dropdown + button {
   float: left;
-  height: 32px;
+  height: 33px;
   border-left: 0 !important;
   border-top-left-radius: 0 !important;
   border-bottom-left-radius: 0 !important;

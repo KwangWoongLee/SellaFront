@@ -26,6 +26,7 @@
       th:nth-child(1),
       td:nth-child(1) {
         width: 170px;
+        text-align: center;
       }
 
       th:nth-child(2),
@@ -132,17 +133,38 @@
 
     .standardproductsearch {
       width: 100%;
-      height: 360px !important;
+      height: calc(100% - 415px) !important;
       margin-bottom: 30px;
       background-color: #fff;
       border: 1px solid #ccc;
       border-radius: 7px;
       box-shadow: 3px 3px 3px 0px rgba(0, 0, 0, 0.1);
       overflow: auto;
+
+      .thead th:nth-child(2),
+      .tbody td:nth-child(2) {
+        width: 100px;
+        text-align: center;
+      }
+
+      .thead th:nth-child(3) {
+        width: 88px;
+      }
+
+      .tbody td:nth-child(3) {
+        padding: 3px 10px;
+        width: 80px;
+
+        button {
+          display: block;
+          margin: 0 auto;
+          float: unset;
+        }
+      }
     }
 
     .standardproductsearch table tbody .td_empty {
-      min-height: 360px;
+      min-height: 100%;
     }
 
     .standardproductsearch table tbody .td_empty:before {
@@ -160,7 +182,7 @@
     }
 
     .categoryfeesearch table tbody .td_empty {
-      min-height: 318px;
+      min-height: 100%;
     }
 
     .categoryfeesearch table tbody .td_empty:before {
@@ -169,7 +191,7 @@
 
     .standardproductsearch table,
     .categoryfeesearch table {
-      height: auto;
+      height: 100%;
       background-color: transparent;
       border-radius: 0;
       box-shadow: unset;
@@ -177,7 +199,7 @@
     }
 
     .categoryfeesearch tbody {
-      height: auto;
+      height: 100%;
     }
 
     .categoryfeesearch tr {
@@ -204,8 +226,8 @@
     height: 267px !important;
   }
 
-  .standardproductsearch {
-    height: calc(100% - 415px) !important;
+  .standardproductsearch .tbody {
+    height: calc(100% - 36px) !important;
   }
 
   .standardproductsearch table tbody:empty {
@@ -218,5 +240,11 @@
 
   .categoryfeesearch table tbody:empty {
     min-height: 304px;
+  }
+}
+
+.sale_product.modal {
+  .standardproductsearch {
+    height: calc(100% - 447px) !important;
   }
 }

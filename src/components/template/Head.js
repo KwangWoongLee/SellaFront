@@ -35,50 +35,119 @@ const Head = () => {
   return (
     <>
       <div className="header v02">
-        <Nav.Link onClick={onLink} className="logo" name="">
-          <img src={`${img_src}${logo_white}`} alt="로고" />
-        </Nav.Link>
+        <div>
+          <Nav.Link onClick={onLink} className="logo" name="">
+            <img src={`${img_src}${logo_white}`} alt="로고" />
+          </Nav.Link>
 
-        <nav>
-          <ul className="left">
-            <li
-              className={
-                location.pathname === '/settlement/margin_calc' || location.pathname === '/settlement/today_summary'
-                  ? 'on'
-                  : ''
-              }
-            >
-              <Nav.Link className="nav-link" onClick={onLink} name="/settlement/margin_calc">
-                <p>
-                  <span>정산해보기!</span>손익 관리
-                </p>{' '}
+          <nav>
+            <ul className="left">
+              <li
+                className={
+                  location.pathname === '/settlement/margin_calc' || location.pathname === '/settlement/today_summary'
+                    ? 'on'
+                    : ''
+                }
+              >
+                <Nav.Link className="nav-link" onClick={onLink} name="/settlement/margin_calc">
+                  <p>
+                    <span>정산해보기!</span>손익 관리
+                  </p>{' '}
+                </Nav.Link>
+              </li>
+            </ul>
+            <ul className="center">
+              <li className={location.pathname === '/step2' ? 'on' : ''}>
+                <Nav.Link onClick={onLink} name="/step2">
+                  <p>
+                    <span>1단계</span>기준 상품 관리
+                  </p>{' '}
+                </Nav.Link>
+              </li>
+              <li
+                className={
+                  location.pathname === '/settlement/form_management' ||
+                  location.pathname === '/settlement/sale_product' ||
+                  location.pathname === '/settlement/standard_product'
+                    ? 'on'
+                    : ''
+                }
+              >
+                <Nav.Link onClick={onLink} name="/settlement/sale_product">
+                  <p>
+                    <span>2단계</span>매체 관리
+                  </p>
+                </Nav.Link>
+              </li>
+            </ul>
+            <div className="member">
+              <img src={`${img_src}${icon_calculator}`} alt="계산기" className="icon_calculator" />
+              <Nav.Link
+                className="nav-link mcalculator"
+                onClick={(e) => {
+                  let no_login_path = account && account.grade !== -1 ? '' : '/calculator/margin_free';
+                  onLink(e, no_login_path);
+                }}
+                name="/calculator/margin"
+              >
+                <span>마진계산기</span>
               </Nav.Link>
-            </li>
-          </ul>
-          <ul className="center">
-            <li className={location.pathname === '/step2' ? 'on' : ''}>
-              <Nav.Link onClick={onLink} name="/step2">
-                <p>
-                  <span>1단계</span>기준 상품 관리
-                </p>{' '}
+              <Nav.Link
+                className="nav-link"
+                onClick={(e) => {
+                  onLink(e);
+                }}
+                name="/calculator/lowest_price"
+              >
+                <span>최저가 계산기</span>
               </Nav.Link>
-            </li>
-            <li
-              className={
-                location.pathname === '/settlement/form_management' ||
-                location.pathname === '/settlement/sale_product' ||
-                location.pathname === '/settlement/standard_product'
-                  ? 'on'
-                  : ''
-              }
-            >
-              <Nav.Link onClick={onLink} name="/settlement/sale_product">
-                <p>
-                  <span>2단계</span>매체 관리
-                </p>
+              {/* <span>·</span>
+          <Nav.Link className="nav-link bcalculator" onClick={onLink} name="/calculator/buying">
+            <span>사입계산기</span>
+          </Nav.Link> */}
+              <Nav.Link className="nav-link" onClick={onLink} name="/cscenter">
+                <span className="cscenter">고객센터</span>
               </Nav.Link>
-            </li>
-          </ul>
+              <img
+                onClick={() => {
+                  window.open('http://pf.kakao.com/_AxfxfMG/chat');
+                }}
+                src={`${img_src}${icon_kakao}`}
+                alt="카카오"
+                className="icon_kakao"
+              />
+
+              <span
+                onClick={() => {
+                  window.open('http://pf.kakao.com/_AxfxfMG/chat');
+                }}
+                className="cschat"
+              >
+                1:1문의
+              </span>
+              {account && account.grade !== -1 ? (
+                <>
+                  <span class="name">{account.name}</span>
+                  <Nav.Link className="nav-link icon_member" onClick={onLink} name="/mypage/membership">
+                    <img src={`${img_src}${icon_member}`} alt="" />
+                  </Nav.Link>
+                  <Nav.Link className="nav-link icon_power" onClick={onLink} name="/logout">
+                    <img src={`${img_src}${icon_power}`} alt="" />
+                  </Nav.Link>
+                </>
+              ) : (
+                <>
+                  <Nav.Link className="nav-link" onClick={onLink} name="/regist">
+                    <span className="cscenter">회원가입</span>
+                  </Nav.Link>
+                  <Nav.Link className="nav-link" onClick={onLink} name="/login">
+                    <span className="cscenter">로그인</span>
+                  </Nav.Link>
+                </>
+              )}
+            </div>
+          </nav>
+
           <ul className="burder">
             <li>
               {/* <Button className="btn_hamburger btn btn-primary">
@@ -152,74 +221,7 @@ const Head = () => {
               </ul>
             </li>
           </ul>
-
-          <div className="member">
-            <img src={`${img_src}${icon_calculator}`} alt="계산기" className="icon_calculator" />
-            <Nav.Link
-              className="nav-link mcalculator"
-              onClick={(e) => {
-                let no_login_path = account && account.grade !== -1 ? '' : '/calculator/margin_free';
-                onLink(e, no_login_path);
-              }}
-              name="/calculator/margin"
-            >
-              <span>마진계산기</span>
-            </Nav.Link>
-            <Nav.Link
-              className="nav-link"
-              onClick={(e) => {
-                onLink(e);
-              }}
-              name="/calculator/lowest_price"
-            >
-              <span>최저가 계산기</span>
-            </Nav.Link>
-            {/* <span>·</span>
-          <Nav.Link className="nav-link bcalculator" onClick={onLink} name="/calculator/buying">
-            <span>사입계산기</span>
-          </Nav.Link> */}
-            <Nav.Link className="nav-link" onClick={onLink} name="/cscenter">
-              <span className="cscenter">고객센터</span>
-            </Nav.Link>
-            <img
-              onClick={() => {
-                window.open('http://pf.kakao.com/_AxfxfMG/chat');
-              }}
-              src={`${img_src}${icon_kakao}`}
-              alt="카카오"
-              className="icon_kakao"
-            />
-
-            <span
-              onClick={() => {
-                window.open('http://pf.kakao.com/_AxfxfMG/chat');
-              }}
-              className="cschat"
-            >
-              1:1문의
-            </span>
-            {account && account.grade !== -1 ? (
-              <>
-                <span class="name">{account.name}</span>
-                <Nav.Link className="nav-link icon_member" onClick={onLink} name="/mypage/membership">
-                  <img src={`${img_src}${icon_member}`} alt="" />
-                </Nav.Link>
-                <Nav.Link className="nav-link icon_power" onClick={onLink} name="/logout">
-                  <img src={`${img_src}${icon_power}`} alt="" />
-                </Nav.Link>
-              </>
-            ) : (
-              <>
-                <Nav.Link className="nav-link" onClick={onLink} name="/regist">
-                  <span className="cscenter">회원가입</span>
-                </Nav.Link>
-                <Nav.Link className="nav-link" onClick={onLink} name="/login">
-                  <span className="cscenter">로그인</span>
-                </Nav.Link>
-              </>
-            )}
-          </div>
-        </nav>
+        </div>
       </div>
     </>
   );
