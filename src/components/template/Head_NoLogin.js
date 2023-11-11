@@ -4,8 +4,9 @@ import 'styles/Template.scss';
 import { useLocation } from 'react-router-dom';
 import { CSSTransition } from 'react-transition-group';
 
-import { img_src, navigate, logger } from 'util/com';
+import com, { img_src, navigate, logger } from 'util/com';
 import Recoils from 'recoils';
+import _ from 'lodash';
 import Checkbox from 'components/common/CheckBoxCell';
 import logo_white from 'images/logo_white.svg';
 import icon_member from 'images/icon_member.svg';
@@ -17,16 +18,14 @@ import 'styles/mediaQuery_1000.scss';
 
 import icon_hamburger from 'images/icon_hamburger.svg';
 import icon_arrow_back from 'images/icon_arrow_back.svg';
-const Head = () => {
+import { responsiveFontSizes } from '@mui/material';
+const Head_NoLogin = ({ setScrollElemId }) => {
   //logger.debug('Template Head');
   const account = Recoils.useValue('CONFIG:ACCOUNT');
   const location = useLocation();
   const nodeRef = useRef(null);
   const [transition, setTransition] = useState(false);
 
-  const [burderClass, setBurderClass] = useState('');
-
-  useEffect(() => {}, []);
   const onLink = (e, no_login_path) => {
     e.preventDefault();
     logger.debug('href : ', e.currentTarget.name);
@@ -38,9 +37,14 @@ const Head = () => {
 
     //logger.debug('NavigateCtr :');
   };
+
+  const onScroll = (id) => {
+    if (setScrollElemId) setScrollElemId(id);
+  };
+
   return (
     <>
-      <div className="header v02 home">
+      <div id="header" className="header v02 home">
         <div>
           <Nav.Link onClick={onLink} name="" className="btn_arrow_back">
             <img alt={''} src={icon_arrow_back} />
@@ -52,15 +56,12 @@ const Head = () => {
 
           <Nav.Link
             onClick={() => {
-              if (burderClass === '') {
-                setBurderClass('on');
-                setTransition(true);
-              } else {
-                setBurderClass('');
+              if (transition) {
                 setTransition(false);
+                return;
               }
+              setTransition(true);
             }}
-            name=""
             className="btn_hamburger"
           >
             <img alt={''} src={icon_hamburger} />
@@ -69,22 +70,55 @@ const Head = () => {
           <nav>
             <ul className="center">
               <li>
-                <Nav.Link onClick={onLink} href="#main01">
+                <Nav.Link
+                  onClick={() => {
+                    if (!setScrollElemId) {
+                      com.storage.setItem('header_nologin_select', '1');
+                      navigate('');
+                    }
+
+                    onScroll('main01');
+                  }}
+                >
                   서비스 소개
                 </Nav.Link>
               </li>
               <li>
-                <Nav.Link onClick={onLink} href="#main02">
+                <Nav.Link
+                  onClick={() => {
+                    if (!setScrollElemId) {
+                      com.storage.setItem('header_nologin_select', '2');
+                      navigate('');
+                    }
+                    onScroll('main02');
+                  }}
+                >
                   더 알아보기
                 </Nav.Link>
               </li>
               <li>
-                <Nav.Link onClick={onLink} href="#main03">
+                <Nav.Link
+                  onClick={() => {
+                    if (!setScrollElemId) {
+                      com.storage.setItem('header_nologin_select', '3');
+                      navigate('');
+                    }
+                    onScroll('main03');
+                  }}
+                >
                   요금제
                 </Nav.Link>
               </li>
               <li>
-                <Nav.Link onClick={onLink} href="#main04">
+                <Nav.Link
+                  onClick={() => {
+                    if (!setScrollElemId) {
+                      com.storage.setItem('header_nologin_select', '4');
+                      navigate('');
+                    }
+                    onScroll('main04');
+                  }}
+                >
                   이용방법
                 </Nav.Link>
               </li>
@@ -106,7 +140,7 @@ const Head = () => {
                 onClick={(e) => {
                   onLink(e);
                 }}
-                name="/calculator/lowest_price"
+                name="/calculator/lowest_price_free"
               >
                 <span>최저가 계산기</span>
               </Nav.Link>
@@ -157,28 +191,29 @@ const Head = () => {
             </div>
           </nav>
 
-          {/* .btn_hamburger 클릭이벤트에 따라 .burder에 on 클래스 토글로 넣어주세요~ 혹시 메뉴 열릴때 스르륵 열리게 가능할까요? 매체양식관리처럼요!
-
-        ul.burder backgound 까만 반투명 클릭 시 스르륵 닫히게 부탁드려요!
-         */}
           <CSSTransition
             in={transition}
             nodeRef={nodeRef}
             timeout={300}
             appear={true}
-            classNames="form-add-transition"
+            classNames="burder-transition"
             unmountOnExit={true}
+            onClick={(e) => {
+              const isLiTag = _.includes(e.target.className, 'nav-link');
+              if (!isLiTag) {
+                setTransition(false);
+              }
+            }}
           >
-            <ul className={`burder ${burderClass}`}>
-              {/* <ul className="burder on"> */}
+            <ul className={`burder`} ref={nodeRef}>
               <li>
-                <ul class="sub-menu">
+                <ul className="sub-menu">
                   <li>
                     <Nav.Link
                       className="nav-link"
-                      onClick={(e) => {
-                        let no_login_path = account && account.grade !== -1 ? '' : '#main01';
-                        onLink(e, no_login_path);
+                      onClick={() => {
+                        onScroll('m_main01');
+                        setTransition(false);
                       }}
                     >
                       서비스 소개
@@ -187,11 +222,10 @@ const Head = () => {
                   <li>
                     <Nav.Link
                       className="nav-link"
-                      onClick={(e) => {
-                        let no_login_path = account && account.grade !== -1 ? '' : '/calculator/margin_free';
-                        onLink(e, no_login_path);
+                      onClick={() => {
+                        onScroll('main02');
+                        setTransition(false);
                       }}
-                      name="/calculator/margin"
                     >
                       더 알아보기
                     </Nav.Link>
@@ -199,11 +233,10 @@ const Head = () => {
                   <li>
                     <Nav.Link
                       className="nav-link"
-                      onClick={(e) => {
-                        let no_login_path = account && account.grade !== -1 ? '' : '/calculator/margin_free';
-                        onLink(e, no_login_path);
+                      onClick={() => {
+                        onScroll('main03');
+                        setTransition(false);
                       }}
-                      name="/calculator/margin"
                     >
                       요금제
                     </Nav.Link>
@@ -211,11 +244,10 @@ const Head = () => {
                   <li>
                     <Nav.Link
                       className="nav-link"
-                      onClick={(e) => {
-                        let no_login_path = account && account.grade !== -1 ? '' : '/calculator/margin_free';
-                        onLink(e, no_login_path);
+                      onClick={() => {
+                        onScroll('main04');
+                        setTransition(false);
                       }}
-                      name="/calculator/margin"
                     >
                       이용방법
                     </Nav.Link>
@@ -277,4 +309,4 @@ const Head = () => {
     </>
   );
 };
-export default React.memo(Head);
+export default React.memo(Head_NoLogin);

@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef, useMemo, Fragment } from 'react';
 
 import { Table, Button, Modal, DropdownButton, Dropdown } from 'react-bootstrap';
+import Head_NoLogin from 'components/template/Head_NoLogin';
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
-import com, { img_src, useInput, modal, navigate } from 'util/com';
+import com, { img_src, useInput, modal, navigate, is_authed } from 'util/com';
 import request from 'util/request';
 import CSCenterNavTab from 'components/cscenter/CSCenterNavTab';
 import Recoils from 'recoils';
@@ -135,7 +136,7 @@ const FAQ = () => {
 
   return (
     <>
-      <Head />
+      {is_authed() ? <Head /> : <Head_NoLogin />}
       <Body title={`자주 묻는 질문`} myClass={'cscenter faq'}>
         <CSCenterNavTab active="/cscenter/faq" className="navtab cscenter" />
 

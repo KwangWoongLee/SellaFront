@@ -3,7 +3,7 @@ import { Nav } from 'react-bootstrap';
 import 'styles/Template.scss';
 import { useLocation } from 'react-router-dom';
 
-import { img_src, navigate, logger } from 'util/com';
+import { img_src, navigate, logger, is_authed } from 'util/com';
 import Recoils from 'recoils';
 import Checkbox from 'components/common/CheckBoxCell';
 import logo_white from 'images/logo_white.svg';
@@ -34,9 +34,9 @@ const Head = () => {
   };
   return (
     <>
-      <div className="header v02">
+      <div id="header" className="header v02">
         <div>
-          <Nav.Link onClick={onLink} className="logo" name="">
+          <Nav.Link onClick={onLink} className="logo" name={is_authed() ? '/settlement/margin_calc' : ''}>
             <img src={`${img_src}${logo_white}`} alt="로고" />
           </Nav.Link>
 
@@ -97,7 +97,7 @@ const Head = () => {
                 onClick={(e) => {
                   onLink(e);
                 }}
-                name="/calculator/lowest_price"
+                name="/calculator/lowest_price_free"
               >
                 <span>최저가 계산기</span>
               </Nav.Link>

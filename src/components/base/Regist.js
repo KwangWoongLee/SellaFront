@@ -14,7 +14,7 @@ import Recoils from 'recoils';
 import request from 'util/request';
 import _ from 'lodash';
 
-import Head from 'components/template/Head_home';
+import Head_NoLogin from 'components/template/Head_NoLogin';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 import Checkbox from 'components/common/CheckBoxCell';
@@ -302,7 +302,7 @@ const Regist = () => {
 
   return (
     <>
-      <Head />
+      <Head_NoLogin />
       <Body title={`회원가입`} myClass={'regist'}>
         <Form onSubmit={onSubmit} id="regist-form" className="formbox">
           <h3>회원가입</h3>

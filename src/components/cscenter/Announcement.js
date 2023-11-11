@@ -2,9 +2,10 @@ import React, { useState, useEffect, Fragment } from 'react';
 
 import { Button } from 'react-bootstrap';
 import Head from 'components/template/Head';
+import Head_NoLogin from 'components/template/Head_NoLogin';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
-import { img_src, modal } from 'util/com';
+import { img_src, modal, is_authed } from 'util/com';
 import request from 'util/request';
 import CSCenterNavTab from 'components/cscenter/CSCenterNavTab';
 import _ from 'lodash';
@@ -140,7 +141,7 @@ const Announcement = () => {
 
   return (
     <>
-      <Head />
+      {is_authed() ? <Head /> : <Head_NoLogin />}
       <Body title={`공지사항`} myClass={'cscenter announcement'}>
         <CSCenterNavTab active="/cscenter/announcement" className="navtab cscenter" />
 

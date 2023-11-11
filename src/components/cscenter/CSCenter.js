@@ -2,11 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 
 import { Nav } from 'react-bootstrap';
 import Head from 'components/template/Head';
+import Head_NoLogin from 'components/template/Head_NoLogin';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 import CSCenterNavTab from 'components/cscenter/CSCenterNavTab';
 import request from 'util/request';
-import { img_src, modal, navigate } from 'util/com';
+import { img_src, modal, navigate, is_authed } from 'util/com';
 import com from 'util/com';
 import Recoils from 'recoils';
 import _ from 'lodash';
@@ -70,7 +71,7 @@ const CSCenter = () => {
 
   return (
     <>
-      <Head />
+      {is_authed() ? <Head /> : <Head_NoLogin />}
       <Body title={`CSCenter`} myClass={'cscenter main'}>
         <CSCenterNavTab active="/CSCenter" className="navtab cscenter" />
 

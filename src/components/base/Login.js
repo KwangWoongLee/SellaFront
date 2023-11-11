@@ -4,7 +4,7 @@ import Recoils from 'recoils';
 import com, { logger, navigate, modal } from 'util/com';
 import request from 'util/request';
 
-import Head from 'components/template/Head_home';
+import Head_NoLogin from 'components/template/Head_NoLogin';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 import Checkbox from 'components/common/CheckBoxCell';
@@ -98,7 +98,7 @@ const Login = () => {
 
   return (
     <>
-      <Head />
+      <Head_NoLogin />
       <Body title={`로그인`} myClass={'login'}>
         <iframe
           width="653"

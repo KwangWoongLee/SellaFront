@@ -44,7 +44,7 @@ import FAQ from 'components/cscenter/FAQ';
 import Inquiry from 'components/cscenter/Inquiry';
 import Margin_NoLogin from 'components/calculator/Margin_NoLogin';
 import Home from 'components/base/Home';
-import LowestPrice from 'components/calculator/LowestPrice';
+import LowestPrice_NoLogin from 'components/calculator/LowestPrice_NoLogin';
 
 const Router = process.env.REACT_APP_SSR === '1' ? BrowserRouter : HashRouter;
 
@@ -60,148 +60,150 @@ export function App() {
   });
 
   return (
-    <RecoilRoot>
-      <Router>
-        <RecoilNexus />
-        <NavigateCtr />
-        <Routes>
-          <Route
-            path=""
-            element={
-              <Home></Home>
-              //              <ProtectedRoute>
-              //                <MarginCalc />
-              //              </ProtectedRoute>
-            }
-          />
-          <Route path="/login" element={<Login />} />
-          <Route path="/logout" element={<Logout />} />
-          <Route path="settlement">
+    <div>
+      <RecoilRoot>
+        <Router>
+          <RecoilNexus />
+          <NavigateCtr />
+          <Routes>
             <Route
-              path="margin_calc"
+              path=""
               element={
-                <ProtectedRoute>
-                  <MarginCalc />
-                </ProtectedRoute>
+                <Home></Home>
+                //              <ProtectedRoute>
+                //                <MarginCalc />
+                //              </ProtectedRoute>
               }
             />
-            <Route
-              path="today_summary"
-              element={
-                <ProtectedRoute>
-                  <TodaySummary />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="form_management"
-              element={
-                <ProtectedRoute>
-                  <FormManagement />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="sale_product"
-              element={
-                <ProtectedRoute>
-                  <SaleProduct />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="standard_product"
-              element={
-                <ProtectedRoute>
-                  <StandardProduct />
-                </ProtectedRoute>
-              }
-            />
-          </Route>
-          <Route
-            path="step2"
-            element={
-              <ProtectedRoute>
-                <Step2 />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="calculator">
-            <Route
-              path="margin"
-              element={
-                <ProtectedRoute>
-                  <Margin />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="margin_free" element={<Margin_NoLogin />} />
-            <Route path="lowest_price" element={<LowestPrice />} />
-            <Route
-              path="buying"
-              element={
-                <ProtectedRoute>
-                  <Buying />
-                </ProtectedRoute>
-              }
-            />
-          </Route>
-          <Route path="cscenter">
-            <Route path="" element={<CSCenter />} />
-            <Route path="announcement" element={<Announcement />} />
-            <Route path="manual" element={<Manual />} />
-            <Route path="faq" element={<FAQ />} />
-            <Route
-              path="inquiry"
-              element={
-                <ProtectedRoute>
-                  <Inquiry />
-                </ProtectedRoute>
-              }
-            />
-          </Route>
-
-          <Route path="mypage">
-            <Route
-              path="membership"
-              element={
-                <ProtectedRoute>
-                  <Membership />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="profile"
-              element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              }
-            />
-          </Route>
-          <Route path="regist">
-            <Route path="" element={<Regist />} />
-            <Route path="result" element={<RegistResult />} />
-          </Route>
-
-          <Route path="search">
-            <Route path="id">
-              <Route path="" element={<SearchID />} />
-              <Route path="result" element={<SearchIDResult />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/logout" element={<Logout />} />
+            <Route path="settlement">
+              <Route
+                path="margin_calc"
+                element={
+                  <ProtectedRoute>
+                    <MarginCalc />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="today_summary"
+                element={
+                  <ProtectedRoute>
+                    <TodaySummary />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="form_management"
+                element={
+                  <ProtectedRoute>
+                    <FormManagement />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="sale_product"
+                element={
+                  <ProtectedRoute>
+                    <SaleProduct />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="standard_product"
+                element={
+                  <ProtectedRoute>
+                    <StandardProduct />
+                  </ProtectedRoute>
+                }
+              />
             </Route>
-            <Route path="password">
-              <Route path="" element={<SearchPW />} />
-              <Route path="result" element={<SearchPWResult />} />
+            <Route
+              path="step2"
+              element={
+                <ProtectedRoute>
+                  <Step2 />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="calculator">
+              <Route
+                path="margin"
+                element={
+                  <ProtectedRoute>
+                    <Margin />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="margin_free" element={<Margin_NoLogin />} />
+              <Route path="lowest_price_free" element={<LowestPrice_NoLogin />} />
+              <Route
+                path="buying"
+                element={
+                  <ProtectedRoute>
+                    <Buying />
+                  </ProtectedRoute>
+                }
+              />
             </Route>
-          </Route>
+            <Route path="cscenter">
+              <Route path="" element={<CSCenter />} />
+              <Route path="announcement" element={<Announcement />} />
+              <Route path="manual" element={<Manual />} />
+              <Route path="faq" element={<FAQ />} />
+              <Route
+                path="inquiry"
+                element={
+                  <ProtectedRoute>
+                    <Inquiry />
+                  </ProtectedRoute>
+                }
+              />
+            </Route>
 
-          <Route path="*" element={<h1>Not Found Page</h1>} />
-          <Route path="empty" element={null} />
-        </Routes>
-        <Modals />
-      </Router>
-    </RecoilRoot>
+            <Route path="mypage">
+              <Route
+                path="membership"
+                element={
+                  <ProtectedRoute>
+                    <Membership />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="profile"
+                element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                }
+              />
+            </Route>
+            <Route path="regist">
+              <Route path="" element={<Regist />} />
+              <Route path="result" element={<RegistResult />} />
+            </Route>
+
+            <Route path="search">
+              <Route path="id">
+                <Route path="" element={<SearchID />} />
+                <Route path="result" element={<SearchIDResult />} />
+              </Route>
+              <Route path="password">
+                <Route path="" element={<SearchPW />} />
+                <Route path="result" element={<SearchPWResult />} />
+              </Route>
+            </Route>
+
+            <Route path="*" element={<h1>Not Found Page</h1>} />
+            <Route path="empty" element={null} />
+          </Routes>
+          <Modals />
+        </Router>
+      </RecoilRoot>
+    </div>
   );
 }
 

@@ -113,6 +113,11 @@ export const useInput = (init) => {
 };
 
 export const navigate = (path, flag) => {
+  const element = document.getElementsByTagName('body');
+  if (element && element[0]) {
+    element[0].scrollTop = 0;
+  }
+
   const pathname = navigate_ref.current.location.pathname;
 
   if (pathname === '/settlement/margin_calc' && !flag) {

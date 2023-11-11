@@ -84,8 +84,30 @@
       }
     }
 
-    ul.burder.on {
+    ul.burder {
       display: block;
+    }
+
+    .burder-transition-appear {
+      transform: translateX(100%);
+    }
+    .burder-transition-appear-active {
+      transform: translateX(0);
+      transition: all 0.4s ease;
+    }
+    .burder-transition-enter {
+      transform: translateX(100%);
+    }
+    .burder-transition-enter-active {
+      transform: translateX(0);
+      transition: all 0.4s ease;
+    }
+    .burder-transition-exit {
+      transform: translateX(0);
+    }
+    .burder-transition-exit-active {
+      transform: translateX(100%);
+      transition: all 0.4s ease;
     }
 
     nav {
@@ -273,8 +295,8 @@
   }
 
   .body.home .main03 ul > li .salebox dl:last-child {
-    width: calc(100% - 130px) !important;
-    margin-left: 30px !important;
+    width: calc(100% - 110px) !important;
+    margin-left: 10px !important;
   }
 
   .body.home .main03 ul > li .salebox dl dt {
@@ -371,6 +393,10 @@
   }
 
   .body.margin.nologin .section2 {
+    display: none !important;
+  }
+
+  .body.home .bannerslide .slick-arrow {
     display: none !important;
   }
 }

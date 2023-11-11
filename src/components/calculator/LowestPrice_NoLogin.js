@@ -2,13 +2,14 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 
 import { Button, DropdownButton, Dropdown } from 'react-bootstrap';
 import Head from 'components/template/Head';
+import Head_NoLogin from 'components/template/Head_NoLogin';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 import CalculatorNavTab from 'components/calculator/CalculatorNavTab';
 import SearchModal from 'components/calculator/SearchModal';
 import Recoils from 'recoils';
 
-import { modal, logger, page_reload } from 'util/com';
+import { modal, logger, page_reload, is_authed } from 'util/com';
 import request from 'util/request';
 import _ from 'lodash';
 
@@ -18,14 +19,9 @@ import { AgGridReact } from 'ag-grid-react';
 
 import 'styles/Margin.scss';
 
-const LowestPrice = () => {
-  const [rowData, setDatas] = useState([]);
-  const platformData = [...Recoils.getState('SELLA:PLATFORM')];
-  const [platformType, setplatformType] = useState(0);
-  const [modalState, setModalState] = useState(false);
-  const [abledSaveButton, setAbledSaveButton] = useState(false);
-
-  const maxSaveCountRef = useRef(0);
+const LowestPrice_NoLogin = () => {
+  const [platformData, setPlatformData] = useState([]);
+  const [platformType, setplatformType] = useState(-1);
 
   //inputs
   const nameRef = useRef(null);
@@ -49,102 +45,22 @@ const LowestPrice = () => {
   const [sumPlus, setSumPlus] = useState(0);
   const [lowestPrice, setLowestPrice] = useState('');
 
-  //ag-grid
-
   const gridRef = useRef();
-  const containerStyle = useMemo(() => ({ width: '100%', height: '100%' }), []);
-  const gridStyle = useMemo(() => ({ height: '1000px', width: '100%' }), []);
-  const defaultColDef = useMemo(() => {
-    return {
-      editable: true,
-      sortable: true,
-      resizable: true,
-      flex: 1,
-      minWidth: 100,
-    };
-  }, []);
-
-  const [columnDefs] = useState([
-    {
-      field: '',
-      pinned: 'left',
-      headerCheckboxSelection: true,
-      lockPinned: true,
-      cellClass: 'lock-pinned checkcell',
-      checkboxSelection: true,
-      maxWidth: 36,
-      horizontal: 'Center',
-    },
-    {
-      field: 'forms_name',
-      sortable: true,
-      pinned: 'left',
-      lockPinned: true,
-      cellClass: 'lock-pinned uneditable',
-      editable: false,
-      headerName: '판매매체',
-      filter: true,
-    },
-
-    {
-      field: 'goods_name',
-      sortable: true,
-      unSortIcon: true,
-      headerName: '상품명',
-      filter: true,
-      cellClass: 'uneditable',
-    },
-    {
-      field: 'revenue_sum_price',
-      sortable: true,
-      unSortIcon: true,
-      valueParser: (params) => Number(params.newValue),
-      headerName: '판매가',
-      cellClass: 'uneditable',
-    },
-    {
-      field: 'margin_price',
-      sortable: true,
-      unSortIcon: true,
-      valueParser: (params) => Number(params.newValue),
-      headerName: '순수익',
-      cellClass: 'uneditable',
-    },
-
-    {
-      field: 'margin_rate',
-      sortable: true,
-      unSortIcon: true,
-      valueFormatter: (params) => {
-        return `${Number(params.value)} %`;
-      },
-      valueParser: (params) => Number(params.newValue),
-      headerName: '마진율',
-      cellClass: 'uneditable',
-    },
-  ]);
-
-  const rowHeight = 36;
 
   useEffect(() => {
-    request.post(`user/calculator/margin`, {}).then((ret) => {
+    request.post(`base/info/sella_platform`, {}).then((ret) => {
       if (!ret.err) {
         const { data } = ret.data;
         logger.info(data);
-        maxSaveCountRef.current = data.max_save_count;
-
-        if (data.margin_results && data.margin_results.length > maxSaveCountRef.current - 1) {
-          setAbledSaveButton(false);
-        } else {
-          setAbledSaveButton(true);
-        }
-
-        setDatas(() => data.margin_results);
+        setPlatformData(() => data.platform);
+        setplatformType(0);
       }
     });
   }, []);
 
   useEffect(() => {
+    if (platformType === -1) return;
+
     let platformFeeRate = Number(platformData[platformType].fee_rate);
     platformFeeRate = platformFeeRate.toFixed(2);
     platformFeeRateRef.current.value = platformFeeRate;
@@ -182,45 +98,6 @@ const LowestPrice = () => {
     }
 
     saveDataRef.current = { ...saveDataRef.current, goods_name: name };
-
-    if (saveDataRef.current.idx) {
-      request.post(`user/calculator/margin/modify`, { save_data: saveDataRef.current }).then((ret) => {
-        if (!ret.err) {
-          page_reload();
-        }
-      });
-    } else {
-      request.post(`user/calculator/margin/save`, { save_data: saveDataRef.current }).then((ret) => {
-        if (!ret.err) {
-          page_reload();
-        }
-      });
-    }
-  };
-  const onSearch = () => {
-    setModalState(true);
-  };
-
-  const PageCallback = (goods) => {
-    nameRef.current.value = goods.name;
-    stockPriceRef.current.value = goods.stock_price;
-    savedDPFeeRef.current.value = goods.delivery_fee + goods.packing_fee;
-    // sellPriceRef.current.value;
-    // sellDeliveryFeeRef.current.value;
-  };
-
-  const onDelete = () => {
-    const selectedRows = gridRef.current.api.getSelectedRows();
-    if (selectedRows && selectedRows.length > 0) {
-      const selectedIdxs = _.map(selectedRows, 'idx');
-      request.post(`user/calculator/margin/delete`, { idxs: selectedIdxs }).then((ret) => {
-        if (!ret.err) {
-          const { data } = ret.data;
-          logger.info(data);
-          page_reload();
-        }
-      });
-    }
   };
 
   const onChange = (key, e) => {
@@ -238,7 +115,7 @@ const LowestPrice = () => {
     let sellDeliveryFee = sellDeliveryFeeRef.current.value;
     let stockPrice = stockPriceRef.current.value;
     let savedDPFee = savedDPFeeRef.current.value;
-    // let lowestMarginRate = lowestMarginRateRef.current.value;
+    let lowestMarginRate = lowestMarginRateRef.current.value;
 
     let platformFeeRate = platformFeeRateRef.current.value;
     let platformDeliverFeeRate = platformDeliverFeeRateRef.current.value;
@@ -259,10 +136,10 @@ const LowestPrice = () => {
       modal.alert('택배비·포장비 를 입력해주세요.');
       return;
     }
-    // if (isNaN(lowestMarginRate) || lowestMarginRate === '') {
-    //   lowestMarginRate = 0;
-    //   lowestMarginRateRef.current.value = 0;
-    // }
+    if (isNaN(lowestMarginRate) || lowestMarginRate === '') {
+      lowestMarginRate = 0;
+      lowestMarginRateRef.current.value = 0;
+    }
 
     sellPrice = Number(sellPrice);
     if (sellPrice === 0) {
@@ -274,12 +151,12 @@ const LowestPrice = () => {
     stockPrice = Number(stockPrice);
     savedDPFee = Number(savedDPFee);
 
-    // lowestMarginRate = Number(lowestMarginRate);
-    // if (lowestMarginRate < 0 || lowestMarginRate >= 100) {
-    //   modal.alert('최저마진율을 0~100% 사이로 입력해주세요.');
-    //   return;
-    // }
-    // lowestMarginRate = lowestMarginRate / 100;
+    lowestMarginRate = Number(lowestMarginRate);
+    if (lowestMarginRate < 0 || lowestMarginRate >= 100) {
+      modal.alert('최저마진율을 0~100% 사이로 입력해주세요.');
+      return;
+    }
+    lowestMarginRate = lowestMarginRate / 100;
 
     platformFeeRate = Number(platformFeeRate);
     if (platformFeeRate < 0 || platformFeeRate >= 100) {
@@ -313,17 +190,17 @@ const LowestPrice = () => {
     let marginRate = (margin / stockPrice) * 100;
     marginRate = Number(marginRate.toFixed(1));
 
-    // const test = lowestMarginRate + platformFeeRate - 1;
-    // if (test == 0) {
-    //   modal.alert('최저마진율 + 매체 수수료는 1이 될 수 없습니다.');
-    //   return;
-    // }
+    const test = lowestMarginRate + platformFeeRate - 1;
+    if (test == 0) {
+      modal.alert('최저마진율 + 매체 수수료는 1이 될 수 없습니다.');
+      return;
+    }
 
-    // let low =
-    //   (sellDeliveryFee - stockPrice - savedDPFee - platformDeliveryFee) / (lowestMarginRate + platformFeeRate - 1);
-    // low = Number(low.toFixed(1));
+    let low =
+      (sellDeliveryFee - stockPrice - savedDPFee - platformDeliveryFee) / (lowestMarginRate + platformFeeRate - 1);
+    low = Number(low.toFixed(1));
 
-    // setLowestPrice(low);
+    setLowestPrice(low);
 
     const result = {
       sell_price: sellPrice,
@@ -351,10 +228,6 @@ const LowestPrice = () => {
       // lowest_margin_rate: lowestMarginRate,
     };
 
-    if (saveDataRef.current.idx !== null) {
-      setAbledSaveButton(true);
-    }
-
     setResultData({ ...result });
   };
 
@@ -378,14 +251,7 @@ const LowestPrice = () => {
     saveDataRef.current = {};
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      onSearch(e);
-    }
-  };
-
   const onSelectionChanged = (params) => {
-    setAbledSaveButton(false);
     const selectedRows = gridRef.current.api.getSelectedRows();
     const row = selectedRows[0];
 
@@ -418,7 +284,7 @@ const LowestPrice = () => {
 
   return (
     <>
-      <Head />
+      {is_authed() ? <Head /> : <Head_NoLogin />}
       <Body title={`최저가 계산기`} myClass={'margin lowestprice'}>
         {/* <CalculatorNavTab active="/calculator/margin" /> */}
         <div className="page">
@@ -426,10 +292,6 @@ const LowestPrice = () => {
             <div className="btnbox">
               <Button variant="primary" onClick={onReset}>
                 초기화
-              </Button>
-
-              <Button disabled={!abledSaveButton} variant="primary" onClick={onSave} className="btn_blue">
-                저장
               </Button>
             </div>
             <div className="tablebox1">
@@ -452,20 +314,6 @@ const LowestPrice = () => {
             <div className="tablebox2">
               <table>
                 <tbody>
-                  <tr>
-                    <td>
-                      <input
-                        ref={nameRef}
-                        onKeyDown={handleKeyDown}
-                        placeholder="상품명 입력"
-                        className="input_prdname"
-                      ></input>
-                      <Button variant="primary" onClick={onSearch} className="btn btn_blue">
-                        내 상품 찾기
-                      </Button>
-                    </td>
-                  </tr>
-
                   <tr>
                     <td>
                       <span className="txt_green">최저 마진율</span>
@@ -495,7 +343,7 @@ const LowestPrice = () => {
                       <span className="txt_red">수수료</span>
                       <DropdownButton
                         variant=""
-                        title={platformData.length ? platformData[platformType].name : ''}
+                        title={platformType !== -1 && platformData.length ? platformData[platformType].name : ''}
                         className="nounit"
                       >
                         {platformData &&
@@ -533,43 +381,11 @@ const LowestPrice = () => {
               계산하기
             </Button>
           </div>
-          <div className="section section2">
-            <div className="btnbox">
-              <Button variant="primary" onClick={onDelete}>
-                선택 삭제
-              </Button>
-              <span className="count">
-                <b>{rowData.length}</b> / {maxSaveCountRef.current}개
-              </span>
-            </div>
-            <div style={containerStyle} className="tablebox">
-              <div style={gridStyle} className="ag-theme-alpine">
-                <AgGridReact
-                  ref={gridRef}
-                  rowData={rowData}
-                  columnDefs={columnDefs}
-                  alwaysShowHorizontalScroll={true}
-                  alwaysShowVerticalScroll={true}
-                  defaultColDef={defaultColDef}
-                  rowSelection={'single'}
-                  overlayNoRowsTemplate={'데이터가 없습니다.'}
-                  onSelectionChanged={onSelectionChanged}
-                  rowHeight={rowHeight}
-                ></AgGridReact>
-              </div>
-            </div>
-          </div>
         </div>
       </Body>
       <Footer />
-      <SearchModal
-        modalState={modalState}
-        setModalState={setModalState}
-        selectCallback={PageCallback}
-        name={nameRef.current && nameRef.current.value}
-      ></SearchModal>{' '}
     </>
   );
 };
 
-export default React.memo(LowestPrice);
+export default React.memo(LowestPrice_NoLogin);

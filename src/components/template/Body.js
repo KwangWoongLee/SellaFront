@@ -8,7 +8,9 @@ const Body = ({ myClass, children }) => {
 
   return (
     <>
-      <div className={`body ${myClass}`}>{children}</div>
+      <div id="body" className={`body ${myClass}`}>
+        {children}
+      </div>
     </>
   );
 };

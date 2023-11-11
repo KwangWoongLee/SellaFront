@@ -89,7 +89,7 @@
       }
 
       li.loss .dd:before {
-        content: '손해 - ';
+        content: '손해 ';
         font-size: 16px;
         font-weight: 400;
       }
@@ -454,7 +454,7 @@
       margin-bottom: 0 !important;
       padding-top: 20px;
       width: 100%;
-      height: calc(100% - 142px);
+      height: calc(100% - 150px);
       border-top: 1px dotted #8e9fd5;
       overflow-y: auto;
     }

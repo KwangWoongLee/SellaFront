@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 
 import { Button, DropdownButton, Dropdown } from 'react-bootstrap';
-import Head from 'components/template/Head_home';
+import Head_NoLogin from 'components/template/Head_NoLogin';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 import CalculatorNavTab from 'components/calculator/CalculatorNavTab';
@@ -24,7 +24,7 @@ const Margin_NoLogin = () => {
   //logger.debug('Margin_NoLogin');
 
   const [platformData, setPlatformData] = useState([]);
-  const [platformType, setplatformType] = useState(0);
+  const [platformType, setplatformType] = useState(-1);
 
   //inputs
   const nameRef = useRef(null);
@@ -44,6 +44,17 @@ const Margin_NoLogin = () => {
   const [sumMinus, setSumMinus] = useState(0);
   const [sumPlus, setSumPlus] = useState(0);
   const [lowestPrice, setLowestPrice] = useState('');
+
+  useEffect(() => {
+    request.post(`base/info/sella_platform`, {}).then((ret) => {
+      if (!ret.err) {
+        const { data } = ret.data;
+        logger.info(data);
+        setPlatformData(() => data.platform);
+        setplatformType(0);
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (!platformData || !platformData.length) return;
@@ -163,7 +174,7 @@ const Margin_NoLogin = () => {
 
   return (
     <>
-      <Head></Head>
+      <Head_NoLogin />
       <Body title={`마진 계산기`} myClass={'margin nologin'}>
         <div className="section section1">
           <div className="tablebox1">
@@ -247,7 +258,7 @@ const Margin_NoLogin = () => {
                     <span className="txt_red">수수료</span>
                     <DropdownButton
                       variant=""
-                      title={platformData.length ? platformData[platformType].name : ''}
+                      title={platformType !== -1 && platformData.length ? platformData[platformType].name : ''}
                       className="nounit"
                     >
                       {platformData &&

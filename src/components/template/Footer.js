@@ -1,14 +1,24 @@
 import React, { useEffect } from 'react';
-import { img_src, logger } from 'util/com';
+import { img_src, logger, navigate } from 'util/com';
 
+import { Nav } from 'react-bootstrap';
 import 'styles/Template.scss';
 
 import logo_blue from 'images/logo_blue.svg';
 // import logo_footer from 'images/logo_footer.svg';
 
 const Footer = () => {
-  //logger.debug('Template Footer');
-  useEffect(() => {}, []);
+  const onLink = (e, no_login_path) => {
+    e.preventDefault();
+    logger.debug('href : ', e.currentTarget.name);
+    if (no_login_path) {
+      navigate(no_login_path);
+    } else {
+      navigate(e.currentTarget.name);
+    }
+
+    //logger.debug('NavigateCtr :');
+  };
 
   return (
     <>
@@ -16,16 +26,24 @@ const Footer = () => {
         <div className="menubox">
           <ul>
             <li>
-              <a href="https://sella.co.kr/cscenter">개인정보처리방침</a>
+              <Nav.Link onClick={onLink} className="logo" name="/cscenter/announcement">
+                개인정보처리방침
+              </Nav.Link>
             </li>
             <li>
-              <a href="https://sella.co.kr/cscenter">이용약관</a>
+              <Nav.Link onClick={onLink} className="logo" name="/cscenter/announcement">
+                이용약관
+              </Nav.Link>
             </li>
             <li>
-              <a href="https://sella.co.kr/cscenter/announcement">공지사항</a>
+              <Nav.Link onClick={onLink} className="logo" name="/cscenter/announcement">
+                공지사항
+              </Nav.Link>
             </li>
             <li>
-              <a href="https://sella.co.kr/cscenter">고객센터</a>
+              <Nav.Link onClick={onLink} className="logo" name="/cscenter">
+                고객센터
+              </Nav.Link>
             </li>
           </ul>
         </div>

@@ -54,7 +54,7 @@ const CustomCalendar = ({ dayGroupDatas, selectCallback, setCalendarCurrentDate 
           event: CustomEvent,
         }}
         events={events}
-        style={{ height: '100vh' }}
+        style={{ height: 'calc(100vh - 200px)' }}
         onSelectEvent={(e) => {
           selectCallback(e);
         }}

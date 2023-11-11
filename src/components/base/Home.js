@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Button, InputGroup, Form, Nav } from 'react-bootstrap';
 import Recoils from 'recoils';
+import { is_authed } from 'util/com';
 import com, { logger, navigate, img_src, modal } from 'util/com';
-import Head from 'components/template/Head_home';
+import Head_NoLogin from 'components/template/Head_NoLogin';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 import _ from 'lodash';
 
-import { time_format_none_time } from 'util/com';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -38,6 +38,8 @@ import img_salearrow from 'images/img_salearrow.svg';
 const Home = () => {
   const [sliderState, setSliderState] = useState(false);
   const [announcement, setAnnouncement] = useState([]);
+  const [scrollElemId, setScrollElemId] = useState('');
+  const [currentLiTag, setCurrentLiTag] = useState(0);
   const onLink = (e, no_login_path) => {
     e.preventDefault();
     logger.debug('href : ', e.currentTarget.name);
@@ -46,12 +48,26 @@ const Home = () => {
     } else {
       navigate(e.currentTarget.name);
     }
-
-    //logger.debug('NavigateCtr :');
   };
+
+  useEffect(() => {
+    const element = document.getElementById(scrollElemId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [scrollElemId]);
+
+  useEffect(() => {
+    const header_nologin_select = com.storage.getItem('header_nologin_select');
+    if (header_nologin_select !== '') {
+      setScrollElemId(`main0${Number(header_nologin_select)}`);
+      com.storage.setItem('header_nologin_select', '');
+    }
+  }, []);
+
   return (
     <>
-      <Head />
+      <Head_NoLogin setScrollElemId={setScrollElemId} />
       <Body title={`서비스 소개`} myClass={'home'}>
         <Slider
           className="bannerslide pc"
@@ -73,12 +89,21 @@ const Home = () => {
               </dd>
               <dt>1분이면 정산 걱정 끝!</dt>
               <dd className="btn_start">
-                <Button>
+                <Button
+                  onClick={() => {
+                    navigate('/login');
+                  }}
+                >
                   <img src={`${img_src}${btn_start}`} />
                 </Button>
               </dd>
             </dl>
-            <img src={`${img_src}${banner_01}`} />
+            <img
+              onClick={() => {
+                navigate('/login');
+              }}
+              src={`${img_src}${banner_01}`}
+            />
           </div>
           <div className="bannerwrap">
             <dl className="right">
@@ -94,11 +119,21 @@ const Home = () => {
               </dt>
               <dd className="btn_start">
                 <Button>
-                  <img src={`${img_src}${btn_start}`} />
+                  <img
+                    onClick={() => {
+                      navigate('/login');
+                    }}
+                    src={`${img_src}${btn_start}`}
+                  />
                 </Button>
               </dd>
             </dl>
-            <img src={`${img_src}${banner_02}`} />
+            <img
+              onClick={() => {
+                navigate('/login');
+              }}
+              src={`${img_src}${banner_02}`}
+            />
           </div>
           <div className="bannerwrap">
             <dl className="left">
@@ -110,11 +145,21 @@ const Home = () => {
               <dt>손익캘린더 모아보기</dt>
               <dd className="btn_start">
                 <Button>
-                  <img src={`${img_src}${btn_start}`} />
+                  <img
+                    onClick={() => {
+                      navigate('/login');
+                    }}
+                    src={`${img_src}${btn_start}`}
+                  />
                 </Button>
               </dd>
             </dl>
-            <img src={`${img_src}${banner_03}`} />
+            <img
+              onClick={() => {
+                console.log(1);
+              }}
+              src={`${img_src}${banner_03}`}
+            />
           </div>
           <div className="bannerwrap">
             <dl className="right">
@@ -125,7 +170,11 @@ const Home = () => {
               </dd>
               <dt>손익 계산 무료 체험</dt>
               <dd className="btn_start">
-                <Button>
+                <Button
+                  onClick={() => {
+                    navigate('/login');
+                  }}
+                >
                   <img src={`${img_src}${btn_start}`} />
                 </Button>
               </dd>
@@ -141,7 +190,11 @@ const Home = () => {
               </dd>
               <dt>1분이면 오출고 걱정 끝!</dt>
               <dd className="btn_start">
-                <Button>
+                <Button
+                  onClick={() => {
+                    navigate('/login');
+                  }}
+                >
                   <img src={`${img_src}${btn_start}`} />
                 </Button>
               </dd>
@@ -157,7 +210,11 @@ const Home = () => {
               </dd>
               <dt>기준 상품 입력하기</dt>
               <dd className="btn_start">
-                <Button>
+                <Button
+                  onClick={() => {
+                    navigate('/login');
+                  }}
+                >
                   <img src={`${img_src}${btn_start}`} />
                 </Button>
               </dd>
@@ -175,7 +232,11 @@ const Home = () => {
               </dd>
               <dt>마진계산기 무료 사용</dt>
               <dd className="btn_start">
-                <Button>
+                <Button
+                  onClick={() => {
+                    navigate('/login');
+                  }}
+                >
                   <img src={`${img_src}${btn_start}`} />
                 </Button>
               </dd>
@@ -221,43 +282,63 @@ const Home = () => {
 혹시 fade 효과를 넣을 수 있으면 부탁드려요! */}
 
           <ul className="slider-for">
-            <li className="on">
+            <li className={currentLiTag === 0 ? 'on' : ''}>
               <img src={`${img_src}${main01_01}`} />
             </li>
-            <li>
+            <li className={currentLiTag === 1 ? 'on' : ''}>
               <img src={`${img_src}${main01_02}`} />
             </li>
-            <li>
+            <li className={currentLiTag === 2 ? 'on' : ''}>
               <img src={`${img_src}${main01_03}`} />
             </li>
-            <li>
+            <li className={currentLiTag === 3 ? 'on' : ''}>
               <img src={`${img_src}${main01_04}`} />
             </li>
           </ul>
 
           <ul className="slider-nav">
-            <li className="on">
+            <li
+              className={currentLiTag === 0 ? 'on' : ''}
+              onClick={(e) => {
+                setCurrentLiTag(0);
+              }}
+            >
               빠른 손익계산
               <p>
                 신규 접수된 주문 데이터 업로드만으로 간단하게 손익 계산을 할 수 있습니다. 출고 하기 전 손익 결과 확인
                 만으로도 손해가 큰 주문건의 출고를 막을 수 있죠.
               </p>
             </li>
-            <li>
+            <li
+              className={currentLiTag === 1 ? 'on' : ''}
+              onClick={(e) => {
+                setCurrentLiTag(1);
+              }}
+            >
               손익 캘린더
               <p>
                 업로드한 주문서의 저장으로 매일 판매한 실제 매출, 손익 계산 결과, 택배 발송 건수 등 비즈니스에 꼭 필요한
                 정산 데이터를 한눈에 볼 수 있습니다.
               </p>
             </li>
-            <li>
+            <li
+              className={currentLiTag === 2 ? 'on' : ''}
+              onClick={(e) => {
+                setCurrentLiTag(2);
+              }}
+            >
               복잡한 양식 관리는 이제 그만
               <p>
                 다른 솔루션에서 경험했던 복잡한 양식설정 화면은 잊으세요. ‘셀라’는 여러분이 정산에 들이는 시간을 최소화
                 할 수 있도록 노력했습니다.
               </p>
             </li>
-            <li>
+            <li
+              className={currentLiTag === 3 ? 'on' : ''}
+              onClick={(e) => {
+                setCurrentLiTag(3);
+              }}
+            >
               마진계산기 · 최저가계산기
               <p>
                 내 상품의 가격이 적절한지 몇초만에 계산하고 저장하세요. 한눈에 상품들의 마진율 리스트를 파악 할 수
@@ -269,7 +350,7 @@ const Home = () => {
 
         <section className="main01 mobile" id="m_main01">
           <ul>
-            <li className="on">
+            <li>
               빠른 손익계산
               <p>
                 신규 접수된 주문 데이터 업로드만으로 간단하게 손익 계산을 할 수 있습니다. 출고 하기 전 손익 결과 확인
@@ -318,7 +399,6 @@ const Home = () => {
                     <img
                       src={`${img_src}${btn_kakaotalk}`}
                       onClick={() => {
-                        //모바일에서 되는지 ..? 안되면 redirect 해야하느데 정책 필요합니다.
                         window.open('http://pf.kakao.com/_AxfxfMG/chat');
                       }}
                     />
@@ -339,10 +419,21 @@ const Home = () => {
                 <dt>셀라 유저들을 위한 가이드 컨텐츠</dt>
                 <dd>셀라 도입 검토 및 궁금한 사용법에 대해 참고해 보세요.</dd>
                 <dd className="dd_btn_down">
-                  <Button className="btn_down">서비스 소개서 다운로드</Button>
+                  <Button
+                    onClick={() => {
+                      modal.alert('서비스 준비중입니다.');
+                    }}
+                    className="btn_down"
+                  >
+                    서비스 소개서 다운로드
+                  </Button>
                 </dd>
                 <dd className="dd_btn">
-                  <Button>
+                  <Button
+                    onClick={() => {
+                      modal.alert('서비스 준비중입니다.');
+                    }}
+                  >
                     <img src={`${img_src}${icon_arrow_right2}`} />
                   </Button>
                 </dd>
@@ -353,7 +444,11 @@ const Home = () => {
                 <dt>자주 묻는 질문</dt>
                 <dd>자주 묻는 질문을 통해 셀라 이용에 도움을 받아보세요.</dd>
                 <dd className="dd_btn">
-                  <Button>
+                  <Button
+                    onClick={() => {
+                      navigate('/cscenter/faq');
+                    }}
+                  >
                     <img src={`${img_src}${icon_arrow_right2}`} />
                   </Button>
                 </dd>
@@ -527,7 +622,13 @@ const Home = () => {
           <div>
             <h3>시작이 어려우신가요?</h3>
             <h4>교육 받아보시면 쉽습니다.</h4>
-            <Button>1:1 교육 신청하기</Button>
+            <Button
+              onClick={() => {
+                window.open('http://pf.kakao.com/_AxfxfMG/chat');
+              }}
+            >
+              1:1 교육 신청하기
+            </Button>
           </div>
         </section>
       </Body>

@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 
-import { Button, Modal } from 'react-bootstrap';
+import { Button, Modal, DropdownButton, Dropdown } from 'react-bootstrap';
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 import { page_reload, replace_1000, revert_1000, time_format, time_format_day } from 'util/com';
-import Checkbox from 'components/common/CheckBoxCell';
 import com, { img_src } from 'util/com';
 import request from 'util/request';
 import { modal } from 'util/com';
@@ -32,21 +31,17 @@ const TodaySummary = () => {
   const [viewResult, setViewResult] = useState(false);
   const [monthViewResult, setMonthViewResult] = useState({});
   const [platforms, setPlatforms] = useState([]);
+  const [platformType, setPlatformType] = useState(0);
   const [rawData, setRawData] = useState([]);
   const [rowData, setRowData] = useState([]);
   const [selectedDayGroup, setSelectedDayGroup] = useState('');
   const [calendarCurrentDate, setCalendarCurrentDate] = useState(new Date());
   const [dayData, setDayData] = useState({});
   const [dateModalState, setDateModalState] = useState(false);
-  //ag-grid
-  const gridRef = useRef();
-  const containerStyle = useMemo(() => ({ width: '100%', height: '100%' }), []);
+
+  const selectRowDataIdxRef = useRef(null);
 
   useEffect(() => {
-    let temp = _.filter(Recoils.getState('DATA:PLATFORMS'), { view: 1 });
-    temp = _.sortBy(temp, ['_order']);
-    setPlatforms(temp);
-
     request.post(`user/today_summary`, {}).then((ret) => {
       if (!ret.err) {
         const { data } = ret.data;
@@ -131,8 +126,25 @@ const TodaySummary = () => {
   }, []);
 
   useEffect(() => {
-    if (dayData[selectedDayGroup]) setRowData(dayData[selectedDayGroup]['events']);
+    if (dayData[selectedDayGroup]) {
+      setRowData(dayData[selectedDayGroup]['events']);
+      const forms_names = _.uniq(_.map(dayData[selectedDayGroup]['events'], 'forms_name'));
+      forms_names.unshift('전체');
+      setPlatforms(forms_names);
+    }
   }, [selectedDayGroup]);
+
+  useEffect(() => {
+    if (dayData[selectedDayGroup]) {
+      const rowData = dayData[selectedDayGroup]['events'];
+      if (platformType === 0) {
+        setRowData(dayData[selectedDayGroup]['events']);
+        return;
+      }
+
+      setRowData(() => _.filter(rowData, (row) => row.forms_name === platforms[platformType]));
+    }
+  }, [platformType]);
 
   useEffect(() => {
     if (!rawData || !rawData.length) return;
@@ -199,12 +211,7 @@ const TodaySummary = () => {
   }, [rowData]);
 
   const onDelete = (e) => {
-    const idxs = _.map(
-      _.filter(rowData, (row) => {
-        return row.checked;
-      }),
-      'idx'
-    );
+    const idxs = [selectRowDataIdxRef.current];
 
     if (!idxs.length) {
       modal.alert('선택된 데이터가 없습니다.');
@@ -223,12 +230,7 @@ const TodaySummary = () => {
   };
 
   const onChangeDate = (date) => {
-    const idxs = _.map(
-      _.filter(rowData, (row) => {
-        return row.checked;
-      }),
-      'idx'
-    );
+    const idxs = [selectRowDataIdxRef.current];
 
     if (!idxs.length) {
       modal.alert('선택된 데이터가 없습니다.');
@@ -240,23 +242,6 @@ const TodaySummary = () => {
         page_reload();
       }
     });
-  };
-
-  // 체크박스 선택
-  const handleSingleCheck = (idx, checked) => {
-    const findObj = _.find(rowData, { idx: idx });
-    findObj.checked = checked;
-
-    setRowData([...rowData]);
-  };
-
-  // 체크박스 전체 선택
-  const handleAllCheck = (checked) => {
-    for (const row of rowData) {
-      row.checked = checked;
-    }
-
-    setRowData([...rowData]);
   };
 
   return (
@@ -334,28 +319,70 @@ const TodaySummary = () => {
             </h4>
             <div className="inputbox">
               <div className="btngroup">
-                <Button className="btn_blue on">전체</Button>
-                <Button className="btn_green">이익</Button>
-                <Button className="btn_red">손해</Button>
+                <Button
+                  className="btn_blue on"
+                  onClick={() => {
+                    if (dayData[selectedDayGroup]) setRowData(dayData[selectedDayGroup]['events']);
+                  }}
+                >
+                  전체
+                </Button>
+                <Button
+                  className="btn_green"
+                  onClick={() => {
+                    if (dayData[selectedDayGroup]) {
+                      const rowData = dayData[selectedDayGroup]['events'];
+                      setRowData(() => _.filter(rowData, (row) => row.sum_profit_loss >= 0));
+                    }
+                  }}
+                >
+                  이익
+                </Button>
+                <Button
+                  className="btn_red"
+                  onClick={() => {
+                    if (dayData[selectedDayGroup]) {
+                      const rowData = dayData[selectedDayGroup]['events'];
+                      setRowData(() => _.filter(rowData, (row) => row.sum_profit_loss < 0));
+                    }
+                  }}
+                >
+                  손해
+                </Button>
               </div>
-              <select name="" id="">
-                <option value="">매체명</option>
-              </select>
+
+              <DropdownButton variant="" title={platforms && platforms[platformType]} className="inputagency">
+                {platforms.map((name, key) => (
+                  <Dropdown.Item
+                    key={key}
+                    eventKey={key}
+                    onClick={(e) => {
+                      setPlatformType(key);
+                    }}
+                    active={platformType === key}
+                  >
+                    {platforms[key]}
+                  </Dropdown.Item>
+                ))}
+              </DropdownButton>
             </div>
             <div className={!_.isEmpty(viewResult) ? 'viewbox' : 'viewbox off'}>
               <div className="innerbox left">
                 <ul>
                   <li className="txt_blue">
-                    <b>전체</b>
-                    {viewResult.unique_order_no_count}
+                    <b>전체</b> {dayData[selectedDayGroup] ? dayData[selectedDayGroup]['events'].length : 0}
                   </li>
                   <li className="txt_green">
                     <b>이익</b>
-                    {viewResult.unique_order_no_count - viewResult.loss_order_no_count}
+                    {dayData[selectedDayGroup]
+                      ? _.filter(dayData[selectedDayGroup]['events'], (row) => row.sum_profit_loss >= 0).length
+                      : 0}
                   </li>
                   <li className="txt_red">
                     <b>손해</b>
-                    {viewResult.loss_order_no_count}
+                    {dayData[selectedDayGroup]
+                      ? _.filter(dayData[selectedDayGroup]['events'], (row) => row.sum_profit_loss < 0).length
+                      : 0}
                   </li>
                 </ul>
               </div>
@@ -386,294 +413,17 @@ const TodaySummary = () => {
               </div>
             </div>
             <ul className="listbox">
-              <li className="green">
-                <p>
-                  <b>오전 7:28:22</b>네이버 스마트 스토어
-                </p>
-                <ol>
-                  <li>
-                    <b>총 주문 수</b>99999999 <i>건</i>
-                  </li>
-                  <li>
-                    <b>택배발송</b>99,999,600 <i>건</i>
-                  </li>
-                  <li>
-                    <b>총 결제금액</b>99,999,600 <i>원</i>
-                  </li>
-                  <li>
-                    <b>받은 배송비</b>99,999,600 <i>원</i>
-                  </li>
-                  <li>
-                    <b>손익 합계</b>+ 99,999,600 <i>원</i>
-                  </li>
-                  <li className="btnbox">
-                    <Button
-                      className="btn_date"
-                      variant="primary"
-                      onClick={() => {
-                        setDateModalState(true);
-                      }}
-                    >
-                      <img src={`${img_src}${icon_date}`} />
-                    </Button>
-                    <Button className="btn_del" onClick={onDelete}>
-                      <img src={`${img_src}${icon_del}`} />
-                    </Button>
-                  </li>
-                </ol>
-              </li>
-              <li className="red">
-                <p>
-                  <b>오전 7:28:22</b>네이버 스마트 스토어
-                </p>
-                <ol>
-                  <li>
-                    <b>총 주문 수</b>99999999 <i>건</i>
-                  </li>
-                  <li>
-                    <b>택배발송</b>99,999,600 <i>건</i>
-                  </li>
-                  <li>
-                    <b>총 결제금액</b>99,999,600 <i>원</i>
-                  </li>
-                  <li>
-                    <b>받은 배송비</b>99,999,600 <i>원</i>
-                  </li>
-                  <li>
-                    <b>손익 합계</b>+ 99,999,600 <i>원</i>
-                  </li>
-                  <li className="btnbox">
-                    <Button
-                      className="btn_date"
-                      variant="primary"
-                      onClick={() => {
-                        setDateModalState(true);
-                      }}
-                    >
-                      <img src={`${img_src}${icon_date}`} />
-                    </Button>
-                    <Button className="btn_del" onClick={onDelete}>
-                      <img src={`${img_src}${icon_del}`} />
-                    </Button>
-                  </li>
-                </ol>
-              </li>
-              <li className="green">
-                <p>
-                  <b>오전 7:28:22</b>네이버 스마트 스토어
-                </p>
-                <ol>
-                  <li>
-                    <b>총 주문 수</b>99999999 <i>건</i>
-                  </li>
-                  <li>
-                    <b>택배발송</b>99,999,600 <i>건</i>
-                  </li>
-                  <li>
-                    <b>총 결제금액</b>99,999,600 <i>원</i>
-                  </li>
-                  <li>
-                    <b>받은 배송비</b>99,999,600 <i>원</i>
-                  </li>
-                  <li>
-                    <b>손익 합계</b>+ 99,999,600 <i>원</i>
-                  </li>
-                  <li className="btnbox">
-                    <Button
-                      className="btn_date"
-                      variant="primary"
-                      onClick={() => {
-                        setDateModalState(true);
-                      }}
-                    >
-                      <img src={`${img_src}${icon_date}`} />
-                    </Button>
-                    <Button className="btn_del" onClick={onDelete}>
-                      <img src={`${img_src}${icon_del}`} />
-                    </Button>
-                  </li>
-                </ol>
-              </li>
-              <li className="red">
-                <p>
-                  <b>오전 7:28:22</b>네이버 스마트 스토어
-                </p>
-                <ol>
-                  <li>
-                    <b>총 주문 수</b>99999999 <i>건</i>
-                  </li>
-                  <li>
-                    <b>택배발송</b>99,999,600 <i>건</i>
-                  </li>
-                  <li>
-                    <b>총 결제금액</b>99,999,600 <i>원</i>
-                  </li>
-                  <li>
-                    <b>받은 배송비</b>99,999,600 <i>원</i>
-                  </li>
-                  <li>
-                    <b>손익 합계</b>+ 99,999,600 <i>원</i>
-                  </li>
-                  <li className="btnbox">
-                    <Button
-                      className="btn_date"
-                      variant="primary"
-                      onClick={() => {
-                        setDateModalState(true);
-                      }}
-                    >
-                      <img src={`${img_src}${icon_date}`} />
-                    </Button>
-                    <Button className="btn_del" onClick={onDelete}>
-                      <img src={`${img_src}${icon_del}`} />
-                    </Button>
-                  </li>
-                </ol>
-              </li>
-              <li className="green">
-                <p>
-                  <b>오전 7:28:22</b>네이버 스마트 스토어
-                </p>
-                <ol>
-                  <li>
-                    <b>총 주문 수</b>99999999 <i>건</i>
-                  </li>
-                  <li>
-                    <b>택배발송</b>99,999,600 <i>건</i>
-                  </li>
-                  <li>
-                    <b>총 결제금액</b>99,999,600 <i>원</i>
-                  </li>
-                  <li>
-                    <b>받은 배송비</b>99,999,600 <i>원</i>
-                  </li>
-                  <li>
-                    <b>손익 합계</b>+ 99,999,600 <i>원</i>
-                  </li>
-                  <li className="btnbox">
-                    <Button
-                      className="btn_date"
-                      variant="primary"
-                      onClick={() => {
-                        setDateModalState(true);
-                      }}
-                    >
-                      <img src={`${img_src}${icon_date}`} />
-                    </Button>
-                    <Button className="btn_del" onClick={onDelete}>
-                      <img src={`${img_src}${icon_del}`} />
-                    </Button>
-                  </li>
-                </ol>
-              </li>
-              <li className="red">
-                <p>
-                  <b>오전 7:28:22</b>네이버 스마트 스토어
-                </p>
-                <ol>
-                  <li>
-                    <b>총 주문 수</b>99999999 <i>건</i>
-                  </li>
-                  <li>
-                    <b>택배발송</b>99,999,600 <i>건</i>
-                  </li>
-                  <li>
-                    <b>총 결제금액</b>99,999,600 <i>원</i>
-                  </li>
-                  <li>
-                    <b>받은 배송비</b>99,999,600 <i>원</i>
-                  </li>
-                  <li>
-                    <b>손익 합계</b>+ 99,999,600 <i>원</i>
-                  </li>
-                  <li className="btnbox">
-                    <Button
-                      className="btn_date"
-                      variant="primary"
-                      onClick={() => {
-                        setDateModalState(true);
-                      }}
-                    >
-                      <img src={`${img_src}${icon_date}`} />
-                    </Button>
-                    <Button className="btn_del" onClick={onDelete}>
-                      <img src={`${img_src}${icon_del}`} />
-                    </Button>
-                  </li>
-                </ol>
-              </li>
-              <li className="green">
-                <p>
-                  <b>오전 7:28:22</b>네이버 스마트 스토어
-                </p>
-                <ol>
-                  <li>
-                    <b>총 주문 수</b>99999999 <i>건</i>
-                  </li>
-                  <li>
-                    <b>택배발송</b>99,999,600 <i>건</i>
-                  </li>
-                  <li>
-                    <b>총 결제금액</b>99,999,600 <i>원</i>
-                  </li>
-                  <li>
-                    <b>받은 배송비</b>99,999,600 <i>원</i>
-                  </li>
-                  <li>
-                    <b>손익 합계</b>+ 99,999,600 <i>원</i>
-                  </li>
-                  <li className="btnbox">
-                    <Button
-                      className="btn_date"
-                      variant="primary"
-                      onClick={() => {
-                        setDateModalState(true);
-                      }}
-                    >
-                      <img src={`${img_src}${icon_date}`} />
-                    </Button>
-                    <Button className="btn_del" onClick={onDelete}>
-                      <img src={`${img_src}${icon_del}`} />
-                    </Button>
-                  </li>
-                </ol>
-              </li>
-              <li className="red">
-                <p>
-                  <b>오전 7:28:22</b>네이버 스마트 스토어
-                </p>
-                <ol>
-                  <li>
-                    <b>총 주문 수</b>99999999 <i>건</i>
-                  </li>
-                  <li>
-                    <b>택배발송</b>99,999,600 <i>건</i>
-                  </li>
-                  <li>
-                    <b>총 결제금액</b>99,999,600 <i>원</i>
-                  </li>
-                  <li>
-                    <b>받은 배송비</b>99,999,600 <i>원</i>
-                  </li>
-                  <li>
-                    <b>손익 합계</b>+ 99,999,600 <i>원</i>
-                  </li>
-                  <li className="btnbox">
-                    <Button
-                      className="btn_date"
-                      variant="primary"
-                      onClick={() => {
-                        setDateModalState(true);
-                      }}
-                    >
-                      <img src={`${img_src}${icon_date}`} />
-                    </Button>
-                    <Button className="btn_del" onClick={onDelete}>
-                      <img src={`${img_src}${icon_del}`} />
-                    </Button>
-                  </li>
-                </ol>
-              </li>
+              {rowData &&
+                rowData.map((d, key) => (
+                  <SummaryRow
+                    key={key}
+                    index={key}
+                    d={d}
+                    setDateModalState={setDateModalState}
+                    onDelete={onDelete}
+                    selectRowDataIdxRef={selectRowDataIdxRef}
+                  />
+                ))}
             </ul>{' '}
           </div>
         </div>
@@ -689,37 +439,57 @@ const TodaySummary = () => {
   );
 };
 
-const SummaryRow = React.memo(({ handleSingleCheck, rowChecked, d }) => {
-  const [checked, setChecked] = useState(false);
-
-  useEffect(() => {
-    setChecked(rowChecked);
-  }, [rowChecked]);
-
-  const checkedItemHandler = (e) => {
-    handleSingleCheck(d.idx, !checked);
-    setChecked(!checked);
-  };
-
+const SummaryRow = React.memo(({ d, setDateModalState, onDelete, selectRowDataIdxRef }) => {
   return (
-    <tr>
-      <td>
-        <Checkbox checked={checked} checkedItemHandler={checkedItemHandler}></Checkbox>
-      </td>
-      <td>
-        {replace_1000(d.unique_order_no_count)}
-        <br />
-        <span className="subtxt">({replace_1000(d.delivery_send_count)})</span>
-      </td>
-      <td>
-        {replace_1000(d.sum_payment_price)}
-        <br />
-        <span className="subtxt">({replace_1000(d.sum_received_delivery_fee)})</span>
-      </td>
-      <td>{replace_1000(d.sum_profit_loss)}</td>
-      <td>{time_format(d.reg_date)}</td>
-      <td>{d.forms_name}</td>
-    </tr>
+    <li className={d.sum_profit_loss >= 0 ? 'green' : 'red'}>
+      <p>
+        <b>{time_format(d.reg_date)}</b>
+        {d.forms_name}
+      </p>
+      <ol>
+        <li>
+          <b>총 주문 수</b>
+          {replace_1000(d.unique_order_no_count)} <i>건</i>
+        </li>
+        <li>
+          <b>택배발송</b>
+          {d.delivery_send_count} <i>건</i>
+        </li>
+        <li>
+          <b>총 결제금액</b>
+          {replace_1000(d.sum_payment_price)} <i>원</i>
+        </li>
+        <li>
+          <b>받은 배송비</b>
+          {replace_1000(d.sum_received_delivery_fee)} <i>원</i>
+        </li>
+        <li>
+          <b>손익 합계</b>
+          {replace_1000(d.sum_profit_loss)} <i>원</i>
+        </li>
+        <li className="btnbox">
+          <Button
+            className="btn_date"
+            variant="primary"
+            onClick={() => {
+              selectRowDataIdxRef.current = d.idx;
+              setDateModalState(true);
+            }}
+          >
+            <img src={`${img_src}${icon_date}`} />
+          </Button>
+          <Button
+            className="btn_del"
+            onClick={() => {
+              selectRowDataIdxRef.current = d.idx;
+              onDelete();
+            }}
+          >
+            <img src={`${img_src}${icon_del}`} />
+          </Button>
+        </li>
+      </ol>
+    </li>
   );
 });
 
