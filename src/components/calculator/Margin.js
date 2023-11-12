@@ -8,7 +8,7 @@ import CalculatorNavTab from 'components/calculator/CalculatorNavTab';
 import SearchModal from 'components/calculator/SearchModal';
 import Recoils from 'recoils';
 
-import { modal, logger, page_reload } from 'util/com';
+import { modal, logger, page_reload, revert_1000, replace_1000 } from 'util/com';
 import request from 'util/request';
 import _ from 'lodash';
 
@@ -100,7 +100,7 @@ const Margin = () => {
       field: 'revenue_sum_price',
       sortable: true,
       unSortIcon: true,
-      valueParser: (params) => Number(params.newValue),
+      valueGetter: (params) => `${replace_1000(revert_1000(params.data.revenue_sum_price))} 원`,
       headerName: '판매가',
       cellClass: 'uneditable',
     },
@@ -108,7 +108,7 @@ const Margin = () => {
       field: 'margin_price',
       sortable: true,
       unSortIcon: true,
-      valueParser: (params) => Number(params.newValue),
+      valueGetter: (params) => `${replace_1000(revert_1000(params.data.margin_price))} 원`,
       headerName: '순수익',
       cellClass: 'uneditable',
     },
@@ -230,9 +230,10 @@ const Margin = () => {
   };
 
   const onChangeInput = (e, ref) => {
-    if (e.target.value.match('^[a-zA-Z ]*$') != null) {
-      ref.current.value = e.target.value;
-    }
+    // if (e.target.value.match('^[a-zA-Z ]*$') != null) {
+    //   ref.current.value = e.target.value;
+    // }
+    ref.current.value = replace_1000(revert_1000(e.target.value));
   };
 
   const onClickCalc = (e) => {
@@ -245,19 +246,19 @@ const Margin = () => {
     let platformFeeRate = platformFeeRateRef.current.value;
     let platformDeliverFeeRate = platformDeliverFeeRateRef.current.value;
 
-    if (isNaN(sellPrice) || sellPrice === '') {
+    if (sellPrice === '') {
       modal.alert('판매가격을 입력해주세요.');
       return;
     }
-    if (isNaN(sellDeliveryFee) || sellDeliveryFee === '') {
+    if (sellDeliveryFee === '') {
       modal.alert('받은 배송비를 입력해주세요.');
       return;
     }
-    if (isNaN(stockPrice) || stockPrice === '') {
+    if (stockPrice === '') {
       modal.alert('매입가를 입력해주세요.');
       return;
     }
-    if (isNaN(savedDPFee) || savedDPFee === '') {
+    if (savedDPFee === '') {
       modal.alert('택배비·포장비 를 입력해주세요.');
       return;
     }
@@ -266,15 +267,15 @@ const Margin = () => {
     //   lowestMarginRateRef.current.value = 0;
     // }
 
-    sellPrice = Number(sellPrice);
+    sellPrice = revert_1000(sellPrice);
     if (sellPrice === 0) {
       modal.alert('판매가격은 0원 일 수 없습니다.');
       return;
     }
 
-    sellDeliveryFee = Number(sellDeliveryFee);
-    stockPrice = Number(stockPrice);
-    savedDPFee = Number(savedDPFee);
+    sellDeliveryFee = revert_1000(sellDeliveryFee);
+    stockPrice = revert_1000(stockPrice);
+    savedDPFee = revert_1000(savedDPFee);
 
     // lowestMarginRate = Number(lowestMarginRate);
     // if (lowestMarginRate < 0 || lowestMarginRate >= 100) {
@@ -390,12 +391,16 @@ const Margin = () => {
     setAbledSaveButton(false);
     const selectedRows = gridRef.current.api.getSelectedRows();
     const row = selectedRows[0];
+    if (!row) {
+      onReset();
+      return;
+    }
 
     nameRef.current.value = `${row.goods_name}`;
-    sellPriceRef.current.value = `${row.sell_price}`;
-    sellDeliveryFeeRef.current.value = `${row.received_delivery_fee}`;
-    stockPriceRef.current.value = `${row.stock_price}`;
-    savedDPFeeRef.current.value = `${row.saved_dp_fee}`;
+    sellPriceRef.current.value = `${replace_1000(row.sell_price)}`;
+    sellDeliveryFeeRef.current.value = `${replace_1000(row.received_delivery_fee)}`;
+    stockPriceRef.current.value = `${replace_1000(row.stock_price)}`;
+    savedDPFeeRef.current.value = `${replace_1000(row.saved_dp_fee)}`;
     // lowestMarginRateRef.current.value = `${row.lowest_margin_rate}`;
     setLowestPrice(row.lowest_standard_price);
     setSumMinus(row.expense_sum_price);
@@ -444,7 +449,7 @@ const Margin = () => {
                   <tr>
                     <th>정산금액</th>
                     <td>
-                      {resultData.settlement_price}
+                      {replace_1000(revert_1000(resultData.settlement_price))}
                       <span> 원</span>
                     </td>
                   </tr>
@@ -454,7 +459,7 @@ const Margin = () => {
                     <td className={resultData.margin >= 0 ? 'txt_green' : 'txt_red'}>
                       <span>{resultData.margin >= 0 ? '이익' : '손해'} </span>
                       {resultData.margin > 0 && '+'}
-                      {resultData.margin}
+                      {replace_1000(revert_1000(resultData.margin))}
                       <span> 원</span>
                     </td>
                   </tr>
@@ -490,7 +495,7 @@ const Margin = () => {
                     <td>
                       <span className="txt_green">판매가격</span>
                       <input
-                        type="number"
+                        type="text"
                         ref={sellPriceRef}
                         onChange={(e) => {
                           onChangeInput(e, sellPriceRef);
@@ -503,7 +508,13 @@ const Margin = () => {
                   <tr>
                     <td>
                       <span className="txt_green">받은 배송비</span>
-                      <input type="number" ref={sellDeliveryFeeRef}></input>
+                      <input
+                        type="text"
+                        ref={sellDeliveryFeeRef}
+                        onChange={(e) => {
+                          onChangeInput(e, sellDeliveryFeeRef);
+                        }}
+                      ></input>
                       <span>원</span>
                     </td>
                   </tr>
@@ -511,7 +522,13 @@ const Margin = () => {
                   <tr>
                     <td>
                       <span className="txt_red">매입가</span>
-                      <input type="number" ref={stockPriceRef}></input>
+                      <input
+                        type="text"
+                        ref={stockPriceRef}
+                        onChange={(e) => {
+                          onChangeInput(e, stockPriceRef);
+                        }}
+                      ></input>
                       <span>원</span>
                     </td>
                   </tr>
@@ -519,7 +536,13 @@ const Margin = () => {
                   <tr>
                     <td>
                       <span className="txt_red ">택배비·포장비</span>
-                      <input type="number" ref={savedDPFeeRef}></input>
+                      <input
+                        type="text"
+                        ref={savedDPFeeRef}
+                        onChange={(e) => {
+                          onChangeInput(e, savedDPFeeRef);
+                        }}
+                      ></input>
                       <span>원</span>
                     </td>
                   </tr>

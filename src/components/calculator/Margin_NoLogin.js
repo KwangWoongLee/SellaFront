@@ -4,11 +4,8 @@ import { Button, DropdownButton, Dropdown } from 'react-bootstrap';
 import Head_NoLogin from 'components/template/Head_NoLogin';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
-import CalculatorNavTab from 'components/calculator/CalculatorNavTab';
-import SearchModal from 'components/calculator/SearchModal';
-import Recoils from 'recoils';
 
-import { img_src, modal, logger, page_reload, navigate } from 'util/com';
+import { img_src, modal, logger, page_reload, navigate, revert_1000, replace_1000 } from 'util/com';
 import request from 'util/request';
 import _ from 'lodash';
 
@@ -73,9 +70,10 @@ const Margin_NoLogin = () => {
   };
 
   const onChangeInput = (e, ref) => {
-    if (e.target.value.match('^[a-zA-Z ]*$') != null) {
-      ref.current.value = e.target.value;
-    }
+    // if (e.target.value.match('^[a-zA-Z ]*$') != null) {
+    //   ref.current.value = e.target.value;
+    // }
+    ref.current.value = replace_1000(revert_1000(e.target.value));
   };
 
   const onClickCalc = (e) => {
@@ -87,32 +85,32 @@ const Margin_NoLogin = () => {
     let platformFeeRate = platformFeeRateRef.current.value;
     let platformDeliverFeeRate = platformDeliverFeeRateRef.current.value;
 
-    if (isNaN(sellPrice) || sellPrice === '') {
+    if (sellPrice === '') {
       modal.alert('판매가격을 입력해주세요.');
       return;
     }
-    if (isNaN(sellDeliveryFee) || sellDeliveryFee === '') {
+    if (sellDeliveryFee === '') {
       modal.alert('받은 배송비를 입력해주세요.');
       return;
     }
-    if (isNaN(stockPrice) || stockPrice === '') {
+    if (stockPrice === '') {
       modal.alert('매입가를 입력해주세요.');
       return;
     }
-    if (isNaN(savedDPFee) || savedDPFee === '') {
+    if (savedDPFee === '') {
       modal.alert('택배비·포장비 를 입력해주세요.');
       return;
     }
 
-    sellPrice = Number(sellPrice);
+    sellPrice = revert_1000(sellPrice);
     if (sellPrice === 0) {
       modal.alert('판매가격은 0원 일 수 없습니다.');
       return;
     }
 
-    sellDeliveryFee = Number(sellDeliveryFee);
-    stockPrice = Number(stockPrice);
-    savedDPFee = Number(savedDPFee);
+    sellDeliveryFee = revert_1000(sellDeliveryFee);
+    stockPrice = revert_1000(stockPrice);
+    savedDPFee = revert_1000(savedDPFee);
 
     platformFeeRate = Number(platformFeeRate);
     if (platformFeeRate < 0 || platformFeeRate >= 100) {
@@ -187,7 +185,7 @@ const Margin_NoLogin = () => {
                 <tr>
                   <th>정산금액</th>
                   <td>
-                    {resultData.settlement_price}
+                    {replace_1000(revert_1000(resultData.settlement_price))}
                     <span> 원</span>
                   </td>
                 </tr>
@@ -197,7 +195,7 @@ const Margin_NoLogin = () => {
                   <td className={resultData.margin >= 0 ? 'txt_green' : 'txt_red'}>
                     <span>{resultData.margin >= 0 ? '이익' : '손해'} </span>
                     {resultData.margin > 0 && '+'}
-                    {resultData.margin}
+                    {replace_1000(revert_1000(resultData.margin))}
                     <span> 원</span>
                   </td>
                 </tr>
@@ -219,7 +217,7 @@ const Margin_NoLogin = () => {
                   <td>
                     <span className="txt_green">판매가격</span>
                     <input
-                      type="number"
+                      type="text"
                       ref={sellPriceRef}
                       onChange={(e) => {
                         onChangeInput(e, sellPriceRef);
@@ -232,7 +230,13 @@ const Margin_NoLogin = () => {
                 <tr>
                   <td>
                     <span className="txt_green">받은 배송비</span>
-                    <input type="number" ref={sellDeliveryFeeRef}></input>
+                    <input
+                      type="text"
+                      ref={sellDeliveryFeeRef}
+                      onChange={(e) => {
+                        onChangeInput(e, sellDeliveryFeeRef);
+                      }}
+                    ></input>
                     <span>원</span>
                   </td>
                 </tr>
@@ -240,7 +244,13 @@ const Margin_NoLogin = () => {
                 <tr>
                   <td>
                     <span className="txt_red">매입가</span>
-                    <input type="number" ref={stockPriceRef}></input>
+                    <input
+                      type="text"
+                      ref={stockPriceRef}
+                      onChange={(e) => {
+                        onChangeInput(e, stockPriceRef);
+                      }}
+                    ></input>
                     <span>원</span>
                   </td>
                 </tr>
@@ -248,7 +258,13 @@ const Margin_NoLogin = () => {
                 <tr>
                   <td>
                     <span className="txt_red ">택배비·포장비</span>
-                    <input type="number" ref={savedDPFeeRef}></input>
+                    <input
+                      type="text"
+                      ref={savedDPFeeRef}
+                      onChange={(e) => {
+                        onChangeInput(e, savedDPFeeRef);
+                      }}
+                    ></input>
                     <span>원</span>
                   </td>
                 </tr>
