@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 import { Button, InputGroup, Form, Modal } from 'react-bootstrap';
-
+import com, { img_src } from 'util/com';
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 import MyPageNavTab from 'components/base/MyPageNavTab';
 import Checkbox from 'components/common/CheckBoxCell';
 import { logger, modal, navigate, is_regex_password, is_regex_email } from 'util/com';
-import { RequestPay } from 'util/payment';
+import { RequestPay, RequestPayPeriod } from 'util/payment';
 import request from 'util/request';
 import Recoils from 'recoils';
 import useScript from 'react-script-hook';
@@ -16,6 +16,8 @@ import useScript from 'react-script-hook';
 import 'styles/Mypage.scss';
 
 import icon_close from 'images/icon_close.svg';
+import img_stamp10sale from 'images/img_stamp10sale.svg';
+import img_salearrow from 'images/img_salearrow.svg';
 
 const Membership = () => {
   const account = Recoils.useValue('CONFIG:ACCOUNT');
@@ -89,6 +91,12 @@ const Membership = () => {
 
   const onPaymentReq = (d) => {
     RequestPay(d, () => {
+      console.log();
+    });
+  };
+
+  const onPaymentReqPeriod = (d) => {
+    RequestPayPeriod(d, () => {
       console.log();
     });
   };
@@ -180,6 +188,63 @@ const Membership = () => {
               {accountData ? accountData.remain_warranty_day : 0}]일 남았습니다.
             </h4>
 
+            <ul className="payoptionbox">
+              <li>
+                <p>
+                  Basic
+                  <span>
+                    19,900 원 / 월<i>(VAT 별도)</i>
+                  </span>
+                </p>
+                <span>
+                  매출 집계와 손익 계산에 최적화된
+                  <br />
+                  셀라의 기능을 사용하고 싶다면
+                </span>
+                <ol>
+                  <li>기준 상품 관리</li>
+                  <li>손익 계산</li>
+                  <li>손익 캘린더</li>
+                  <li>마진 계산기 (계산 결과 저장)</li>
+                  <li>최저가 계산기 (계산 결과 저장)</li>
+                </ol>
+                <hr />
+                <p className="txt_blue">
+                  정기결제 할인 특가
+                  <img src={`${img_src}${img_stamp10sale}`} />
+                </p>
+                <span>
+                  정기 결제 신청하고
+                  <br />
+                  반드시 누려야할 10% 할인!
+                </span>
+                <div className="salebox">
+                  <dl>
+                    <dt>정상가</dt>
+                    <dd>
+                      19,900<i>원</i>
+                      <img src={`${img_src}${img_salearrow}`} />
+                    </dd>
+                  </dl>
+                  <dl>
+                    <dt>정기결제 10% OFF</dt>
+                    <dd>
+                      17,900<i>원</i>
+                    </dd>
+                  </dl>
+                </div>
+
+                <hr />
+
+                <select name="" id="">
+                  <option value="">결제 옵션 선택</option>
+                  <option value="">정기 결제 특가 : 17,900 원 (vat별도)</option>
+                  <option value="">1달 결제 : 19,900 원 (vat별도)</option>
+                </select>
+                <Button>요금제 선택하기</Button>
+              </li>
+            </ul>
+
             {sella_grade &&
               sella_grade.map(
                 (sella_grade_data, index) =>
@@ -187,7 +252,7 @@ const Membership = () => {
                     <GradeItem
                       account_data={accountData}
                       grade_data={sella_grade_data}
-                      onClick={onPaymentReq}
+                      onClick={sella_grade_data.period_flag ? onPaymentReqPeriod : onPaymentReq}
                     ></GradeItem>
                   )
               )}
@@ -329,7 +394,7 @@ const GradeItem = React.memo(({ index, account_data, grade_data, onClick }) => {
     <div className="innerbox">
       <dl>
         <dt>{grade_data.name}</dt>
-        {grade_data.price != 0 && <dd>{grade_data.price}원 / 월</dd>}
+        {grade_data.price != 0 && <dd>{grade_data.price}원</dd>}
         <dd>{grade_data.descript}</dd>
       </dl>
 

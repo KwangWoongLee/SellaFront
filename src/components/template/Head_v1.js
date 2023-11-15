@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { Button, Nav } from 'react-bootstrap';
-import 'styles/Template.scss';
 import { useLocation } from 'react-router-dom';
 
 import { img_src, navigate, logger } from 'util/com';
@@ -12,8 +11,6 @@ import icon_member from 'images/icon_member.svg';
 import icon_power from 'images/icon_power.svg';
 import icon_calculator from 'images/icon_calculator.svg';
 import icon_kakao from 'images/icon_kakao.svg';
-
-import 'styles/mediaQuery_1000.scss';
 
 import icon_hamburger from 'images/icon_hamburger.svg';
 

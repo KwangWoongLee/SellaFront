@@ -8,6 +8,9 @@ body {
   background-color: #f8f9ff !important;
   font-size: 16px;
   overflow-x: hidden;
+
+  animation: bugfix infinite 1s;
+  -webkit-animation: bugfix infinite 1s;
 }
 
 #root {
@@ -30,6 +33,10 @@ body {
 .nav-link:hover,
 .nav-link:hover * {
   opacity: 0.7;
+}
+
+.mobile {
+  display: none !important;
 }
 
 .hidden {
@@ -368,7 +375,7 @@ label {
 .btn.dropdown-toggle {
   padding: 7px 12px;
   min-width: 50px;
-  height: 32px;
+  height: 33px;
   font-size: 13px;
   line-height: 16px;
   background-color: #fff;
@@ -487,6 +494,86 @@ select {
   height: auto;
   vertical-align: middle;
   border: 0;
+}
+
+.btn_hamburger {
+  width: 50px;
+  height: 50px;
+  padding: 13.5px;
+  background: url(../images/icon_hamburger.svg) no-repeat center center;
+  background-size: 22px;
+}
+
+.btn_hamburger.on {
+  background: url(../images/icon_hamburger.svg) no-repeat center center;
+}
+
+#btn_hamburger {
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 11px 12px;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  user-select: none;
+
+  span {
+    height: 3px;
+    width: 100%;
+    border-radius: 2px;
+    background-color: white;
+    position: relative;
+    display: inline-block;
+    transition: all 0.2s ease-in-out;
+
+    &:before {
+      top: -10px;
+      visibility: visible;
+    }
+    &:after {
+      top: 10px;
+    }
+    &:before,
+    &:after {
+      height: 3px;
+      width: 100%;
+      border-radius: 2px;
+      background-color: white;
+      position: absolute;
+      content: '';
+      transition: all 0.2s ease-in-out;
+    }
+  }
+  &:hover span,
+  &:hover span:before,
+  &:hover span:after {
+    background: #828ba7;
+  }
+}
+
+#input_hamburger {
+  display: none;
+
+  &:checked ~ #overlay {
+    visibility: visible;
+  }
+
+  &:checked ~ #btn_hamburger {
+    &:hover span,
+    span {
+      background: transparent;
+    }
+    span {
+      &:before {
+        transform: rotate(45deg) translate(7px, 7px);
+        opacity: 1;
+      }
+      &:after {
+        transform: rotate(-45deg) translate(7px, -7px);
+      }
+    }
+  }
 }
 
 // input

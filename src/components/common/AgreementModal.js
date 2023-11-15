@@ -9,6 +9,7 @@ import icon_close from 'images/icon_close.svg';
 const AgreementModal = React.memo(({ modalState, setModalState, contents }) => {
   //logger.debug('AgreementModal');
   const [contentObj, setContentObj] = useState({ title: '', content: '' });
+  const [selectButton, setSelectButton] = useState(0);
 
   useEffect(() => {
     if (contents && contents.length) {
@@ -26,7 +27,13 @@ const AgreementModal = React.memo(({ modalState, setModalState, contents }) => {
         {contents &&
           contents.map((d, idx) => (
             <>
-              <Button className="tab" onClick={() => setContentObj(d)}>
+              <Button
+                className={selectButton === idx ? 'tab on' : 'tab'}
+                onClick={() => {
+                  setContentObj(d);
+                  setSelectButton(idx);
+                }}
+              >
                 {d.button_name}
               </Button>
             </>

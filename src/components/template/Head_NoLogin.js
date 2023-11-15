@@ -1,24 +1,22 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Nav, Button } from 'react-bootstrap';
-import 'styles/Template.scss';
 import { useLocation } from 'react-router-dom';
 import { CSSTransition } from 'react-transition-group';
 
 import com, { img_src, navigate, logger } from 'util/com';
 import Recoils from 'recoils';
 import _ from 'lodash';
+
 import Checkbox from 'components/common/CheckBoxCell';
 import logo_white from 'images/logo_white.svg';
 import icon_member from 'images/icon_member.svg';
 import icon_power from 'images/icon_power.svg';
 import icon_calculator from 'images/icon_calculator.svg';
 import icon_kakao from 'images/icon_kakao.svg';
-
-import 'styles/mediaQuery_1000.scss';
-
 import icon_hamburger from 'images/icon_hamburger.svg';
 import icon_arrow_back from 'images/icon_arrow_back.svg';
 import { responsiveFontSizes } from '@mui/material';
+
 const Head_NoLogin = ({ setScrollElemId }) => {
   //logger.debug('Template Head');
   const account = Recoils.useValue('CONFIG:ACCOUNT');
@@ -54,7 +52,7 @@ const Head_NoLogin = ({ setScrollElemId }) => {
             <img src={`${img_src}${logo_white}`} alt="로고" />
           </Nav.Link>
 
-          <Nav.Link
+          {/* <Nav.Link
             onClick={() => {
               if (transition) {
                 setTransition(false);
@@ -63,9 +61,22 @@ const Head_NoLogin = ({ setScrollElemId }) => {
               setTransition(true);
             }}
             className="btn_hamburger"
-          >
-            <img alt={''} src={icon_hamburger} />
-          </Nav.Link>
+          ></Nav.Link> */}
+
+          <input
+            type="checkbox"
+            id="input_hamburger"
+            onClick={() => {
+              if (transition) {
+                setTransition(false);
+                return;
+              }
+              setTransition(true);
+            }}
+          />
+          <label for="input_hamburger" id="btn_hamburger">
+            <span></span>
+          </label>
 
           <nav>
             <ul className="center">
@@ -119,7 +130,7 @@ const Head_NoLogin = ({ setScrollElemId }) => {
                     onScroll('main04');
                   }}
                 >
-                  이용방법
+                  1:1상담
                 </Nav.Link>
               </li>
             </ul>
@@ -249,7 +260,7 @@ const Head_NoLogin = ({ setScrollElemId }) => {
                         setTransition(false);
                       }}
                     >
-                      이용방법
+                      1:1 상담
                     </Nav.Link>
                   </li>
                   <li>
@@ -265,19 +276,24 @@ const Head_NoLogin = ({ setScrollElemId }) => {
                     </Nav.Link>
                   </li>
                   <li>
-                    <Nav.Link className="nav-link bcalculator" onClick={onLink} name="/calculator/buying">
+                    <Nav.Link className="nav-link bcalculator" onClick={onLink} name="/calculator/lowest_price_free">
                       최저가 계산기
                     </Nav.Link>
                   </li>
                   <li className="line"></li>
                   <li className="small">
-                    <Nav.Link className="nav-link" onClick={onLink} name="/cscenter">
-                      고객센터
+                    <Nav.Link className="nav-link" onClick={onLink} name="/cscenter/announcement">
+                      공지사항
                     </Nav.Link>
                   </li>
                   <li className="small">
-                    <Nav.Link className="nav-link" onClick={onLink} name="/cscenter">
+                    <Nav.Link className="nav-link" onClick={onLink} name="/cscenter/faq">
                       자주 묻는 질문
+                    </Nav.Link>
+                  </li>
+                  <li className="small">
+                    <Nav.Link className="nav-link" onClick={onLink} name="/cscenter/manual">
+                      사용방법
                     </Nav.Link>
                   </li>
                   <li className="small">
@@ -287,19 +303,47 @@ const Head_NoLogin = ({ setScrollElemId }) => {
                           window.open('http://pf.kakao.com/_AxfxfMG/chat');
                         }}
                       ></button>
-                      1:1문의
+                      문의하기
                     </Nav.Link>
                   </li>
-                  <li className="small">
-                    <Nav.Link className="nav-link" onClick={onLink} name="/regist">
-                      회원가입
-                    </Nav.Link>
-                  </li>
-                  <li className="small">
-                    <Nav.Link className="nav-link" onClick={onLink} name="/login">
-                      로그인
-                    </Nav.Link>
-                  </li>
+
+                  {account && account.grade !== -1 ? (
+                    <>
+                      <li className="small">
+                        <Nav.Link className="nav-link icon_member" onClick={onLink} name="/mypage/membership">
+                          마이페이지
+                        </Nav.Link>
+                      </li>
+                      <li className="small">
+                        <Nav.Link className="nav-link icon_power" onClick={onLink} name="/logout">
+                          로그아웃
+                        </Nav.Link>
+                      </li>
+                    </>
+                  ) : (
+                    <>
+                      <li className="small">
+                        <Nav.Link className="nav-link" onClick={onLink} name="/regist">
+                          회원가입
+                        </Nav.Link>
+                      </li>
+                      <li className="small">
+                        <Nav.Link className="nav-link" onClick={onLink} name="/search/id">
+                          아이디 찾기
+                        </Nav.Link>
+                      </li>
+                      <li className="small">
+                        <Nav.Link className="nav-link" onClick={onLink} name="/search/password">
+                          비밀번호 찾기
+                        </Nav.Link>
+                      </li>
+                      <li className="small">
+                        <Nav.Link className="nav-link" onClick={onLink} name="/login">
+                          로그인
+                        </Nav.Link>
+                      </li>
+                    </>
+                  )}
                 </ul>
               </li>
             </ul>

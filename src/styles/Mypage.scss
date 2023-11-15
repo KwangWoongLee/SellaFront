@@ -190,9 +190,43 @@
     }
 
     button {
-      margin-top: 20px;
+      margin-top: 17px;
       width: 100%;
       height: 40px;
+    }
+  }
+
+  ul.payoptionbox {
+    margin-top: 30px;
+    width: 100% !important;
+
+    > li {
+      box-shadow: 3px 3px 3px 0px rgba(0, 0, 0, 0.1);
+    }
+
+    li {
+      margin-left: 0;
+      margin-right: 0;
+      width: 100%;
+      border-radius: 10px;
+
+      p {
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+      }
+
+      .salebox dl:last-child {
+        width: 38%;
+      }
+
+      p.txt_blue img {
+        right: 7px;
+      }
+    }
+
+    li:nth-child(1) p {
+      color: #fff;
+      background-color: #1d6cf6;
     }
   }
 }

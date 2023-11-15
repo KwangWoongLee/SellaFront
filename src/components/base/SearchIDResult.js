@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import com, { logger, navigate } from 'util/com';
 
-import Head from 'components/template/Head';
+import Head_NoLogin from 'components/template/Head_NoLogin';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 
@@ -26,7 +26,7 @@ const SearchIDResult = () => {
 
   return (
     <>
-      <Head />
+      <Head_NoLogin />
       <Body title={`아이디 찾기 성공`} myClass={'searchresult'}>
         {mode == 1 && (
           <div className="formbox success">

@@ -50,16 +50,16 @@
   .section .tablebox {
     width: 100%;
     height: auto;
+    overflow-y: visible;
   }
 
   .section1 .tablebox1,
   .section1 .tablebox2 {
-    display: block;
+    display: flex;
     width: 100%;
     height: auto;
     border-radius: 5px;
     border: 4px solid #081a51;
-    overflow: hidden;
   }
 
   .section1 .tablebox2 {
@@ -445,6 +445,92 @@
         background-color: #0051ff;
         color: #fff;
       }
+    }
+  }
+}
+
+.body.lowestprice {
+  .section1 .tablebox1 table th {
+    height: auto;
+  }
+
+  .section1 .tablebox1 table td {
+    font-size: 20px;
+    line-height: 50px;
+  }
+
+  .section1 .tablebox2 table {
+    border-radius: unset !important;
+  }
+
+  .section1 .tablebox2 table th {
+    padding-bottom: 15px;
+    background-color: #081a51;
+    color: #fff;
+    font-size: 15px;
+    line-height: 15px;
+    font-weight: 600;
+  }
+
+  .section1 .tablebox2 table td.w100 {
+    padding: 15px 20px;
+    border-bottom: 3px solid #081a51;
+
+    input {
+      padding: 5px 10px 7px;
+      width: calc(100% - 20px);
+      height: auto;
+      font-size: 18px;
+      line-height: 18px;
+      font-weight: 700;
+      color: #081a51;
+      border: 3px solid #081a51;
+    }
+
+    input + span {
+      font-size: 15px;
+      line-height: 43px;
+      font-weight: 700;
+      color: #081a51;
+    }
+  }
+
+  .section2 {
+    h3 {
+      margin-top: 0 !important;
+    }
+
+    h5 {
+      padding-bottom: 30px;
+      margin-bottom: 30px !important;
+      border-bottom: 1px dashed #ccc;
+    }
+
+    .innerbox p {
+      margin-bottom: 10px !important;
+      font-size: 18px;
+      line-height: 18px;
+      font-weight: 600;
+      color: #d20000;
+    }
+
+    img {
+      margin: 30px auto;
+      width: 80%;
+    }
+
+    ul li {
+      font-size: 16px;
+      line-height: 16px;
+      font-weight: 600;
+    }
+
+    ul + h4 {
+      margin-bottom: 20px;
+    }
+
+    button {
+      width: 80% !important;
     }
   }
 }

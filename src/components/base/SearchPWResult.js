@@ -3,7 +3,7 @@ import { Button, InputGroup, Form } from 'react-bootstrap';
 import com, { logger, navigate, is_regex_password, modal } from 'util/com';
 import request from 'util/request';
 
-import Head from 'components/template/Head';
+import Head_NoLogin from 'components/template/Head_NoLogin';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 
@@ -98,7 +98,7 @@ const SearchPWResult = () => {
 
   return (
     <>
-      <Head />
+      <Head_NoLogin />
       <Body title={`비밀번호 찾기 성공`} myClass={'searchresult'}>
         {mode == 1 && (
           <Form id="change-password-form" className="formbox success">

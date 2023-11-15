@@ -6,11 +6,13 @@ import Head_NoLogin from 'components/template/Head_NoLogin';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 
-import { modal, logger, page_reload, is_authed, revert_1000, replace_1000 } from 'util/com';
+import { img_src, modal, logger, page_reload, navigate, is_authed, revert_1000, replace_1000 } from 'util/com';
 import request from 'util/request';
 import _ from 'lodash';
 
 import 'styles/Margin.scss';
+
+import img_lowestprice_01 from 'images/img_lowestprice_01.png';
 
 const LowestPrice_NoLogin = () => {
   const [platformData, setPlatformData] = useState([]);
@@ -117,7 +119,7 @@ const LowestPrice_NoLogin = () => {
     }
 
     let low = minus / (1 - lowestMarginRate);
-    low = Number(low.toFixed(1));
+    low = replace_1000(revert_1000(low.toFixed(0)));
 
     setLowestPrice(low);
   };
@@ -133,113 +135,144 @@ const LowestPrice_NoLogin = () => {
   return (
     <>
       {is_authed() ? <Head /> : <Head_NoLogin />}
-      <Body title={`최저가 계산기`} myClass={'margin lowestprice'}>
+      <Body title={`최저가 계산기`} myClass={'margin lowestprice nologin'}>
         {/* <CalculatorNavTab active="/calculator/margin" /> */}
-        <div className="page">
-          <div className="section section1">
-            <div className="btnbox">
-              <Button variant="primary" onClick={onReset}>
-                초기화
-              </Button>
-            </div>
-            <div className="tablebox1">
-              <table>
-                <colgroup>
-                  <col width="50px" />
-                  <col />
-                </colgroup>
-                <tbody>
-                  <tr>
-                    <th>최저판매가</th>
-                    <td>
-                      {lowestPrice}
-                      <span> 원</span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div className="tablebox2">
-              <table>
-                <tbody>
-                  <tr>
-                    <td>
-                      <span className="txt_green">최저 마진율</span>
-                      <input type="number" ref={lowestMarginRateRef}></input>
-                      <span>%</span>
-                    </td>
-                  </tr>
+        <div className="section section1">
+          <div className="tablebox1">
+            <table>
+              <colgroup>
+                <col width="50px" />
+                <col />
+              </colgroup>
+              <tbody>
+                <tr>
+                  <th>최저판매가</th>
+                  <td>
+                    {lowestPrice}
+                    <span> 원</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="tablebox2">
+            <table>
+              <tbody>
+                <tr>
+                  <th>최저 마진율</th>
+                </tr>
+                <tr>
+                  <td className="w100">
+                    <input type="number" ref={lowestMarginRateRef}></input>
+                    <span>%</span>
+                  </td>
+                </tr>
 
-                  <tr>
-                    <td>
-                      <span className="txt_red">매입가</span>
-                      <input
-                        type="text"
-                        ref={stockPriceRef}
-                        onChange={(e) => {
-                          onChangeInput(e, stockPriceRef);
-                        }}
-                      ></input>
-                      <span>원</span>
-                    </td>
-                  </tr>
+                <tr>
+                  <td>
+                    <span className="txt_red">매입가</span>
+                    <input
+                      type="text"
+                      ref={stockPriceRef}
+                      onChange={(e) => {
+                        onChangeInput(e, stockPriceRef);
+                      }}
+                    ></input>
+                    <span>원</span>
+                  </td>
+                </tr>
 
-                  <tr>
-                    <td>
-                      <span className="txt_red ">택배비·포장비</span>
-                      <input
-                        type="text"
-                        ref={savedDPFeeRef}
-                        onChange={(e) => {
-                          onChangeInput(e, savedDPFeeRef);
-                        }}
-                      ></input>
-                      <span>원</span>
-                    </td>
-                  </tr>
+                <tr>
+                  <td>
+                    <span className="txt_red ">택배비·포장비</span>
+                    <input
+                      type="text"
+                      ref={savedDPFeeRef}
+                      onChange={(e) => {
+                        onChangeInput(e, savedDPFeeRef);
+                      }}
+                    ></input>
+                    <span>원</span>
+                  </td>
+                </tr>
 
-                  <tr>
-                    <td>
-                      <span className="txt_red">수수료</span>
-                      <DropdownButton
-                        variant=""
-                        title={platformType !== -1 && platformData.length ? platformData[platformType].name : ''}
-                        className="nounit"
-                      >
-                        {platformData &&
-                          platformData.map((item, key) => (
-                            <Dropdown.Item
-                              key={key}
-                              eventKey={key}
-                              onClick={(e) => onChange(key, e)}
-                              active={platformType === key}
-                            >
-                              {item.name}
-                            </Dropdown.Item>
-                          ))}
-                      </DropdownButton>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <span className="txt_small">매체 수수료</span>
-                      <input type="number" ref={platformFeeRateRef}></input>
-                      <span>%</span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <span className="txt_small">배송비 수수료</span>
-                      <input type="number" ref={platformDeliverFeeRateRef}></input>
-                      <span>%</span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <Button variant="primary" className="btn_blue btn_calc" onClick={onClickCalc}>
-              계산하기
+                <tr>
+                  <td>
+                    <span className="txt_red">수수료</span>
+                    <DropdownButton
+                      variant=""
+                      title={platformType !== -1 && platformData.length ? platformData[platformType].name : ''}
+                      className="nounit"
+                    >
+                      {platformData &&
+                        platformData.map((item, key) => (
+                          <Dropdown.Item
+                            key={key}
+                            eventKey={key}
+                            onClick={(e) => onChange(key, e)}
+                            active={platformType === key}
+                          >
+                            {item.name}
+                          </Dropdown.Item>
+                        ))}
+                    </DropdownButton>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <span className="txt_small">매체 수수료</span>
+                    <input type="number" ref={platformFeeRateRef}></input>
+                    <span>%</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <span className="txt_small">배송비 수수료</span>
+                    <input type="number" ref={platformDeliverFeeRateRef}></input>
+                    <span>%</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <Button variant="primary" className="btn_blue btn_calc" onClick={onClickCalc}>
+            계산하기
+          </Button>
+          <div className="btnbox">
+            <Button variant="primary" onClick={onReset}>
+              초기화
             </Button>
+          </div>
+        </div>
+        <div className="section section2">
+          <h3>최저가 계산기</h3>
+          <h5>왜 필요한가요?</h5>
+          <div class="innerbox">
+            <p>“ 최소 10% 마진은 남기고 싶어 ”</p>
+            <p>“ 얼마 이상 팔아야 하는거야? ”</p>
+            <img src={`${img_src}${img_lowestprice_01}`} />
+            <ul>
+              <li>
+                <b>최적의 마진을 위한 가격책정. 어떻게 하고 계세요?</b>
+              </li>
+              <li>
+                판매할 최저 금액을 잘 모르겠을 때 사용해보세요.
+                <br />
+                더 이상 손해 안보는 판매가 책정
+                <br />
+                최저가 계산기로 최저 금액을 미리 계산하세요.
+              </li>
+            </ul>
+            <h4>더 많은 기능을 사용해보세요!</h4>
+            <button
+              type="button"
+              onClick={() => {
+                navigate('/login');
+              }}
+              class="btn-primary btn btn-primary"
+            >
+              셀라 무료체험 신청
+            </button>
           </div>
         </div>
       </Body>

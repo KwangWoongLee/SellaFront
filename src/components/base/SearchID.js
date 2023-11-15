@@ -15,13 +15,15 @@ import com, {
 import request from 'util/request';
 import _ from 'lodash';
 
-import Head from 'components/template/Head';
+import Head_NoLogin from 'components/template/Head_NoLogin';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
+
 import Checkbox from 'components/common/CheckBoxCell';
 
-import 'styles/Login.scss';
 import AgreementModal from 'components/common/AgreementModal';
+
+import 'styles/Login.scss';
 
 const agency_str = ['통신사 선택', 'SKT', 'KT', 'LG'];
 const month_str = ['월', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
@@ -289,7 +291,7 @@ const SearchID = () => {
 
   return (
     <>
-      <Head />
+      <Head_NoLogin />
       <Body title={`아이디 찾기`} myClass={'searchid'}>
         <Form onSubmit={onSubmit} id="search-id-form" className="formbox">
           <h3>아이디 찾기</h3>

@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { img_src, logger, navigate } from 'util/com';
 
 import { Nav } from 'react-bootstrap';
-import 'styles/Template.scss';
 
 import logo_blue from 'images/logo_blue.svg';
 // import logo_footer from 'images/logo_footer.svg';

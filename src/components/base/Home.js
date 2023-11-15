@@ -50,10 +50,23 @@ const Home = () => {
     }
   };
 
+  const getElementY = (element) => {
+    return window.pageYOffset + element.getBoundingClientRect().top;
+  };
+
+  // 해당 element 로 스크롤!
+
   useEffect(() => {
     const element = document.getElementById(scrollElemId);
     if (element) {
+      // const client = element.getBoundingClientRect();
       element.scrollIntoView({ behavior: 'smooth' });
+      // const bodyElement = document.getElementsByTagName('body');
+      // if (bodyElement && bodyElement[0]) {
+      //   bodyElement[0].scrollTop = bodyElement[0].scrollTop - 50;
+      // }
+
+      // window.scrollTo({ top: getElementY(element), behavior: 'smooth' });
     }
   }, [scrollElemId]);
 
@@ -492,7 +505,7 @@ const Home = () => {
           <h3>요금제 유형</h3>
           <h4>꼭 필요한 기능을 준비했습니다.</h4>
 
-          <ul>
+          <ul className="payoptionbox">
             <li>
               <p>
                 Free<span>0 원 / 무료체험 기간 14일</span>
@@ -567,6 +580,14 @@ const Home = () => {
                   </dd>
                 </dl>
               </div>
+
+              <hr />
+
+              <select name="" id="">
+                <option value="">결제 옵션 선택</option>
+                <option value="">정기 결제 특가 : 17,900 원 (vat별도)</option>
+                <option value="">1달 결제 : 19,900 원 (vat별도)</option>
+              </select>
               <Button>요금제 선택하기</Button>
             </li>
 
@@ -595,7 +616,7 @@ const Home = () => {
               <Button>오픈 준비 중</Button>
             </li>
 
-            <li>
+            {/* <li>
               <p>
                 Expert
                 <span>
@@ -614,7 +635,7 @@ const Home = () => {
                 <li>서비스 제휴 신청</li>
               </ol>
               <Button>상담 신청</Button>
-            </li>
+            </li> */}
           </ul>
         </section>
 

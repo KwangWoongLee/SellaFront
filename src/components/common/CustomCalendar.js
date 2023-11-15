@@ -60,6 +60,9 @@ const CustomCalendar = ({ dayGroupDatas, selectCallback, setCalendarCurrentDate 
         }}
         onNavigate={(date) => {
           setCurrentDate(date);
+          const findEvent = events.find((event) => event.group === time_format_day(date));
+
+          selectCallback(findEvent);
         }}
         selectable={true}
         messages={{

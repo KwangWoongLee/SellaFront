@@ -34,10 +34,12 @@ const TodaySummary = () => {
   const [platformType, setPlatformType] = useState(0);
   const [rawData, setRawData] = useState([]);
   const [rowData, setRowData] = useState([]);
+  const [selectButton, setSelectButton] = useState(0);
   const [selectedDayGroup, setSelectedDayGroup] = useState('');
   const [calendarCurrentDate, setCalendarCurrentDate] = useState(new Date());
   const [dayData, setDayData] = useState({});
   const [dateModalState, setDateModalState] = useState(false);
+  const [except, setExcept] = useState('');
 
   const selectRowDataIdxRef = useRef(null);
 
@@ -121,6 +123,9 @@ const TodaySummary = () => {
         }
 
         setRawData(data);
+        const now = Date.now();
+        const day = time_format_day(new Date(now));
+        setSelectedDayGroup(day);
       }
     });
   }, []);
@@ -131,6 +136,9 @@ const TodaySummary = () => {
       const forms_names = _.uniq(_.map(dayData[selectedDayGroup]['events'], 'forms_name'));
       forms_names.unshift('전체');
       setPlatforms(forms_names);
+      setExcept('');
+    } else {
+      setExcept('저장된 주문서가 없습니다.');
     }
   }, [selectedDayGroup]);
 
@@ -306,7 +314,11 @@ const TodaySummary = () => {
             <CustomCalendar
               dayGroupDatas={dayData}
               selectCallback={(e) => {
-                setSelectedDayGroup(e.group);
+                if (e) setSelectedDayGroup(e.group);
+                else {
+                  setSelectedDayGroup(null);
+                  setExcept('저장된 주문서가 없습니다.');
+                }
               }}
               setCalendarCurrentDate={setCalendarCurrentDate}
             ></CustomCalendar>
@@ -320,16 +332,18 @@ const TodaySummary = () => {
             <div className="inputbox">
               <div className="btngroup">
                 <Button
-                  className="btn_blue on"
+                  className={selectButton === 0 ? 'btn_blue on' : 'btn_blue'}
                   onClick={() => {
+                    setSelectButton(0);
                     if (dayData[selectedDayGroup]) setRowData(dayData[selectedDayGroup]['events']);
                   }}
                 >
                   전체
                 </Button>
                 <Button
-                  className="btn_green"
+                  className={selectButton === 1 ? 'btn_green on' : 'btn_green'}
                   onClick={() => {
+                    setSelectButton(1);
                     if (dayData[selectedDayGroup]) {
                       const rowData = dayData[selectedDayGroup]['events'];
                       setRowData(() => _.filter(rowData, (row) => row.sum_profit_loss >= 0));
@@ -339,8 +353,9 @@ const TodaySummary = () => {
                   이익
                 </Button>
                 <Button
-                  className="btn_red"
+                  className={selectButton === 2 ? 'btn_red on' : 'btn_red'}
                   onClick={() => {
+                    setSelectButton(2);
                     if (dayData[selectedDayGroup]) {
                       const rowData = dayData[selectedDayGroup]['events'];
                       setRowData(() => _.filter(rowData, (row) => row.sum_profit_loss < 0));
@@ -413,7 +428,8 @@ const TodaySummary = () => {
               </div>
             </div>
             <ul className="listbox">
-              {rowData &&
+              {except === '' ? (
+                rowData &&
                 rowData.map((d, key) => (
                   <SummaryRow
                     key={key}
@@ -423,7 +439,10 @@ const TodaySummary = () => {
                     onDelete={onDelete}
                     selectRowDataIdxRef={selectRowDataIdxRef}
                   />
-                ))}
+                ))
+              ) : (
+                <span>{except}</span>
+              )}
             </ul>{' '}
           </div>
         </div>

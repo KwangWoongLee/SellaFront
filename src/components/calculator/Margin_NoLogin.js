@@ -341,13 +341,14 @@ const Margin_NoLogin = () => {
           <iframe
             width="653"
             height="367"
-            src="https://www.youtube.com/embed/DfSuw44goMM"
-            title="유튜브 쇼핑몰 채널 따라해서 연 매출 25억 달성한 사장님의 성공 스토리"
+            src="https://www.youtube.com/embed/BjYNGW4NaA4?autoplay=1&mute=1&loop=1&controls=0showinfo=0&Modembranding=1&rel=0"
+            title="마진계산기 사용방법"
             frameborder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowfullscreen
             className="videobox"
           ></iframe>
+
           <div class="innerbox">
             <dl>
               <dt>

@@ -7,6 +7,8 @@ import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import 'styles/aggrid_custom.css';
 import 'styles/table_custom.css';
+import 'styles/Template.scss';
+
 import { useBeforeunload } from 'react-beforeunload';
 
 import { RecoilRoot } from 'recoil';
@@ -45,6 +47,8 @@ import Inquiry from 'components/cscenter/Inquiry';
 import Margin_NoLogin from 'components/calculator/Margin_NoLogin';
 import Home from 'components/base/Home';
 import LowestPrice_NoLogin from 'components/calculator/LowestPrice_NoLogin';
+
+import 'styles/mediaQuery_1000.scss';
 
 const Router = process.env.REACT_APP_SSR === '1' ? BrowserRouter : HashRouter;
 

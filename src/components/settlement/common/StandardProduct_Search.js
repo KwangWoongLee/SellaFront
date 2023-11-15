@@ -5,7 +5,7 @@ import { img_src } from 'util/com';
 import Recoils from 'recoils';
 import _ from 'lodash';
 
-import { logger } from 'util/com';
+import { logger, replace_1000, revert_1000 } from 'util/com';
 
 import icon_search from 'images/icon_search.svg';
 import icon_reset from 'images/icon_reset.svg';
@@ -168,7 +168,7 @@ const StandardProductItem = React.memo(({ index, d, onSelect, onUnSelect }) => {
       }}
     >
       <td>{d.name}</td>
-      <td>{d.stock_price}</td>
+      <td>{replace_1000(revert_1000(d.stock_price))}</td>
       <td className="td_small">
         {d.select ? (
           <button

@@ -472,7 +472,7 @@
     }
   }
 
-  .btn_hamburger {
+  #btn_hamburger {
     display: none;
   }
 
@@ -484,7 +484,10 @@
     float: right;
     width: 100%;
     height: calc(100% - 50px);
-    background-color: rgba(0, 0, 0, 0.1);
+  }
+
+  .burder-transition-enter-done {
+    background-color: rgba(0, 0, 0, 0.2);
   }
 
   ul.burder > li {
@@ -528,7 +531,4 @@
       }
     }
   }
-}
-
-.header.v02.home {
 }

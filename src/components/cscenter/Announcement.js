@@ -1,10 +1,12 @@
 import React, { useState, useEffect, Fragment } from 'react';
 
+import 'styles/CSCenter.scss';
+
 import { Button } from 'react-bootstrap';
 import Head from 'components/template/Head';
 import Head_NoLogin from 'components/template/Head_NoLogin';
-import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
+import Footer from 'components/template/Footer';
 import { img_src, modal, is_authed } from 'util/com';
 import request from 'util/request';
 import CSCenterNavTab from 'components/cscenter/CSCenterNavTab';
@@ -12,8 +14,6 @@ import _ from 'lodash';
 import ImageModal from 'components/common/ImageModal';
 
 import com, { logger, time_format } from 'util/com';
-
-import 'styles/CSCenter.scss';
 
 import icon_arrow_left from 'images/icon_arrow_left.svg';
 import icon_arrow_right from 'images/icon_arrow_right.svg';
@@ -34,7 +34,7 @@ const Announcement = () => {
   // search input
   const [categoryType, setCategoryType] = useState(0);
   const [title, setTitle] = useState('');
-  const category_str = ['일반', '테스트', '전체'];
+  const category_str = ['전체', '일반', '테스트'];
   //
 
   // pagination
@@ -148,7 +148,7 @@ const Announcement = () => {
         <div className="page">
           <h3>공지사항</h3>
 
-          <div className="pagination">
+          <div className="pagination pc">
             <Button onClick={(e) => onPageNext(false)} className="btn_arrow_left">
               <img src={`${img_src}${icon_arrow_left}`} alt="이전 페이지" />
             </Button>
@@ -172,16 +172,16 @@ const Announcement = () => {
               name="title"
               type="text"
               placeholder="제목"
-              className="input_search"
+              className="input_search pc"
               value={title}
               onChange={(e) => {
                 setTitle(e.target.value);
               }}
             />
-            <Button onClick={onSearch} className="btn btn_search">
+            <Button onClick={onSearch} className="btn btn_search pc">
               <img alt={''} src={`${img_src}${icon_search}`} />
             </Button>
-            <Button className="btn_reset" onClick={onReset}>
+            <Button className="btn_reset pc" onClick={onReset}>
               <img alt={''} src={`${img_src}${icon_reset}`} />
             </Button>
           </div>
@@ -223,6 +223,37 @@ const Announcement = () => {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          <div className="pagination mobile">
+            <Button onClick={(e) => onPageNext(false)} className="btn_arrow_left">
+              <img src={`${img_src}${icon_arrow_left}`} alt="이전 페이지" />
+            </Button>
+            <span>
+              Page {page} of {pageCount}
+            </span>
+            <Button onClick={(e) => onPageNext(true)} className="btn_arrow_right">
+              <img src={`${img_src}${icon_arrow_right}`} alt="다음 페이지" />
+            </Button>{' '}
+          </div>
+
+          <div className="inputbox mobile">
+            <input
+              name="title"
+              type="text"
+              placeholder="제목"
+              className="input_search "
+              value={title}
+              onChange={(e) => {
+                setTitle(e.target.value);
+              }}
+            />
+            <Button onClick={onSearch} className="btn btn_search">
+              <img alt={''} src={`${img_src}${icon_search}`} />
+            </Button>
+            <Button className="btn_reset pc" onClick={onReset}>
+              <img alt={''} src={`${img_src}${icon_reset}`} />
+            </Button>
           </div>
         </div>
       </Body>

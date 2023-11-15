@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useRef, useMemo, Fragment } from 'react';
 
 import { Table, Button, Modal, DropdownButton, Dropdown } from 'react-bootstrap';
+
+import 'styles/CSCenter.scss';
+
 import Head_NoLogin from 'components/template/Head_NoLogin';
 import Head from 'components/template/Head';
-import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
+import Footer from 'components/template/Footer';
 import com, { img_src, useInput, modal, navigate, is_authed } from 'util/com';
 import request from 'util/request';
 import CSCenterNavTab from 'components/cscenter/CSCenterNavTab';
@@ -13,8 +16,6 @@ import _ from 'lodash';
 import ImageModal from 'components/common/ImageModal';
 
 import { logger } from 'util/com';
-
-import 'styles/CSCenter.scss';
 
 import icon_arrow_left from 'images/icon_arrow_left.svg';
 import icon_arrow_right from 'images/icon_arrow_right.svg';
@@ -143,7 +144,7 @@ const FAQ = () => {
         <div className="page">
           <h3>자주 묻는 질문</h3>
 
-          <div className="pagination">
+          <div className="pagination pc">
             <Button onClick={(e) => onPageNext(false)} className="btn_arrow_left">
               <img src={`${img_src}${icon_arrow_left}`} alt="이전 페이지" />
             </Button>
@@ -152,15 +153,10 @@ const FAQ = () => {
             </span>
             <Button onClick={(e) => onPageNext(true)} className="btn_arrow_right">
               <img src={`${img_src}${icon_arrow_right}`} alt="다음 페이지" />
-            </Button>
+            </Button>{' '}
           </div>
 
           <div className="inputbox">
-            {/* default 전체, 
-            다른버튼 클릭하여 조회기간 변경 시 해당 버튼에 btn_blue 클래스 넣어주시면 됩니다~  
-            
-              여기가 조회기간이 아니라 카테고리인데, 아래 className="period" 바꿔도 작동 문제 없이 되나요..?
-            */}
             <div className="period">
               {category_str.map((name, key) => (
                 <Button onClick={(e) => onChangeCategoryType(key)} className={categoryType == key ? 'btn_blue' : ''}>
@@ -172,17 +168,17 @@ const FAQ = () => {
               name="title"
               type="text"
               placeholder="제목"
-              className="input_search"
+              className="input_search pc"
               value={title}
               onChange={(e) => {
                 setTitle(e.target.value);
               }}
             />
-            <Button onClick={onSearch} className="btn btn_search">
-              <img src={`${img_src}${icon_search}`} />
+            <Button onClick={onSearch} className="btn btn_search pc">
+              <img alt={''} src={`${img_src}${icon_search}`} />
             </Button>
-            <Button className="btn_reset" onClick={onReset}>
-              <img src={`${img_src}${icon_reset}`} />
+            <Button className="btn_reset pc" onClick={onReset}>
+              <img alt={''} src={`${img_src}${icon_reset}`} />
             </Button>
           </div>
 
@@ -219,6 +215,37 @@ const FAQ = () => {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          <div className="pagination mobile">
+            <Button onClick={(e) => onPageNext(false)} className="btn_arrow_left">
+              <img src={`${img_src}${icon_arrow_left}`} alt="이전 페이지" />
+            </Button>
+            <span>
+              Page {page} of {pageCount}
+            </span>
+            <Button onClick={(e) => onPageNext(true)} className="btn_arrow_right">
+              <img src={`${img_src}${icon_arrow_right}`} alt="다음 페이지" />
+            </Button>{' '}
+          </div>
+
+          <div className="inputbox mobile">
+            <input
+              name="title"
+              type="text"
+              placeholder="제목"
+              className="input_search "
+              value={title}
+              onChange={(e) => {
+                setTitle(e.target.value);
+              }}
+            />
+            <Button onClick={onSearch} className="btn btn_search">
+              <img alt={''} src={`${img_src}${icon_search}`} />
+            </Button>
+            <Button className="btn_reset pc" onClick={onReset}>
+              <img alt={''} src={`${img_src}${icon_reset}`} />
+            </Button>
           </div>
         </div>
       </Body>

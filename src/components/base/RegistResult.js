@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from 'react-bootstrap';
 import com, { logger, navigate } from 'util/com';
 
-import Head from 'components/template/Head';
+import Head_NoLogin from 'components/template/Head_NoLogin';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 
@@ -18,7 +18,7 @@ const RegistResult = () => {
 
   return (
     <>
-      <Head />
+      <Head_NoLogin />
       <Body title={`회원가입 완료`} myClass={'registresult'}>
         <div className="formbox">
           <h3>회원가입 완료</h3>
