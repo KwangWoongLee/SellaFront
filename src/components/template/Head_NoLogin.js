@@ -213,6 +213,11 @@ const Head_NoLogin = ({ setScrollElemId }) => {
               const isLiTag = _.includes(e.target.className, 'nav-link');
               if (!isLiTag) {
                 setTransition(false);
+
+                const hamburgerElem = document.getElementById('input_hamburger');
+                if (hamburgerElem) {
+                  hamburgerElem.checked = false;
+                }
               }
             }}
           >

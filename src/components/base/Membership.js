@@ -187,7 +187,7 @@ const Membership = () => {
               {accountData && accountData.grade !== 0 && accountData.grade !== 1 && '유료'}서비스 사용기간이 [
               {accountData ? accountData.remain_warranty_day : 0}]일 남았습니다.
             </h4>
-
+            {/*결제 심사를 위해 잠시 주석처리합니다.
             <ul className="payoptionbox">
               <li>
                 <p>
@@ -243,7 +243,7 @@ const Membership = () => {
                 </select>
                 <Button>요금제 선택하기</Button>
               </li>
-            </ul>
+            </ul>*/}
 
             {sella_grade &&
               sella_grade.map(
@@ -394,7 +394,11 @@ const GradeItem = React.memo(({ index, account_data, grade_data, onClick }) => {
     <div className="innerbox">
       <dl>
         <dt>{grade_data.name}</dt>
-        {grade_data.price != 0 && <dd>{grade_data.price}원</dd>}
+        {grade_data.price != 0 && (
+          <dd>
+            {grade_data.price}원 {grade_data.period_flag ? '/ 월 (매 15일)' : '(위 서비스 사용기간)'}
+          </dd>
+        )}
         <dd>{grade_data.descript}</dd>
       </dl>
 

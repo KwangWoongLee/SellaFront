@@ -12,6 +12,7 @@ import icon_reset from 'images/icon_reset.svg';
 const CategoryFee_Search = React.memo(({ selectCallback, parentFormsMatchSelectData }) => {
   //logger.debug('CategoryFee_Search');
   const sella_categories = Recoils.useValue('SELLA:CATEGORIES');
+  const forms = Recoils.useValue('DATA:PLATFORMS');
 
   const categoryRef = useRef(null);
   const [items, setItems] = useState([]);
@@ -23,6 +24,7 @@ const CategoryFee_Search = React.memo(({ selectCallback, parentFormsMatchSelectD
   useEffect(() => {
     if (!parentFormsMatchSelectData) {
       setPlatformStr([]);
+      setPlatformType(-1);
       return;
     } else {
       const forms_match = parentFormsMatchSelectData;
@@ -34,7 +36,7 @@ const CategoryFee_Search = React.memo(({ selectCallback, parentFormsMatchSelectD
             const platformName = basic_platform_str[i];
 
             if (platformName === forms_match.forms_name) {
-              setPlatformStr([...forms_match.forms_name]);
+              setPlatformStr(() => _.uniq([...platformStr, forms_match.forms_name]));
               setPlatformType(i);
               findFlag = true;
               break;
@@ -42,10 +44,17 @@ const CategoryFee_Search = React.memo(({ selectCallback, parentFormsMatchSelectD
           }
         }
 
-        if (forms_match.settlement_flag) {
+        const findForm = _.find(forms, { name: forms_match.forms_name });
+        if (!findForm) {
+          return;
+        }
+
+        if (findForm.settlement_flag) {
           setMode(1);
+          setPlatformType(-1);
+          setPlatformStr([]);
         } else {
-          if (typeof forms_match.settlement_flag === 'undefined') return;
+          if (typeof findForm.settlement_flag === 'undefined') return;
 
           if (!findFlag) {
             setPlatformStr([...basic_platform_str]);

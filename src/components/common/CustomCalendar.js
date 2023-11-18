@@ -62,7 +62,7 @@ const CustomCalendar = ({ dayGroupDatas, selectCallback, setCalendarCurrentDate 
           setCurrentDate(date);
           const findEvent = events.find((event) => event.group === time_format_day(date));
 
-          selectCallback(findEvent);
+          selectCallback(findEvent, time_format_day(date));
         }}
         selectable={true}
         messages={{

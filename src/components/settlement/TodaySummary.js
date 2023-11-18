@@ -313,11 +313,23 @@ const TodaySummary = () => {
             </div>
             <CustomCalendar
               dayGroupDatas={dayData}
-              selectCallback={(e) => {
+              selectCallback={(e, selectDay) => {
                 if (e) setSelectedDayGroup(e.group);
                 else {
-                  setSelectedDayGroup(null);
+                  setSelectedDayGroup(selectDay);
                   setExcept('저장된 주문서가 없습니다.');
+
+                  let summary = {
+                    unique_order_no_count: 0,
+                    delivery_send_count: 0,
+                    loss_order_no_count: 0,
+                    sum_payment_price: 0,
+                    sum_received_delivery_fee: 0,
+                    sum_delivery_fee: 0,
+                    sum_profit_loss: 0,
+                  };
+
+                  setViewResult(summary);
                 }
               }}
               setCalendarCurrentDate={setCalendarCurrentDate}

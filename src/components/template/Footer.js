@@ -49,7 +49,7 @@ const Footer = () => {
         <div className="informbox">
           <img src={`${img_src}${logo_blue}`} alt="로고" />
           <dl>
-            <dd>셀러라면, 셀라(SELLA)</dd>
+            <dd>셀러라면</dd>
             <dd className="left">상담전화 : 070-8028-4426</dd>
             <dd>주소 : 경기도 양주시 부흥로 1936, 405호</dd>
             <dd className="left">대표 : 박효은</dd>
