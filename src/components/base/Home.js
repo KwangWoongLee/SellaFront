@@ -94,7 +94,7 @@ const Home = () => {
           <div className="bannerwrap">
             <dl className="left">
               <dd>
-                오늘 들어온 주문.
+                반영됐을까요? 오늘 들어온 주문.
                 <br />
                 이익이 얼마일까? 손해는 아닐까?
                 <br />
