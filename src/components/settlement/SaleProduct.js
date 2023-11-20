@@ -16,10 +16,15 @@ import { logger } from 'util/com';
 import Recoils from 'recoils';
 import _ from 'lodash';
 
+import { useMediaQuery } from 'react-responsive';
+
 import 'styles/SaleProduct.scss';
+import MobileRefuser from 'components/template/MobileRefuser';
 
 const SaleProduct = () => {
-  //logger.debug('SaleProduct');
+  const isMobile = useMediaQuery({
+    query: '(max-width:768px)',
+  });
 
   const [items, setItems] = useState([]);
   const [formsMatchSelect, setFormsMatchSelect] = useState(null);
@@ -383,38 +388,46 @@ const SaleProduct = () => {
       <Body title={`판매상품 연결조회`} myClass={'sale_product'}>
         <FormManagementNavTab active="/settlement/sale_product" />
         <div className="page">
-          <div className="section1">
-            <h3>판매 상품 연결 조회</h3>
-            <button onClick={onSave} className="btn_blue btn-primary">
-              전체 저장
-            </button>
-            <FormsMatchTable
-              rows={items}
-              selectCallback={onSelectFormsMatchTable}
-              deleteCallback={onDeleteFormsMatchTable}
-              onParentSelect={formsMatchSelect}
-            ></FormsMatchTable>
-            <h3>연결 상품</h3>
-            <GoodsMatchTable
-              selectCallback={onSelectGoodsMatchTable}
-              deleteCallback={onDeleteGoodsMatchTable}
-              changeCallback={onChangeGoodsMatchTable}
-              parentFormsMatchSelectData={selectFormsMatchData}
-            ></GoodsMatchTable>
-          </div>
-          <div className="section2">
-            <h3>연결할 기준 상품 검색</h3>
-            <StandardProduct_Search
-              selectCallback={onSelectStandardProduct_Search}
-              unSelectCallback={onUnSelectStandardProduct_Search}
-              parentFormsMatchSelectData={selectFormsMatchData}
-            ></StandardProduct_Search>
-            <h3>수수료 검색</h3>
-            <CategoryFee_Search
-              parentFormsMatchSelectData={selectFormsMatchData}
-              selectCallback={onSelectCategoryFee_Search}
-            ></CategoryFee_Search>
-          </div>
+          {isMobile ? (
+            <>
+              <MobileRefuser></MobileRefuser>
+            </>
+          ) : (
+            <>
+              <div className="section1">
+                <h3>판매 상품 연결 조회</h3>
+                <button onClick={onSave} className="btn_blue btn-primary">
+                  전체 저장
+                </button>
+                <FormsMatchTable
+                  rows={items}
+                  selectCallback={onSelectFormsMatchTable}
+                  deleteCallback={onDeleteFormsMatchTable}
+                  onParentSelect={formsMatchSelect}
+                ></FormsMatchTable>
+                <h3>연결 상품</h3>
+                <GoodsMatchTable
+                  selectCallback={onSelectGoodsMatchTable}
+                  deleteCallback={onDeleteGoodsMatchTable}
+                  changeCallback={onChangeGoodsMatchTable}
+                  parentFormsMatchSelectData={selectFormsMatchData}
+                ></GoodsMatchTable>
+              </div>
+              <div className="section2">
+                <h3>연결할 기준 상품 검색</h3>
+                <StandardProduct_Search
+                  selectCallback={onSelectStandardProduct_Search}
+                  unSelectCallback={onUnSelectStandardProduct_Search}
+                  parentFormsMatchSelectData={selectFormsMatchData}
+                ></StandardProduct_Search>
+                <h3>수수료 검색</h3>
+                <CategoryFee_Search
+                  parentFormsMatchSelectData={selectFormsMatchData}
+                  selectCallback={onSelectCategoryFee_Search}
+                ></CategoryFee_Search>
+              </div>
+            </>
+          )}
         </div>
       </Body>
       <Footer />

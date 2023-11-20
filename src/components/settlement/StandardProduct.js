@@ -11,15 +11,19 @@ import Recoils from 'recoils';
 import { img_src, logger, time_format } from 'util/com';
 import request from 'util/request';
 import _ from 'lodash';
+import { useMediaQuery } from 'react-responsive';
 
 import 'styles/StandardProduct.scss';
 
 import icon_search from 'images/icon_search.svg';
 import icon_reset from 'images/icon_reset.svg';
 import icon_del from 'images/icon_del.svg';
+import MobileRefuser from 'components/template/MobileRefuser';
 
 const StandardProduct = () => {
-  //logger.debug('StandardProduct');
+  const isMobile = useMediaQuery({
+    query: '(max-width:768px)',
+  });
 
   const [goodsData, setGoodsData] = useState([]);
   const [matchData, setMatchData] = useState([]);
@@ -147,10 +151,16 @@ const StandardProduct = () => {
       <Body title={`기준상품 연결 조회`} myClass={'standard_product'}>
         <FormManagementNavTab active="/settlement/standard_product" />
         <div className="page">
-          <div className="section1">
-            <h3>기준상품 연결 조회 </h3>
-            <div className="inputbox">
-              {/* <DropdownButton variant="" title={category[categoryType]}>
+          {isMobile ? (
+            <>
+              <MobileRefuser></MobileRefuser>
+            </>
+          ) : (
+            <>
+              <div className="section1">
+                <h3>기준상품 연결 조회 </h3>
+                <div className="inputbox">
+                  {/* <DropdownButton variant="" title={category[categoryType]}>
                 {category &&
                   category.map((item, key) => (
                     <Dropdown.Item
@@ -163,88 +173,90 @@ const StandardProduct = () => {
                     </Dropdown.Item>
                   ))}
               </DropdownButton> */}
-              <input
-                type="text"
-                placeholder={'상품명'}
-                ref={nameRef}
-                className="input_search"
-                onKeyDown={handleKeyDown}
-              ></input>
-              <Button onClick={onSearch} className="btn_search">
-                <img src={`${img_src}${icon_search}`} />
-              </Button>
+                  <input
+                    type="text"
+                    placeholder={'상품명'}
+                    ref={nameRef}
+                    className="input_search"
+                    onKeyDown={handleKeyDown}
+                  ></input>
+                  <Button onClick={onSearch} className="btn_search">
+                    <img src={`${img_src}${icon_search}`} />
+                  </Button>
 
-              <Button className="btn_reset" onClick={onReset}>
-                <img src={`${img_src}${icon_reset}`} />
-              </Button>
-            </div>
-            <div className="tablebox">
-              <table className="thead">
-                <thead>
-                  <th>상품코드</th>
-                  {/* <th>카테고리</th> */}
-                  <th>상품명</th>
-                </thead>
-              </table>
-              <table className="tbody">
-                <tbody>
-                  <>
-                    {goodsData &&
-                      goodsData.map((d, key) => (
-                        <GoodsItem
-                          key={key}
-                          index={key}
-                          d={d}
-                          onClick={(e) => {
-                            onClickSearchRow(e, d);
-                          }}
-                          tableRow={tableRow}
-                        />
-                      ))}
-                  </>
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div className="section2">
-            <h3>
-              연결한 판매상품 <span>{matchData.length}</span>
-            </h3>
-            {/* 이부분 데이터가 뿌려지는 걸 못봐서 나중에 다시 스타일 잡을게요! 
+                  <Button className="btn_reset" onClick={onReset}>
+                    <img src={`${img_src}${icon_reset}`} />
+                  </Button>
+                </div>
+                <div className="tablebox">
+                  <table className="thead">
+                    <thead>
+                      <th>상품코드</th>
+                      {/* <th>카테고리</th> */}
+                      <th>상품명</th>
+                    </thead>
+                  </table>
+                  <table className="tbody">
+                    <tbody>
+                      <>
+                        {goodsData &&
+                          goodsData.map((d, key) => (
+                            <GoodsItem
+                              key={key}
+                              index={key}
+                              d={d}
+                              onClick={(e) => {
+                                onClickSearchRow(e, d);
+                              }}
+                              tableRow={tableRow}
+                            />
+                          ))}
+                      </>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div className="section2">
+                <h3>
+                  연결한 판매상품 <span>{matchData.length}</span>
+                </h3>
+                {/* 이부분 데이터가 뿌려지는 걸 못봐서 나중에 다시 스타일 잡을게요! 
             이 부분을 AGGrid로 하자고 말씀해주셨었나요..?ㅠ 여기는 별 기능이없어
             그냥 테이블로 바꿔놓을게요 ?*/}
 
-            <div className="tablebox">
-              <table className="thead">
-                <thead>
-                  <th>연결일시</th>
-                  <th>주문매체</th>
-                  <th>상품명</th>
-                  <th>옵션</th>
-                  <th>수량</th>
-                  {/* <th>수수료</th> */}
-                  <th></th>
-                </thead>
-              </table>
-              <table className="tbody">
-                <tbody>
-                  <>
-                    {matchData &&
-                      matchData.map((d, key) => (
-                        <StandardProductItem
-                          key={key}
-                          index={key}
-                          d={d}
-                          onChange={onChangeStandardItem}
-                          onSave={onSave}
-                          onDelete={onDelete}
-                        />
-                      ))}
-                  </>
-                </tbody>
-              </table>
-            </div>
-          </div>
+                <div className="tablebox">
+                  <table className="thead">
+                    <thead>
+                      <th>연결일시</th>
+                      <th>주문매체</th>
+                      <th>상품명</th>
+                      <th>옵션</th>
+                      <th>수량</th>
+                      {/* <th>수수료</th> */}
+                      <th></th>
+                    </thead>
+                  </table>
+                  <table className="tbody">
+                    <tbody>
+                      <>
+                        {matchData &&
+                          matchData.map((d, key) => (
+                            <StandardProductItem
+                              key={key}
+                              index={key}
+                              d={d}
+                              onChange={onChangeStandardItem}
+                              onSave={onSave}
+                              onDelete={onDelete}
+                            />
+                          ))}
+                      </>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </Body>
       <Footer />

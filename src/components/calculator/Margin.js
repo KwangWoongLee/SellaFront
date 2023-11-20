@@ -11,15 +11,19 @@ import Recoils from 'recoils';
 import { modal, logger, page_reload, revert_1000, replace_1000 } from 'util/com';
 import request from 'util/request';
 import _ from 'lodash';
+import { useMediaQuery } from 'react-responsive';
 
 // AG Grid
 import { AgGridReact } from 'ag-grid-react';
 //
 
 import 'styles/Margin.scss';
+import MobileRefuser from 'components/template/MobileRefuser';
 
 const Margin = () => {
-  //logger.debug('Margin');
+  const isMobile = useMediaQuery({
+    query: '(max-width:768px)',
+  });
 
   const [rowData, setDatas] = useState([]);
   const platformData = [...Recoils.getState('SELLA:PLATFORM')];
@@ -429,161 +433,167 @@ const Margin = () => {
       <Body title={`마진 계산기`} myClass={'margin'}>
         {/* <CalculatorNavTab active="/calculator/margin" /> */}
         <div className="page">
-          <div className="section section1">
-            <div className="btnbox">
-              <Button variant="primary" onClick={onReset}>
-                초기화
-              </Button>
+          {isMobile ? (
+            <>
+              <MobileRefuser></MobileRefuser>
+            </>
+          ) : (
+            <>
+              <div className="section section1">
+                <div className="btnbox">
+                  <Button variant="primary" onClick={onReset}>
+                    초기화
+                  </Button>
 
-              <Button disabled={!abledSaveButton} variant="primary" onClick={onSave} className="btn_blue">
-                저장
-              </Button>
-            </div>
-            <div className="tablebox1">
-              <table>
-                <colgroup>
-                  <col width="50px" />
-                  <col />
-                </colgroup>
-                <tbody>
-                  <tr>
-                    <th>정산금액</th>
-                    <td>
-                      {replace_1000(revert_1000(resultData.settlement_price))}
-                      <span> 원</span>
-                    </td>
-                  </tr>
+                  <Button disabled={!abledSaveButton} variant="primary" onClick={onSave} className="btn_blue">
+                    저장
+                  </Button>
+                </div>
+                <div className="tablebox1">
+                  <table>
+                    <colgroup>
+                      <col width="50px" />
+                      <col />
+                    </colgroup>
+                    <tbody>
+                      <tr>
+                        <th>정산금액</th>
+                        <td>
+                          {replace_1000(revert_1000(resultData.settlement_price))}
+                          <span> 원</span>
+                        </td>
+                      </tr>
 
-                  <tr>
-                    <th>순이익</th>
-                    <td className={resultData.margin >= 0 ? 'txt_green' : 'txt_red'}>
-                      <span>{resultData.margin >= 0 ? '이익' : '손해'} </span>
-                      {resultData.margin > 0 && '+'}
-                      {replace_1000(revert_1000(resultData.margin))}
-                      <span> 원</span>
-                    </td>
-                  </tr>
+                      <tr>
+                        <th>순이익</th>
+                        <td className={resultData.margin >= 0 ? 'txt_green' : 'txt_red'}>
+                          <span>{resultData.margin >= 0 ? '이익' : '손해'} </span>
+                          {resultData.margin > 0 && '+'}
+                          {replace_1000(revert_1000(resultData.margin))}
+                          <span> 원</span>
+                        </td>
+                      </tr>
 
-                  <tr>
-                    <th>마진율</th>
-                    <td className={resultData.margin_rate >= 0 ? 'txt_green' : 'txt_red'}>
-                      {resultData.margin_rate}
-                      <span> %</span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div className="tablebox2">
-              <table>
-                <tbody>
-                  <tr>
-                    <td>
-                      <input
-                        ref={nameRef}
-                        onKeyDown={handleKeyDown}
-                        placeholder="상품명 입력"
-                        className="input_prdname"
-                      ></input>
-                      <Button variant="primary" onClick={onSearch} className="btn btn_blue">
-                        내 상품 찾기
-                      </Button>
-                    </td>
-                  </tr>
+                      <tr>
+                        <th>마진율</th>
+                        <td className={resultData.margin_rate >= 0 ? 'txt_green' : 'txt_red'}>
+                          {resultData.margin_rate}
+                          <span> %</span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div className="tablebox2">
+                  <table>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <input
+                            ref={nameRef}
+                            onKeyDown={handleKeyDown}
+                            placeholder="상품명 입력"
+                            className="input_prdname"
+                          ></input>
+                          <Button variant="primary" onClick={onSearch} className="btn btn_blue">
+                            내 상품 찾기
+                          </Button>
+                        </td>
+                      </tr>
 
-                  <tr>
-                    <td>
-                      <span className="txt_green">판매가격</span>
-                      <input
-                        type="text"
-                        ref={sellPriceRef}
-                        onChange={(e) => {
-                          onChangeInput(e, sellPriceRef);
-                        }}
-                      ></input>
-                      <span>원</span>
-                    </td>
-                  </tr>
+                      <tr>
+                        <td>
+                          <span className="txt_green">판매가격</span>
+                          <input
+                            type="text"
+                            ref={sellPriceRef}
+                            onChange={(e) => {
+                              onChangeInput(e, sellPriceRef);
+                            }}
+                          ></input>
+                          <span>원</span>
+                        </td>
+                      </tr>
 
-                  <tr>
-                    <td>
-                      <span className="txt_green">받은 배송비</span>
-                      <input
-                        type="text"
-                        ref={sellDeliveryFeeRef}
-                        onChange={(e) => {
-                          onChangeInput(e, sellDeliveryFeeRef);
-                        }}
-                      ></input>
-                      <span>원</span>
-                    </td>
-                  </tr>
+                      <tr>
+                        <td>
+                          <span className="txt_green">받은 배송비</span>
+                          <input
+                            type="text"
+                            ref={sellDeliveryFeeRef}
+                            onChange={(e) => {
+                              onChangeInput(e, sellDeliveryFeeRef);
+                            }}
+                          ></input>
+                          <span>원</span>
+                        </td>
+                      </tr>
 
-                  <tr>
-                    <td>
-                      <span className="txt_red">매입가</span>
-                      <input
-                        type="text"
-                        ref={stockPriceRef}
-                        onChange={(e) => {
-                          onChangeInput(e, stockPriceRef);
-                        }}
-                      ></input>
-                      <span>원</span>
-                    </td>
-                  </tr>
+                      <tr>
+                        <td>
+                          <span className="txt_red">매입가</span>
+                          <input
+                            type="text"
+                            ref={stockPriceRef}
+                            onChange={(e) => {
+                              onChangeInput(e, stockPriceRef);
+                            }}
+                          ></input>
+                          <span>원</span>
+                        </td>
+                      </tr>
 
-                  <tr>
-                    <td>
-                      <span className="txt_red ">택배비·포장비</span>
-                      <input
-                        type="text"
-                        ref={savedDPFeeRef}
-                        onChange={(e) => {
-                          onChangeInput(e, savedDPFeeRef);
-                        }}
-                      ></input>
-                      <span>원</span>
-                    </td>
-                  </tr>
+                      <tr>
+                        <td>
+                          <span className="txt_red ">택배비·포장비</span>
+                          <input
+                            type="text"
+                            ref={savedDPFeeRef}
+                            onChange={(e) => {
+                              onChangeInput(e, savedDPFeeRef);
+                            }}
+                          ></input>
+                          <span>원</span>
+                        </td>
+                      </tr>
 
-                  <tr>
-                    <td>
-                      <span className="txt_red">수수료</span>
-                      <DropdownButton
-                        variant=""
-                        title={platformData.length ? platformData[platformType].name : ''}
-                        className="nounit"
-                      >
-                        {platformData &&
-                          platformData.map((item, key) => (
-                            <Dropdown.Item
-                              key={key}
-                              eventKey={key}
-                              onClick={(e) => onChange(key, e)}
-                              active={platformType === key}
-                            >
-                              {item.name}
-                            </Dropdown.Item>
-                          ))}
-                      </DropdownButton>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <span className="txt_small">매체 수수료</span>
-                      <input type="number" ref={platformFeeRateRef}></input>
-                      <span>%</span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <span className="txt_small">배송비 수수료</span>
-                      <input type="number" ref={platformDeliverFeeRateRef}></input>
-                      <span>%</span>
-                    </td>
-                  </tr>
-                  {/* <tr>
+                      <tr>
+                        <td>
+                          <span className="txt_red">수수료</span>
+                          <DropdownButton
+                            variant=""
+                            title={platformData.length ? platformData[platformType].name : ''}
+                            className="nounit"
+                          >
+                            {platformData &&
+                              platformData.map((item, key) => (
+                                <Dropdown.Item
+                                  key={key}
+                                  eventKey={key}
+                                  onClick={(e) => onChange(key, e)}
+                                  active={platformType === key}
+                                >
+                                  {item.name}
+                                </Dropdown.Item>
+                              ))}
+                          </DropdownButton>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <span className="txt_small">매체 수수료</span>
+                          <input type="number" ref={platformFeeRateRef}></input>
+                          <span>%</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <span className="txt_small">배송비 수수료</span>
+                          <input type="number" ref={platformDeliverFeeRateRef}></input>
+                          <span>%</span>
+                        </td>
+                      </tr>
+                      {/* <tr>
                     <td className="td_sum gray">
                       <span>최저 판매가</span> {lowestPrice} 원
                     </td>
@@ -595,39 +605,41 @@ const Margin = () => {
                       <span>%</span>
                     </td>
                   </tr> */}
-                </tbody>
-              </table>
-            </div>
-            <Button variant="primary" className="btn_blue btn_calc" onClick={onClickCalc}>
-              계산하기
-            </Button>
-          </div>
-          <div className="section section2">
-            <div className="btnbox">
-              <Button variant="primary" onClick={onDelete}>
-                선택 삭제
-              </Button>
-              <span className="count">
-                <b>{rowData.length}</b> / {maxSaveCountRef.current}개
-              </span>
-            </div>
-            <div style={containerStyle} className="tablebox">
-              <div style={gridStyle} className="ag-theme-alpine">
-                <AgGridReact
-                  ref={gridRef}
-                  rowData={rowData}
-                  columnDefs={columnDefs}
-                  alwaysShowHorizontalScroll={true}
-                  alwaysShowVerticalScroll={true}
-                  defaultColDef={defaultColDef}
-                  rowSelection={'single'}
-                  overlayNoRowsTemplate={'데이터가 없습니다.'}
-                  onSelectionChanged={onSelectionChanged}
-                  rowHeight={rowHeight}
-                ></AgGridReact>
+                    </tbody>
+                  </table>
+                </div>
+                <Button variant="primary" className="btn_blue btn_calc" onClick={onClickCalc}>
+                  계산하기
+                </Button>
               </div>
-            </div>
-          </div>
+              <div className="section section2">
+                <div className="btnbox">
+                  <Button variant="primary" onClick={onDelete}>
+                    선택 삭제
+                  </Button>
+                  <span className="count">
+                    <b>{rowData.length}</b> / {maxSaveCountRef.current}개
+                  </span>
+                </div>
+                <div style={containerStyle} className="tablebox">
+                  <div style={gridStyle} className="ag-theme-alpine">
+                    <AgGridReact
+                      ref={gridRef}
+                      rowData={rowData}
+                      columnDefs={columnDefs}
+                      alwaysShowHorizontalScroll={true}
+                      alwaysShowVerticalScroll={true}
+                      defaultColDef={defaultColDef}
+                      rowSelection={'single'}
+                      overlayNoRowsTemplate={'데이터가 없습니다.'}
+                      onSelectionChanged={onSelectionChanged}
+                      rowHeight={rowHeight}
+                    ></AgGridReact>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </Body>
       <Footer />

@@ -263,7 +263,7 @@ const LowestPrice_NoLogin = () => {
                 최저가 계산기로 최저 금액을 미리 계산하세요.
               </li>
             </ul>
-            <h4>더 많은 기능을 사용해보세요!</h4>
+            {/* <h4>더 많은 기능을 사용해보세요!</h4>
             <button
               type="button"
               onClick={() => {
@@ -272,7 +272,7 @@ const LowestPrice_NoLogin = () => {
               class="btn-primary btn btn-primary"
             >
               셀라 무료체험 신청
-            </button>
+            </button> */}
           </div>
         </div>
       </Body>

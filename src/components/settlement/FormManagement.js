@@ -13,6 +13,7 @@ import FormManagement_Custom from 'components/settlement/FormManagement_Custom';
 import FormManagement_Custom_Add from 'components/settlement/FormManagement_Custom_Add';
 import * as xlsx from 'xlsx';
 
+import { useMediaQuery } from 'react-responsive';
 import { logger } from 'util/com';
 import _ from 'lodash';
 
@@ -23,9 +24,12 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 //
 
 import 'styles/FormManagement.scss';
+import MobileRefuser from 'components/template/MobileRefuser';
 
 const FormManagement = () => {
-  //logger.debug('FormManagement');
+  const isMobile = useMediaQuery({
+    query: '(max-width:768px)',
+  });
 
   const [formsData, setFormsDatas] = useState([]);
   const [formMode, setFormMode] = useState(0);
@@ -246,41 +250,49 @@ const FormManagement = () => {
       <Body title={`매체별 양식관리`} myClass={'form_management'}>
         <FormManagementNavTab active="/settlement/form_management" />
         <div className="page">
-          <div className="section1">
-            <h3>판매매체</h3>
-            <Button variant="primary" onClick={onSaveOrder}>
-              순서 저장
-            </Button>
-            <div className="ag-theme-alpine">
-              <AgGridReact
-                ref={gridRef}
-                rowData={formsData}
-                columnDefs={columnDefs}
-                alwaysShowHorizontalScroll={false}
-                alwaysShowVerticalScroll={false}
-                defaultColDef={defaultColDef}
-                rowSelection="single"
-                rowDragManaged={true}
-                animateRows={true}
-                onSelectionChanged={onSelectionChanged}
-                onGridReady={onGridReady}
-                rowHeight={rowHeight}
-              ></AgGridReact>
-            </div>
-            <div className="btnbox">
-              <Button variant="primary" onClick={onAddForm} className="btn_blue">
-                사용자 양식 추가
-              </Button>
-              {formMode != 1 && (
-                <Button variant="primary" className="btn_red" onClick={onDelete}>
-                  선택 양식 삭제
+          {isMobile ? (
+            <>
+              <MobileRefuser></MobileRefuser>
+            </>
+          ) : (
+            <>
+              <div className="section1">
+                <h3>판매매체</h3>
+                <Button variant="primary" onClick={onSaveOrder}>
+                  순서 저장
                 </Button>
-              )}
-            </div>
-          </div>
-          <div className="section2">{formMode == 1 && <FormManagement_Basic platform={nextForm} />}</div>
-          <div className="section3">{formMode == 2 && <FormManagement_Custom platform={nextForm} />}</div>
-          <div className="section3">{formMode == 3 && <FormManagement_Custom_Add platform={nextForm} />}</div>
+                <div className="ag-theme-alpine">
+                  <AgGridReact
+                    ref={gridRef}
+                    rowData={formsData}
+                    columnDefs={columnDefs}
+                    alwaysShowHorizontalScroll={false}
+                    alwaysShowVerticalScroll={false}
+                    defaultColDef={defaultColDef}
+                    rowSelection="single"
+                    rowDragManaged={true}
+                    animateRows={true}
+                    onSelectionChanged={onSelectionChanged}
+                    onGridReady={onGridReady}
+                    rowHeight={rowHeight}
+                  ></AgGridReact>
+                </div>
+                <div className="btnbox">
+                  <Button variant="primary" onClick={onAddForm} className="btn_blue">
+                    사용자 양식 추가
+                  </Button>
+                  {formMode != 1 && (
+                    <Button variant="primary" className="btn_red" onClick={onDelete}>
+                      선택 양식 삭제
+                    </Button>
+                  )}
+                </div>
+              </div>
+              <div className="section2">{formMode == 1 && <FormManagement_Basic platform={nextForm} />}</div>
+              <div className="section3">{formMode == 2 && <FormManagement_Custom platform={nextForm} />}</div>
+              <div className="section3">{formMode == 3 && <FormManagement_Custom_Add platform={nextForm} />}</div>
+            </>
+          )}
         </div>
       </Body>
       <Footer />

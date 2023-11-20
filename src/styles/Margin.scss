@@ -411,11 +411,12 @@
 
       ul {
         display: block;
-        margin: 30px auto 40px;
+        // margin: 30px auto 40px;
+        margin: 30px auto 0;
         padding-bottom: 15px;
         width: 80%;
         height: auto;
-        border-bottom: 1px dashed #ccc;
+        // border-bottom: 1px dashed #ccc;
 
         li {
           display: block;

@@ -250,6 +250,18 @@
 
       .tbody td:nth-child(2) {
         border-right: 1px dotted #ccc;
+
+        span.tag {
+          display: inline-block;
+          margin-left: 10px;
+          padding: 5px 10px 6px;
+          width: auto;
+          color: #081a51;
+          font-size: 12px;
+          line-height: 12px;
+          background-color: #f9f9f9;
+          border-radius: 5px;
+        }
       }
 
       .tbody td:nth-child(3) {
@@ -402,7 +414,7 @@
       }
 
       td:nth-child(2) {
-        width: 40%;
+        // width: 40%;
         color: #333;
       }
     }

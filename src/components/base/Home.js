@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Button, InputGroup, Form, Nav } from 'react-bootstrap';
+import { Button, InputGroup, Form, Nav, Modal } from 'react-bootstrap';
 import Recoils from 'recoils';
 import { is_authed } from 'util/com';
 import com, { logger, navigate, img_src, modal } from 'util/com';
@@ -37,36 +37,14 @@ import img_salearrow from 'images/img_salearrow.svg';
 
 const Home = () => {
   const [sliderState, setSliderState] = useState(false);
-  const [announcement, setAnnouncement] = useState([]);
   const [scrollElemId, setScrollElemId] = useState('');
   const [currentLiTag, setCurrentLiTag] = useState(0);
-  const onLink = (e, no_login_path) => {
-    e.preventDefault();
-    logger.debug('href : ', e.currentTarget.name);
-    if (no_login_path) {
-      navigate(no_login_path);
-    } else {
-      navigate(e.currentTarget.name);
-    }
-  };
-
-  const getElementY = (element) => {
-    return window.pageYOffset + element.getBoundingClientRect().top;
-  };
-
-  // 해당 element 로 스크롤!
 
   useEffect(() => {
     const element = document.getElementById(scrollElemId);
-    if (element) {
-      // const client = element.getBoundingClientRect();
-      element.scrollIntoView({ behavior: 'smooth' });
-      // const bodyElement = document.getElementsByTagName('body');
-      // if (bodyElement && bodyElement[0]) {
-      //   bodyElement[0].scrollTop = bodyElement[0].scrollTop - 50;
-      // }
 
-      // window.scrollTo({ top: getElementY(element), behavior: 'smooth' });
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
     }
   }, [scrollElemId]);
 
@@ -94,7 +72,7 @@ const Home = () => {
           <div className="bannerwrap">
             <dl className="left">
               <dd>
-                반영이될까요 ?? 오늘 들어온 주문.
+                오늘 들어온 주문.
                 <br />
                 이익이 얼마일까? 손해는 아닐까?
                 <br />
@@ -277,8 +255,8 @@ const Home = () => {
             <img src={`${img_src}${banner_05_m}`} />
           </div>
         </Slider>
-
-        <section className="main01 pc" id="main01">
+        <div id="main01"></div>
+        <section className="main01 pc">
           <h3>서비스 소개</h3>
           <h4>
             어떤 솔루션에서도 제대로 된 정산 기능을 찾을 수 없어서 직접 만들었습니다.
@@ -397,8 +375,8 @@ const Home = () => {
             </li>
           </ul>
         </section>
-
-        <section className="main02" id="main02">
+        <div id="main02"></div>
+        <section className="main02">
           <h3>‘셀라’ 더 알아보기</h3>
           <h4>유용한 정보를 참고하세요.</h4>
 
@@ -501,7 +479,8 @@ const Home = () => {
           </ul>
         </section>
 
-        <section className="main03" id="main03">
+        <div id="main03"></div>
+        <section className="main03">
           <h3>요금제 유형</h3>
           <h4>꼭 필요한 기능을 준비했습니다.</h4>
 
@@ -639,7 +618,8 @@ const Home = () => {
           </ul>
         </section>
 
-        <section className="main04" id="main04">
+        <div id="main04"></div>
+        <section className="main04">
           <div>
             <h3>시작이 어려우신가요?</h3>
             <h4>교육 받아보시면 쉽습니다.</h4>

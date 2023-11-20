@@ -4,7 +4,7 @@ import { Button, Modal, DropdownButton, Dropdown } from 'react-bootstrap';
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
-import { page_reload, replace_1000, revert_1000, time_format, time_format_day } from 'util/com';
+import { page_reload, replace_1000, revert_1000, time_format_none_day, time_format_day } from 'util/com';
 import com, { img_src } from 'util/com';
 import request from 'util/request';
 import { modal } from 'util/com';
@@ -433,7 +433,7 @@ const TodaySummary = () => {
                     {viewResult.sum_received_delivery_fee} <i>원</i>
                   </li>
                   <li className="txt_green">
-                    <b>택배 발송</b>
+                    <b>손익 합계</b>
                     {viewResult.sum_delivery_fee} <i>원</i>
                   </li>
                 </ul>
@@ -474,7 +474,7 @@ const SummaryRow = React.memo(({ d, setDateModalState, onDelete, selectRowDataId
   return (
     <li className={d.sum_profit_loss >= 0 ? 'green' : 'red'}>
       <p>
-        <b>{time_format(d.reg_date)}</b>
+        <b>{time_format_none_day(d.reg_date)}</b>
         {d.forms_name}
       </p>
       <ol>

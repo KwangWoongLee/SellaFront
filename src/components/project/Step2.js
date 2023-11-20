@@ -22,12 +22,14 @@ import _ from 'lodash';
 import * as xlsx from 'xlsx';
 import * as ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
+import { useMediaQuery } from 'react-responsive';
 
 // AG Grid
 import { AgGridReact } from 'ag-grid-react';
 //
 
 import 'styles/Step2.scss';
+import MobileRefuser from 'components/template/MobileRefuser';
 
 let rawData;
 const excel_str = [
@@ -58,6 +60,10 @@ const Step2 = () => {
       minWidth: 100,
     };
   }, []);
+
+  const isMobile = useMediaQuery({
+    query: '(max-width:768px)',
+  });
 
   useEffect(() => {
     const goodsData = _.cloneDeep(Recoils.getState('DATA:GOODS'));
@@ -430,52 +436,58 @@ const Step2 = () => {
       <Head />
       <Body title={`Step2`} myClass={'step2'}>
         <div className="page">
-          <div className="btnbox_left">
-            <Button variant="primary" onClick={onDelete} className="btn_red">
-              선택 삭제
-            </Button>{' '}
-            <Button variant="primary" onClick={onModify} className="btn_blue">
-              선택 저장
-            </Button>{' '}
-            <Button variant="primary" onClick={onInsert}>
-              상품 추가
-            </Button>{' '}
-            <p class="prdcount">
-              전체 상품 <span>{rowData && rowData.length}</span> 개
-            </p>
-          </div>
-          <div className="btnbox_right">
-            <span className="icon_Excel2">엑셀일괄작업</span>
-            <DropdownButton variant="" title={excel_str[excelType]}>
-              {excel_str.map((_, key) => (
-                <Dropdown.Item
-                  key={key}
-                  eventKey={key}
-                  onClick={(e) => onChangeExcelType(key, e)}
-                  active={excelType === key}
-                >
-                  {excel_str[key]}
-                </Dropdown.Item>
-              ))}
-            </DropdownButton>
-          </div>
-          <div style={containerStyle} className="tablebox">
-            <div style={gridStyle} className="ag-theme-alpine test">
-              <AgGridReact
-                ref={gridRef}
-                rowData={rowData}
-                columnDefs={columnDefs}
-                alwaysShowHorizontalScroll={true}
-                alwaysShowVerticalScroll={true}
-                defaultColDef={defaultColDef}
-                rowSelection={'multiple'}
-                onCellEditingStopped={onCellValueChanged}
-                singleClickEdit={true}
-                rowHeight={rowHeight}
-                stopEditingWhenCellsLoseFocus={true}
-              ></AgGridReact>
-            </div>
-          </div>
+          {isMobile ? (
+            <MobileRefuser></MobileRefuser>
+          ) : (
+            <>
+              <div className="btnbox_left">
+                <Button variant="primary" onClick={onDelete} className="btn_red">
+                  선택 삭제
+                </Button>{' '}
+                <Button variant="primary" onClick={onModify} className="btn_blue">
+                  선택 저장
+                </Button>{' '}
+                <Button variant="primary" onClick={onInsert}>
+                  상품 추가
+                </Button>{' '}
+                <p class="prdcount">
+                  전체 상품 <span>{rowData && rowData.length}</span> 개
+                </p>
+              </div>
+              <div className="btnbox_right">
+                <span className="icon_Excel2">엑셀일괄작업</span>
+                <DropdownButton variant="" title={excel_str[excelType]}>
+                  {excel_str.map((_, key) => (
+                    <Dropdown.Item
+                      key={key}
+                      eventKey={key}
+                      onClick={(e) => onChangeExcelType(key, e)}
+                      active={excelType === key}
+                    >
+                      {excel_str[key]}
+                    </Dropdown.Item>
+                  ))}
+                </DropdownButton>
+              </div>
+              <div style={containerStyle} className="tablebox">
+                <div style={gridStyle} className="ag-theme-alpine test">
+                  <AgGridReact
+                    ref={gridRef}
+                    rowData={rowData}
+                    columnDefs={columnDefs}
+                    alwaysShowHorizontalScroll={true}
+                    alwaysShowVerticalScroll={true}
+                    defaultColDef={defaultColDef}
+                    rowSelection={'multiple'}
+                    onCellEditingStopped={onCellValueChanged}
+                    singleClickEdit={true}
+                    rowHeight={rowHeight}
+                    stopEditingWhenCellsLoseFocus={true}
+                  ></AgGridReact>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </Body>
       <Footer />

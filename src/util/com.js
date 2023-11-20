@@ -247,6 +247,11 @@ export const time_format_none_time = (time) => {
   return dateFormat(now, `yyyy-mm-dd`);
 };
 
+export const time_format_none_day = (time) => {
+  const now = new Date(time);
+  return formatAMPM(now);
+};
+
 export const get_login_hash = function (value) {
   const login_secret = conf.login_secret;
   const data = `${login_secret}${value}`;
