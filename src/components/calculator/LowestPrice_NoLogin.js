@@ -19,6 +19,7 @@ const LowestPrice_NoLogin = () => {
   const [platformType, setplatformType] = useState(-1);
 
   //inputs
+  const sellDeliveryFeeRef = useRef(null);
   const stockPriceRef = useRef(null);
   const savedDPFeeRef = useRef(null);
   const platformFeeRateRef = useRef(null);
@@ -59,6 +60,7 @@ const LowestPrice_NoLogin = () => {
   };
 
   const onClickCalc = (e) => {
+    let sellDeliveryFee = sellDeliveryFeeRef.current.value;
     let stockPrice = stockPriceRef.current.value;
     let savedDPFee = savedDPFeeRef.current.value;
     let lowestMarginRate = lowestMarginRateRef.current.value;
@@ -79,6 +81,7 @@ const LowestPrice_NoLogin = () => {
       lowestMarginRateRef.current.value = 0;
     }
 
+    sellDeliveryFee = revert_1000(sellDeliveryFee);
     stockPrice = revert_1000(stockPrice);
     savedDPFee = revert_1000(savedDPFee);
 
@@ -110,15 +113,14 @@ const LowestPrice_NoLogin = () => {
 
     const platformDeliveryFee = savedDPFee * platformDeliverFeeRate;
 
-    const minus = stockPrice + platformFee + savedDPFee + platformDeliveryFee;
-
-    const test = lowestMarginRate - 1;
+    const test = lowestMarginRate + platformFeeRate - 1;
     if (test == 0) {
       modal.alert('최저마진율 100 %가 될 수 없습니다.');
       return;
     }
 
-    let low = minus / (1 - lowestMarginRate);
+    let low =
+      (sellDeliveryFee - stockPrice - savedDPFee - platformDeliveryFee) / (lowestMarginRate + platformFeeRate - 1);
     low = replace_1000(revert_1000(low.toFixed(0)));
 
     setLowestPrice(low);
@@ -165,6 +167,20 @@ const LowestPrice_NoLogin = () => {
                   <td className="w100">
                     <input type="number" ref={lowestMarginRateRef}></input>
                     <span>%</span>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span className="txt_green">받은 배송비</span>
+                    <input
+                      type="text"
+                      ref={sellDeliveryFeeRef}
+                      onChange={(e) => {
+                        onChangeInput(e, sellDeliveryFeeRef);
+                      }}
+                    ></input>
+                    <span>원</span>
                   </td>
                 </tr>
 

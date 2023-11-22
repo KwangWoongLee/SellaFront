@@ -75,6 +75,10 @@ const Manual = () => {
     }
   }, [rowData]);
 
+  useEffect(() => {
+    onSearch();
+  }, [categoryType]);
+
   const onPageNext = (next) => {
     if (next) {
       if (pageCount < page + 1) return;
@@ -130,13 +134,19 @@ const Manual = () => {
   };
 
   const onReset = () => {
-    setDatas([]);
     setPage(1);
     setCategoryType(0);
     setTitle('');
   };
   const onChangeCategoryType = (type) => {
+    setTitle('');
     setCategoryType(type);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      onSearch(e);
+    }
   };
 
   return (
@@ -177,6 +187,7 @@ const Manual = () => {
               onChange={(e) => {
                 setTitle(e.target.value);
               }}
+              onKeyDown={handleKeyDown}
             />
             <Button onClick={onSearch} className="btn btn_search pc">
               <img alt={''} src={`${img_src}${icon_search}`} />

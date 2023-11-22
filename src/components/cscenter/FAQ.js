@@ -74,6 +74,10 @@ const FAQ = () => {
     }
   }, [rowData]);
 
+  useEffect(() => {
+    onSearch();
+  }, [categoryType]);
+
   const handleClick = (index) => {
     const updatedState = rowData[index];
 
@@ -126,13 +130,19 @@ const FAQ = () => {
   };
 
   const onReset = () => {
-    setDatas([]);
     setPage(1);
     setCategoryType(0);
     setTitle('');
   };
   const onChangeCategoryType = (type) => {
+    setTitle('');
     setCategoryType(type);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      onSearch(e);
+    }
   };
 
   return (
@@ -173,6 +183,7 @@ const FAQ = () => {
               onChange={(e) => {
                 setTitle(e.target.value);
               }}
+              onKeyDown={handleKeyDown}
             />
             <Button onClick={onSearch} className="btn btn_search pc">
               <img alt={''} src={`${img_src}${icon_search}`} />

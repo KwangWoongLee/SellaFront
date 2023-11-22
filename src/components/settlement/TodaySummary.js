@@ -4,7 +4,14 @@ import { Button, Modal, DropdownButton, Dropdown } from 'react-bootstrap';
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
-import { page_reload, replace_1000, revert_1000, time_format_none_day, time_format_day } from 'util/com';
+import {
+  page_reload,
+  replace_1000,
+  revert_1000,
+  time_format_none_day,
+  time_format_day,
+  time_format_date_time,
+} from 'util/com';
 import com, { img_src } from 'util/com';
 import request from 'util/request';
 import { modal } from 'util/com';
@@ -245,7 +252,14 @@ const TodaySummary = () => {
       return;
     }
 
-    request.post('user/today_summary/modify', { idxs, date: new Date(date) }).then((ret) => {
+    const findObj = _.find(rowData, { idx: selectRowDataIdxRef.current });
+    if (!findObj) {
+      modal.alert('선택된 데이터가 없습니다.');
+      return;
+    }
+
+    const date_only_time = time_format_date_time(findObj.reg_date);
+    request.post('user/today_summary/modify', { idxs, date: `${date} ${date_only_time}` }).then((ret) => {
       if (!ret.err) {
         page_reload();
       }

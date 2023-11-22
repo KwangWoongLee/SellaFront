@@ -492,7 +492,7 @@ const SellaForm = React.memo(({ index, d, selectRow, onClick, onDelete, checkedI
             ></Checkbox>
           </>
         )}
-        <label>
+        <label onClick={onClick}>
           {d.sella_title}
           {d.sella_title == '정산예정금액' ? '이 있습니다.' : ''}
           {d.sella_title == '배송비 묶음번호' ? '가 있습니다.' : ''}

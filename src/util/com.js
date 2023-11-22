@@ -231,9 +231,27 @@ function formatAMPM(date) {
   return strTime;
 }
 
+function formatHHMMSS(date) {
+  let hours = date.getHours();
+  let minutes = date.getMinutes();
+  let seconds = date.getSeconds();
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  minutes = minutes < 10 ? '0' + minutes : minutes;
+  seconds = seconds < 10 ? '0' + seconds : seconds;
+  let strTime = hours + ':' + minutes + ':' + seconds;
+  return strTime;
+}
+
 export const time_format_day = (time) => {
   const now = new Date(time);
   return dateFormat(now, `yyyy년 mm월 dd일`);
+};
+
+export const time_format_date_time = (time) => {
+  const now = new Date(time);
+
+  return dateFormat(now, `hh:MM:ss`);
 };
 
 export const time_format = (time) => {
