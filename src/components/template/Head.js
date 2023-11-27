@@ -3,7 +3,7 @@ import { Nav } from 'react-bootstrap';
 import { useLocation } from 'react-router-dom';
 import { CSSTransition } from 'react-transition-group';
 
-import { img_src, navigate, logger, is_authed } from 'util/com';
+import com, { img_src, navigate, logger, is_authed } from 'util/com';
 import Recoils from 'recoils';
 import _ from 'lodash';
 
@@ -75,6 +75,11 @@ const Head = () => {
               if (!isLiTag) {
                 setTransition(false);
               }
+
+              const hamburgerElem = document.getElementById('input_hamburger');
+              if (hamburgerElem) {
+                hamburgerElem.checked = false;
+              }
             }}
           >
             <ul className={`burder`} ref={nodeRef}>
@@ -85,6 +90,8 @@ const Head = () => {
                       className="nav-link"
                       onClick={() => {
                         // onScroll('m_main01');
+                        com.storage.setItem('header_nologin_select', '1');
+                        navigate('/');
                         setTransition(false);
                       }}
                     >
@@ -95,7 +102,8 @@ const Head = () => {
                     <Nav.Link
                       className="nav-link"
                       onClick={() => {
-                        // onScroll('main02');
+                        com.storage.setItem('header_nologin_select', '2');
+                        navigate('/');
                         setTransition(false);
                       }}
                     >
@@ -106,7 +114,8 @@ const Head = () => {
                     <Nav.Link
                       className="nav-link"
                       onClick={() => {
-                        // onScroll('main03');
+                        com.storage.setItem('header_nologin_select', '3');
+                        navigate('/');
                         setTransition(false);
                       }}
                     >
@@ -117,7 +126,8 @@ const Head = () => {
                     <Nav.Link
                       className="nav-link"
                       onClick={() => {
-                        // onScroll('main04');
+                        com.storage.setItem('header_nologin_select', '4');
+                        navigate('/');
                         setTransition(false);
                       }}
                     >

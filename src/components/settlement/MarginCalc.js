@@ -23,6 +23,7 @@ import * as ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import _ from 'lodash';
 import moment from 'moment';
+import { useMediaQuery } from 'react-responsive';
 
 import { logger, replace_1000, revert_1000, time_format, time_format_none_time } from 'util/com';
 import Slider from 'react-slick';
@@ -35,6 +36,7 @@ import icon_circle_arrow_down from 'images/icon_circle_arrow_down.svg';
 import icon_circle_arrow_up from 'images/icon_circle_arrow_up.svg';
 import img_service from 'images/img_service.png';
 import icon_close from 'images/icon_close.svg';
+import MobileRefuser from 'components/template/MobileRefuser';
 
 const MarginCalc = () => {
   const account = Recoils.useValue('CONFIG:ACCOUNT');
@@ -58,6 +60,10 @@ const MarginCalc = () => {
   //ag-grid
   const containerStyle = useMemo(() => ({ width: '100%', height: '100%' }), []);
   const gridStyle = useMemo(() => ({ height: '1000px', width: '100%' }), []);
+
+  const isMobile = useMediaQuery({
+    query: '(max-width:768px)',
+  });
 
   useEffect(() => {
     request.post(`cscenter/announcement`, { category: '', title: '' }).then((ret) => {
@@ -545,144 +551,152 @@ const MarginCalc = () => {
       <Head />
       <Body title={`손익 계산`} myClass={'margin_calc'}>
         <SettlementNavTab active="/settlement/margin_calc" />
-
-        {mode == 0 && (
+        {isMobile ? (
+          <div className="page">
+            <MobileRefuser></MobileRefuser>
+          </div>
+        ) : (
           <>
-            <div className="page before">
-              <div className="innerbox">
-                <div className="noticebox">
-                  <Slider
-                    modalState={sliderState}
-                    setModalState={setSliderState}
-                    autoplay={true}
-                    autoplaySpeed={6000}
-                    dots={false}
-                    slidesToShow={1}
-                    slidesToScroll={1}
-                    arrow={false}
-                  >
-                    {announcement &&
-                      announcement.map((data, key) => (
-                        <dl>
-                          {/* <span>{data.announcement_category}</span>{' '} */}
-                          <dt
-                            onClick={() => {
-                              com.storage.setItem('nav_announcement', data.idx);
-                              navigate('/cscenter/announcement');
-                            }}
-                          >
-                            {data.title}
-                          </dt>{' '}
-                          <dd>{time_format_none_time(data.reg_date)}</dd>
-                        </dl>
-                      ))}
-                  </Slider>
-                  <button
-                    onClick={() => {
-                      navigate('cscenter/announcement');
-                    }}
-                    className="btn-primary btn_more btn_more2"
-                  ></button>
-                </div>
-
-                <div className="uploadbox">
-                  <div className="section1">
-                    <h3>
-                      주문서를 업로드하고
-                      <br className="mobile" /> 손익을 관리하세요!
-                      <p className="pc">
-                        오늘 들어온 주문, <span className="txt_red">순이익</span>은 얼마인가요?
-                      </p>
-                      <p className="mobile">
-                        <span className="txt_red">PC버전 셀라에서</span>
-                        <br className="mobile" />
-                        모든 기능을 사용하실 수 있습니다
-                      </p>
-                    </h3>
-
-                    <div className="btnbox">
-                      <DropdownButton variant="" title={platforms.length ? platforms[platformType].name : ''}>
-                        {platforms &&
-                          platforms.map(
-                            (item, key) =>
-                              item.view && (
-                                <Dropdown.Item
-                                  key={key}
-                                  eventKey={key}
-                                  onClick={(e) => onChange(key, e)}
-                                  active={platformType === key}
-                                >
-                                  {item.name}
-                                </Dropdown.Item>
-                              )
-                          )}
-                      </DropdownButton>
-                      <Button variant="primary" onClick={onUpload} className="btn_green">
-                        <img src={`${img_src}${icon_circle_arrow_up}`} />새 주문서 업로드
-                      </Button>
-                      <span>※ 신규 접수된 '배송준비중' 인 양식을 사용해주세요.</span>
+            {mode == 0 && (
+              <>
+                <div className="page before">
+                  <div className="innerbox">
+                    <div className="noticebox">
+                      <Slider
+                        modalState={sliderState}
+                        setModalState={setSliderState}
+                        autoplay={true}
+                        autoplaySpeed={6000}
+                        dots={false}
+                        slidesToShow={1}
+                        slidesToScroll={1}
+                        arrow={false}
+                      >
+                        {announcement &&
+                          announcement.map((data, key) => (
+                            <dl>
+                              {/* <span>{data.announcement_category}</span>{' '} */}
+                              <dt
+                                onClick={() => {
+                                  com.storage.setItem('nav_announcement', data.idx);
+                                  navigate('/cscenter/announcement');
+                                }}
+                              >
+                                {data.title}
+                              </dt>{' '}
+                              <dd>{time_format_none_time(data.reg_date)}</dd>
+                            </dl>
+                          ))}
+                      </Slider>
+                      <button
+                        onClick={() => {
+                          navigate('cscenter/announcement');
+                        }}
+                        className="btn-primary btn_more btn_more2"
+                      ></button>
                     </div>
 
-                    <ul className="inform">
-                      <li>판매 매체별 주문정보로 손익을 계산할 수 있습니다.</li>
-                      <li>적자 상품을 찾아 판매 가격을 수정하세요.</li>
-                      <li>오늘 업로드한 주문서를 모아서 하루동안 손익을 파악하세요.</li>
-                    </ul>
-                  </div>
-                  <div className="section2">
-                    <img src={`${img_src}${img_service}`} />
+                    <div className="uploadbox">
+                      <div className="section1">
+                        <h3>
+                          주문서를 업로드하고
+                          <br className="mobile" /> 손익을 관리하세요!
+                          <p className="pc">
+                            오늘 들어온 주문, <span className="txt_red">순이익</span>은 얼마인가요?
+                          </p>
+                          <p className="mobile">
+                            <span className="txt_red">PC버전 셀라에서</span>
+                            <br className="mobile" />
+                            모든 기능을 사용하실 수 있습니다
+                          </p>
+                        </h3>
+
+                        <div className="btnbox">
+                          <DropdownButton variant="" title={platforms.length ? platforms[platformType].name : ''}>
+                            {platforms &&
+                              platforms.map(
+                                (item, key) =>
+                                  item.view && (
+                                    <Dropdown.Item
+                                      key={key}
+                                      eventKey={key}
+                                      onClick={(e) => onChange(key, e)}
+                                      active={platformType === key}
+                                    >
+                                      {item.name}
+                                    </Dropdown.Item>
+                                  )
+                              )}
+                          </DropdownButton>
+                          <Button variant="primary" onClick={onUpload} className="btn_green">
+                            <img src={`${img_src}${icon_circle_arrow_up}`} />새 주문서 업로드
+                          </Button>
+                          <span>※ 신규 접수된 '배송준비중' 인 양식을 사용해주세요.</span>
+                        </div>
+
+                        <ul className="inform">
+                          <li>판매 매체별 주문정보로 손익을 계산할 수 있습니다.</li>
+                          <li>적자 상품을 찾아 판매 가격을 수정하세요.</li>
+                          <li>오늘 업로드한 주문서를 모아서 하루동안 손익을 파악하세요.</li>
+                        </ul>
+                      </div>
+                      <div className="section2">
+                        <img src={`${img_src}${img_service}`} />
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </>
-        )}
-        {mode == 1 && (
-          <>
-            <div className="page after">
-              <div className="inputbox">
-                <DropdownButton variant="" title={platforms.length ? platforms[platformType].name : ''}>
-                  {platforms &&
-                    platforms.map((item, key) => (
-                      <Dropdown.Item
-                        key={key}
-                        eventKey={key}
-                        onClick={(e) => onChange(key, e)}
-                        active={platformType === key}
+              </>
+            )}
+            {mode == 1 && (
+              <>
+                <div className="page after">
+                  <div className="inputbox">
+                    <DropdownButton variant="" title={platforms.length ? platforms[platformType].name : ''}>
+                      {platforms &&
+                        platforms.map((item, key) => (
+                          <Dropdown.Item
+                            key={key}
+                            eventKey={key}
+                            onClick={(e) => onChange(key, e)}
+                            active={platformType === key}
+                          >
+                            {item.name}
+                          </Dropdown.Item>
+                        ))}
+                    </DropdownButton>
+                    <Button variant="primary" onClick={onUpload} className="btn_green">
+                      <img src={`${img_src}${icon_circle_arrow_up}`} />새 주문서 업로드
+                    </Button>
+
+                    <div className="btnbox">
+                      <Button
+                        variant="primary"
+                        onClick={onDelete}
+                        className="btn_red"
+                        disabled={!rowData || !rowData.length || !_.find(rowData, { checked: true })}
                       >
-                        {item.name}
-                      </Dropdown.Item>
-                    ))}
-                </DropdownButton>
-                <Button variant="primary" onClick={onUpload} className="btn_green">
-                  <img src={`${img_src}${icon_circle_arrow_up}`} />새 주문서 업로드
-                </Button>
+                        선택 삭제
+                      </Button>
 
-                <div className="btnbox">
-                  <Button
-                    variant="primary"
-                    onClick={onDelete}
-                    className="btn_red"
-                    disabled={!rowData || !rowData.length || !_.find(rowData, { checked: true })}
-                  >
-                    선택 삭제
-                  </Button>
+                      <Button
+                        disabled={!rowData || !rowData.length}
+                        variant="primary"
+                        onClick={onViewResult}
+                        className="btn_blue"
+                      >
+                        손익 계산
+                      </Button>
 
-                  <Button
-                    disabled={!rowData || !rowData.length}
-                    variant="primary"
-                    onClick={onViewResult}
-                    className="btn_blue"
-                  >
-                    손익 계산
-                  </Button>
+                      {/* TODO 색 고민 해봐야.. */}
 
-                  {/* TODO 색 고민 해봐야.. */}
-
-                  <Button onClick={onSaveTodaySummary} disabled={!rowData || !rowData.length || _.isEmpty(viewResult)}>
-                    주문서 저장
-                  </Button>
-                  {/* 
+                      <Button
+                        onClick={onSaveTodaySummary}
+                        disabled={!rowData || !rowData.length || _.isEmpty(viewResult)}
+                      >
+                        주문서 저장
+                      </Button>
+                      {/* 
                   <Button
                     variant="primary"
                     onClick={onDownload}
@@ -692,153 +706,156 @@ const MarginCalc = () => {
                     <img src={`${img_src}${icon_circle_arrow_down}`} />
                     다운로드
                   </Button> */}
-                  {rowData && rowData.length > 0 && (
-                    <span className="formName">
-                      업로드한 매체 : <b>{rowData[0].forms_name}</b>
-                    </span>
-                  )}
-                </div>
-              </div>
+                      {rowData && rowData.length > 0 && (
+                        <span className="formName">
+                          업로드한 매체 : <b>{rowData[0].forms_name}</b>
+                        </span>
+                      )}
+                    </div>
+                  </div>
 
-              <ul className={!_.isEmpty(viewResult) ? 'viewbox' : 'viewbox off'}>
-                <li
-                  onClick={() => {
-                    isLossRowViewRef.current = false;
-                    setRowData([...lastRowDatasRef.current]);
-                  }}
-                >
-                  <p className="dt">총 주문</p>
-                  <p className="dd">
-                    {viewResult.unique_order_no_count && replace_1000(revert_1000(viewResult.unique_order_no_count))}
-                    <span>건</span>
-                  </p>
-                </li>
-                <li>
-                  <p className="dt">택배 발송</p>
-                  <p className="dd">
-                    {viewResult.delivery_send_count && replace_1000(revert_1000(viewResult.delivery_send_count))}
-                    <span>건</span>
-                  </p>
-                </li>
-                <li
-                  onClick={() => {
-                    isLossRowViewRef.current = true;
+                  <ul className={!_.isEmpty(viewResult) ? 'viewbox' : 'viewbox off'}>
+                    <li
+                      onClick={() => {
+                        isLossRowViewRef.current = false;
+                        setRowData([...lastRowDatasRef.current]);
+                      }}
+                    >
+                      <p className="dt">총 주문</p>
+                      <p className="dd">
+                        {viewResult.unique_order_no_count &&
+                          replace_1000(revert_1000(viewResult.unique_order_no_count))}
+                        <span>건</span>
+                      </p>
+                    </li>
+                    <li>
+                      <p className="dt">택배 발송</p>
+                      <p className="dd">
+                        {viewResult.delivery_send_count && replace_1000(revert_1000(viewResult.delivery_send_count))}
+                        <span>건</span>
+                      </p>
+                    </li>
+                    <li
+                      onClick={() => {
+                        isLossRowViewRef.current = true;
 
-                    const lossRowGroups = _.map(
-                      _.filter(rowData, (row) => {
-                        return row.profit_loss < 0;
-                      }),
-                      'group.id'
-                    );
-
-                    setRowData(
-                      _.filter(rowData, (row) => {
-                        return _.includes(lossRowGroups, row.group.id);
-                      })
-                    );
-                  }}
-                >
-                  <p className="dt">적자 주문</p>
-                  <span className="dd txt_red">
-                    {viewResult.loss_order_no_count && replace_1000(revert_1000(viewResult.loss_order_no_count))}
-                    <span className="unit txt_red">건</span>
-                  </span>
-                </li>
-                <li>
-                  <p className="dt">상품 결제 금액</p>
-                  <p className="dd">
-                    {viewResult.sum_payment_price && replace_1000(revert_1000(viewResult.sum_payment_price))}
-                    <span>원</span>
-                  </p>
-                </li>
-                <li>
-                  <p className="dt">받은 배송비</p>
-                  <p className="dd">
-                    {viewResult.sum_received_delivery_fee &&
-                      replace_1000(revert_1000(viewResult.sum_received_delivery_fee))}
-                    <span>원</span>
-                  </p>
-                </li>
-                <li>
-                  <p className="dt">보낸 배송비</p>
-                  <p className="dd">
-                    {viewResult.sum_delivery_fee && replace_1000(revert_1000(viewResult.sum_delivery_fee))}
-                    <span>원</span>
-                  </p>
-                </li>
-                <li className={viewResult.sum_profit_loss > 0 ? 'profit' : 'loss'}>
-                  <p className="dt">손익 합계</p>
-                  <p className="dd">
-                    {viewResult.sum_profit_loss && replace_1000(revert_1000(viewResult.sum_profit_loss))}
-                    <span>원</span>
-                  </p>
-                </li>
-              </ul>
-
-              <div style={containerStyle} className="tablebox">
-                <Table className="thead">
-                  <thead>
-                    <th>
-                      <Checkbox
-                        checked={
-                          rowData &&
+                        const lossRowGroups = _.map(
                           _.filter(rowData, (row) => {
-                            return row.checked;
-                          }).length === rowData.length
-                            ? true
-                            : false
-                        }
-                        checkedItemHandler={handleAllCheck}
-                      ></Checkbox>
-                    </th>
-                    <th>총 손익</th>
-                    <th>손익</th>
-                    <th>결제일</th>
-                    {/* <th>배송비묶음번호</th> */}
-                    <th>주문번호</th>
-                    {/* <th>매체</th> */}
-                    <th>판매상품명</th>
-                    <th>옵션</th>
-                    <th>수량</th>
-                    <th>
-                      총 결제금액
-                      <br />
-                      (정산예정금액)
-                    </th>
-                    <th>
-                      받은 배송비
-                      <br />
-                      (배송비수수료)
-                    </th>
-                    <th>총 입고단가</th>
-                    <th>배송비</th>
-                    <th>포장비</th>
-                    <th>수취인명</th>
-                    <th>수취인 연락처</th>
-                    <th>수취인 주소</th>
-                  </thead>
-                  <tbody></tbody>
-                </Table>
-                <Table className="tbody">
-                  <thead></thead>
-                  <tbody>
-                    {rowData &&
-                      rowData.map((d, key) => (
-                        <ProfitLossRow
-                          onRowDoubleClick={onRowDoubleClick}
-                          rowChecked={d.checked}
-                          handleSingleCheck={handleSingleCheck}
-                          key={key}
-                          index={key}
-                          d={d}
-                          stockPriceDataRef={stockPriceDataRef}
-                          setStockPriceModalState={setStockPriceModalState}
-                        />
-                      ))}
-                  </tbody>
-                </Table>
-              </div>
-            </div>
+                            return row.profit_loss < 0;
+                          }),
+                          'group.id'
+                        );
+
+                        setRowData(
+                          _.filter(rowData, (row) => {
+                            return _.includes(lossRowGroups, row.group.id);
+                          })
+                        );
+                      }}
+                    >
+                      <p className="dt">적자 주문</p>
+                      <span className="dd txt_red">
+                        {viewResult.loss_order_no_count && replace_1000(revert_1000(viewResult.loss_order_no_count))}
+                        <span className="unit txt_red">건</span>
+                      </span>
+                    </li>
+                    <li>
+                      <p className="dt">상품 결제 금액</p>
+                      <p className="dd">
+                        {viewResult.sum_payment_price && replace_1000(revert_1000(viewResult.sum_payment_price))}
+                        <span>원</span>
+                      </p>
+                    </li>
+                    <li>
+                      <p className="dt">받은 배송비</p>
+                      <p className="dd">
+                        {viewResult.sum_received_delivery_fee &&
+                          replace_1000(revert_1000(viewResult.sum_received_delivery_fee))}
+                        <span>원</span>
+                      </p>
+                    </li>
+                    <li>
+                      <p className="dt">보낸 배송비</p>
+                      <p className="dd">
+                        {viewResult.sum_delivery_fee && replace_1000(revert_1000(viewResult.sum_delivery_fee))}
+                        <span>원</span>
+                      </p>
+                    </li>
+                    <li className={viewResult.sum_profit_loss > 0 ? 'profit' : 'loss'}>
+                      <p className="dt">손익 합계</p>
+                      <p className="dd">
+                        {viewResult.sum_profit_loss && replace_1000(revert_1000(viewResult.sum_profit_loss))}
+                        <span>원</span>
+                      </p>
+                    </li>
+                  </ul>
+
+                  <div style={containerStyle} className="tablebox">
+                    <Table className="thead">
+                      <thead>
+                        <th>
+                          <Checkbox
+                            checked={
+                              rowData &&
+                              _.filter(rowData, (row) => {
+                                return row.checked;
+                              }).length === rowData.length
+                                ? true
+                                : false
+                            }
+                            checkedItemHandler={handleAllCheck}
+                          ></Checkbox>
+                        </th>
+                        <th>총 손익</th>
+                        <th>손익</th>
+                        <th>결제일</th>
+                        {/* <th>배송비묶음번호</th> */}
+                        <th>주문번호</th>
+                        {/* <th>매체</th> */}
+                        <th>판매상품명</th>
+                        <th>옵션</th>
+                        <th>수량</th>
+                        <th>
+                          총 결제금액
+                          <br />
+                          (정산예정금액)
+                        </th>
+                        <th>
+                          받은 배송비
+                          <br />
+                          (배송비수수료)
+                        </th>
+                        <th>총 입고단가</th>
+                        <th>배송비</th>
+                        <th>포장비</th>
+                        <th>수취인명</th>
+                        <th>수취인 연락처</th>
+                        <th>수취인 주소</th>
+                      </thead>
+                      <tbody></tbody>
+                    </Table>
+                    <Table className="tbody">
+                      <thead></thead>
+                      <tbody>
+                        {rowData &&
+                          rowData.map((d, key) => (
+                            <ProfitLossRow
+                              onRowDoubleClick={onRowDoubleClick}
+                              rowChecked={d.checked}
+                              handleSingleCheck={handleSingleCheck}
+                              key={key}
+                              index={key}
+                              d={d}
+                              stockPriceDataRef={stockPriceDataRef}
+                              setStockPriceModalState={setStockPriceModalState}
+                            />
+                          ))}
+                      </tbody>
+                    </Table>
+                  </div>
+                </div>
+              </>
+            )}
           </>
         )}
       </Body>

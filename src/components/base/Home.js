@@ -3,6 +3,7 @@ import { Button, InputGroup, Form, Nav, Modal } from 'react-bootstrap';
 import Recoils from 'recoils';
 import { is_authed } from 'util/com';
 import com, { logger, navigate, img_src, modal } from 'util/com';
+import Head from 'components/template/Head';
 import Head_NoLogin from 'components/template/Head_NoLogin';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
@@ -58,7 +59,7 @@ const Home = () => {
 
   return (
     <>
-      <Head_NoLogin setScrollElemId={setScrollElemId} />
+      {is_authed() ? <Head /> : <Head_NoLogin setScrollElemId={setScrollElemId} />}
       <Body title={`서비스 소개`} myClass={'home'}>
         <Slider
           className="bannerslide pc"
@@ -255,7 +256,12 @@ const Home = () => {
             <img src={`${img_src}${banner_05_m}`} />
           </div>
         </Slider>
-        <div id="main01"></div>
+        <div
+          id="main01"
+          style={{
+            marginBottom: '50px',
+          }}
+        ></div>
         <section className="main01 pc">
           <h3>서비스 소개</h3>
           <h4>
@@ -375,7 +381,12 @@ const Home = () => {
             </li>
           </ul>
         </section>
-        <div id="main02"></div>
+        <div
+          id="main02"
+          style={{
+            marginBottom: '50px',
+          }}
+        ></div>
         <section className="main02">
           <h3>‘셀라’ 더 알아보기</h3>
           <h4>유용한 정보를 참고하세요.</h4>
@@ -479,7 +490,12 @@ const Home = () => {
           </ul>
         </section>
 
-        <div id="main03"></div>
+        <div
+          id="main03"
+          style={{
+            marginBottom: '50px',
+          }}
+        ></div>
         <section className="main03">
           <h3>요금제 유형</h3>
           <h4>꼭 필요한 기능을 준비했습니다.</h4>
@@ -618,7 +634,12 @@ const Home = () => {
           </ul>
         </section>
 
-        <div id="main04"></div>
+        <div
+          id="main04"
+          style={{
+            marginBottom: '50px',
+          }}
+        ></div>
         <section className="main04">
           <div>
             <h3>시작이 어려우신가요?</h3>

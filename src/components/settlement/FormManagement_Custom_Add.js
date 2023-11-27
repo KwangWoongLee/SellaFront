@@ -481,7 +481,7 @@ const SellaForm = React.memo(({ index, d, selectRow, onClick, onDelete, checkedI
 
   return (
     <tr className={selectRow == index ? 'focus' : ''}>
-      <td className={d.sella_essential ? 'td_label required' : 'td_label'}>
+      <td onClick={onClick} className={d.sella_essential ? 'td_label required' : 'td_label'}>
         {d.check_flag && (
           <>
             <Checkbox
@@ -492,7 +492,7 @@ const SellaForm = React.memo(({ index, d, selectRow, onClick, onDelete, checkedI
             ></Checkbox>
           </>
         )}
-        <label onClick={onClick}>
+        <label>
           {d.sella_title}
           {d.sella_title == '정산예정금액' ? '이 있습니다.' : ''}
           {d.sella_title == '배송비 묶음번호' ? '가 있습니다.' : ''}
@@ -519,7 +519,12 @@ const SellaForm = React.memo(({ index, d, selectRow, onClick, onDelete, checkedI
                 </Tooltip>
               }
             >
-              <Button className="btn_tip"></Button>
+              <Button
+                className="btn_tip"
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+              ></Button>
             </OverlayTrigger>
           </>
         )}

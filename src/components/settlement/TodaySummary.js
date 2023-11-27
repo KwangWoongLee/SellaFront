@@ -20,6 +20,7 @@ import Recoils from 'recoils';
 import _ from 'lodash';
 
 import { logger } from 'util/com';
+import { useMediaQuery } from 'react-responsive';
 
 import 'styles/MarginCalc.scss';
 import 'styles/TodaySummary.scss';
@@ -29,6 +30,7 @@ import CommonDateModal from 'components/common/CommonDateModal';
 
 import icon_del from 'images/icon_del.svg';
 import icon_date from 'images/icon_date.svg';
+import MobileRefuser from 'components/template/MobileRefuser';
 const TodaySummary = () => {
   //logger.debug('TodaySummary');
 
@@ -49,6 +51,10 @@ const TodaySummary = () => {
   const [except, setExcept] = useState('');
 
   const selectRowDataIdxRef = useRef(null);
+
+  const isMobile = useMediaQuery({
+    query: '(max-width:768px)',
+  });
 
   useEffect(() => {
     request.post(`user/today_summary`, {}).then((ret) => {
@@ -273,204 +279,212 @@ const TodaySummary = () => {
         <SettlementNavTab active="/settlement/today_summary" />
 
         <div className="page">
-          <div className="section1">
-            <div className="viewboxWrap">
-              <h4>월별 손익 합계</h4>
-              <ul className={!_.isEmpty(monthViewResult) ? 'viewbox' : 'viewbox off'}>
-                <li>
-                  <p className="dt">총 주문</p>
-                  <p className="dd">
-                    {monthViewResult.unique_order_no_count}
-                    <span>건</span>
-                  </p>
-                </li>
-                <li>
-                  <p className="dt">택배 발송</p>
-                  <p className="dd">
-                    {monthViewResult.delivery_send_count}
-                    <span>건</span>
-                  </p>
-                </li>
-                <li>
-                  <p className="dt">적자 주문</p>
-                  <span className="dd txt_red">
-                    {monthViewResult.loss_order_no_count}
-                    <span className="unit txt_red">건</span>
-                  </span>
-                </li>
-                <li>
-                  <p className="dt">상품 결제 금액</p>
-                  <p className="dd">
-                    {monthViewResult.sum_payment_price}
-                    <span>원</span>
-                  </p>
-                </li>
-                <li>
-                  <p className="dt">받은 배송비</p>
-                  <p className="dd">
-                    {monthViewResult.sum_received_delivery_fee}
-                    <span>원</span>
-                  </p>
-                </li>
-                <li
-                  className={
-                    !_.isEmpty(monthViewResult) && revert_1000(monthViewResult.sum_profit_loss) > 0 ? 'profit' : 'loss'
-                  }
-                >
-                  <p className="dt">손익 합계</p>
-                  <p className="dd">
-                    {monthViewResult.sum_profit_loss}
-                    <span>원</span>
-                  </p>
-                </li>
-              </ul>
-            </div>
-            <CustomCalendar
-              dayGroupDatas={dayData}
-              selectCallback={(e, selectDay) => {
-                if (e) setSelectedDayGroup(e.group);
-                else {
-                  setSelectedDayGroup(selectDay);
-                  setExcept('저장된 주문서가 없습니다.');
+          {isMobile ? (
+            <MobileRefuser></MobileRefuser>
+          ) : (
+            <>
+              <div className="section1">
+                <div className="viewboxWrap">
+                  <h4>월별 손익 합계</h4>
+                  <ul className={!_.isEmpty(monthViewResult) ? 'viewbox' : 'viewbox off'}>
+                    <li>
+                      <p className="dt">총 주문</p>
+                      <p className="dd">
+                        {monthViewResult.unique_order_no_count}
+                        <span>건</span>
+                      </p>
+                    </li>
+                    <li>
+                      <p className="dt">택배 발송</p>
+                      <p className="dd">
+                        {monthViewResult.delivery_send_count}
+                        <span>건</span>
+                      </p>
+                    </li>
+                    <li>
+                      <p className="dt">적자 주문</p>
+                      <span className="dd txt_red">
+                        {monthViewResult.loss_order_no_count}
+                        <span className="unit txt_red">건</span>
+                      </span>
+                    </li>
+                    <li>
+                      <p className="dt">상품 결제 금액</p>
+                      <p className="dd">
+                        {monthViewResult.sum_payment_price}
+                        <span>원</span>
+                      </p>
+                    </li>
+                    <li>
+                      <p className="dt">받은 배송비</p>
+                      <p className="dd">
+                        {monthViewResult.sum_received_delivery_fee}
+                        <span>원</span>
+                      </p>
+                    </li>
+                    <li
+                      className={
+                        !_.isEmpty(monthViewResult) && revert_1000(monthViewResult.sum_profit_loss) > 0
+                          ? 'profit'
+                          : 'loss'
+                      }
+                    >
+                      <p className="dt">손익 합계</p>
+                      <p className="dd">
+                        {monthViewResult.sum_profit_loss}
+                        <span>원</span>
+                      </p>
+                    </li>
+                  </ul>
+                </div>
+                <CustomCalendar
+                  dayGroupDatas={dayData}
+                  selectCallback={(e, selectDay) => {
+                    if (e) setSelectedDayGroup(e.group);
+                    else {
+                      setSelectedDayGroup(selectDay);
+                      setExcept('저장된 주문서가 없습니다.');
 
-                  let summary = {
-                    unique_order_no_count: 0,
-                    delivery_send_count: 0,
-                    loss_order_no_count: 0,
-                    sum_payment_price: 0,
-                    sum_received_delivery_fee: 0,
-                    sum_delivery_fee: 0,
-                    sum_profit_loss: 0,
-                  };
+                      let summary = {
+                        unique_order_no_count: 0,
+                        delivery_send_count: 0,
+                        loss_order_no_count: 0,
+                        sum_payment_price: 0,
+                        sum_received_delivery_fee: 0,
+                        sum_delivery_fee: 0,
+                        sum_profit_loss: 0,
+                      };
 
-                  setViewResult(summary);
-                }
-              }}
-              setCalendarCurrentDate={setCalendarCurrentDate}
-            ></CustomCalendar>
-          </div>
-
-          <div className="section3">
-            <h4>
-              {selectedDayGroup}
-              <span>주문서 리스트</span>
-            </h4>
-            <div className="inputbox">
-              <div className="btngroup">
-                <Button
-                  className={selectButton === 0 ? 'btn_blue on' : 'btn_blue'}
-                  onClick={() => {
-                    setSelectButton(0);
-                    if (dayData[selectedDayGroup]) setRowData(dayData[selectedDayGroup]['events']);
-                  }}
-                >
-                  전체
-                </Button>
-                <Button
-                  className={selectButton === 1 ? 'btn_green on' : 'btn_green'}
-                  onClick={() => {
-                    setSelectButton(1);
-                    if (dayData[selectedDayGroup]) {
-                      const rowData = dayData[selectedDayGroup]['events'];
-                      setRowData(() => _.filter(rowData, (row) => row.sum_profit_loss >= 0));
+                      setViewResult(summary);
                     }
                   }}
-                >
-                  이익
-                </Button>
-                <Button
-                  className={selectButton === 2 ? 'btn_red on' : 'btn_red'}
-                  onClick={() => {
-                    setSelectButton(2);
-                    if (dayData[selectedDayGroup]) {
-                      const rowData = dayData[selectedDayGroup]['events'];
-                      setRowData(() => _.filter(rowData, (row) => row.sum_profit_loss < 0));
-                    }
-                  }}
-                >
-                  손해
-                </Button>
+                  setCalendarCurrentDate={setCalendarCurrentDate}
+                ></CustomCalendar>
               </div>
 
-              <DropdownButton variant="" title={platforms && platforms[platformType]} className="inputagency">
-                {platforms.map((name, key) => (
-                  <Dropdown.Item
-                    key={key}
-                    eventKey={key}
-                    onClick={(e) => {
-                      setPlatformType(key);
-                    }}
-                    active={platformType === key}
-                  >
-                    {platforms[key]}
-                  </Dropdown.Item>
-                ))}
-              </DropdownButton>
-            </div>
-            <div className={!_.isEmpty(viewResult) ? 'viewbox' : 'viewbox off'}>
-              <div className="innerbox left">
-                <ul>
-                  <li className="txt_blue">
-                    <b>전체</b> {dayData[selectedDayGroup] ? dayData[selectedDayGroup]['events'].length : 0}
-                  </li>
-                  <li className="txt_green">
-                    <b>이익</b>
-                    {dayData[selectedDayGroup]
-                      ? _.filter(dayData[selectedDayGroup]['events'], (row) => row.sum_profit_loss >= 0).length
-                      : 0}
-                  </li>
-                  <li className="txt_red">
-                    <b>손해</b>
-                    {dayData[selectedDayGroup]
-                      ? _.filter(dayData[selectedDayGroup]['events'], (row) => row.sum_profit_loss < 0).length
-                      : 0}
-                  </li>
-                </ul>
-              </div>
+              <div className="section3">
+                <h4>
+                  {selectedDayGroup}
+                  <span>주문서 리스트</span>
+                </h4>
+                <div className="inputbox">
+                  <div className="btngroup">
+                    <Button
+                      className={selectButton === 0 ? 'btn_blue on' : 'btn_blue'}
+                      onClick={() => {
+                        setSelectButton(0);
+                        if (dayData[selectedDayGroup]) setRowData(dayData[selectedDayGroup]['events']);
+                      }}
+                    >
+                      전체
+                    </Button>
+                    <Button
+                      className={selectButton === 1 ? 'btn_green on' : 'btn_green'}
+                      onClick={() => {
+                        setSelectButton(1);
+                        if (dayData[selectedDayGroup]) {
+                          const rowData = dayData[selectedDayGroup]['events'];
+                          setRowData(() => _.filter(rowData, (row) => row.sum_profit_loss >= 0));
+                        }
+                      }}
+                    >
+                      이익
+                    </Button>
+                    <Button
+                      className={selectButton === 2 ? 'btn_red on' : 'btn_red'}
+                      onClick={() => {
+                        setSelectButton(2);
+                        if (dayData[selectedDayGroup]) {
+                          const rowData = dayData[selectedDayGroup]['events'];
+                          setRowData(() => _.filter(rowData, (row) => row.sum_profit_loss < 0));
+                        }
+                      }}
+                    >
+                      손해
+                    </Button>
+                  </div>
 
-              <div className="innerbox right">
-                <ul>
-                  <li className="txt_blue">
-                    <b>총 주문 수</b>
-                    {viewResult.unique_order_no_count} <i>건</i>
-                  </li>
-                  <li className="txt_blue">
-                    <b>택배 발송</b>
-                    {viewResult.delivery_send_count} <i>건</i>
-                  </li>
-                  <li className="txt_blue">
-                    <b>총 결제금액</b>
-                    {viewResult.sum_payment_price} <i>원</i>
-                  </li>
-                  <li className="txt_blue">
-                    <b>받은 배송비</b>
-                    {viewResult.sum_received_delivery_fee} <i>원</i>
-                  </li>
-                  <li className="txt_green">
-                    <b>손익 합계</b>
-                    {viewResult.sum_delivery_fee} <i>원</i>
-                  </li>
-                </ul>
+                  <DropdownButton variant="" title={platforms && platforms[platformType]} className="inputagency">
+                    {platforms.map((name, key) => (
+                      <Dropdown.Item
+                        key={key}
+                        eventKey={key}
+                        onClick={(e) => {
+                          setPlatformType(key);
+                        }}
+                        active={platformType === key}
+                      >
+                        {platforms[key]}
+                      </Dropdown.Item>
+                    ))}
+                  </DropdownButton>
+                </div>
+                <div className={!_.isEmpty(viewResult) ? 'viewbox' : 'viewbox off'}>
+                  <div className="innerbox left">
+                    <ul>
+                      <li className="txt_blue">
+                        <b>전체</b> {dayData[selectedDayGroup] ? dayData[selectedDayGroup]['events'].length : 0}
+                      </li>
+                      <li className="txt_green">
+                        <b>이익</b>
+                        {dayData[selectedDayGroup]
+                          ? _.filter(dayData[selectedDayGroup]['events'], (row) => row.sum_profit_loss >= 0).length
+                          : 0}
+                      </li>
+                      <li className="txt_red">
+                        <b>손해</b>
+                        {dayData[selectedDayGroup]
+                          ? _.filter(dayData[selectedDayGroup]['events'], (row) => row.sum_profit_loss < 0).length
+                          : 0}
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div className="innerbox right">
+                    <ul>
+                      <li className="txt_blue">
+                        <b>총 주문 수</b>
+                        {viewResult.unique_order_no_count} <i>건</i>
+                      </li>
+                      <li className="txt_blue">
+                        <b>택배 발송</b>
+                        {viewResult.delivery_send_count} <i>건</i>
+                      </li>
+                      <li className="txt_blue">
+                        <b>총 결제금액</b>
+                        {viewResult.sum_payment_price} <i>원</i>
+                      </li>
+                      <li className="txt_blue">
+                        <b>받은 배송비</b>
+                        {viewResult.sum_received_delivery_fee} <i>원</i>
+                      </li>
+                      <li className="txt_green">
+                        <b>손익 합계</b>
+                        {viewResult.sum_delivery_fee} <i>원</i>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <ul className="listbox">
+                  {except === '' ? (
+                    rowData &&
+                    rowData.map((d, key) => (
+                      <SummaryRow
+                        key={key}
+                        index={key}
+                        d={d}
+                        setDateModalState={setDateModalState}
+                        onDelete={onDelete}
+                        selectRowDataIdxRef={selectRowDataIdxRef}
+                      />
+                    ))
+                  ) : (
+                    <span>{except}</span>
+                  )}
+                </ul>{' '}
               </div>
-            </div>
-            <ul className="listbox">
-              {except === '' ? (
-                rowData &&
-                rowData.map((d, key) => (
-                  <SummaryRow
-                    key={key}
-                    index={key}
-                    d={d}
-                    setDateModalState={setDateModalState}
-                    onDelete={onDelete}
-                    selectRowDataIdxRef={selectRowDataIdxRef}
-                  />
-                ))
-              ) : (
-                <span>{except}</span>
-              )}
-            </ul>{' '}
-          </div>
+            </>
+          )}
         </div>
       </Body>
       <Footer />

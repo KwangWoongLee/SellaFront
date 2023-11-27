@@ -81,7 +81,7 @@ const SellaForm = React.memo(({ index, d }) => {
         {' ('}
         {d.column}
         {'열)'}
-        {d.sella_code == 30001 && <span className="tag">(매체 기본 수수료 {d.additional}%)</span>}
+        {d.sella_code == 30001 && d.additional && <span className="tag">(매체 기본 수수료 {d.additional}%)</span>}
         {(d.sella_code == 30047 || d.sella_code == 30032 || d.sella_code == 30033) && (
           <span className="tag">
             ({d.sella_title} 수수료 {d.additional}%)

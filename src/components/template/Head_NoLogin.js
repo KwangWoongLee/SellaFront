@@ -213,11 +213,11 @@ const Head_NoLogin = ({ setScrollElemId }) => {
               const isLiTag = _.includes(e.target.className, 'nav-link');
               if (!isLiTag) {
                 setTransition(false);
+              }
 
-                const hamburgerElem = document.getElementById('input_hamburger');
-                if (hamburgerElem) {
-                  hamburgerElem.checked = false;
-                }
+              const hamburgerElem = document.getElementById('input_hamburger');
+              if (hamburgerElem) {
+                hamburgerElem.checked = false;
               }
             }}
           >
@@ -228,7 +228,7 @@ const Head_NoLogin = ({ setScrollElemId }) => {
                     <Nav.Link
                       className="nav-link"
                       onClick={() => {
-                        onScroll('m_main01');
+                        onScroll('main01');
                         setTransition(false);
                       }}
                     >

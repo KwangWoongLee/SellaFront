@@ -14,7 +14,14 @@ function Checkbox({ checked, checkedItemHandler }) {
 
   return (
     <>
-      <input type="checkbox" checked={bChecked} onChange={(e) => checkHandler(e)} />
+      <input
+        type="checkbox"
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+        checked={bChecked}
+        onChange={(e) => checkHandler(e)}
+      />
     </>
   );
 }
