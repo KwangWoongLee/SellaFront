@@ -251,7 +251,7 @@ export const time_format_day = (time) => {
 export const time_format_date_time = (time) => {
   const now = new Date(time);
 
-  return dateFormat(now, `hh:MM:ss`);
+  return dateFormat(now, `HH:MM:ss`);
 };
 
 export const time_format = (time) => {
