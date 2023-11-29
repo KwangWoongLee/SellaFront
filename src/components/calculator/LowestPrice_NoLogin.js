@@ -84,6 +84,7 @@ const LowestPrice_NoLogin = () => {
     sellDeliveryFee = revert_1000(sellDeliveryFee);
     stockPrice = revert_1000(stockPrice);
     savedDPFee = revert_1000(savedDPFee);
+    const sumMinus = stockPrice + savedDPFee;
 
     lowestMarginRate = Number(lowestMarginRate);
     if (lowestMarginRate < 0 || lowestMarginRate >= 100) {
@@ -92,6 +93,8 @@ const LowestPrice_NoLogin = () => {
     }
     lowestMarginRate = lowestMarginRate / 100;
 
+    const wannaMargin = sumMinus * (1 + lowestMarginRate);
+
     platformFeeRate = Number(platformFeeRate);
     if (platformFeeRate < 0 || platformFeeRate >= 100) {
       modal.alert('매체 수수료율을 0~100% 사이로 입력해주세요.');
@@ -99,8 +102,6 @@ const LowestPrice_NoLogin = () => {
     }
     platformFeeRate = platformFeeRate / 100;
     platformFeeRate = Number(platformFeeRate.toFixed(5));
-
-    const platformFee = stockPrice * platformFeeRate;
 
     platformDeliverFeeRate = Number(platformDeliverFeeRate);
     if (platformDeliverFeeRate < 0 || platformDeliverFeeRate >= 100) {
@@ -111,17 +112,17 @@ const LowestPrice_NoLogin = () => {
     platformDeliverFeeRate = platformDeliverFeeRate / 100;
     platformDeliverFeeRate = Number(platformDeliverFeeRate.toFixed(5));
 
-    const platformDeliveryFee = savedDPFee * platformDeliverFeeRate;
+    const sumDeliveryFee = sellDeliveryFee * (1 - platformDeliverFeeRate);
 
-    const test = lowestMarginRate + platformFeeRate - 1;
+    const test = platformFeeRate - 1;
     if (test == 0) {
       modal.alert('최저마진율 100 %가 될 수 없습니다.');
       return;
     }
 
-    let low =
-      (sellDeliveryFee - stockPrice - savedDPFee - platformDeliveryFee) / (lowestMarginRate + platformFeeRate - 1);
-    low = replace_1000(revert_1000(low.toFixed(0)));
+    const wannaLowestPrice = (wannaMargin - sumDeliveryFee) / (1 - platformFeeRate);
+
+    const low = replace_1000(revert_1000(wannaLowestPrice.toFixed(0)));
 
     setLowestPrice(low);
   };

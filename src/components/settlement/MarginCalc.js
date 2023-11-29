@@ -1000,8 +1000,7 @@ const CalcSummary = (rowData) => {
   const unique_order_no = _.uniqBy(rowData, '30004');
   const unique_order_no_count = unique_order_no.length;
 
-  let delivery_send;
-  const changes = {};
+  let delivery_send_count = 0;
 
   if (_.includes(Object.keys(rowData[0]), '30002')) {
     //배송비 묶음 번호가 있는 경우
@@ -1025,6 +1024,7 @@ const CalcSummary = (rowData) => {
 
     for (const row of rowData) {
       if (row.group.first) {
+        delivery_send_count++;
         const eqGroupDatas = _.filter(rowData, (item) => {
           return item.group.id === row.group.id;
         });
@@ -1052,7 +1052,6 @@ const CalcSummary = (rowData) => {
     }
   }
 
-  const delivery_send_count = delivery_send ? delivery_send.length : unique_order_no_count;
   const loss_order = _.filter(rowData, (row) => {
     return row.profit_loss < 0;
   });

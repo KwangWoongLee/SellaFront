@@ -9,6 +9,7 @@ import GoodsMatchTable from 'components/settlement/common/GoodsMatchTable';
 import CategoryFee_Search from 'components/settlement/common/CategoryFee_Search';
 import StandardProduct_Search from 'components/settlement/common/StandardProduct_Search';
 import _ from 'lodash';
+import Step2Modal from 'components/project/Step2Modal';
 
 import { logger } from 'util/com';
 
@@ -25,6 +26,7 @@ const MarginCalc_ConnectModal = React.memo(
     let rawGoodsMatch = Recoils.getState('DATA:GOODSMATCH');
     const selectFormsMatchRef = useRef(null);
     const [selectFormsMatchData, setSelectFormsMatchData] = useState(null);
+    const [step2ModalState, setStep2ModalState] = useState(false);
 
     const saveFormsMatchRef = useRef(null);
     const noUpdateRef = useRef(null);
@@ -363,52 +365,70 @@ const MarginCalc_ConnectModal = React.memo(
     };
 
     return (
-      <Modal show={modalState} onHide={onClose} centered className="modal UnConnect sale_product">
-        <Modal.Header>
-          <Modal.Title>상품 매칭 관리</Modal.Title>
-          <Button variant="primary" className="btn_close" onClick={onClose}>
-            <img src={`${img_src}${icon_close}`} />
-          </Button>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="section1">
-            <h3>
-              연결 주문 <span>{items.length}</span>
-            </h3>
-            <button onClick={onSave} className="btn_blue btn-primary btn_save">
-              전체 저장
-            </button>
-            <FormsMatchTable
-              rows={items}
-              modalState={modalState}
-              selectCallback={onSelectFormsMatchTable}
-              deleteCallback={onDeleteFormsMatchTable}
-              onParentSelect={formsMatchSelect}
-            ></FormsMatchTable>
-            <h3>연결 상품</h3>
+      <>
+        <Modal show={modalState} onHide={onClose} centered className="modal UnConnect sale_product">
+          <Modal.Header>
+            <Modal.Title>상품 매칭 관리</Modal.Title>
+            <Button variant="primary" className="btn_close" onClick={onClose}>
+              <img src={`${img_src}${icon_close}`} />
+            </Button>
+            <Button
+              onClick={() => {
+                setStep2ModalState(true);
+              }}
+              className=" btn-primary btn_save"
+            >
+              상품 추가
+            </Button>
+          </Modal.Header>
+          <Modal.Body>
+            <div className="section1">
+              <h3>
+                연결 주문 <span>{items.length}</span>
+              </h3>
+              <button onClick={onSave} className="btn_blue btn-primary btn_save">
+                전체 저장
+              </button>
+              <FormsMatchTable
+                rows={items}
+                modalState={modalState}
+                selectCallback={onSelectFormsMatchTable}
+                deleteCallback={onDeleteFormsMatchTable}
+                onParentSelect={formsMatchSelect}
+              ></FormsMatchTable>
+              <h3>연결 상품</h3>
 
-            <GoodsMatchTable
-              selectCallback={onSelectGoodsMatchTable}
-              deleteCallback={onDeleteGoodsMatchTable}
-              changeCallback={onChangeGoodsMatchTable}
-              parentFormsMatchSelectData={selectFormsMatchData}
-            ></GoodsMatchTable>
-          </div>
-          <div className="section2">
-            <h3>연결할 기준 상품 검색</h3>
-            <StandardProduct_Search
-              selectCallback={onSelectStandardProduct_Search}
-              unSelectCallback={onUnSelectStandardProduct_Search}
-              parentFormsMatchSelectData={selectFormsMatchData}
-            ></StandardProduct_Search>
-            <h3>수수료 검색</h3>
-            <CategoryFee_Search
-              selectCallback={onSelectCategoryFee_Search}
-              parentFormsMatchSelectData={selectFormsMatchData}
-            ></CategoryFee_Search>
-          </div>
-        </Modal.Body>
-      </Modal>
+              <GoodsMatchTable
+                selectCallback={onSelectGoodsMatchTable}
+                deleteCallback={onDeleteGoodsMatchTable}
+                changeCallback={onChangeGoodsMatchTable}
+                parentFormsMatchSelectData={selectFormsMatchData}
+              ></GoodsMatchTable>
+            </div>
+            <div className="section2">
+              <h3>연결할 기준 상품 검색</h3>
+              <StandardProduct_Search
+                selectCallback={onSelectStandardProduct_Search}
+                unSelectCallback={onUnSelectStandardProduct_Search}
+                parentFormsMatchSelectData={selectFormsMatchData}
+              ></StandardProduct_Search>
+              <h3>수수료 검색</h3>
+              <CategoryFee_Search
+                selectCallback={onSelectCategoryFee_Search}
+                parentFormsMatchSelectData={selectFormsMatchData}
+              ></CategoryFee_Search>
+            </div>
+          </Modal.Body>
+        </Modal>
+        <Step2Modal
+          modalState={step2ModalState}
+          setModalState={setStep2ModalState}
+          callback={() => {
+            setSelectFormsMatchData({ ...selectFormsMatchRef.current });
+            setFormsMatchSelect(-1);
+          }}
+        ></Step2Modal>
+      </>
     );
   }
 );
