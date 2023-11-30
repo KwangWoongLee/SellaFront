@@ -1,15 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Button, ButtonGroup, InputGroup, Form, DropdownButton, Dropdown } from 'react-bootstrap';
-import com, {
-  modal,
-  logger,
-  navigate,
-  replace_phone,
-  is_regex_phone,
-  is_regex_password,
-  is_regex_id,
-  is_regex_email,
-} from 'util/com';
+import { Button, InputGroup, Form } from 'react-bootstrap';
+import com, { modal, logger, navigate, is_regex_password, is_regex_id, is_regex_email } from 'util/com';
 import Recoils from 'recoils';
 import request from 'util/request';
 import _ from 'lodash';
@@ -21,37 +12,26 @@ import Checkbox from 'components/common/CheckBoxCell';
 
 import 'styles/Login.scss';
 
-const agency_str = ['통신사 선택', 'SKT', 'KT', 'LG'];
-const gender = ['남', '여'];
-const local = ['내국인', '외국인'];
 const Regist = () => {
-  //logger.debug('Regist');
-
   const [registButtonOn, setRegistButtonOn] = useState(false);
   const [allChecked, setAllChecked] = useState(false);
   const [agreement, setAgreement] = useState([]);
-  const [agencyType, setAgencyType] = useState(0);
-  const [genderType, setGenderType] = useState(0);
-  const [localType, setLocalType] = useState(0);
   const [auth, setAuth] = useState({
-    name: false,
-    phone: false,
-    send_phone: false,
-    auth_phone: false,
-    email: false,
     id: false,
     auth_id: false,
     password: false,
     password_confirm: false,
-    agency: false,
   });
   const nameRef = useRef(null);
-  const phoneRef = useRef(null);
-  const authNoRef = useRef(null);
   const idRef = useRef(null);
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const passwordConfirmRef = useRef(null);
+
+  useEffect(() => {
+    const cert = Recoils.getState('CONFIG:CERT');
+    nameRef.current.value = cert.name;
+  }, []);
 
   useEffect(() => {
     if (!agreement.length) {
@@ -88,31 +68,6 @@ const Regist = () => {
     else setRegistButtonOn(false);
   }, [auth]);
 
-  useEffect(() => {
-    if (agencyType) {
-      const auth_temp = auth;
-      auth_temp['agency'] = true;
-      setAuth({ ...auth_temp });
-    } else {
-      const auth_temp = auth;
-      auth_temp['agency'] = false;
-      setAuth({ ...auth_temp });
-    }
-  }, [agencyType]);
-
-  const onNameChange = (e) => {
-    let name = nameRef.current.value;
-    if (name.length > 0) {
-      const auth_temp = auth;
-      auth_temp['name'] = true;
-      setAuth({ ...auth_temp });
-    } else {
-      const auth_temp = auth;
-      auth_temp['name'] = false;
-      setAuth({ ...auth_temp });
-    }
-  };
-
   const onSubmit = (e) => {
     e.preventDefault();
     for (const agreement_item of agreement) {
@@ -123,66 +78,31 @@ const Regist = () => {
     }
 
     const name = nameRef.current.value;
-    const phone = phoneRef.current.value;
 
     const id = idRef.current.value;
     const password = passwordRef.current.value;
     const email = emailRef.current.value;
 
-    if (!name) {
-      modal.alert('이름을 입력 해주세요.');
+    const cert = Recoils.getState('CONFIG:CERT');
+    const random_key = cert.random_key;
+    if (!random_key) {
+      modal.alert('비정상 접근입니다.');
       return;
     }
 
-    request.post('/regist', { id, password, phone, name, email, agreement }).then((ret) => {
+    request.post('/regist', { id, random_key, password, phone: '', name, email, agreement }).then((ret) => {
       if (!ret.err) {
-        com.storage.setItem('tempRegistResult', id);
+        Recoils.setState('CONFIG:CERT', {
+          random_key: '',
+          name: '',
+          temp_id: id,
+        });
 
         navigate('/regist/result');
-      } else {
-        com.storage.setItem('tempRegistResult', '');
       }
     });
 
     logger.info(`regist : id = ${id}, password = ${password}`);
-  };
-
-  const onAuthNoChange = (e) => {
-    let auth_no = authNoRef.current.value;
-    if (auth_no.length > 6) {
-      authNoRef.current.value = auth_no.substr(0, 6);
-      return;
-    }
-  };
-
-  const onCheckPhoneAuthNo = (e) => {
-    const phone = phoneRef.current.value;
-    const auth_no = authNoRef.current.value;
-    if (auth_no)
-      request.post('auth/phone/auth_no', { phone, auth_no }).then((ret) => {
-        if (!ret.err) {
-          const auth_temp = auth;
-          auth_temp['auth_phone'] = true;
-          setAuth({ ...auth_temp });
-        }
-      });
-  };
-
-  const onSendPhoneAuthNo = (e) => {
-    const phone = phoneRef.current.value;
-
-    request.post('auth/phone', { phone }).then((ret) => {
-      if (!ret.err) {
-        const { data } = ret.data;
-        modal.alert(`임시방편입니다.
-          ${data.random_no}
-        `);
-
-        const auth_temp = auth;
-        auth_temp['send_phone'] = true;
-        setAuth({ ...auth_temp });
-      }
-    });
   };
 
   const onIDCheck = (e) => {
@@ -217,30 +137,6 @@ const Regist = () => {
 
     setAgreement([...agreement]);
     setAllChecked(!allChecked);
-  };
-
-  const onPhoneChange = (e) => {
-    let phone = phoneRef.current.value;
-    if (phone.length > 13) {
-      phoneRef.current.value = phone.substr(0, 13);
-      return;
-    }
-    phone = replace_phone(phone);
-
-    const auth_temp = auth;
-    auth['auth_phone'] = false;
-    setAuth({ ...auth_temp });
-
-    phoneRef.current.value = phone;
-    if (is_regex_phone(phone)) {
-      const auth_temp = auth;
-      auth_temp['phone'] = phone;
-      setAuth({ ...auth_temp });
-    } else {
-      const auth_temp = auth;
-      auth_temp['phone'] = false;
-      setAuth({ ...auth_temp });
-    }
   };
 
   const onEmailChange = (e) => {
@@ -298,8 +194,6 @@ const Regist = () => {
     }
   };
 
-  const onClickAgreement = (e, content) => {};
-
   return (
     <>
       <Head_NoLogin />
@@ -321,9 +215,7 @@ const Regist = () => {
                     }}
                   ></Checkbox>
                   <label>동의</label>
-                  <textarea onClick={(e) => onClickAgreement(e, agreement[key].contents)} disabled={true}>
-                    {agreement[key].contents[0].content}
-                  </textarea>
+                  <textarea disabled={true}>{agreement[key].contents[0].content}</textarea>
                 </>
               ))}
             </div>
@@ -340,112 +232,8 @@ const Regist = () => {
           <div className="rightbox">
             <label>이름</label>
             <InputGroup className="inputname">
-              <Form.Control
-                ref={nameRef}
-                onChange={onNameChange}
-                type="text"
-                placeholder="이름 입력"
-                aria-label="name"
-                defaultValue={''}
-              />
+              <Form.Control disabled={true} ref={nameRef} type="text" aria-label="name" />
             </InputGroup>
-            <label>휴대폰인증</label>
-            <DropdownButton variant="" title={agency_str[agencyType]} className="inputagency">
-              {agency_str.map((name, key) => (
-                <Dropdown.Item
-                  key={key}
-                  eventKey={key}
-                  onClick={(e) => {
-                    setAgencyType(key);
-                  }}
-                  active={agencyType === key}
-                >
-                  {agency_str[key]}
-                </Dropdown.Item>
-              ))}
-            </DropdownButton>
-            <div className="btnbox">
-              <ButtonGroup aria-label="gender" className="gender">
-                {gender.map((name, key) => (
-                  <Button
-                    variant="secondary"
-                    className={genderType === key ? 'btn-primary on' : 'btn-primary'}
-                    key={key}
-                    eventKey={key}
-                    onClick={(e) => {
-                      setGenderType(key);
-                    }}
-                    active={genderType === key}
-                  >
-                    {gender[key]}
-                  </Button>
-                ))}
-              </ButtonGroup>
-              <ButtonGroup aria-label="local" className="local">
-                {local.map((name, key) => (
-                  <Button
-                    variant="secondary"
-                    className={localType === key ? 'btn-primary on' : 'btn-primary'}
-                    key={key}
-                    eventKey={key}
-                    onClick={(e) => {
-                      setLocalType(key);
-                    }}
-                    active={localType === key}
-                  >
-                    {local[key]}
-                  </Button>
-                ))}
-              </ButtonGroup>
-            </div>
-            <InputGroup className="inputphone1">
-              <Form.Control
-                ref={phoneRef}
-                type="text"
-                placeholder="휴대폰 번호 입력"
-                defaultValue={''}
-                onChange={onPhoneChange}
-              />
-              <Button
-                disabled={!(auth['name'] && auth['agency'] && auth['phone'])}
-                variant="primary"
-                className="btn_blue"
-                onClick={onSendPhoneAuthNo}
-              >
-                인증번호 발송
-              </Button>
-            </InputGroup>
-            {auth['send_phone'] ? (
-              <span className="inform inform1">인증번호를 발송했습니다.</span>
-            ) : auth['phone'] ? (
-              <span className="inform inform1 red">인증번호를 발송하세요.</span>
-            ) : (
-              <br />
-            )}
-            <InputGroup className="inputphone2">
-              <Form.Control
-                ref={authNoRef}
-                type="text"
-                placeholder="인증번호 입력"
-                defaultValue={''}
-                onChange={onAuthNoChange}
-              />
-              <Button
-                disabled={!auth['send_phone']}
-                variant="primary"
-                className="btn_blue"
-                onClick={onCheckPhoneAuthNo}
-              >
-                인증하기
-              </Button>
-            </InputGroup>
-            {auth['auth_phone'] ? (
-              <span className="inform inform1">인증되었습니다.</span>
-            ) : auth['send_phone'] ? (
-              <span className="inform inform2 red">인증번호가 일치하지 않습니다.</span>
-            ) : (
-              <br />
-            )}
 
             <label>아이디/비밀번호</label>
             <InputGroup className="inputid">

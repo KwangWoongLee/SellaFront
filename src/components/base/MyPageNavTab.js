@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import {} from 'react-bootstrap';
 import { logger } from 'util/com';
 import CommonNavTab from 'components/common/CommonNavTab';
 

@@ -36,6 +36,9 @@ export const modal = {
   alert: (error) => {
     Recoils.setState('ALERT', { show: true, error });
   },
+  cert: (mode) => {
+    Recoils.setState('CERT', { show: true, mode });
+  },
   confirm: (title, body, buttons) => {
     Recoils.setState('CONFIRM', { show: true, title, body, buttons: buttons });
   },

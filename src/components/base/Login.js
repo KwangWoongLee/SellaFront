@@ -163,7 +163,7 @@ const Login = () => {
           <Nav.Link
             className="btn_txt btn_join"
             onClick={() => {
-              navigate('/regist');
+              modal.cert(0);
             }}
           >
             회원가입

@@ -3,7 +3,7 @@ import { Nav, Button } from 'react-bootstrap';
 import { useLocation } from 'react-router-dom';
 import { CSSTransition } from 'react-transition-group';
 
-import com, { img_src, navigate, logger } from 'util/com';
+import com, { img_src, navigate, logger, modal } from 'util/com';
 import Recoils from 'recoils';
 import _ from 'lodash';
 
@@ -191,7 +191,13 @@ const Head_NoLogin = ({ setScrollElemId }) => {
                 </>
               ) : (
                 <>
-                  <Nav.Link className="nav-link" onClick={onLink} name="/regist">
+                  <Nav.Link
+                    className="nav-link"
+                    onClick={() => {
+                      modal.cert(0);
+                    }}
+                    name="/regist"
+                  >
                     <span className="cscenter">회원가입</span>
                   </Nav.Link>
                   <Nav.Link className="nav-link" onClick={onLink} name="/login">

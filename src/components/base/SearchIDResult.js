@@ -7,21 +7,30 @@ import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 
 import 'styles/Login.scss';
+import Recoils from 'recoils';
+import request from 'util/request';
 
 const SearchIDResult = () => {
-  //logger.debug('SearchIDResult');
   const [searchedID, setSearchedID] = useState('');
   const [mode, setMode] = useState(0);
 
   useEffect(() => {
-    const temp = com.storage.getItem('tempSearchIdResult');
-    if (temp === 'undefined' || temp === '') {
+    const cert = Recoils.getState('CONFIG:CERT');
+    const random_key = cert.random_key;
+    if (!random_key) {
       setMode(0);
       setSearchedID('');
-    } else {
-      setMode(1);
-      setSearchedID(temp);
+      return;
     }
+
+    request.post('auth/search/id', { random_key: random_key }).then((ret) => {
+      if (!ret.err) {
+        const { data } = ret.data;
+
+        setMode(1);
+        setSearchedID(data.id);
+      }
+    });
   }, []);
 
   return (

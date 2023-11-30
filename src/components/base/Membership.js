@@ -11,7 +11,6 @@ import { logger, modal, navigate, is_regex_password, is_regex_email } from 'util
 import { RequestPay, RequestPayPeriod } from 'util/payment';
 import request from 'util/request';
 import Recoils from 'recoils';
-import useScript from 'react-script-hook';
 
 import 'styles/Mypage.scss';
 
@@ -41,14 +40,6 @@ const Membership = () => {
   });
 
   const [modalState, setModalState] = useState(false);
-
-  useScript({
-    src: 'https://cdn.iamport.kr/v1/iamport.js',
-    onload: () => {
-      window.IMP.init('imp85285548');
-    },
-    checkForExisting: true,
-  });
 
   useEffect(() => {
     let isOk = true;

@@ -11,6 +11,7 @@ insert_recoil('NAV', 0);
 // common
 insert_recoil('SPINEER', false);
 insert_recoil('ALERT', { show: false });
+insert_recoil('CERT', { show: false });
 insert_recoil('CONFIRM', { show: false });
 
 // modal
@@ -24,6 +25,11 @@ insert_recoil('MODAL:FILEUPLOAD', {
   title: null,
   cb: null,
   multiple: true,
+});
+
+insert_recoil('CONFIG:CERT', {
+  random_key: '',
+  name: '',
 });
 
 // account

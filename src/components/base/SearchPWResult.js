@@ -6,6 +6,7 @@ import request from 'util/request';
 import Head_NoLogin from 'components/template/Head_NoLogin';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
+import Recoils from 'recoils';
 
 const SearchPWResult = () => {
   //logger.debug('SearchPWResult');
@@ -18,26 +19,34 @@ const SearchPWResult = () => {
   const [changeRefButtonOn, setChangeRefButtonOn] = useState(false);
   const passwordRef = useRef(null);
   const passwordConfirmRef = useRef(null);
-  const tempIdRef = useRef(null);
 
   useEffect(() => {
-    const temp = com.storage.getItem('tempSearchPasswordResult');
-    const tempId = com.storage.getItem('tempSearchPasswordId');
-    if (temp === 'undefined' || temp === '' || temp === 'false') {
-      setMode(0);
-    } else {
-      setMode(1);
+    const cert = Recoils.getState('CONFIG:CERT');
+    const random_key = cert.random_key;
+    const temp_id = cert.temp_id;
 
-      if (!tempId) {
-        modal.alert('비정상 접근입니다.');
-        navigate('/login');
-        return;
-      }
-      tempIdRef.current = tempId;
-
-      com.storage.setItem('tempSearchPasswordId', '');
-      com.storage.setItem('tempSearchPasswordResult', '');
+    if (!temp_id) {
+      modal.alert('비정상 접근입니다.');
+      navigate('/login');
+      return;
     }
+
+    request.post('auth/search/password', { id: temp_id, random_key }).then((ret) => {
+      if (!ret.err) {
+        const { data } = ret.data;
+        if (!data.ok) {
+          setMode(0);
+        } else {
+          setMode(1);
+
+          Recoils.setState('CONFIG:CERT', {
+            random_key: '',
+            name: '',
+            temp_id: data.id,
+          });
+        }
+      }
+    });
   }, []);
 
   useEffect(() => {
@@ -88,7 +97,16 @@ const SearchPWResult = () => {
       return;
     }
 
-    request.post('auth/patch/password', { id: tempIdRef.current, new_password }).then((ret) => {
+    const cert = Recoils.getState('CONFIG:CERT');
+    const temp_id = cert.temp_id;
+
+    if (!temp_id) {
+      modal.alert('비정상 접근입니다.');
+      navigate('/login');
+      return;
+    }
+
+    request.post('auth/patch/password', { id: temp_id, new_password }).then((ret) => {
       if (!ret.err) {
         modal.alert('변경되었습니다.');
         navigate('login');

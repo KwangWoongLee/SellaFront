@@ -78,6 +78,7 @@ const request = {
 
             Recoils.resetState('CONFIG:ACCOUNT');
             Recoils.resetState('ALERT');
+            Recoils.resetState('CERT');
             Recoils.resetState('CONFIRM');
 
             modal.alert('세션정보가 만료되었습니다. 재로그인 해주세요.');
@@ -125,6 +126,7 @@ const request = {
 
         Recoils.resetState('CONFIG:ACCOUNT');
         Recoils.resetState('ALERT');
+        Recoils.resetState('CERT');
         Recoils.resetState('CONFIRM');
 
         modal.alert(ret.err.error);
@@ -133,6 +135,7 @@ const request = {
         navigate('/login');
       } else if (ret.err && ret.err.error_no === -14) {
         Recoils.resetState('ALERT');
+        Recoils.resetState('CERT');
         Recoils.resetState('CONFIRM');
 
         modal.alert(ret.err.error);
@@ -172,6 +175,7 @@ const request = {
 
             Recoils.resetState('CONFIG:ACCOUNT');
             Recoils.resetState('ALERT');
+            Recoils.resetState('CERT');
             Recoils.resetState('CONFIRM');
 
             modal.alert('세션정보가 만료되었습니다. 재로그인 해주세요.');
@@ -218,6 +222,7 @@ const request = {
         Recoils.resetState('CONFIG:ACCOUNT');
         Recoils.resetState('ALERT');
         Recoils.resetState('CONFIRM');
+        Recoils.resetState('CERT');
 
         modal.alert(ret.err.error);
 
@@ -226,6 +231,7 @@ const request = {
       } else if (ret.err && ret.err.error_no === -14) {
         Recoils.resetState('ALERT');
         Recoils.resetState('CONFIRM');
+        Recoils.resetState('CERT');
 
         modal.alert(ret.err.error);
         // 미결제 상태
