@@ -9,6 +9,7 @@ import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 import Checkbox from 'components/common/CheckBoxCell';
 import _ from 'lodash';
+import { RequestCert } from 'util/certification';
 
 import 'styles/Login.scss';
 
@@ -163,7 +164,18 @@ const Login = () => {
           <Nav.Link
             className="btn_txt btn_join"
             onClick={() => {
-              modal.cert(0);
+              const redirect_url = '/regist';
+              RequestCert(redirect_url, (data) => {
+                if (data) {
+                  const origin_cert = Recoils.getState('CONFIG:CERT');
+                  Recoils.setState('CONFIG:CERT', {
+                    ...origin_cert,
+                    ...data,
+                  });
+
+                  navigate(redirect_url);
+                } else modal.alert('인증에 실패하였습니다.');
+              });
             }}
           >
             회원가입

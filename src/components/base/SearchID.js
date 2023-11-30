@@ -12,6 +12,7 @@ import Body from 'components/template/Body';
 import Checkbox from 'components/common/CheckBoxCell';
 
 import AgreementModal from 'components/common/AgreementModal';
+import { RequestCert } from 'util/certification';
 
 import 'styles/Login.scss';
 
@@ -148,7 +149,18 @@ const SearchID = () => {
             variant="primary"
             className="btn_blue btn_submit"
             onClick={() => {
-              modal.cert(1);
+              const redirect_url = '/search/id/result';
+              RequestCert(redirect_url, (data) => {
+                if (data) {
+                  const origin_cert = Recoils.getState('CONFIG:CERT');
+                  Recoils.setState('CONFIG:CERT', {
+                    ...origin_cert,
+                    ...data,
+                  });
+
+                  navigate(redirect_url);
+                } else modal.alert('인증에 실패하였습니다.');
+              });
             }}
           >
             휴대폰 본인인증

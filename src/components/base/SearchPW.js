@@ -19,6 +19,7 @@ import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 import Checkbox from 'components/common/CheckBoxCell';
+import { RequestCert } from 'util/certification';
 
 import 'styles/Login.scss';
 import AgreementModal from 'components/common/AgreementModal';
@@ -176,7 +177,18 @@ const SearchPW = () => {
                 temp_id: idRef.current.value,
               });
 
-              modal.cert(2);
+              const redirect_url = '/search/password/result';
+              RequestCert(redirect_url, (data) => {
+                if (data) {
+                  const origin_cert = Recoils.getState('CONFIG:CERT');
+                  Recoils.setState('CONFIG:CERT', {
+                    ...origin_cert,
+                    ...data,
+                  });
+
+                  navigate(redirect_url);
+                } else modal.alert('인증에 실패하였습니다.');
+              });
             }}
             disabled={!searchButtonOn}
             variant="primary"

@@ -16,6 +16,7 @@ import icon_kakao from 'images/icon_kakao.svg';
 import icon_hamburger from 'images/icon_hamburger.svg';
 import icon_arrow_back from 'images/icon_arrow_back.svg';
 import { responsiveFontSizes } from '@mui/material';
+import { RequestCert } from 'util/certification';
 
 const Head_NoLogin = ({ setScrollElemId }) => {
   //logger.debug('Template Head');
@@ -194,7 +195,18 @@ const Head_NoLogin = ({ setScrollElemId }) => {
                   <Nav.Link
                     className="nav-link"
                     onClick={() => {
-                      modal.cert(0);
+                      const redirect_url = '/regist';
+                      RequestCert(redirect_url, (data) => {
+                        if (data) {
+                          const origin_cert = Recoils.getState('CONFIG:CERT');
+                          Recoils.setState('CONFIG:CERT', {
+                            ...origin_cert,
+                            ...data,
+                          });
+
+                          navigate(redirect_url);
+                        } else modal.alert('인증에 실패하였습니다.');
+                      });
                     }}
                     name="/regist"
                   >
