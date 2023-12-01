@@ -200,13 +200,13 @@ const Margin_NoLogin = () => {
                   </td>
                 </tr>
 
-                <tr>
+                {/* <tr>
                   <th>마진율</th>
                   <td className={resultData.margin_rate >= 0 ? 'txt_green' : 'txt_red'}>
                     {resultData.margin_rate}
                     <span> %</span>
                   </td>
-                </tr>
+                </tr> */}
               </tbody>
             </table>
           </div>

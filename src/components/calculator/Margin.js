@@ -117,17 +117,18 @@ const Margin = () => {
       cellClass: 'uneditable',
     },
 
-    {
-      field: 'margin_rate',
-      sortable: true,
-      unSortIcon: true,
-      valueFormatter: (params) => {
-        return `${Number(params.value)} %`;
-      },
-      valueParser: (params) => Number(params.newValue),
-      headerName: '마진율',
-      cellClass: 'uneditable',
-    },
+    // {
+    //   field: 'margin_rate',
+    //   hidden: true,
+    //   sortable: true,
+    //   unSortIcon: true,
+    //   valueFormatter: (params) => {
+    //     return `${Number(params.value)} %`;
+    //   },
+    //   valueParser: (params) => Number(params.newValue),
+    //   headerName: '마진율',
+    //   cellClass: 'uneditable',
+    // },
   ]);
 
   const rowHeight = 36;
@@ -474,13 +475,13 @@ const Margin = () => {
                         </td>
                       </tr>
 
-                      <tr>
+                      {/* <tr>
                         <th>마진율</th>
                         <td className={resultData.margin_rate >= 0 ? 'txt_green' : 'txt_red'}>
                           {resultData.margin_rate}
                           <span> %</span>
                         </td>
-                      </tr>
+                      </tr> */}
                     </tbody>
                   </table>
                 </div>
