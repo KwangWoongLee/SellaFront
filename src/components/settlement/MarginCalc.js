@@ -717,6 +717,8 @@ const MarginCalc = () => {
                   <ul className={!_.isEmpty(viewResult) ? 'viewbox' : 'viewbox off'}>
                     <li
                       onClick={() => {
+                        if (_.isEmpty(viewResult)) return;
+
                         isLossRowViewRef.current = false;
                         setRowData([...lastRowDatasRef.current]);
                       }}

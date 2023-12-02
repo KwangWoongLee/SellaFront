@@ -25,6 +25,7 @@ const MarginCalc_UnConnectModal = React.memo(
     const [selectFormsMatchData, setSelectFormsMatchData] = useState(null);
     const [step2ModalState, setStep2ModalState] = useState(false);
 
+    const insertedDataRef = useRef(null);
     const saveFormsMatchRef = useRef(null);
     const noUpdateRef = useRef(null);
 
@@ -163,6 +164,10 @@ const MarginCalc_UnConnectModal = React.memo(
 
       selectFormsMatchRef.current.goods_match = [...selectFormsMatchRef.current.goods_match, new_goods_match];
 
+      _.forEach(selectFormsMatchRef.current.goods_match, (goods_match) => {
+        goods_match.reg_date = new Date(Date.now());
+      });
+
       if (selectFormsMatchRef.current.goods_match.length) {
         selectFormsMatchRef.current.save = true;
         saveFormsMatchRef.current[selectFormsMatchRef.current.idx] = _.cloneDeep(selectFormsMatchRef.current);
@@ -276,6 +281,7 @@ const MarginCalc_UnConnectModal = React.memo(
                 selectCallback={onSelectStandardProduct_Search}
                 unSelectCallback={onUnSelectStandardProduct_Search}
                 parentFormsMatchSelectData={selectFormsMatchData}
+                insertedData={insertedDataRef.current}
               ></StandardProduct_Search>
               <h3>수수료 검색</h3>
               <CategoryFee_Search
@@ -289,7 +295,8 @@ const MarginCalc_UnConnectModal = React.memo(
         <Step2Modal
           modalState={step2ModalState}
           setModalState={setStep2ModalState}
-          callback={() => {
+          callback={(insertedData) => {
+            insertedDataRef.current = insertedData;
             setSelectFormsMatchData({ ...selectFormsMatchRef.current });
             setFormsMatchSelect(-1);
           }}

@@ -44,7 +44,7 @@ const Head = () => {
             <img alt={''} src={icon_arrow_back} />
           </Nav.Link>
 
-          <Nav.Link onClick={onLink} className="logo" name={is_authed() ? '/settlement/margin_calc' : ''}>
+          <Nav.Link onClick={onLink} className="logo" name={is_authed() ? '/' : ''}>
             <img src={`${img_src}${logo_white}`} alt="로고" />
           </Nav.Link>
 

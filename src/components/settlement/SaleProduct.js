@@ -57,6 +57,7 @@ const SaleProduct = () => {
           ...findObj,
           category_fee_rate: findGoodsMatchObj.category_fee_rate,
           match_count: findGoodsMatchObj.match_count,
+          reg_date: findGoodsMatchObj.reg_date,
           goods_match_idx: Number(goods_match_idx),
         };
         match_data.goods_match.push(goods);
@@ -97,7 +98,7 @@ const SaleProduct = () => {
 
         saveFormsMatchRef.current = new Array(filteredArr.length);
 
-        if (filteredArr.length) {
+        if (!filteredArr.length) {
           setFormsMatchSelect(-1);
 
           selectFormsMatchRef.current = null;
@@ -110,150 +111,102 @@ const SaleProduct = () => {
   };
 
   const onSelectGoodsMatchTable = (d) => {};
-  const onDeleteGoodsMatchTable = (goods_match) => {
+  const onDeleteGoodsMatchTable = (d) => {
     if (!selectFormsMatchRef.current) return; // TODO error
 
-    if (!selectFormsMatchRef.current.goods_match.length !== goods_match.length) {
-      selectFormsMatchRef.current.save = true;
-    }
+    const findRawObj = _.find(rawGoodsMatch, (data) => {
+      return data.forms_match_idx === selectFormsMatchRef.current.forms_match_idx && data.goods_idx === d.idx;
+    });
 
-    selectFormsMatchRef.current.goods_match = [...goods_match];
-    selectFormsMatchRef.current.goods_match_idxs = _.transform(
-      _.map(goods_match, 'goods_match_idx'),
-      function (result, n) {
-        result.push(Number(n));
-      },
-      []
-    );
-
-    if (!selectFormsMatchRef.current.goods_match.length) {
-      selectFormsMatchRef.current.delete = true;
-      selectFormsMatchRef.current.save = true;
-    }
-
-    if (selectFormsMatchRef.current.delete || selectFormsMatchRef.current.save) {
-      saveFormsMatchRef.current[selectFormsMatchRef.current.idx] = _.cloneDeep(selectFormsMatchRef.current);
-    }
+    _.remove(selectFormsMatchRef.current.goods_match, (goods_match) => {
+      return goods_match.idx == d.idx;
+    });
 
     setSelectFormsMatchData({ ...selectFormsMatchRef.current });
+
+    if (findRawObj) {
+      request.post(`user/goods/match/delete`, { delete_data: findRawObj }).then((ret) => {
+        if (!ret.err) {
+          const { data } = ret.data;
+          logger.info(data);
+
+          Recoils.setState('DATA:FORMSMATCH', data.forms_match);
+          Recoils.setState('DATA:GOODSMATCH', data.goods_match);
+
+          rawGoodsMatch = _.cloneDeep(data.goods_match);
+
+          const real_data = _.filter(rawGoodsMatch, (data) => {
+            return data.forms_match_idx === selectFormsMatchRef.current.forms_match_idx && data.idx;
+          });
+
+          if (!real_data.length) {
+            setItems(() =>
+              _.filter(items, (item) => {
+                return item.forms_match_idx !== selectFormsMatchRef.current.forms_match_idx;
+              })
+            );
+
+            setFormsMatchSelect(-1);
+
+            selectFormsMatchRef.current = null;
+            setSelectFormsMatchData({ ...selectFormsMatchRef.current });
+
+            return;
+          }
+        }
+      });
+    }
   };
 
   const onChangeGoodsMatchTable = (goods_match) => {
-    // if (!selectFormsMatchRef.current) return; // TODO error
-
-    // const rawGoodsMatch = Recoils.getState('DATA:GOODSMATCH');
-
-    // if (forms_match) {
-    //   for (const match_data of forms_match) {
-    //     match_data.goods_match = [];
-    //     match_data.forms_option_name = `${match_data.forms_option_name1}`;
-    //     match_data.forms_option_name += match_data.forms_option_name2 ? `\n${match_data.forms_option_name2}` : '';
-    //     match_data.forms_option_name += match_data.forms_option_name3 ? `\n${match_data.forms_option_name3}` : '';
-
-    //     for (const goods_match_idx of match_data.goods_match_idxs) {
-    //       const findGoodsMatchObj = _.find(rawGoodsMatch, {
-    //         idx: Number(goods_match_idx),
-    //       });
-    //       if (!findGoodsMatchObj) continue;
-    //       const findObj = _.find(goods_data, { idx: Number(findGoodsMatchObj.goods_idx) });
-    //       if (!findObj) continue;
-    //       const goods = {
-    //         ...findObj,
-    //         category_fee_rate: findGoodsMatchObj.category_fee_rate,
-    //         match_count: findGoodsMatchObj.match_count,
-    //         goods_match_idx: Number(goods_match_idx),
-    //       };
-    //       match_data.goods_match.push(goods);
-    //     }
-    //   }
-    // }
-
-    // selectFormsMatchRef.current.goods_match = [...goods_match];
-
-    // if (forms_match) {
-    //   if (
-    //     _.find(selectFormsMatchRef.current.goods_match, (goods_match) => {
-    //       return !goods_match.goods_match_idx;
-    //     })
-    //   ) {
-    //     selectFormsMatchRef.current.save = true;
-    //     saveFormsMatchRef.current[selectFormsMatchRef.current.idx] = _.cloneDeep(selectFormsMatchRef.current);
-    //     return;
-    //   }
-
-    //   for (const current_goods_match_data of selectFormsMatchRef.current.goods_match) {
-    //     if (!current_goods_match_data.goods_match_idx) {
-    //       selectFormsMatchRef.current.save = true;
-    //       saveFormsMatchRef.current[selectFormsMatchRef.current.idx] = _.cloneDeep(selectFormsMatchRef.current);
-    //       break;
-    //     }
-
-    //     const raw_current_forms_match_data = _.find(forms_match, (d) => {
-    //       return _.includes(d.goods_match_idxs, current_goods_match_data.goods_match_idx);
-    //     });
-
-    //     const raw_current_goods_match_data = _.find(raw_current_forms_match_data.goods_match, (d) => {
-    //       return d.goods_match_idx === current_goods_match_data.goods_match_idx;
-    //     });
-
-    //     if (raw_current_goods_match_data) {
-    //       if (
-    //         raw_current_goods_match_data.match_count !== current_goods_match_data.match_count ||
-    //         (current_goods_match_data.category_fee_rate &&
-    //           raw_current_goods_match_data.category_fee_rate !== current_goods_match_data.category_fee_rate)
-    //       ) {
-    //         selectFormsMatchRef.current.save = true;
-    //         saveFormsMatchRef.current[selectFormsMatchRef.current.idx] = _.cloneDeep(selectFormsMatchRef.current);
-    //         break;
-    //       } else {
-    //         selectFormsMatchRef.current.save = false;
-    //         saveFormsMatchRef.current[selectFormsMatchRef.current.idx] = null;
-    //       }
-    //     }
-    //   }
-    // }
-
-    // setSelectFormsMatchData({ ...selectFormsMatchRef.current });
-
     if (!selectFormsMatchRef.current) return; // TODO error
 
-    selectFormsMatchRef.current.goods_match = [...goods_match];
-
-    if (rawGoodsMatch) {
-      if (
-        _.find(selectFormsMatchRef.current.goods_match, (d) => {
-          return !d.goods_match_idx;
-        })
-      ) {
-        selectFormsMatchRef.current.save = true;
-        saveFormsMatchRef.current[selectFormsMatchRef.current.idx] = _.cloneDeep(selectFormsMatchRef.current);
-        return;
-      }
-
-      for (const current_goods_match_data of selectFormsMatchRef.current.goods_match) {
-        if (!current_goods_match_data.goods_match_idx) {
-          selectFormsMatchRef.current.save = true;
-          saveFormsMatchRef.current[selectFormsMatchRef.current.idx] = _.cloneDeep(selectFormsMatchRef.current);
-          break;
-        }
-
-        const raw_current_goods_match_data = _.find(rawGoodsMatch, { idx: current_goods_match_data.goods_match_idx });
-        if (raw_current_goods_match_data) {
-          if (
+    let diff_goods_match = [];
+    if (rawGoodsMatch && goods_match) {
+      diff_goods_match = _.cloneDeep(
+        _.differenceWith(goods_match, rawGoodsMatch, (current_goods_match_data, raw_current_goods_match_data) => {
+          return !(
             raw_current_goods_match_data.goods_idx !== current_goods_match_data.idx ||
             raw_current_goods_match_data.match_count !== current_goods_match_data.match_count ||
             (current_goods_match_data.category_fee_rate &&
               raw_current_goods_match_data.category_fee_rate !== current_goods_match_data.category_fee_rate)
-          ) {
-            selectFormsMatchRef.current.save = true;
-            saveFormsMatchRef.current[selectFormsMatchRef.current.idx] = _.cloneDeep(selectFormsMatchRef.current);
-            break;
+          );
+        })
+      );
+    }
+
+    if (diff_goods_match && diff_goods_match.length) {
+      selectFormsMatchRef.current.save = true;
+
+      for (const diff_data of diff_goods_match) {
+        diff_data.reg_date = new Date(Date.now());
+        if (diff_data.goods_match_idx) {
+          let findObj = _.find(selectFormsMatchRef.current.goods_match, {
+            goods_match_idx: diff_data.goods_match_idx,
+          });
+          findObj = diff_data;
+        } else {
+          let findObj = _.find(selectFormsMatchRef.current.goods_match, {
+            idx: diff_data.idx,
+          });
+
+          let findRawObj = _.find(rawGoodsMatch, {
+            goods_idx: diff_data.idx,
+          });
+
+          if (findObj) {
+            findObj = diff_data;
+            findObj.goods_match_idx = findRawObj.idx;
           } else {
-            selectFormsMatchRef.current.save = false;
-            saveFormsMatchRef.current[selectFormsMatchRef.current.idx] = null;
+            selectFormsMatchRef.current.goods_match.push(diff_data);
           }
         }
       }
+
+      saveFormsMatchRef.current[selectFormsMatchRef.current.idx] = _.cloneDeep(selectFormsMatchRef.current);
+    } else {
+      selectFormsMatchRef.current.save = false;
+      saveFormsMatchRef.current[selectFormsMatchRef.current.idx] = null;
     }
 
     setSelectFormsMatchData({ ...selectFormsMatchRef.current });
@@ -267,8 +220,18 @@ const SaleProduct = () => {
       return; // TODO error
     }
 
-    const new_goods_match = { ...d };
+    let findRawObj = _.cloneDeep(
+      _.find(rawGoodsMatch, (data) => {
+        return data.forms_match_idx == selectFormsMatchRef.current.forms_match_idx && data.goods_idx == d.idx;
+      })
+    );
+
+    let new_goods_match = { ...d };
+    if (findRawObj) {
+      new_goods_match = { ...new_goods_match, findRawObj };
+    }
     new_goods_match.match_count = 1;
+    new_goods_match.reg_date = new Date(Date.now());
     if (selectFormsMatchRef.current.goods_match.length) {
       new_goods_match.category_fee_rate = Number(selectFormsMatchRef.current.goods_match[0].category_fee_rate);
     } else {
@@ -284,8 +247,10 @@ const SaleProduct = () => {
         return raw_goods_match.forms_match_idx === selectFormsMatchRef.current.forms_match_idx;
       });
       if (findRawFormsMatch) {
-        selectFormsMatchRef.current.save = true;
-        saveFormsMatchRef.current[selectFormsMatchRef.current.idx] = _.cloneDeep(selectFormsMatchRef.current);
+        if (!findRawObj) {
+          selectFormsMatchRef.current.save = true;
+          saveFormsMatchRef.current[selectFormsMatchRef.current.idx] = _.cloneDeep(selectFormsMatchRef.current);
+        }
       }
     }
 
@@ -295,27 +260,7 @@ const SaleProduct = () => {
   const onUnSelectStandardProduct_Search = (d) => {
     if (!selectFormsMatchRef.current) return; // TODO error
 
-    if (rawGoodsMatch) {
-      if (
-        _.find(selectFormsMatchRef.current.goods_match, (goods_match) => {
-          return !goods_match.goods_match_idx;
-        })
-      ) {
-        selectFormsMatchRef.current.save = false;
-        saveFormsMatchRef.current[selectFormsMatchRef.current.idx] = null;
-      }
-
-      if (selectFormsMatchRef.current.goods_match.length === 1) {
-        selectFormsMatchRef.current.save = true;
-        saveFormsMatchRef.current[selectFormsMatchRef.current.idx] = _.cloneDeep(selectFormsMatchRef.current);
-      }
-    }
-
-    _.remove(selectFormsMatchRef.current.goods_match, (goods_match) => {
-      return goods_match.idx == d.idx;
-    });
-
-    onDeleteGoodsMatchTable(selectFormsMatchRef.current.goods_match);
+    onDeleteGoodsMatchTable(d);
   };
 
   const onSelectCategoryFee_Search = (d) => {

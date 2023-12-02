@@ -83,7 +83,7 @@ const Home = () => {
               <dd className="btn_start">
                 <Button
                   onClick={() => {
-                    navigate('/login');
+                    is_authed() ? navigate('/settlement/margin_calc') : navigate('/login');
                   }}
                 >
                   <img src={`${img_src}${btn_start}`} />
@@ -92,7 +92,7 @@ const Home = () => {
             </dl>
             <img
               onClick={() => {
-                navigate('/login');
+                is_authed() ? navigate('/settlement/margin_calc') : navigate('/login');
               }}
               src={`${img_src}${banner_01}`}
             />
@@ -113,7 +113,7 @@ const Home = () => {
                 <Button>
                   <img
                     onClick={() => {
-                      navigate('/login');
+                      is_authed() ? navigate('/settlement/margin_calc') : navigate('/login');
                     }}
                     src={`${img_src}${btn_start}`}
                   />
@@ -122,7 +122,7 @@ const Home = () => {
             </dl>
             <img
               onClick={() => {
-                navigate('/login');
+                is_authed() ? navigate('/settlement/margin_calc') : navigate('/login');
               }}
               src={`${img_src}${banner_02}`}
             />
@@ -139,7 +139,7 @@ const Home = () => {
                 <Button>
                   <img
                     onClick={() => {
-                      navigate('/login');
+                      is_authed() ? navigate('/settlement/margin_calc') : navigate('/login');
                     }}
                     src={`${img_src}${btn_start}`}
                   />
@@ -164,7 +164,7 @@ const Home = () => {
               <dd className="btn_start">
                 <Button
                   onClick={() => {
-                    navigate('/login');
+                    is_authed() ? navigate('/settlement/margin_calc') : navigate('/login');
                   }}
                 >
                   <img src={`${img_src}${btn_start}`} />
@@ -184,7 +184,7 @@ const Home = () => {
               <dd className="btn_start">
                 <Button
                   onClick={() => {
-                    navigate('/login');
+                    is_authed() ? navigate('/settlement/margin_calc') : navigate('/login');
                   }}
                 >
                   <img src={`${img_src}${btn_start}`} />
@@ -204,7 +204,7 @@ const Home = () => {
               <dd className="btn_start">
                 <Button
                   onClick={() => {
-                    navigate('/login');
+                    is_authed() ? navigate('/settlement/margin_calc') : navigate('/login');
                   }}
                 >
                   <img src={`${img_src}${btn_start}`} />
@@ -226,7 +226,7 @@ const Home = () => {
               <dd className="btn_start">
                 <Button
                   onClick={() => {
-                    navigate('/login');
+                    is_authed() ? navigate('/settlement/margin_calc') : navigate('/login');
                   }}
                 >
                   <img src={`${img_src}${btn_start}`} />

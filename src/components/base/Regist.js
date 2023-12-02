@@ -9,6 +9,7 @@ import Head_NoLogin from 'components/template/Head_NoLogin';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 import Checkbox from 'components/common/CheckBoxCell';
+import { RequestCert } from 'util/certification';
 
 import 'styles/Login.scss';
 
@@ -17,6 +18,7 @@ const Regist = () => {
   const [allChecked, setAllChecked] = useState(false);
   const [agreement, setAgreement] = useState([]);
   const [auth, setAuth] = useState({
+    cert: false,
     id: false,
     auth_id: false,
     password: false,
@@ -28,10 +30,17 @@ const Regist = () => {
   const passwordRef = useRef(null);
   const passwordConfirmRef = useRef(null);
 
-  useEffect(() => {
-    const cert = Recoils.getState('CONFIG:CERT');
-    nameRef.current.value = cert.name;
-  }, []);
+  // RequestCert(redirect_url, (data) => {
+  //   if (data) {
+  //     const origin_cert = Recoils.getState('CONFIG:CERT');
+  //     Recoils.setState('CONFIG:CERT', {
+  //       ...origin_cert,
+  //       ...data,
+  //     });
+
+  //     navigate(redirect_url);
+  //   } else modal.alert('인증에 실패하였습니다.');
+  // });
 
   useEffect(() => {
     if (!agreement.length) {
@@ -230,10 +239,40 @@ const Regist = () => {
             </div>
           </div>
           <div className="rightbox">
-            <label>이름</label>
-            <InputGroup className="inputname">
-              <Form.Control disabled={true} ref={nameRef} type="text" aria-label="name" />
-            </InputGroup>
+            {auth['cert'] ? (
+              <>
+                <label>이름</label>
+                <InputGroup className="inputname">
+                  <Form.Control disabled={true} ref={nameRef} type="text" aria-label="name" />
+                </InputGroup>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="primary"
+                  className="btn_blue btn_submit"
+                  onClick={() => {
+                    RequestCert('', (data) => {
+                      if (data) {
+                        const origin_cert = Recoils.getState('CONFIG:CERT');
+                        Recoils.setState('CONFIG:CERT', {
+                          ...origin_cert,
+                          ...data,
+                        });
+
+                        const auth_temp = auth;
+                        auth_temp['cert'] = true;
+                        setAuth({ ...auth_temp });
+
+                        nameRef.current.value = data.name;
+                      } else modal.alert('인증에 실패하였습니다.');
+                    });
+                  }}
+                >
+                  휴대폰 본인인증
+                </Button>{' '}
+              </>
+            )}
 
             <label>아이디/비밀번호</label>
             <InputGroup className="inputid">

@@ -29,7 +29,7 @@ const GoodsMatchTable = React.memo(({ selectCallback, deleteCallback, changeCall
 
     setRowData(newRowData);
 
-    deleteCallback(newRowData);
+    deleteCallback(d);
   };
 
   const onChange = (e, d, value, type) => {

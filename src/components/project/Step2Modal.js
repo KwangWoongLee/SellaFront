@@ -69,7 +69,7 @@ const Step2Modal = React.memo(({ modalState, setModalState, callback }) => {
 
           onClose();
           if (callback) {
-            callback();
+            callback(rowData);
           }
         }
       });

@@ -21,11 +21,14 @@ const CommonDateModal = React.memo(({ modalState, setModalState, onChangeDate })
       monthsRef.current.push(m.toString());
     }
 
-    let date = new Date(form.year, form.month, 0).getDate();
+    let date = new Date(new Date(now).getFullYear(), new Date(now).getMonth(), 0).getDate();
     for (let d = 1; d <= date; d += 1) {
       daysRef.current.push(d.toString());
     }
+  }, []);
 
+  useEffect(() => {
+    const now = Date.now();
     const nowDate = new Date(now);
     const formData = {
       year: nowDate.getFullYear(),
