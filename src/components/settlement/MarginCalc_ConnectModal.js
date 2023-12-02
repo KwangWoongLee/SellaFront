@@ -190,26 +190,22 @@ const MarginCalc_ConnectModal = React.memo(
         for (const diff_data of diff_goods_match) {
           diff_data.reg_date = new Date(Date.now());
 
-          if (diff_data.goods_match_idx) {
-            let findObj = _.find(selectFormsMatchRef.current.goods_match, {
-              goods_match_idx: diff_data.goods_match_idx,
-            });
-            findObj = { ...findObj, ...diff_data };
+          const findObj = _.find(selectFormsMatchRef.current.goods_match, {
+            idx: diff_data.idx,
+          });
+
+          let findRawObj = _.find(rawGoodsMatch, (data) => {
+            return (
+              data.forms_match_idx == selectFormsMatchRef.current.forms_match_idx && data.goods_idx == diff_data.idx
+            );
+          });
+
+          if (findObj) {
+            findObj.goods_match_idx = findRawObj.idx;
+            diff_data.new = false;
           } else {
-            let findObj = _.find(selectFormsMatchRef.current.goods_match, {
-              idx: diff_data.idx,
-            });
-
-            let findRawObj = _.find(rawGoodsMatch, {
-              goods_idx: diff_data.idx,
-            });
-
-            if (findObj) {
-              diff_data.goods_match_idx = findRawObj.idx;
-              findObj = { ...findObj, ...diff_data };
-            } else {
-              selectFormsMatchRef.current.goods_match.push(diff_data);
-            }
+            diff_data.new = true;
+            selectFormsMatchRef.current.goods_match.push(diff_data);
           }
         }
 
@@ -284,106 +280,39 @@ const MarginCalc_ConnectModal = React.memo(
     };
 
     const onSave = () => {
-      const delete_datas = _.filter(saveFormsMatchRef.current, (item) => {
-        return item && item.delete;
-      });
-
       const save_datas = _.filter(saveFormsMatchRef.current, (item) => {
         return item && !item.delete && item.save;
       });
 
-      if ((!delete_datas || !delete_datas.length) && (!save_datas || !save_datas.length)) {
-        modal.alert('저장할 데이터가 없습니다.');
-        return;
-      }
-
-      if (delete_datas && delete_datas.length) {
-        const delete_forms_match_idxs = _.map(delete_datas, 'forms_match_idx');
-        const delete_idxs = _.map(delete_datas, 'idx');
-        request.post(`user/forms/match/delete/multi`, { forms_match_idxs: delete_forms_match_idxs }).then((ret) => {
+      if (save_datas && save_datas.length) {
+        request.post(`user/forms/match/save`, { save_datas }).then((ret) => {
           if (!ret.err) {
             const { data } = ret.data;
             logger.info(data);
 
-            for (const delete_data of delete_datas) {
-              deleteCallback(delete_data, true);
-            }
+            Recoils.setState('DATA:FORMSMATCH', data.forms_match);
+            Recoils.setState('DATA:GOODSMATCH', data.goods_match);
 
-            if (save_datas && save_datas.length) {
-              request.post(`user/forms/match/save`, { save_datas }).then((ret) => {
-                if (!ret.err) {
-                  const { data } = ret.data;
-                  logger.info(data);
+            saveCallback(save_datas, data.forms_match);
 
-                  Recoils.setState('DATA:FORMSMATCH', data.forms_match);
-                  Recoils.setState('DATA:GOODSMATCH', data.goods_match);
+            const saved_idxs = _.map(save_datas, 'idx');
 
-                  saveCallback(save_datas, data.forms_match);
+            _.forEach(items, (item) => {
+              if (_.includes(saved_idxs, item.idx)) {
+                item.save = false;
+                item.delete = false;
+              }
+            });
+            rawGoodsMatch = _.cloneDeep(data.goods_match);
 
-                  const saved_idxs = _.map(save_datas, 'idx');
+            saveFormsMatchRef.current = new Array(saved_idxs.length);
+            setItems([...items]);
 
-                  _.forEach(items, (item) => {
-                    if (_.includes(saved_idxs, item.idx)) {
-                      item.save = false;
-                      item.delete = false;
-                    }
-                  });
-                  rawGoodsMatch = _.cloneDeep(data.goods_match);
-
-                  saveFormsMatchRef.current = new Array(saved_idxs.length);
-                  setItems(() => _.filter(items, (item) => !_.includes(delete_idxs, item.idx)));
-
-                  setFormsMatchSelect(-1);
-                  selectFormsMatchRef.current = null;
-                  setSelectFormsMatchData({ ...selectFormsMatchRef.current });
-                }
-              });
-            } else {
-              Recoils.setState('DATA:FORMSMATCH', data.forms_match);
-              Recoils.setState('DATA:GOODSMATCH', data.goods_match);
-
-              rawGoodsMatch = _.cloneDeep(data.goods_match);
-
-              saveFormsMatchRef.current = new Array(delete_idxs.length);
-              setItems(() => _.filter(items, (item) => !_.includes(delete_idxs, item.idx)));
-
-              setFormsMatchSelect(-1);
-              selectFormsMatchRef.current = null;
-              setSelectFormsMatchData({ ...selectFormsMatchRef.current });
-            }
+            setFormsMatchSelect(-1);
+            selectFormsMatchRef.current = null;
+            setSelectFormsMatchData({ ...selectFormsMatchRef.current });
           }
         });
-      } else {
-        if (save_datas && save_datas.length) {
-          request.post(`user/forms/match/save`, { save_datas }).then((ret) => {
-            if (!ret.err) {
-              const { data } = ret.data;
-              logger.info(data);
-
-              Recoils.setState('DATA:FORMSMATCH', data.forms_match);
-              Recoils.setState('DATA:GOODSMATCH', data.goods_match);
-
-              saveCallback(save_datas, data.forms_match);
-
-              const saved_idxs = _.map(save_datas, 'idx');
-
-              _.forEach(items, (item) => {
-                if (_.includes(saved_idxs, item.idx)) {
-                  item.save = false;
-                  item.delete = false;
-                }
-              });
-              rawGoodsMatch = _.cloneDeep(data.goods_match);
-
-              saveFormsMatchRef.current = new Array(saved_idxs.length);
-              setItems([...items]);
-
-              setFormsMatchSelect(-1);
-              selectFormsMatchRef.current = null;
-              setSelectFormsMatchData({ ...selectFormsMatchRef.current });
-            }
-          });
-        }
       }
     };
 

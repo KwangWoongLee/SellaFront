@@ -141,7 +141,7 @@ const Margin_NoLogin = () => {
     const settlement_price = (sellPrice - platformFee + sellDeliveryFee - platformDeliveryFee).toFixed(0);
     let margin = settlement_price - sum_minus;
     margin = Number(Math.round(margin));
-    let marginRate = (margin / sellPrice) * 100;
+    let marginRate = (margin / sum_minus) * 100;
     marginRate = Number(marginRate.toFixed(1));
 
     const result = {
@@ -200,13 +200,13 @@ const Margin_NoLogin = () => {
                   </td>
                 </tr>
 
-                {/* <tr>
+                <tr>
                   <th>마진율</th>
                   <td className={resultData.margin_rate >= 0 ? 'txt_green' : 'txt_red'}>
                     {resultData.margin_rate}
                     <span> %</span>
                   </td>
-                </tr> */}
+                </tr>
               </tbody>
             </table>
           </div>
@@ -305,18 +305,6 @@ const Margin_NoLogin = () => {
                     <span>%</span>
                   </td>
                 </tr>
-                {/* <tr>
-                    <td className="td_sum gray">
-                      <span>최저 판매가</span> {lowestPrice} 원
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <span>최저 마진율</span>
-                      <input type="number" ref={lowestMarginRateRef}></input>
-                      <span>%</span>
-                    </td>
-                  </tr> */}
               </tbody>
             </table>
           </div>

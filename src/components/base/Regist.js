@@ -270,7 +270,7 @@ const Regist = () => {
                   }}
                 >
                   휴대폰 본인인증
-                </Button>{' '}
+                </Button>
               </>
             )}
 

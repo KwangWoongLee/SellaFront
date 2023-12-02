@@ -117,18 +117,18 @@ const Margin = () => {
       cellClass: 'uneditable',
     },
 
-    // {
-    //   field: 'margin_rate',
-    //   hidden: true,
-    //   sortable: true,
-    //   unSortIcon: true,
-    //   valueFormatter: (params) => {
-    //     return `${Number(params.value)} %`;
-    //   },
-    //   valueParser: (params) => Number(params.newValue),
-    //   headerName: '마진율',
-    //   cellClass: 'uneditable',
-    // },
+    {
+      field: 'margin_rate',
+      hidden: true,
+      sortable: true,
+      unSortIcon: true,
+      valueFormatter: (params) => {
+        return `${Number(params.value)} %`;
+      },
+      valueParser: (params) => Number(params.newValue),
+      headerName: '마진율',
+      cellClass: 'uneditable',
+    },
   ]);
 
   const rowHeight = 36;
@@ -318,7 +318,7 @@ const Margin = () => {
     const settlement_price = (sellPrice - platformFee + sellDeliveryFee - platformDeliveryFee).toFixed(0);
     let margin = settlement_price - sum_minus;
     margin = Number(Math.round(margin));
-    let marginRate = (margin / stockPrice) * 100;
+    let marginRate = (margin / sum_minus) * 100;
     marginRate = Number(marginRate.toFixed(1));
 
     // const test = lowestMarginRate + platformFeeRate - 1;
@@ -475,13 +475,13 @@ const Margin = () => {
                         </td>
                       </tr>
 
-                      {/* <tr>
+                      <tr>
                         <th>마진율</th>
                         <td className={resultData.margin_rate >= 0 ? 'txt_green' : 'txt_red'}>
                           {resultData.margin_rate}
                           <span> %</span>
                         </td>
-                      </tr> */}
+                      </tr>
                     </tbody>
                   </table>
                 </div>
@@ -594,18 +594,6 @@ const Margin = () => {
                           <span>%</span>
                         </td>
                       </tr>
-                      {/* <tr>
-                    <td className="td_sum gray">
-                      <span>최저 판매가</span> {lowestPrice} 원
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <span>최저 마진율</span>
-                      <input type="number" ref={lowestMarginRateRef}></input>
-                      <span>%</span>
-                    </td>
-                  </tr> */}
                     </tbody>
                   </table>
                 </div>

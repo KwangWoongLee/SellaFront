@@ -165,17 +165,7 @@ const Login = () => {
             className="btn_txt btn_join"
             onClick={() => {
               const redirect_url = '/regist';
-              RequestCert(redirect_url, (data) => {
-                if (data) {
-                  const origin_cert = Recoils.getState('CONFIG:CERT');
-                  Recoils.setState('CONFIG:CERT', {
-                    ...origin_cert,
-                    ...data,
-                  });
-
-                  navigate(redirect_url);
-                } else modal.alert('인증에 실패하였습니다.');
-              });
+              navigate(redirect_url);
             }}
           >
             회원가입

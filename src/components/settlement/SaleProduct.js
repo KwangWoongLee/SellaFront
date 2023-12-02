@@ -228,7 +228,10 @@ const SaleProduct = () => {
 
     let new_goods_match = { ...d };
     if (findRawObj) {
+      new_goods_match.new = false;
       new_goods_match = { ...new_goods_match, findRawObj };
+    } else {
+      new_goods_match.new = true;
     }
     new_goods_match.match_count = 1;
     new_goods_match.reg_date = new Date(Date.now());
