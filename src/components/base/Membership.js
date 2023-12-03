@@ -7,10 +7,11 @@ import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
 import MyPageNavTab from 'components/base/MyPageNavTab';
 import Checkbox from 'components/common/CheckBoxCell';
-import { logger, modal, navigate, is_regex_password, is_regex_email } from 'util/com';
+import { logger, modal, navigate, is_regex_password, is_regex_email, replace_1000, revert_1000 } from 'util/com';
 import { RequestPay, RequestPayPeriod } from 'util/payment';
 import request from 'util/request';
 import Recoils from 'recoils';
+import _ from 'lodash';
 
 import 'styles/Mypage.scss';
 
@@ -80,8 +81,10 @@ const Membership = () => {
     });
   }, []);
 
-  const onPaymentReq = (d) => {
-    RequestPay(d, () => {
+  const onPaymentReq = (d, remain_warranty_day) => {
+    const data = { ...d, remain_warranty_day };
+
+    RequestPay(data, () => {
       console.log();
     });
   };
@@ -175,8 +178,11 @@ const Membership = () => {
           <div className="paymentbox">
             <h3>멤버십 혜택 안내</h3>
             <h4>
-              {accountData && accountData.grade !== 0 && accountData.grade !== 1 && '유료'}서비스 사용기간이 [
-              {accountData ? accountData.remain_warranty_day : 0}]일 남았습니다.
+              {accountData && accountData.grade !== 0 && accountData.grade !== 1 && '유료 '}
+              {accountData &&
+                _.find(sella_grade, { grade: accountData.grade }) &&
+                `${_.find(sella_grade, { grade: accountData.grade }).name} `}
+              서비스 사용기간이 [{accountData ? accountData.remain_warranty_day : 0}]일 남았습니다.
             </h4>
             {/*결제 심사를 위해 잠시 주석처리합니다.
             <ul className="payoptionbox">
@@ -243,7 +249,13 @@ const Membership = () => {
                     <GradeItem
                       account_data={accountData}
                       grade_data={sella_grade_data}
-                      onClick={sella_grade_data.period_flag ? onPaymentReqPeriod : onPaymentReq}
+                      onClick={
+                        sella_grade_data.period_flag
+                          ? onPaymentReqPeriod
+                          : () => {
+                              onPaymentReq(sella_grade_data, accountData.remain_warranty_day);
+                            }
+                      }
                     ></GradeItem>
                   )
               )}
@@ -385,11 +397,7 @@ const GradeItem = React.memo(({ index, account_data, grade_data, onClick }) => {
     <div className="innerbox">
       <dl>
         <dt>{grade_data.name}</dt>
-        {grade_data.price != 0 && (
-          <dd>
-            {grade_data.price}원 {grade_data.period_flag ? '/ 월 (매 15일)' : '(위 서비스 사용기간)'}
-          </dd>
-        )}
+        {grade_data.price != 0 && <dd>{replace_1000(revert_1000(grade_data.price))}원</dd>}
         <dd>{grade_data.descript}</dd>
       </dl>
 

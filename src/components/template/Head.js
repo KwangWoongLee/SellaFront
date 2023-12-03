@@ -146,11 +146,11 @@ const Head = () => {
                       마진 계산기
                     </Nav.Link>
                   </li>
-                  {/* <li>
+                  <li>
                     <Nav.Link className="nav-link bcalculator" onClick={onLink} name="/calculator/lowest_price_free">
                       최저가 계산기
                     </Nav.Link>
-                  </li> */}
+                  </li>
                   <li className="line"></li>
                   <li className="small">
                     <Nav.Link className="nav-link" onClick={onLink} name="/cscenter/announcement">
@@ -271,7 +271,7 @@ const Head = () => {
               >
                 <span>마진계산기</span>
               </Nav.Link>
-              {/* <Nav.Link
+              <Nav.Link
                 className="nav-link"
                 onClick={(e) => {
                   onLink(e);
@@ -279,7 +279,7 @@ const Head = () => {
                 name="/calculator/lowest_price_free"
               >
                 <span>최저가 계산기</span>
-              </Nav.Link> */}
+              </Nav.Link>
               {/* <span>·</span>
           <Nav.Link className="nav-link bcalculator" onClick={onLink} name="/calculator/buying">
             <span>사입계산기</span>

@@ -23,7 +23,6 @@ const LowestPrice_NoLogin = () => {
   const stockPriceRef = useRef(null);
   const savedDPFeeRef = useRef(null);
   const platformFeeRateRef = useRef(null);
-  const platformDeliverFeeRateRef = useRef(null);
   const lowestMarginRateRef = useRef(null);
   //
   const [lowestPrice, setLowestPrice] = useState('');
@@ -45,10 +44,6 @@ const LowestPrice_NoLogin = () => {
     let platformFeeRate = Number(platformData[platformType].fee_rate);
     platformFeeRate = platformFeeRate.toFixed(2);
     platformFeeRateRef.current.value = platformFeeRate;
-
-    let platformDeliverFeeRate = Number(platformData[platformType].delivery_fee_rate);
-    platformDeliverFeeRate = platformDeliverFeeRate.toFixed(2);
-    platformDeliverFeeRateRef.current.value = platformDeliverFeeRate;
   }, [platformType]);
 
   const onChange = (key, e) => {
@@ -60,40 +55,29 @@ const LowestPrice_NoLogin = () => {
   };
 
   const onClickCalc = (e) => {
-    let sellDeliveryFee = sellDeliveryFeeRef.current.value;
     let stockPrice = stockPriceRef.current.value;
-    let savedDPFee = savedDPFeeRef.current.value;
     let lowestMarginRate = lowestMarginRateRef.current.value;
 
     let platformFeeRate = platformFeeRateRef.current.value;
-    let platformDeliverFeeRate = platformDeliverFeeRateRef.current.value;
-
     if (stockPrice === '') {
       modal.alert('매입가를 입력해주세요.');
       return;
     }
-    if (savedDPFee === '') {
-      modal.alert('택배비·포장비 를 입력해주세요.');
-      return;
-    }
+
     if (isNaN(lowestMarginRate) || lowestMarginRate === '') {
       lowestMarginRate = 0;
       lowestMarginRateRef.current.value = 0;
     }
 
-    sellDeliveryFee = revert_1000(sellDeliveryFee);
     stockPrice = revert_1000(stockPrice);
-    savedDPFee = revert_1000(savedDPFee);
-    const sumMinus = stockPrice + savedDPFee;
+    const sumMinus = stockPrice;
 
     lowestMarginRate = Number(lowestMarginRate);
     if (lowestMarginRate < 0 || lowestMarginRate >= 100) {
       modal.alert('최저마진율을 0~100% 사이로 입력해주세요.');
       return;
     }
-    lowestMarginRate = lowestMarginRate / 100;
-
-    const wannaMargin = sumMinus * (1 + lowestMarginRate);
+    lowestMarginRate = Number((lowestMarginRate / 100).toFixed(5));
 
     platformFeeRate = Number(platformFeeRate);
     if (platformFeeRate < 0 || platformFeeRate >= 100) {
@@ -103,24 +87,13 @@ const LowestPrice_NoLogin = () => {
     platformFeeRate = platformFeeRate / 100;
     platformFeeRate = Number(platformFeeRate.toFixed(5));
 
-    platformDeliverFeeRate = Number(platformDeliverFeeRate);
-    if (platformDeliverFeeRate < 0 || platformDeliverFeeRate >= 100) {
-      modal.alert('배송비 수수료율을 0~100% 사이로 입력해주세요.');
+    if (1 - platformFeeRate - lowestMarginRate == 0) {
+      modal.alert('최저마진율과 수수료의 합이 100이 될 수 없습니다.');
       return;
     }
 
-    platformDeliverFeeRate = platformDeliverFeeRate / 100;
-    platformDeliverFeeRate = Number(platformDeliverFeeRate.toFixed(5));
-
-    const sumDeliveryFee = sellDeliveryFee * (1 - platformDeliverFeeRate);
-
-    const test = platformFeeRate - 1;
-    if (test == 0) {
-      modal.alert('최저마진율 100 %가 될 수 없습니다.');
-      return;
-    }
-
-    const wannaLowestPrice = (wannaMargin - sumDeliveryFee) / (1 - platformFeeRate);
+    // const wannaLowestPrice = wannaMargin / (1 - platformFeeRate);
+    const wannaLowestPrice = stockPrice / (1 - platformFeeRate - lowestMarginRate);
 
     const low = replace_1000(revert_1000(wannaLowestPrice.toFixed(0)));
 
@@ -170,21 +143,6 @@ const LowestPrice_NoLogin = () => {
                     <span>%</span>
                   </td>
                 </tr>
-
-                <tr>
-                  <td>
-                    <span className="txt_green">받은 배송비</span>
-                    <input
-                      type="text"
-                      ref={sellDeliveryFeeRef}
-                      onChange={(e) => {
-                        onChangeInput(e, sellDeliveryFeeRef);
-                      }}
-                    ></input>
-                    <span>원</span>
-                  </td>
-                </tr>
-
                 <tr>
                   <td>
                     <span className="txt_red">매입가</span>
@@ -193,20 +151,6 @@ const LowestPrice_NoLogin = () => {
                       ref={stockPriceRef}
                       onChange={(e) => {
                         onChangeInput(e, stockPriceRef);
-                      }}
-                    ></input>
-                    <span>원</span>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td>
-                    <span className="txt_red ">택배비·포장비</span>
-                    <input
-                      type="text"
-                      ref={savedDPFeeRef}
-                      onChange={(e) => {
-                        onChangeInput(e, savedDPFeeRef);
                       }}
                     ></input>
                     <span>원</span>
@@ -239,13 +183,6 @@ const LowestPrice_NoLogin = () => {
                   <td>
                     <span className="txt_small">매체 수수료</span>
                     <input type="number" ref={platformFeeRateRef}></input>
-                    <span>%</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <span className="txt_small">배송비 수수료</span>
-                    <input type="number" ref={platformDeliverFeeRateRef}></input>
                     <span>%</span>
                   </td>
                 </tr>
