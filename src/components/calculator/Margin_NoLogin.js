@@ -141,7 +141,7 @@ const Margin_NoLogin = () => {
     const settlement_price = (sellPrice - platformFee + sellDeliveryFee - platformDeliveryFee).toFixed(0);
     let margin = settlement_price - sum_minus;
     margin = Number(Math.round(margin));
-    let marginRate = (margin / sum_minus) * 100;
+    let marginRate = (margin / sellPrice) * 100;
     marginRate = Number(marginRate.toFixed(1));
 
     const result = {

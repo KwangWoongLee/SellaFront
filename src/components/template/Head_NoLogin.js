@@ -92,7 +92,7 @@ const Head_NoLogin = ({ setScrollElemId }) => {
                     onScroll('main01');
                   }}
                 >
-                  서비스 소개after
+                  서비스 소개
                 </Nav.Link>
               </li>
               <li>
@@ -147,7 +147,7 @@ const Head_NoLogin = ({ setScrollElemId }) => {
               >
                 <span>마진계산기</span>
               </Nav.Link>
-              <Nav.Link
+              {/* <Nav.Link
                 className="nav-link"
                 onClick={(e) => {
                   onLink(e);
@@ -155,7 +155,7 @@ const Head_NoLogin = ({ setScrollElemId }) => {
                 name="/calculator/lowest_price_free"
               >
                 <span>최저가 계산기</span>
-              </Nav.Link>
+              </Nav.Link> */}
               {/* <span>·</span>
           <Nav.Link className="nav-link bcalculator" onClick={onLink} name="/calculator/buying">
             <span>사입계산기</span>
