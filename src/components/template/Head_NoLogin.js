@@ -92,7 +92,7 @@ const Head_NoLogin = ({ setScrollElemId }) => {
                     onScroll('main01');
                   }}
                 >
-                  서비스 소개after
+                  서비스 소개
                 </Nav.Link>
               </li>
               <li>
