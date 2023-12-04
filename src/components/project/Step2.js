@@ -134,7 +134,7 @@ const Step2 = () => {
         return Number.isNaN(Number(params.newValue)) ? params.oldValue : Number(params.newValue);
       },
       valueFormatter: (params) => {
-        if (params.value == '') return 0;
+        if (!params.value) return 0;
         return replace_1000(params.value);
       },
       filter: false,
@@ -495,8 +495,22 @@ const Step2 = () => {
       <Step2Modal
         modalState={modalState}
         setModalState={setModalState}
-        callback={() => {
-          page_reload();
+        callback={(insertedData) => {
+          const goodsData = _.cloneDeep(Recoils.getState('DATA:GOODS'));
+          rawData = _.cloneDeep(goodsData);
+          const realInsertedData = _.filter(insertedData, (d) => d.name);
+          const ordered_results = [];
+          for (const data of realInsertedData) {
+            const findObj = _.find(goodsData, { name: data.name });
+            ordered_results.push(findObj);
+          }
+
+          const raw_results = _.filter(
+            goodsData,
+            (d) => !_.find(realInsertedData, (inserted) => inserted.name === d.name)
+          );
+
+          setDatas([...ordered_results, ...raw_results]);
         }}
       ></Step2Modal>
     </>

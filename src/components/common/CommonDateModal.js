@@ -4,9 +4,9 @@ import { Modal, Button } from 'react-bootstrap';
 import { logger } from 'util/com';
 
 const CommonDateModal = React.memo(({ modalState, setModalState, onChangeDate }) => {
-  //logger.debug('CommonDateModal');
-
-  const [form, setForm] = useState({});
+  const [year, setYear] = useState(0);
+  const [month, setMonth] = useState(0);
+  const [day, setDay] = useState(0);
   const yearsRef = useRef([]);
   const monthsRef = useRef([]);
   const daysRef = useRef([]);
@@ -18,26 +18,22 @@ const CommonDateModal = React.memo(({ modalState, setModalState, onChangeDate })
     }
 
     for (let m = 1; m <= 12; m += 1) {
-      monthsRef.current.push(m.toString());
-    }
-
-    let date = new Date(new Date(now).getFullYear(), new Date(now).getMonth(), 0).getDate();
-    for (let d = 1; d <= date; d += 1) {
-      daysRef.current.push(d.toString());
+      monthsRef.current.push(m);
+      const monthDate = new Date(new Date(now).getFullYear(), m, 0).getDate();
+      const monthDays = [];
+      for (let d = 1; d <= monthDate; d += 1) {
+        monthDays.push(d);
+      }
+      daysRef.current.push(monthDays);
     }
   }, []);
 
   useEffect(() => {
     const now = Date.now();
     const nowDate = new Date(now);
-    const formData = {
-      year: nowDate.getFullYear(),
-      month: nowDate.getMonth() + 1,
-      day: nowDate.getDate(),
-    };
-    setForm({
-      ...formData,
-    });
+    setYear(nowDate.getFullYear());
+    setMonth(nowDate.getMonth() + 1);
+    setDay(nowDate.getDate());
   }, [modalState]);
 
   const onClose = () => setModalState(false);
@@ -48,28 +44,31 @@ const CommonDateModal = React.memo(({ modalState, setModalState, onChangeDate })
         <Modal.Title>주문서 날짜변경</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <select value={form.year} onChange={(e) => setForm({ ...form, year: e.target.value })}>
-          {yearsRef.current.map((item) => (
-            <option value={item} key={item}>
-              {item} 년
-            </option>
-          ))}
+        <select value={year} onChange={(e) => setYear(e.target.value)}>
+          {yearsRef.current &&
+            yearsRef.current.map((item) => (
+              <option value={item} key={item}>
+                {item} 년
+              </option>
+            ))}
         </select>
 
-        <select value={form.month} onChange={(e) => setForm({ ...form, month: e.target.value })}>
-          {monthsRef.current.map((item) => (
-            <option value={item} key={item}>
-              {item} 월
-            </option>
-          ))}
+        <select value={month} onChange={(e) => setMonth(e.target.value)}>
+          {monthsRef.current &&
+            monthsRef.current.map((item) => (
+              <option value={item} key={item}>
+                {item} 월
+              </option>
+            ))}
         </select>
 
-        <select value={form.day} onChange={(e) => setForm({ ...form, day: e.target.value })}>
-          {daysRef.current.map((item) => (
-            <option value={item} key={item}>
-              {item} 일
-            </option>
-          ))}
+        <select value={day} onChange={(e) => setDay(e.target.value)}>
+          {daysRef.current[month - 1] &&
+            daysRef.current[month - 1].map((item) => (
+              <option value={item} key={item}>
+                {item} 일
+              </option>
+            ))}
         </select>
       </Modal.Body>
       <Modal.Footer>
@@ -77,11 +76,7 @@ const CommonDateModal = React.memo(({ modalState, setModalState, onChangeDate })
           className="btn-primary btn"
           variant="secondary"
           onClick={() => {
-            onChangeDate(
-              `${form.year}-${form.month > 10 ? form.month : `0${form.month}`}-${
-                form.day > 10 ? form.day : `0${form.day}`
-              }`
-            );
+            onChangeDate(`${year}-${month > 10 ? month : `0${month}`}-${day > 10 ? day : `0${day}`}`);
             onClose();
           }}
         >

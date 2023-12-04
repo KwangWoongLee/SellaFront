@@ -55,7 +55,7 @@ const StandardProduct_Search = React.memo(
       // }
     }, [items]);
 
-    const onSearch = () => {
+    const onSearch = (resetFlag) => {
       let search_results = _.cloneDeep(Recoils.getState('DATA:GOODS'));
       const forms_match = parentFormsMatchSelectData;
 
@@ -80,18 +80,25 @@ const StandardProduct_Search = React.memo(
         }
       }
 
-      let ordered_results = [];
-      if (insertedData) {
-        ordered_results = _.filter(search_results, (goods) => {
-          return _.find(insertedData, (insertedRow) => _.lowerCase(insertedRow.name) === _.lowerCase(goods.name));
-        });
+      if (resetFlag) {
+        setItems([...search_results]);
+      } else {
+        let ordered_results = [];
+        if (insertedData) {
+          ordered_results = _.filter(search_results, (goods) => {
+            return _.find(insertedData, (insertedRow) => _.lowerCase(insertedRow.name) === _.lowerCase(goods.name));
+          });
 
-        search_results = _.filter(search_results, (goods) => {
-          return !_.find(insertedData, (insertedRow) => _.lowerCase(insertedRow.name) === _.lowerCase(goods.name));
-        });
+          search_results = _.filter(search_results, (goods) => {
+            return !_.find(insertedData, (insertedRow) => _.lowerCase(insertedRow.name) === _.lowerCase(goods.name));
+          });
+        }
+
+        setItems([...ordered_results, ...search_results]);
       }
 
-      setItems([...ordered_results, ...search_results]);
+      // setItems(() => search_results);
+
       setMode(2);
     };
 
@@ -117,7 +124,7 @@ const StandardProduct_Search = React.memo(
 
     const onReset = () => {
       goodsNameRef.current.value = '';
-      onSearch();
+      onSearch(true);
     };
 
     return (

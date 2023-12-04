@@ -460,7 +460,7 @@ const TodaySummary = () => {
                       </li>
                       <li className="txt_green">
                         <b>손익 합계</b>
-                        {viewResult.sum_delivery_fee} <i>원</i>
+                        {viewResult.sum_profit_loss} <i>원</i>
                       </li>
                     </ul>
                   </div>

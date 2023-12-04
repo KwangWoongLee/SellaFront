@@ -43,6 +43,7 @@ const Margin = () => {
   const platformDeliverFeeRateRef = useRef(null);
   const lowestMarginRateRef = useRef(null);
   const saveDataRef = useRef({});
+  const nowSelectRowRef = useRef(null);
   //
 
   const [resultData, setResultData] = useState({
@@ -188,7 +189,9 @@ const Margin = () => {
       return;
     }
 
-    saveDataRef.current = { ...saveDataRef.current, goods_name: name };
+    if (saveDataRef.current.idx && nameRef.current.value !== nowSelectRowRef.current.goods_name) {
+      _.unset(saveDataRef.current, 'idx');
+    }
 
     if (saveDataRef.current.idx) {
       request.post(`user/calculator/margin/modify`, { save_data: saveDataRef.current }).then((ret) => {
@@ -197,6 +200,7 @@ const Margin = () => {
         }
       });
     } else {
+      saveDataRef.current = { ...saveDataRef.current, goods_name: name };
       request.post(`user/calculator/margin/save`, { save_data: saveDataRef.current }).then((ret) => {
         if (!ret.err) {
           page_reload();
@@ -401,6 +405,7 @@ const Margin = () => {
       return;
     }
 
+    nowSelectRowRef.current = row;
     nameRef.current.value = `${row.goods_name}`;
     sellPriceRef.current.value = `${replace_1000(row.sell_price)}`;
     sellDeliveryFeeRef.current.value = `${replace_1000(row.received_delivery_fee)}`;
