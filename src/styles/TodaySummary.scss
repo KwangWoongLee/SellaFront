@@ -59,6 +59,7 @@
         font-size: 13px;
         line-height: 13px;
         color: #1b3279;
+        white-space: nowrap;
       }
 
       li .dd {
@@ -66,6 +67,7 @@
         line-height: 18px;
         font-weight: 800;
         color: #081a51;
+        white-space: nowrap;
       }
 
       li .dd span {
@@ -221,6 +223,10 @@
           color: #1d7044;
           font-size: 15px;
           font-weight: 600;
+        }
+
+        div.loss {
+          color: #b84a4a;
         }
       }
 
@@ -540,7 +546,7 @@
         }
 
         li.btnbox {
-          padding-left: 10px;
+          width: 83px;
           vertical-align: middle;
           border-left: 0 !important;
 

@@ -187,8 +187,10 @@
     margin-top: 15px;
     width: 100%;
     height: auto !important;
+    overflow-x: auto;
 
     table.thead {
+      min-width: 1820px;
       height: auto !important;
 
       th {
@@ -197,6 +199,7 @@
     }
 
     table.tbody {
+      min-width: 1820px;
       height: calc(100vh - 365px);
     }
 

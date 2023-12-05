@@ -62,7 +62,7 @@ const MarginCalc = () => {
   const gridStyle = useMemo(() => ({ height: '1000px', width: '100%' }), []);
 
   const isMobile = useMediaQuery({
-    query: '(max-width:768px)',
+    query: '(max-width:1024px)',
   });
 
   useEffect(() => {
@@ -598,7 +598,7 @@ const MarginCalc = () => {
 
                     <div className="uploadbox">
                       <div className="section1">
-                        <h3>
+                        <h3 className="mobileBg">
                           주문서를 업로드하고
                           <br className="mobile" /> 손익을 관리하세요!
                           <p className="pc">

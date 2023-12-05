@@ -232,16 +232,34 @@
     text-align: center;
   }
 
-  .body.margin_calc .before .section1 h3 {
-    display: inline-block;
+  h3.mobileBg {
+    display: flex;
+    height: calc(100% - 50px);
+    align-items: center;
+    justify-content: center;
     margin-bottom: 50px;
     padding-top: 5px;
     font-size: 2rem !important;
     line-height: 2.6rem !important;
     font-weight: 700 !important;
+    text-align: center;
   }
 
-  .body.margin_calc .before .section1 h3 p {
+  .body.margin_calc h3.mobileBg {
+    display: inline-block;
+  }
+
+  h3.mobileBg > div {
+    font-size: inherit !important;
+    line-height: inherit !important;
+    font-weight: inherit !important;
+    text-align: inherit;
+  }
+
+  h3.mobileBg p {
+    display: block;
+    margin: 20px 0 30px;
+    width: 100%;
     font-size: 1.3rem;
   }
 

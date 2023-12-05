@@ -53,7 +53,7 @@ const TodaySummary = () => {
   const selectRowDataIdxRef = useRef(null);
 
   const isMobile = useMediaQuery({
-    query: '(max-width:768px)',
+    query: '(max-width:1024px)',
   });
 
   useEffect(() => {
@@ -87,10 +87,10 @@ const TodaySummary = () => {
             if (dayGroupDatas[key].title) {
               let prefix = '';
               if (dayGroupDatas[key].title > 0) {
-                prefix = '이익\n+ ';
+                prefix = '';
                 dayGroupDatas[key].className = 'profit';
               } else {
-                prefix = '손해\n ';
+                prefix = '';
                 dayGroupDatas[key].className = 'loss';
               }
 
@@ -301,13 +301,13 @@ const TodaySummary = () => {
                         <span>건</span>
                       </p>
                     </li>
-                    <li>
+                    {/* <li>
                       <p className="dt">적자 주문</p>
                       <span className="dd txt_red">
                         {monthViewResult.loss_order_no_count}
                         <span className="unit txt_red">건</span>
                       </span>
-                    </li>
+                    </li> */}
                     <li>
                       <p className="dt">상품 결제 금액</p>
                       <p className="dd">
@@ -528,14 +528,15 @@ const SummaryRow = React.memo(({ d, setDateModalState, onDelete, selectRowDataId
         </li>
         <li className="btnbox">
           <Button
-            className="btn_date"
+            className="btn_date_2"
             variant="primary"
             onClick={() => {
               selectRowDataIdxRef.current = d.idx;
               setDateModalState(true);
             }}
           >
-            <img src={`${img_src}${icon_date}`} />
+            {/* <img src={`${img_src}${icon_date}`} /> */}
+            날짜변경
           </Button>
           <Button
             className="btn_del"

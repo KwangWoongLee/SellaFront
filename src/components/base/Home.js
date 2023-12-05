@@ -550,8 +550,8 @@ const Home = () => {
                 <li>마진 계산기 (계산 결과 저장)</li>
                 <li>최저가 계산기 (계산 결과 저장)</li>
               </ol>
-              <hr />
-              <p className="txt_blue">
+
+              {/* <hr /><p className="txt_blue">
                 정기결제 할인 특가
                 <img src={`${img_src}${img_stamp10sale}`} />
               </p>
@@ -574,7 +574,7 @@ const Home = () => {
                     17,900<i>원</i>
                   </dd>
                 </dl>
-              </div>
+              </div> */}
 
               <hr />
 

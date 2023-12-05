@@ -22,7 +22,7 @@ import MobileRefuser from 'components/template/MobileRefuser';
 
 const StandardProduct = () => {
   const isMobile = useMediaQuery({
-    query: '(max-width:768px)',
+    query: '(max-width:1024px)',
   });
 
   const [goodsData, setGoodsData] = useState([]);

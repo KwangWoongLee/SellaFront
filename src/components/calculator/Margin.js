@@ -22,7 +22,7 @@ import MobileRefuser from 'components/template/MobileRefuser';
 
 const Margin = () => {
   const isMobile = useMediaQuery({
-    query: '(max-width:768px)',
+    query: '(max-width:1024px)',
   });
 
   const [rowData, setDatas] = useState([]);
@@ -106,7 +106,7 @@ const Margin = () => {
       sortable: true,
       unSortIcon: true,
       valueGetter: (params) => `${replace_1000(revert_1000(params.data.revenue_sum_price))} 원`,
-      headerName: '판매가',
+      headerName: '판매가 + 받은 배송비',
       cellClass: 'uneditable',
     },
     {
