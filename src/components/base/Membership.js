@@ -9,6 +9,7 @@ import MyPageNavTab from 'components/base/MyPageNavTab';
 import Checkbox from 'components/common/CheckBoxCell';
 import { logger, modal, navigate, is_regex_password, is_regex_email, replace_1000, revert_1000 } from 'util/com';
 import { RequestPay, RequestPayPeriod } from 'util/payment';
+import AgreementModal from 'components/common/AgreementModal';
 import request from 'util/request';
 import Recoils from 'recoils';
 import _ from 'lodash';
@@ -22,6 +23,7 @@ import img_salearrow from 'images/img_salearrow.svg';
 const Membership = () => {
   const account = Recoils.useValue('CONFIG:ACCOUNT');
   const sella_grade = Recoils.getState('SELLA:GRADE');
+  const sellaAgreementRef = useRef(null);
 
   const nameRef = useRef(null);
   const phoneRef = useRef(null);
@@ -57,6 +59,23 @@ const Membership = () => {
     if (isOk) setModifyButtonOn(true);
     else setModifyButtonOn(false);
   }, [auth]);
+
+  useEffect(() => {
+    if (!sellaAgreementRef.current || !sellaAgreementRef.current.length) {
+      request.post('base/info/agreement', {}).then((ret) => {
+        if (!ret.err) {
+          const { data } = ret.data;
+          Recoils.setState('SELLA:AGREEMENT', data.sella_agreement);
+
+          const agreement_temp = _.filter(_.cloneDeep(data.sella_agreement), { type: 'payment' });
+          _.forEach(agreement_temp, (item) => {
+            item.checked = false;
+          });
+          sellaAgreementRef.current = agreement_temp;
+        }
+      });
+    }
+  }, []);
 
   useEffect(() => {
     request.post('base/membership', { access_token: account.access_token }).then((ret) => {
@@ -256,6 +275,7 @@ const Membership = () => {
                               onPaymentReq(sella_grade_data, account.access_token, accountData.remain_warranty_day);
                             }
                       }
+                      sella_agreement={sellaAgreementRef.current}
                     ></GradeItem>
                   )
               )}
@@ -296,11 +316,30 @@ const Membership = () => {
                   disabled={true}
                   ref={phoneRef}
                   type="text"
-                  placeholder="휴대폰번호"
+                  placeholder="개인정보 제공에 동의하지 않으셨습니다."
                   aria-label="id"
                   defaultValue={''}
                 />
               </InputGroup>
+
+              <InputGroup className="inputemail">
+                <label>이메일</label>
+                <Form.Control
+                  disabled={true}
+                  ref={emailRef}
+                  type="text"
+                  placeholder="개인정보 제공에 동의하지 않으셨습니다."
+                  aria-label="email"
+                  defaultValue={''}
+                  onChange={onEmailChange}
+                />
+              </InputGroup>
+              {auth['email'] ? (
+                <br />
+              ) : (
+                <></>
+                // <span className="inform inform5 red">‘@’ 를 포함한 이메일 주소를 정확히 입력해주세요.</span>
+              )}
 
               <InputGroup className="inputpw1">
                 <label>현재 비밀번호</label>
@@ -336,22 +375,6 @@ const Membership = () => {
                 <span className="inform inform1"></span>
               )}
 
-              <InputGroup className="inputemail">
-                <label>이메일</label>
-                <Form.Control
-                  ref={emailRef}
-                  type="text"
-                  placeholder="이메일주소"
-                  aria-label="email"
-                  defaultValue={''}
-                  onChange={onEmailChange}
-                />
-              </InputGroup>
-              {auth['email'] ? (
-                <br />
-              ) : (
-                <span className="inform inform5 red">‘@’ 를 포함한 이메일 주소를 정확히 입력해주세요.</span>
-              )}
               <InputGroup className="inputcompany">
                 <label>회사명</label>
                 <Form.Control ref={corpRef} type="text" placeholder="회사명" aria-label="id" defaultValue={''} />
@@ -392,77 +415,124 @@ const Membership = () => {
   );
 };
 
-const GradeItem = React.memo(({ index, account_data, grade_data, onClick }) => {
-  return (
-    <div className="innerbox">
-      <dl>
-        <dt>{grade_data.name}</dt>
-        {grade_data.price != 0 && <dd>{replace_1000(revert_1000(grade_data.price))}원</dd>}
-        <dd>{grade_data.descript}</dd>
-      </dl>
+const GradeItem = React.memo(({ index, account_data, grade_data, onClick, sella_agreement }) => {
+  const [allChecked, setAllChecked] = useState(false);
+  const [agreement, setAgreement] = useState([]);
+  const [agreementModal, setAgreementModal] = useState(false);
+  const [agreementModalContent, setAgreementModalContent] = useState([]);
 
-      <ul>{grade_data.functions && grade_data.functions.map((data, index) => <li>{data.name}</li>)}</ul>
-      {/* <div className="terms">
-        <ul>
-          <li>
-            {' '}
-            <Checkbox></Checkbox> <label>(필수)멤버십 정기 결제 동의</label>{' '}
-          </li>
-          <li>
-            {' '}
-            <Checkbox></Checkbox> <label>(필수)1년 경과 전 해지 시, 정상가 기준으로 환불</label>{' '}
-          </li>
-          <li>
-            {' '}
-            <Checkbox></Checkbox>{' '}
-            <label>
-              (필수)이용약관 및 결제 및 멤버십 유의사항
-              <span>
-                <strong style={{ textDecoration: 'underline' }}>보기</strong>
-              </span>
-            </label>{' '}
-          </li>
-          <li>
-            {' '}
-            <Checkbox></Checkbox>{' '}
-            <label>
-              (필수)멤버십 제 3자 개인정보 제공
-              <span>
-                <strong style={{ textDecoration: 'underline' }}>보기</strong>
-              </span>
-            </label>{' '}
-          </li>
-          <li>
-            {' '}
-            <Checkbox></Checkbox> <label>(선택)멤버십 혜택 및 프로모션 알림 동의</label>{' '}
-          </li>
-        </ul>
-        <Checkbox></Checkbox>
-        <label>모두 동의합니다.</label>
-      </div> */}
-      {account_data &&
-      account_data.remain_warranty_day &&
-      account_data.remain_warranty_day > 0 &&
-      account_data.grade === grade_data.grade ? (
-        <Button
-          className="btn-primary"
-          onClick={() => {
-            onClick(grade_data, account_data);
-          }}
-        >
-          사용중
-        </Button>
-      ) : (
-        <Button
-          onClick={() => {
-            onClick(grade_data, account_data);
-          }}
-          className="btn-primary btn_flblue"
-        >
-          결제하기
-        </Button>
-      )}
-    </div>
+  useEffect(() => {
+    if (sella_agreement) {
+      setAgreement(_.cloneDeep(sella_agreement));
+    }
+  }, [sella_agreement]);
+
+  useEffect(() => {
+    if (allChecked && _.find(allChecked, { check: true })) setAllChecked(false);
+  }, [agreement]);
+
+  const checkedItemHandler = (d) => {
+    const obj = _.find(agreement, { group_id: d.group_id });
+    obj.checked = !obj.checked;
+
+    const unCheckedList = _.filter(agreement, (data) => {
+      return !data.checked;
+    });
+
+    if (unCheckedList.length > 0) {
+      setAllChecked(false);
+    } else {
+      setAllChecked(true);
+    }
+
+    setAgreement([...agreement]);
+  };
+
+  const onAllAgreementChange = () => {
+    for (const agreement_item of agreement) {
+      agreement_item.checked = !allChecked;
+    }
+
+    setAgreement([...agreement]);
+    setAllChecked(!allChecked);
+  };
+
+  const onClickAgreement = (e, contents) => {
+    setAgreementModalContent([...contents]);
+    setAgreementModal(true);
+  };
+
+  return (
+    <>
+      <div className="innerbox">
+        <dl>
+          <dt>{grade_data.name}</dt>
+          {grade_data.price != 0 && <dd>{replace_1000(revert_1000(grade_data.price))}원</dd>}
+          <dd>{grade_data.descript}</dd>
+        </dl>
+
+        <ul>{grade_data.functions && grade_data.functions.map((data, index) => <li>{data.name}</li>)}</ul>
+
+        {account_data &&
+        account_data.remain_warranty_day &&
+        account_data.remain_warranty_day > 0 &&
+        account_data.grade === grade_data.grade ? (
+          <Button className="btn-primary">사용중</Button>
+        ) : (
+          <>
+            <div className="terms">
+              <ul>
+                {agreement.map((name, key) => (
+                  <>
+                    <li>
+                      {' '}
+                      <Checkbox
+                        checked={agreement[key].checked}
+                        checkedItemHandler={() => {
+                          checkedItemHandler(agreement[key]);
+                        }}
+                      ></Checkbox>
+                      <label>
+                        ({agreement[key].essential_flag ? '필수' : '선택'}){agreement[key].group_title}
+                        {agreement[key].contents && agreement[key].contents[0].button_name && (
+                          <>
+                            <span onClick={onClickAgreement}>
+                              <strong style={{ textDecoration: 'underline' }}>보기</strong>
+                            </span>
+                          </>
+                        )}
+                      </label>{' '}
+                    </li>
+                  </>
+                ))}
+              </ul>
+              <Checkbox
+                checked={allChecked}
+                checkedItemHandler={() => {
+                  onAllAgreementChange();
+                }}
+              ></Checkbox>
+              <label>모두 동의합니다.</label>
+            </div>
+            <Button
+              disabled={!allChecked}
+              onClick={() => {
+                onClick(grade_data, account_data);
+              }}
+              className="btn-primary btn_flblue"
+            >
+              결제하기
+            </Button>
+          </>
+        )}
+      </div>
+
+      <AgreementModal
+        modalState={agreementModal}
+        setModalState={setAgreementModal}
+        contents={agreementModalContent}
+      ></AgreementModal>
+    </>
   );
 });
 

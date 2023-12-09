@@ -16,6 +16,7 @@ import 'styles/Login.scss';
 const Regist = () => {
   const [registButtonOn, setRegistButtonOn] = useState(false);
   const [allChecked, setAllChecked] = useState(false);
+  const [marketingChecked, setMarketingChecked] = useState(false);
   const [agreement, setAgreement] = useState([]);
   const [auth, setAuth] = useState({
     cert: false,
@@ -66,6 +67,14 @@ const Regist = () => {
 
   useEffect(() => {
     let isOk = true;
+    if (!allChecked) isOk = false;
+
+    if (isOk) setRegistButtonOn(true);
+    else setRegistButtonOn(false);
+  }, [allChecked]);
+
+  useEffect(() => {
+    let isOk = true;
     for (const key in auth) {
       if (auth[key] === false) {
         isOk = false;
@@ -90,7 +99,7 @@ const Regist = () => {
 
     const id = idRef.current.value;
     const password = passwordRef.current.value;
-    const email = emailRef.current.value;
+    const email = emailRef.current && emailRef.current.value ? emailRef.current.value : '';
 
     const cert = Recoils.getState('CONFIG:CERT');
     const random_key = cert.random_key;
@@ -134,7 +143,23 @@ const Regist = () => {
   const checkedItemHandler = (d) => {
     const obj = _.find(agreement, { group_id: d.group_id });
     obj.checked = !obj.checked;
-    if (obj.checked === false) setAllChecked(false);
+
+    if (obj.group_id === 3 && obj.checked) {
+      // 마케팅 정보활용 동의
+      setMarketingChecked(true);
+    } else {
+      setMarketingChecked(false);
+    }
+
+    const unCheckedList = _.filter(agreement, (data) => {
+      return !data.checked;
+    });
+
+    if (unCheckedList.length > 0) {
+      setAllChecked(false);
+    } else {
+      setAllChecked(true);
+    }
 
     setAgreement([...agreement]);
   };
@@ -329,20 +354,26 @@ const Regist = () => {
               <span className="inform inform4 red">8~16자 영문, 숫자, 특수문자를 사용하세요.</span>
             )}
 
-            <label>이메일 입력</label>
-            <InputGroup className="inputemail">
-              <Form.Control
-                ref={emailRef}
-                type="text"
-                placeholder="이메일 입력"
-                defaultValue={''}
-                onChange={onEmailChange}
-              />
-            </InputGroup>
-            {auth['email'] ? (
-              <br />
+            {marketingChecked ? (
+              <>
+                <label>이메일 입력</label>
+                <InputGroup className="inputemail">
+                  <Form.Control
+                    ref={emailRef}
+                    type="text"
+                    placeholder="이메일 입력"
+                    defaultValue={''}
+                    onChange={onEmailChange}
+                  />
+                </InputGroup>
+                {auth['email'] ? (
+                  <br />
+                ) : (
+                  <span className="inform inform5 red">‘@’ 를 포함한 이메일 주소를 정확히 입력해주세요.</span>
+                )}
+              </>
             ) : (
-              <span className="inform inform5 red">‘@’ 를 포함한 이메일 주소를 정확히 입력해주세요.</span>
+              <></>
             )}
 
             <Button
