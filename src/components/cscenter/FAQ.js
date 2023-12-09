@@ -86,7 +86,7 @@ const FAQ = () => {
       setCollapseState(!collapseState);
     } else {
       updatedState.other = {
-        img_url: 'https://images.pexels.com/photos/20787/pexels-photo.jpg?auto=compress&cs=tinysrgb&h=350',
+        img_url: rowData[index].img_url1,
         content: rowData[index].content,
       };
       setCollapseState(!collapseState);
@@ -219,7 +219,16 @@ const FAQ = () => {
                         >
                           <img src={row.other.img_url} alt="" />
                         </td>
-                        <td colSpan={2}>{row.other.content}</td>
+                        <td colSpan={2}>
+                          {_.split(row.other.content, '\n').map((d, key) => {
+                            return (
+                              <>
+                                {d}
+                                <br></br>
+                              </>
+                            );
+                          })}
+                        </td>
                       </tr>
                     ) : null}
                   </Fragment>

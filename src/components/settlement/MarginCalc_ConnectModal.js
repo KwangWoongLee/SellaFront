@@ -188,11 +188,10 @@ const MarginCalc_ConnectModal = React.memo(
         selectFormsMatchRef.current.save = true;
 
         for (const diff_data of diff_goods_match) {
-          diff_data.reg_date = new Date(Date.now());
-
           const findObj = _.find(selectFormsMatchRef.current.goods_match, {
             idx: diff_data.idx,
           });
+          findObj.reg_date = new Date(Date.now());
 
           let findRawObj = _.find(rawGoodsMatch, (data) => {
             return (

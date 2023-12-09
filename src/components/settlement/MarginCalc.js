@@ -230,6 +230,8 @@ const MarginCalc = () => {
                     }
                   }
                 }
+
+                lastRowDatasRef.current = [...data];
                 setRowData(() => data);
                 setMode(1);
               }
@@ -290,7 +292,9 @@ const MarginCalc = () => {
         [
           {
             name: '취소',
-            callback: () => {},
+            callback: () => {
+              lastRowDatasRef.current = [...targetData];
+            },
           },
           {
             name: '미연결 주문건 삭제 후 손익계산',
@@ -450,6 +454,8 @@ const MarginCalc = () => {
       changedItems = _.filter(lastRowDatasRef.current, (item) => {
         return !(item.forms_product_name == d.forms_product_name && item.forms_option_name == d.forms_option_name);
       });
+
+      lastRowDatasRef.current = [...changedItems];
     }
 
     _.forEach(changedItems, (item) => {
@@ -1112,7 +1118,7 @@ const StockPriceModal = React.memo(({ modalState, setModalState, goodsMatch }) =
                   goodsMatch.map((d, key) => (
                     <tr>
                       <td>{d.name}</td>
-                      <td>{d.stock_price}</td>
+                      <td>{replace_1000(revert_1000(d.stock_price))}</td>
                       {/* <td>{d.match_count}</td> */}
                     </tr>
                   ))}
@@ -1166,7 +1172,7 @@ const ProfitLossRow = React.memo(
           packing_fee: d.packing_fee == '' ? '0' : replace_1000(d.packing_fee),
         })
       );
-    }, [d]);
+    }, []);
 
     const checkedItemHandler = (e) => {
       handleSingleCheck(d.idx, !checked);
@@ -1176,9 +1182,10 @@ const ProfitLossRow = React.memo(
     const onChange = (e) => {
       const { value, name } = e.target; // 우선 e.target 에서 name 과 value 를 추출
 
+      const replace_value = replace_1000(revert_1000(value));
       setInputs({
         ...inputs, // 기존의 input 객체를 복사한 뒤
-        [name]: replace_1000(revert_1000(value)), // name 키를 가진 값을 value 로 설정
+        [name]: replace_value, // name 키를 가진 값을 value 로 설정
       });
 
       d[name] = revert_1000(value);
@@ -1261,7 +1268,7 @@ const ProfitLossRow = React.memo(
             setStockPriceModalState(true);
           }}
         >
-          <input name="stock_price" defaultValue={inputs.stock_price} onChange={onChange}></input>
+          <input name="stock_price" value={inputs.stock_price} onChange={onChange}></input>
           <span>원</span>
         </td>
         <td

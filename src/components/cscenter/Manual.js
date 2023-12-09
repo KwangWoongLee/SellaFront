@@ -223,7 +223,16 @@ const Manual = () => {
                         >
                           <img src={row.other.img_url} alt="" />
                         </td>
-                        <td colSpan={2}>{row.other.content}</td>
+                        <td colSpan={2}>
+                          {_.split(row.other.content, '\n').map((d, key) => {
+                            return (
+                              <>
+                                {d}
+                                <br></br>
+                              </>
+                            );
+                          })}
+                        </td>
                       </tr>
                     ) : null}
                   </Fragment>

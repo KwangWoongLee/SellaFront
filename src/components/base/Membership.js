@@ -81,10 +81,10 @@ const Membership = () => {
     });
   }, []);
 
-  const onPaymentReq = (d, remain_warranty_day) => {
+  const onPaymentReq = (d, access_token, remain_warranty_day) => {
     const data = { ...d, remain_warranty_day };
 
-    RequestPay(data, () => {
+    RequestPay(data, access_token, () => {
       console.log();
     });
   };
@@ -253,7 +253,7 @@ const Membership = () => {
                         sella_grade_data.period_flag
                           ? onPaymentReqPeriod
                           : () => {
-                              onPaymentReq(sella_grade_data, accountData.remain_warranty_day);
+                              onPaymentReq(sella_grade_data, account.access_token, accountData.remain_warranty_day);
                             }
                       }
                     ></GradeItem>

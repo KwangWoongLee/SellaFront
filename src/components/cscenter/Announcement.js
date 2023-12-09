@@ -87,7 +87,7 @@ const Announcement = () => {
       setCollapseState(!collapseState);
     } else {
       updatedState.other = {
-        img_url: 'https://images.pexels.com/photos/20787/pexels-photo.jpg?auto=compress&cs=tinysrgb&h=350',
+        img_url: rowData[index].img_url1,
         content: rowData[index].content,
       };
       setCollapseState(!collapseState);
@@ -224,10 +224,19 @@ const Announcement = () => {
                             onModalImage(e, row.other.img_url);
                           }}
                         >
-                          <img alt={''} src={row.other.img_url} />
+                          {row.other.img_url ? <img alt={''} src={row.other.img_url} /> : <></>}
                         </td>
                         <td colSpan={2}>
-                          <pre>{row.other.content}</pre>
+                          <pre>
+                            {_.split(row.other.content, '\n').map((d, key) => {
+                              return (
+                                <>
+                                  {d}
+                                  <br></br>
+                                </>
+                              );
+                            })}
+                          </pre>
                         </td>
                       </tr>
                     ) : null}
