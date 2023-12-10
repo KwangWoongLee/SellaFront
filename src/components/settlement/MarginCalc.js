@@ -1011,53 +1011,50 @@ const CalcSummary = (rowData) => {
 
   let delivery_send_count = 0;
 
-  if (_.includes(Object.keys(rowData[0]), '30002')) {
-    //배송비 묶음 번호가 있는 경우
-    for (const row of rowData) {
-      if (row.group.first) {
-        const eqGroupDatas = _.filter(rowData, (item) => {
-          return item.group.id === row.group.id;
-        });
+  for (const row of rowData) {
+    if (row.group.first) {
+      const eqGroupDatas = _.filter(rowData, (item) => {
+        return item.group.id === row.group.id;
+      });
 
-        // row.delivery_fee = _.max(eqGroupDatas, 'delivery_fee')['delivery_fee'];
-        row.reality_delivery_fee = _.maxBy(eqGroupDatas, 'reality_delivery_fee')['reality_delivery_fee'];
-      } else {
-        row.reality_delivery_fee = 0;
-        // row.delivery_fee = 0;
-        // row['30047'] = 0;
-        // row['30047_additional'] = 0;
-      }
-
-      row.profit_loss = calcProfitLoss(row);
+      // row.delivery_fee = _.max(eqGroupDatas, 'delivery_fee')['delivery_fee'];
+      row.reality_delivery_fee = _.maxBy(eqGroupDatas, 'reality_delivery_fee')['reality_delivery_fee'];
+    } else {
+      row.reality_delivery_fee = 0;
+      // row.delivery_fee = 0;
+      // row['30047'] = 0;
+      // row['30047_additional'] = 0;
     }
 
-    for (const row of rowData) {
-      if (row.group.first) {
-        delivery_send_count++;
-        const eqGroupDatas = _.filter(rowData, (item) => {
-          return item.group.id === row.group.id;
-        });
-        row.sum_profit_loss = _.sumBy(eqGroupDatas, 'profit_loss');
+    row.profit_loss = calcProfitLoss(row);
+  }
 
-        for (const eqGroupData of eqGroupDatas) {
-          row.sum_profit_loss -= getRealityDeliveryFee(eqGroupData);
-          row.sum_profit_loss += eqGroupData['delivery_fee'];
-          row.sum_profit_loss += eqGroupData['packing_fee'];
-        }
+  for (const row of rowData) {
+    if (row.group.first) {
+      delivery_send_count++;
+      const eqGroupDatas = _.filter(rowData, (item) => {
+        return item.group.id === row.group.id;
+      });
+      row.sum_profit_loss = _.sumBy(eqGroupDatas, 'profit_loss');
 
-        //받은 배송비
-        const max30047 = revert_1000(_.max(_.map(eqGroupDatas, 'reality_delivery_fee')).toFixed(0));
-        //배송비
-        const max_delivery_fee = _.max(_.map(eqGroupDatas, 'delivery_fee'));
-        //포장비
-        const max_packing_fee = _.max(_.map(eqGroupDatas, 'packing_fee'));
-
-        row.sum_profit_loss += max30047;
-        row.sum_profit_loss -= max_delivery_fee;
-        row.sum_profit_loss -= max_packing_fee;
-
-        row.sum_profit_loss = Number(row.sum_profit_loss.toFixed(0));
+      for (const eqGroupData of eqGroupDatas) {
+        row.sum_profit_loss -= getRealityDeliveryFee(eqGroupData);
+        row.sum_profit_loss += eqGroupData['delivery_fee'];
+        row.sum_profit_loss += eqGroupData['packing_fee'];
       }
+
+      //받은 배송비
+      const max30047 = revert_1000(_.max(_.map(eqGroupDatas, 'reality_delivery_fee')).toFixed(0));
+      //배송비
+      const max_delivery_fee = _.max(_.map(eqGroupDatas, 'delivery_fee'));
+      //포장비
+      const max_packing_fee = _.max(_.map(eqGroupDatas, 'packing_fee'));
+
+      row.sum_profit_loss += max30047;
+      row.sum_profit_loss -= max_delivery_fee;
+      row.sum_profit_loss -= max_packing_fee;
+
+      row.sum_profit_loss = Number(row.sum_profit_loss.toFixed(0));
     }
   }
 

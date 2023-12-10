@@ -252,7 +252,7 @@ const Head = () => {
                     : ''
                 }
               >
-                <Nav.Link onClick={onLink} name="/settlement/sale_product">
+                <Nav.Link onClick={onLink} name="/settlement/form_management">
                   <p>
                     <span>2단계</span>매체 관리
                   </p>
