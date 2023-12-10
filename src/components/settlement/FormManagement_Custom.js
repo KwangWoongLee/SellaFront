@@ -48,7 +48,6 @@ const FormManagement_Custom = (param) => {
 
   return (
     <>
-      {/* 이 페이지도 '새 양식추가' 할때랑 같은 기능을 가진 페이지여야 하는데, 작업해주시면 다시 스타일 잡겠습니다! */}
       <div className="leftbox read">
         <h3>{platform.name} - 양식 확인</h3>
         <table className="thead">
@@ -72,28 +71,31 @@ const FormManagement_Custom = (param) => {
 const SellaForm = React.memo(({ index, d }) => {
   //logger.debug('SellaForm TableItem : ', index);
   return (
-    <tr>
-      <td>
-        {d.sella_title} {d.sella_essential ? '*' : ''}
-      </td>
-      <td>
-        {d.sella_code == 30001 && d.additional ? (
-          <span className="tag">매체 기본 수수료 {d.additional}%</span>
-        ) : (
-          <>
-            {d.title}
-            {' ('}
-            {d.column}
-            {'열)'}
-          </>
-        )}
-        {(d.sella_code == 30047 || d.sella_code == 30032 || d.sella_code == 30033) && (
-          <span className="tag">
-            ({d.sella_title} 수수료 {d.additional}%)
-          </span>
-        )}
-      </td>
-    </tr>
+    d.title &&
+    d.column && (
+      <tr>
+        <td>
+          {d.sella_title} {d.sella_essential ? '*' : ''}
+        </td>
+        <td>
+          {d.sella_code == 30001 && d.additional ? (
+            <span className="tag">매체 기본 수수료 {d.additional}%</span>
+          ) : (
+            <>
+              {d.title}
+              {' ('}
+              {d.column}
+              {'열)'}
+            </>
+          )}
+          {(d.sella_code == 30047 || d.sella_code == 30032 || d.sella_code == 30033) && (
+            <span className="tag">
+              ({d.sella_title} 수수료 {d.additional}%)
+            </span>
+          )}
+        </td>
+      </tr>
+    )
   );
 });
 

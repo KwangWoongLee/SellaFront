@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 
-import { Button, DropdownButton, Dropdown } from 'react-bootstrap';
+import { Table, Button, DropdownButton, Dropdown } from 'react-bootstrap';
+import Checkbox from 'components/common/CheckBoxCell';
 import Head from 'components/template/Head';
 import Footer from 'components/template/Footer';
 import Body from 'components/template/Body';
@@ -50,16 +51,6 @@ const Step2 = () => {
   const access_token = account.access_token;
   const gridRef = useRef();
   const containerStyle = useMemo(() => ({ width: '100%', height: '100%' }), []);
-  const gridStyle = useMemo(() => ({ height: '1000px', width: '100%' }), []);
-  const defaultColDef = useMemo(() => {
-    return {
-      editable: true,
-      sortable: true,
-      resizable: true,
-      flex: 1,
-      minWidth: 100,
-    };
-  }, []);
 
   const isMobile = useMediaQuery({
     query: '(max-width:1024px)',
@@ -91,148 +82,8 @@ const Step2 = () => {
     }
   };
 
-  const [columnDefs] = useState([
-    {
-      editable: false,
-      headerCheckboxSelection: true,
-      checkboxSelection: true,
-      cellClass: 'lock-pinned checkcell',
-      pinned: 'left',
-      lockPinned: true,
-      maxWidth: 36,
-    },
-    {
-      field: 'idx',
-      headerName: '상품코드',
-      sortable: true,
-      editable: false,
-      filter: false,
-      pinned: 'left',
-      lockPinned: true,
-      width: 150,
-      cellStyle: { 'line-height': '30px', 'text-align': 'right' },
-      cellClass: 'codecell uneditable',
-    },
-    {
-      field: 'name',
-      headerName: '상품명',
-      sortable: true,
-      unSortIcon: true,
-      filter: false,
-      cellClass: 'lock-pinned prd_name',
-      pinned: 'left',
-      lockPinned: true,
-      width: 300,
-      cellStyle: { 'line-height': '30px', 'text-align': 'right' },
-    },
-    {
-      field: 'stock_price',
-      headerName: '입고가',
-      sortable: true,
-      unSortIcon: true,
-      valueParser: (params) => {
-        return Number.isNaN(Number(params.newValue)) ? params.oldValue : Number(params.newValue);
-      },
-      valueFormatter: (params) => {
-        if (!params.value) return 0;
-        return replace_1000(params.value);
-      },
-      filter: false,
-      cellClass: 'ag-cell-editable',
-      maxWidth: 120,
-      cellStyle: { 'line-height': '30px', 'text-align': 'right' },
-    },
-    {
-      field: 'delivery_fee',
-      headerName: '택배비',
-      sortable: true,
-      unSortIcon: true,
-      filter: false,
-      editable: true,
-      valueParser: (params) => {
-        return Number.isNaN(Number(params.newValue)) ? params.oldValue : Number(params.newValue);
-      },
-      valueFormatter: (params) => {
-        if (params.value == '') return 0;
-        return replace_1000(params.value);
-      },
-      filter: false,
-      cellClass: 'ag-cell-editable',
-      maxWidth: 120,
-      cellStyle: { 'line-height': '30px', 'text-align': 'right' },
-      minWidth: 215,
-    },
-    {
-      field: 'packing_fee',
-      headerName: '포장비',
-      sortable: true,
-      unSortIcon: true,
-      filter: false,
-      editable: true,
-      valueParser: (params) => {
-        return Number.isNaN(Number(params.newValue)) ? params.oldValue : Number(params.newValue);
-      },
-      valueFormatter: (params) => {
-        if (params.value == '') return 0;
-        return replace_1000(params.value);
-      },
-      filter: false,
-      cellClass: 'ag-cell-editable',
-      maxWidth: 120,
-      cellStyle: { 'line-height': '30px', 'text-align': 'right' },
-      minWidth: 215,
-    },
-    {
-      field: 'goods_category',
-      headerName: '카테고리',
-      sortable: true,
-      unSortIcon: true,
-      filter: false,
-      cellClass: 'lock-pinned',
-      maxWidth: 130,
-      cellStyle: { 'line-height': '30px', 'text-align': 'right' },
-    },
-    {
-      field: 'memo',
-      headerName: '메모',
-      filter: false,
-      cellClass: 'ag-cell-editable',
-      cellStyle: { 'line-height': '30px', 'text-align': 'right' },
-    },
-    {
-      field: 'reg_date',
-      headerName: '최초 등록일',
-      sortable: true,
-      unSortIcon: true,
-      filter: false,
-      editable: false,
-      cellClass: 'uneditable',
-      valueFormatter: (params) => {
-        if (params.value == '') return '';
-        return time_format(params.value);
-      },
-      cellStyle: { 'line-height': '30px', 'text-align': 'right' },
-      minWidth: 210,
-    },
-    {
-      field: 'modify_date',
-      headerName: '최종 수정일',
-      sortable: true,
-      unSortIcon: true,
-      filter: false,
-      editable: false,
-      cellClass: 'uneditable',
-      valueFormatter: (params) => {
-        if (params.value == '') return '';
-        return time_format(params.value);
-      },
-      cellStyle: { 'line-height': '30px', 'text-align': 'right' },
-      minWidth: 210,
-    },
-  ]);
-
   const onDelete = (e) => {
-    const selectedRows = gridRef.current.api.getSelectedRows();
+    const selectedRows = _.filter(rowData, { checked: true });
     if (selectedRows && selectedRows.length > 0) {
       const selectedIdxs = _.map(selectedRows, 'idx');
       modal.confirm(
@@ -266,10 +117,25 @@ const Step2 = () => {
     }
   };
 
-  const rowHeight = 46;
+  // 체크박스 선택
+  const handleSingleCheck = (idx, checked) => {
+    const findObj = _.find(rowData, { idx: idx });
+    findObj.checked = checked;
+
+    setDatas([...rowData]);
+  };
+
+  // 체크박스 전체 선택
+  const handleAllCheck = (checked) => {
+    for (const row of rowData) {
+      row.checked = checked;
+    }
+
+    setDatas([...rowData]);
+  };
 
   const onModify = (e) => {
-    const selectedRows = gridRef.current.api.getSelectedRows();
+    const selectedRows = _.filter(rowData, { checked: true });
     if (selectedRows && selectedRows.length > 0) {
       const selectedCopyRows = _.cloneDeep(selectedRows);
       for (const row of selectedCopyRows) {
@@ -470,21 +336,48 @@ const Step2 = () => {
                 </DropdownButton>
               </div>
               <div style={containerStyle} className="tablebox">
-                <div style={gridStyle} className="ag-theme-alpine test">
-                  <AgGridReact
-                    ref={gridRef}
-                    rowData={rowData}
-                    columnDefs={columnDefs}
-                    alwaysShowHorizontalScroll={true}
-                    alwaysShowVerticalScroll={true}
-                    defaultColDef={defaultColDef}
-                    rowSelection={'multiple'}
-                    onCellEditingStopped={onCellValueChanged}
-                    singleClickEdit={true}
-                    rowHeight={rowHeight}
-                    stopEditingWhenCellsLoseFocus={true}
-                  ></AgGridReact>
-                </div>
+                <Table className="thead">
+                  <thead>
+                    <th>
+                      <Checkbox
+                        checked={
+                          rowData &&
+                          _.filter(rowData, (row) => {
+                            return row.checked;
+                          }).length === rowData.length
+                            ? true
+                            : false
+                        }
+                        checkedItemHandler={handleAllCheck}
+                      ></Checkbox>
+                    </th>
+                    <th>상품코드</th>
+                    <th>상품명</th>
+                    <th>입고단가</th>
+                    <th>배송비</th>
+                    <th>포장비</th>
+                    <th>카테고리</th>
+                    <th>메모</th>
+                    <th>최초등록일</th>
+                    <th>최종수정일</th>
+                  </thead>
+                  <tbody></tbody>
+                </Table>
+                <Table className="tbody">
+                  <thead></thead>
+                  <tbody>
+                    {rowData &&
+                      rowData.map((d, key) => (
+                        <ProductRow
+                          rowChecked={d.checked}
+                          handleSingleCheck={handleSingleCheck}
+                          key={key}
+                          index={key}
+                          d={d}
+                        />
+                      ))}
+                  </tbody>
+                </Table>
               </div>
             </>
           )}
@@ -516,5 +409,92 @@ const Step2 = () => {
     </>
   );
 };
+
+const ProductRow = React.memo(({ handleSingleCheck, rowChecked, d }) => {
+  const [inputs, setInputs] = useState({
+    name: '',
+    stock_price: '',
+    delivery_fee: '',
+    packing_fee: '',
+    goods_category: '',
+    memo: '',
+  });
+  const [checked, setChecked] = useState(false);
+
+  useEffect(() => {
+    setChecked(rowChecked);
+  }, [rowChecked]);
+
+  useEffect(() => {
+    setInputs(
+      _.cloneDeep({
+        ...d,
+        stock_price: d.stock_price == '' ? '0' : replace_1000(d.stock_price),
+        delivery_fee: d.delivery_fee == '' ? '0' : replace_1000(d.delivery_fee),
+        packing_fee: d.packing_fee == '' ? '0' : replace_1000(d.packing_fee),
+      })
+    );
+  }, []);
+
+  const checkedItemHandler = (e) => {
+    handleSingleCheck(d.idx, !checked);
+    setChecked(!checked);
+  };
+
+  const onChange = (e) => {
+    const { value, name } = e.target; // 우선 e.target 에서 name 과 value 를 추출
+
+    const replace_value = replace_1000(revert_1000(value));
+    setInputs({
+      ...inputs, // 기존의 input 객체를 복사한 뒤
+      [name]: replace_value, // name 키를 가진 값을 value 로 설정
+    });
+
+    d[name] = revert_1000(value);
+  };
+
+  const onChangeString = (e) => {
+    const { value, name } = e.target; // 우선 e.target 에서 name 과 value 를 추출
+
+    setInputs({
+      ...inputs, // 기존의 input 객체를 복사한 뒤
+      [name]: value, // name 키를 가진 값을 value 로 설정
+    });
+
+    d[name] = value;
+  };
+
+  return (
+    <tr>
+      <td>
+        <Checkbox checked={checked} checkedItemHandler={checkedItemHandler}></Checkbox>
+      </td>
+      <td>{d.idx}</td>
+      <td>
+        <input name="name" value={inputs.name} onChange={onChangeString}></input>
+      </td>
+      <td>
+        <input name="stock_price" value={inputs.stock_price} onChange={onChange}></input>
+        <span>원</span>
+      </td>
+      <td>
+        <input name="delivery_fee" value={inputs.delivery_fee} onChange={onChange}></input>
+        <span>원</span>
+      </td>
+      <td>
+        <input name="packing_fee" value={inputs.packing_fee} onChange={onChange}></input>
+        <span>원</span>
+      </td>
+      <td>
+        <input name="goods_category" value={inputs.goods_category} onChange={onChangeString}></input>
+      </td>
+      <td>
+        <input name="memo" value={inputs.memo} onChange={onChangeString}></input>
+      </td>
+      <td>{d.reg_date && time_format(d.reg_date)}</td>
+      <td>{d.modify_date && time_format(d.modify_date)}</td>
+    </tr>
+  );
+});
 
 export default React.memo(Step2);

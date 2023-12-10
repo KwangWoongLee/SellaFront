@@ -836,9 +836,9 @@ const MarginCalc = () => {
                         <th>총 입고단가</th>
                         <th>배송비</th>
                         <th>포장비</th>
-                        <th>수취인명</th>
-                        <th>수취인 연락처</th>
-                        <th>수취인 주소</th>
+                        {_.some(rowData, (row) => row['30048']) && <th>수취인명</th>}
+                        {_.some(rowData, (row) => row['30049']) && <th>수취인 연락처</th>}
+                        {_.some(rowData, (row) => row['30050']) && <th>수취인 주소</th>}
                       </thead>
                       <tbody></tbody>
                     </Table>
@@ -854,6 +854,7 @@ const MarginCalc = () => {
                               key={key}
                               index={key}
                               d={d}
+                              rowData={rowData}
                               stockPriceDataRef={stockPriceDataRef}
                               setStockPriceModalState={setStockPriceModalState}
                             />
@@ -1152,17 +1153,28 @@ function excelSerialDateToJSDate(excelSerialDate) {
 }
 
 const ProfitLossRow = React.memo(
-  ({ handleSingleCheck, rowChecked, d, stockPriceDataRef, setStockPriceModalState, onRowDoubleClick }) => {
+  ({ handleSingleCheck, rowChecked, d, stockPriceDataRef, setStockPriceModalState, onRowDoubleClick, rowData }) => {
     const [inputs, setInputs] = useState({
       stock_price: '',
       delivery_fee: '',
       packing_fee: '',
     });
     const [checked, setChecked] = useState(false);
+    const [_30048, set30048] = useState(false);
+    const [_30049, set30049] = useState(false);
+    const [_30050, set30050] = useState(false);
 
     useEffect(() => {
       setChecked(rowChecked);
     }, [rowChecked]);
+
+    useEffect(() => {
+      if (rowData) {
+        set30048(_.some(rowData, (row) => row['30048']));
+        set30049(_.some(rowData, (row) => row['30049']));
+        set30050(_.some(rowData, (row) => row['30050']));
+      }
+    }, [rowData]);
 
     useEffect(() => {
       setInputs(
@@ -1287,27 +1299,33 @@ const ProfitLossRow = React.memo(
           <input name="packing_fee" value={inputs.packing_fee} onChange={onChange}></input>
           <span>원</span>
         </td>
-        <td
-          onDoubleClick={(e) => {
-            onRowDoubleClick(e, d);
-          }}
-        >
-          {d['30048']}
-        </td>
-        <td
-          onDoubleClick={(e) => {
-            onRowDoubleClick(e, d);
-          }}
-        >
-          {d['30049']}
-        </td>
-        <td
-          onDoubleClick={(e) => {
-            onRowDoubleClick(e, d);
-          }}
-        >
-          {d['30050']}
-        </td>
+        {_30048 && (
+          <td
+            onDoubleClick={(e) => {
+              onRowDoubleClick(e, d);
+            }}
+          >
+            {d['30048']}
+          </td>
+        )}
+        {_30049 && (
+          <td
+            onDoubleClick={(e) => {
+              onRowDoubleClick(e, d);
+            }}
+          >
+            {d['30049']}
+          </td>
+        )}
+        {_30050 && (
+          <td
+            onDoubleClick={(e) => {
+              onRowDoubleClick(e, d);
+            }}
+          >
+            {d['30050']}
+          </td>
+        )}
       </tr>
     );
   }

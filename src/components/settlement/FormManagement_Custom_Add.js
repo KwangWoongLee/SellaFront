@@ -50,7 +50,7 @@ const FormManagement_Custom_Add = (param) => {
     formNameRef.current.value = platform.name;
     const rowDatas = [];
 
-    const essential_forms = _.filter(sella_forms, { essential_flag: 1 });
+    const essential_forms = _.filter(sella_forms, { direct_view: 1 });
     for (const sella_form of essential_forms) {
       const row_data = {};
       if (sella_form.check_flag) {
@@ -135,7 +135,7 @@ const FormManagement_Custom_Add = (param) => {
     });
 
     if (
-      _.some(save_data, (row) => {
+      _.some(_.filter(rowData, { sella_essential: 1 }), (row) => {
         if (row.checked === undefined) return !row.title || !row.column || !row.sella_title || !row.sella_code;
       })
     ) {
@@ -160,7 +160,7 @@ const FormManagement_Custom_Add = (param) => {
   const onUpload = function () {
     const rowDatas = [];
 
-    const essential_forms = _.filter(sella_forms, { essential_flag: 1 });
+    const essential_forms = _.filter(sella_forms, { direct_view: 1 });
     for (const sella_form of essential_forms) {
       const row_data = {};
       if (sella_form.check_flag) {

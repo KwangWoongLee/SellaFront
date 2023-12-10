@@ -24,12 +24,14 @@ const FormManagement_Basic = (param) => {
 
   const { platform } = param;
   const sella_basic_forms = Recoils.getState('SELLA:BASICFORMS');
+  const sella_forms = Recoils.useValue('SELLA:SELLAFORMS');
 
   const [formData, setFormData] = useState(null);
   const [rowData, setRowData] = useState([]);
 
   useEffect(() => {
     if (!platform || !platform.basic_form_flag) return;
+    const rowData = [];
 
     const sella_basic_form = _.find(sella_basic_forms, { name: platform.name });
     const basic_form = platform;
@@ -37,6 +39,18 @@ const FormManagement_Basic = (param) => {
     const column_row = [''];
     const header_row = [`${basic_form.title_row}`];
     const titles = sella_basic_form.titles;
+
+    for (const sella_form of sella_forms) {
+      const find_platform_data = _.find(titles, { sella_code: `${sella_form.code}` });
+      if (find_platform_data) {
+        const my_platform_data = _.cloneDeep(find_platform_data);
+        my_platform_data.sella_title = sella_form.title;
+        my_platform_data.sella_essential = sella_form.essential_flag;
+        rowData.push(my_platform_data);
+      }
+    }
+
+    /*
     for (const title of titles) {
       const header = title.title;
       const column = title.column;
@@ -49,9 +63,9 @@ const FormManagement_Basic = (param) => {
       for (let j = 0; j < header_row.length - 1; ++j) empty_row.push('');
       basic_form_rows.push(empty_row);
     }
-    basic_form_rows.push(header_row);
+    basic_form_rows.push(header_row);*/
 
-    setRowData(basic_form_rows);
+    setRowData(rowData);
   }, [param]);
 
   const onDownload = async () => {
@@ -92,15 +106,22 @@ const FormManagement_Basic = (param) => {
           </Button>
           <div className="tablebox">
             <p>
-              <span>제목행</span> : {platform.title_row}번째 / <span>주문 시작 행</span> : {platform.start_row}번째 /{' '}
-              <span>끝에서부터 제거할 행의 개수</span> : {platform.end_row}줄
+              <span>제목행</span> : {platform.title_row}번째 / <span>주문 시작 행</span> : {platform.start_row}번째
+              {/*/{' '}<span>끝에서부터 제거할 행의 개수</span> : {platform.end_row}줄 */}
             </p>
 
             <div className="innerbox">
               {/* 이부분 출력할 테이블 열이 옆으로 길어지면 가로스크롤이 생겨야하는데, 지금은 이정도로만 작업해둘게요! 실제 데이터 많이 들어갈때 모습 보고 만들겠습니다! */}
-              <table className="table_front">
+
+              <table className="thead">
+                <thead>
+                  <th>셀라 표준 항목</th>
+                  <th>선택한 엑셀 항목</th>
+                </thead>
+              </table>
+              <table className="tbody">
                 <tbody>
-                  {rowData && rowData.map((d, key) => <FormItems key={key} index={key} d={d} />)}
+                  {rowData && rowData.map((d, key) => <SellaForm key={key} index={key} d={d} />)}
                   <></>
                 </tbody>
               </table>
@@ -111,6 +132,37 @@ const FormManagement_Basic = (param) => {
     </>
   );
 };
+
+const SellaForm = React.memo(({ index, d }) => {
+  //logger.debug('SellaForm TableItem : ', index);
+  return (
+    d.title &&
+    d.column && (
+      <tr>
+        <td>
+          {d.sella_title} {d.sella_essential ? '*' : ''}
+        </td>
+        <td>
+          {d.sella_code == 30001 && d.additional ? (
+            <span className="tag">매체 기본 수수료 {d.additional}%</span>
+          ) : (
+            <>
+              {d.title}
+              {' ('}
+              {d.column}
+              {'열)'}
+            </>
+          )}
+          {(d.sella_code == 30047 || d.sella_code == 30032 || d.sella_code == 30033) && (
+            <span className="tag">
+              ({d.sella_title} 수수료 {d.additional}%)
+            </span>
+          )}
+        </td>
+      </tr>
+    )
+  );
+});
 
 const FormItems = React.memo(({ index, d }) => {
   //logger.debug('FormManagement_Basic TableItem : ', index);

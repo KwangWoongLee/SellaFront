@@ -24,6 +24,7 @@ const Regist = () => {
     auth_id: false,
     password: false,
     password_confirm: false,
+    email: false,
   });
   const nameRef = useRef(null);
   const idRef = useRef(null);
@@ -354,26 +355,20 @@ const Regist = () => {
               <span className="inform inform4 red">8~16자 영문, 숫자, 특수문자를 사용하세요.</span>
             )}
 
-            {marketingChecked ? (
-              <>
-                <label>이메일 입력</label>
-                <InputGroup className="inputemail">
-                  <Form.Control
-                    ref={emailRef}
-                    type="text"
-                    placeholder="이메일 입력"
-                    defaultValue={''}
-                    onChange={onEmailChange}
-                  />
-                </InputGroup>
-                {auth['email'] ? (
-                  <br />
-                ) : (
-                  <span className="inform inform5 red">‘@’ 를 포함한 이메일 주소를 정확히 입력해주세요.</span>
-                )}
-              </>
+            <label>이메일 입력</label>
+            <InputGroup className="inputemail">
+              <Form.Control
+                ref={emailRef}
+                type="text"
+                placeholder="이메일 입력"
+                defaultValue={''}
+                onChange={onEmailChange}
+              />
+            </InputGroup>
+            {auth['email'] ? (
+              <br />
             ) : (
-              <></>
+              <span className="inform inform5 red">‘@’ 를 포함한 이메일 주소를 정확히 입력해주세요.</span>
             )}
 
             <Button
