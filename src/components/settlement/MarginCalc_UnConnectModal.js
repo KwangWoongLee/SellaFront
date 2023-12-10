@@ -113,6 +113,10 @@ const MarginCalc_UnConnectModal = React.memo(
 
       deleteCallback(d, false);
 
+      if (filtered_items.length === 0) {
+        setModalState(false);
+      }
+
       setFormsMatchSelect(-1);
       selectFormsMatchRef.current = null;
       setSelectFormsMatchData({ ...selectFormsMatchRef.current });
@@ -221,6 +225,10 @@ const MarginCalc_UnConnectModal = React.memo(
 
           saveFormsMatchRef.current = new Array(unsaved_items.length);
           setItems([...unsaved_items]);
+
+          if (unsaved_items.length === 0) {
+            setModalState(false);
+          }
 
           setFormsMatchSelect(-1);
           setSelectFormsMatchData(null);
