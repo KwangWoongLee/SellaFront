@@ -220,9 +220,14 @@ const Announcement = () => {
                     {row.other ? (
                       <tr className="toggle-row">
                         <td
-                          onClick={(e) => {
-                            onModalImage(e, row.other.img_url);
-                          }}
+                          className={row.other.img_url ? '' : 'empty'}
+                          onClick={
+                            row.other.img_url
+                              ? (e) => {
+                                  onModalImage(e, row.other.img_url);
+                                }
+                              : () => {}
+                          }
                         >
                           {row.other.img_url ? <img alt={''} src={row.other.img_url} /> : <></>}
                         </td>

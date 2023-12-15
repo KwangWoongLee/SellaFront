@@ -498,7 +498,11 @@ const GradeItem = React.memo(({ index, account_data, grade_data, onClick, sella_
                     ({agreement[key].essential_flag ? '필수' : '선택'}){agreement[key].group_title}
                     {agreement[key].contents && agreement[key].contents[0].button_name && (
                       <>
-                        <span onClick={onClickAgreement}>
+                        <span
+                          onClick={(e) => {
+                            onClickAgreement(e, agreement[key].contents);
+                          }}
+                        >
                           <strong style={{ textDecoration: 'underline' }}>보기</strong>
                         </span>
                       </>
