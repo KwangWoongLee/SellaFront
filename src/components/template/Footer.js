@@ -61,12 +61,12 @@ const Footer = () => {
         <div className="menubox">
           <ul>
             <li>
-              <Nav.Link onClick={() => onClickModal(1)} className="logo" name="/cscenter/announcement">
+              <Nav.Link onClick={() => onClickModal(2)} className="logo" name="/cscenter/announcement">
                 개인정보처리방침
               </Nav.Link>
             </li>
             <li>
-              <Nav.Link onClick={() => onClickModal(2)} className="logo" name="/cscenter/announcement">
+              <Nav.Link onClick={() => onClickModal(1)} className="logo" name="/cscenter/announcement">
                 이용약관
               </Nav.Link>
             </li>
@@ -104,7 +104,17 @@ const Footer = () => {
             <img alt={''} src={`${img_src}${icon_close}`} />
           </Button>
         </Modal.Header>
-        <Modal.Body>{content}</Modal.Body>
+        <Modal.Body style={{ height: '700px' }}>
+          {' '}
+          {_.split(content, '\n').map((d, key) => {
+            return (
+              <>
+                {d}
+                <br></br>
+              </>
+            );
+          })}
+        </Modal.Body>
       </Modal>
     </>
   );

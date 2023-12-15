@@ -3,6 +3,7 @@ import { Button, Modal } from 'react-bootstrap';
 import { img_src } from 'util/com';
 import { logger } from 'util/com';
 import { useState, useEffect } from 'react';
+import _ from 'lodash';
 
 import icon_close from 'images/icon_close.svg';
 
@@ -44,7 +45,14 @@ const AgreementModal = React.memo(({ modalState, setModalState, contents }) => {
       </Modal.Header>
       <Modal.Body>
         <strong>{contentObj.title}</strong>
-        {contentObj.content}
+        {_.split(contentObj.content, '\n').map((d, key) => {
+          return (
+            <>
+              {d}
+              <br></br>
+            </>
+          );
+        })}
       </Modal.Body>
     </Modal>
   );
