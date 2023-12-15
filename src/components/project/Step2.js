@@ -216,7 +216,7 @@ const Step2 = () => {
       { header: '메모', key: 'memo', width: 30 },
     ];
 
-    ['A1', 'B1', 'C1', 'D1'].map((key) => {
+    ['A1', 'B1', 'C1'].map((key) => {
       worksheet.getCell(key).fill = {
         type: 'pattern',
         pattern: 'solid',
@@ -239,7 +239,7 @@ const Step2 = () => {
               };
             }
 
-            ['B1', 'C1', 'D1', 'E1'].map((key) => {
+            ['B1', 'C1', 'D1'].map((key) => {
               worksheet.getCell(key).fill = {
                 type: 'pattern',
                 pattern: 'solid',

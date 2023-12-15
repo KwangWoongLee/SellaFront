@@ -542,7 +542,28 @@ const SummaryRow = React.memo(({ d, setDateModalState, onDelete, selectRowDataId
             className="btn_del"
             onClick={() => {
               selectRowDataIdxRef.current = d.idx;
-              onDelete();
+              modal.confirm(
+                '',
+                [
+                  {
+                    strong: '삭제하시겠습니까?',
+                    normal: '',
+                  },
+                ],
+                [
+                  {
+                    name: '확인',
+                    className: 'btn_blue',
+                    callback: () => {
+                      onDelete();
+                    },
+                  },
+                  {
+                    name: '취소',
+                    callback: () => {},
+                  },
+                ]
+              );
             }}
           >
             <img src={`${img_src}${icon_del}`} />
