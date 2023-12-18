@@ -393,12 +393,12 @@ const Step2 = () => {
           const realInsertedData = _.filter(insertedData, (d) => d.name);
           const ordered_results = [];
           for (const data of realInsertedData) {
-            const findObj = _.find(goodsData, { name: data.name });
+            const findObj = _.find(rawData, { name: data.name });
             ordered_results.push(findObj);
           }
 
           const raw_results = _.filter(
-            goodsData,
+            rawData,
             (d) => !_.find(realInsertedData, (inserted) => inserted.name === d.name)
           );
 
@@ -433,7 +433,7 @@ const ProductRow = React.memo(({ handleSingleCheck, rowChecked, d }) => {
         packing_fee: d.packing_fee == '' ? '0' : replace_1000(d.packing_fee),
       })
     );
-  }, []);
+  }, [d]);
 
   const checkedItemHandler = (e) => {
     handleSingleCheck(d.idx, !checked);
