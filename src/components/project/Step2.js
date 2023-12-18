@@ -388,8 +388,7 @@ const Step2 = () => {
       <Step2Modal
         modalState={modalState}
         setModalState={setModalState}
-        callback={(insertedData) => {
-          const goodsData = _.cloneDeep(Recoils.getState('DATA:GOODS'));
+        callback={(insertedData, goodsData) => {
           rawData = _.cloneDeep(goodsData);
           const realInsertedData = _.filter(insertedData, (d) => d.name);
           const ordered_results = [];
