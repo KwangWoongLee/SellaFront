@@ -108,7 +108,7 @@ const Head_NoLogin = ({ setScrollElemId }) => {
                   더 알아보기
                 </Nav.Link>
               </li>
-              <li>
+              {/* <li>
                 <Nav.Link
                   onClick={() => {
                     if (!setScrollElemId) {
@@ -120,7 +120,7 @@ const Head_NoLogin = ({ setScrollElemId }) => {
                 >
                   요금제
                 </Nav.Link>
-              </li>
+              </li> */}
               <li>
                 <Nav.Link
                   onClick={() => {
@@ -254,7 +254,7 @@ const Head_NoLogin = ({ setScrollElemId }) => {
                       더 알아보기
                     </Nav.Link>
                   </li>
-                  <li>
+                  {/* <li>
                     <Nav.Link
                       className="nav-link"
                       onClick={() => {
@@ -264,7 +264,7 @@ const Head_NoLogin = ({ setScrollElemId }) => {
                     >
                       요금제
                     </Nav.Link>
-                  </li>
+                  </li> */}
                   <li>
                     <Nav.Link
                       className="nav-link"
