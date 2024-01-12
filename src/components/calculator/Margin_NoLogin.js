@@ -340,12 +340,12 @@ const Margin_NoLogin = () => {
           ></iframe>
 
           <div class="innerbox">
-            <dl>
+            {/* <dl>
               <dt>
                 지금 가입하면 <b>2주 무료사용</b>
-                {/* <span>[ 지금 가입하면 2주 무료사용 ]</span> */}
+                <span>[ 지금 가입하면 2주 무료사용 ]</span>
               </dt>
-              {/* <dd>
+              <dd>
                 1개월 이용시
                 <span>
                   <i>▶</i>19.900원
@@ -357,8 +357,8 @@ const Margin_NoLogin = () => {
                   <b>238,800원</b>
                   <i>▶</i>214,900원
                 </span>
-              </dd> */}
-            </dl>
+              </dd>
+            </dl> */}
             <ul>
               <li>
                 <img src={`${img_src}${icon_check}`} />
