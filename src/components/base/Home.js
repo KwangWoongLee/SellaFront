@@ -504,11 +504,11 @@ const Home = () => {
           <ul className="payoptionbox">
             <li>
               <p>
-                Free<span>0 원 / 무료체험 기간 14일</span>
+                Free<span>0 원</span>
                 <img src={`${img_src}${img_stamp14days}`} />
               </p>
               <span>
-                회원가입만으로 14일간
+                회원가입만으로
                 <br />
                 셀라의 모든 기능을 체험하세요.
               </span>
