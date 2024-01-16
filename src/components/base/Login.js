@@ -104,7 +104,7 @@ const Login = () => {
         <iframe
           width="653"
           height="367"
-          src="https://youtu.be/sDyU91TjMsU"
+          src="https://www.youtube.com/embed/HvdYBtUrMhw?si=S_fwdSb7DiO_8-9c"
           title="유튜브 쇼핑몰 채널 따라해서 연 매출 25억 달성한 사장님의 성공 스토리"
           frameborder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
